@@ -4,7 +4,7 @@ import pytac
 from at import physics
 
 class SimulatorModel(object):
-    def __init__(self, at_element, at_interface):
+    def __init__(self, at_element, at_interface, fields):
         self.field_functions = {'a0' : partial(self.PolynomA, cell=0),
                                 'a1' : partial(self.PolynomA, cell=1),
                                 'b0' : partial(self.PolynomB, cell=0),
@@ -13,9 +13,10 @@ class SimulatorModel(object):
                                 'x' : partial(self.Orbit, cell=0),
                                 'y' : partial(self.Orbit, cell=2),
                                 'f' : self.Frequency}
-        self.units = pytac.PHYS #conversion is done in element before and after pass
+        self.units = pytac.PHYS #conversion is done in element.(set/get)_value before and after pass
         self._element = at_element
         self.at = at_interface
+        self.fields = list(fields)
     
     def get_value(self, field, handle):
         return self.field_functions[field](value=numpy.nan)
@@ -51,5 +52,5 @@ class SimulatorModel(object):
             self._element.Frequency = value
             self.at.push_changes(self._element)
     
-    def get_fields(self): #not implemented yet as there is no fields object as no need to check if entered field is correct in current pytac implementation.
-        return NotImplementedError
+    def get_fields(self):
+        return self.fields
