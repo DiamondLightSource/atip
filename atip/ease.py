@@ -9,7 +9,7 @@ def loader():
     lattice = atip.load_sim.load(lattice)
     return lattice
 
-def preload_all(lattice):
+def preload(lattice):
     class elems:
         None
     setattr(elems, "all", lattice.get_elements(None, None))
