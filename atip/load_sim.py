@@ -1,6 +1,6 @@
 import pytac
 from at import load_mat
-from SimulatorModel import SimulatorModel
+from SimulatorModel import ATModel
 
 def load(lattice, LATTICE_FILE=None):
     if LATTICE_FILE is None:
@@ -11,7 +11,7 @@ def load(lattice, LATTICE_FILE=None):
         ring[x].Index = x+1
         ring[x].Class = ring[x].__doc__.split()[1] #This ensures all elems have a class but likely will not work for other .mat files
     for e in lattice:
-        e.set_model(SimulatorModel(ring[e.index-1], AT, e.get_fields()), pytac.SIM) #could be combined with the above loop - is the clarity of separation worth the extra loop
+        e.set_model(ATModel(ring[e.index-1], AT, e.get_fields()), pytac.SIM) #could be combined with the above loop - is the clarity of separation worth the extra loop
     return lattice
 
 class at_interface(object):

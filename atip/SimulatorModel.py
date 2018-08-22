@@ -3,7 +3,7 @@ import numpy
 import pytac
 from at import physics
 
-class SimulatorModel(object):
+class ATModel(object):
     def __init__(self, at_element, at_interface, fields):
         self.field_functions = {'a0' : partial(self.PolynomA, cell=0),
                                 'a1' : partial(self.PolynomA, cell=1),
