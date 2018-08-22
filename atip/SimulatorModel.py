@@ -2,10 +2,10 @@ from functools import partial
 import numpy
 import pytac
 from at import physics
-from at.exceptions import FieldException, HandleException
+from pytac.exceptions import FieldException, HandleException
 
 class ATModel(object):
-    def __init__(self, at_element, at_interface, fields):
+    def __init__(self, at_element, at_interface, fields=[]):
         self.field_functions = {'a0' : partial(self.PolynomA, cell=0),
                                 'a1' : partial(self.PolynomA, cell=1),
                                 'b0' : partial(self.PolynomB, cell=0),
@@ -20,13 +20,13 @@ class ATModel(object):
         self._fields = list(fields)
     
     def get_value(self, field, handle):
-        if field in self.fields:
+        if field in self._fields:
             return self.field_functions[field](value=numpy.nan)
         else:
             raise FieldException("No field {} on AT element {}".format(field, self._element))
     
     def set_value(self, field, set_value):
-        if field in self.fields:
+        if field in self._fields:
             self.field_functions[field](value=set_value)
         else:
             raise FieldException("No field {} on AT element {}".format(field, self._element))
@@ -60,4 +60,4 @@ class ATModel(object):
             self.at.push_changes(self._element)
     
     def get_fields(self):
-        return self.fields
+        return self._fields
