@@ -2,6 +2,7 @@ from functools import partial
 import numpy
 import pytac
 from at import physics
+from at.exceptions import FieldException, HandleException
 
 class ATModel(object):
     def __init__(self, at_element, at_interface, fields):
@@ -14,15 +15,21 @@ class ATModel(object):
                                 'y' : partial(self.Orbit, cell=2),
                                 'f' : self.Frequency}
         self.units = pytac.PHYS #conversion is done in element.(set/get)_value before and after pass
-        self._element = at_element
         self.at = at_interface
-        self.fields = list(fields)
+        self._element = at_element
+        self._fields = list(fields)
     
     def get_value(self, field, handle):
-        return self.field_functions[field](value=numpy.nan)
+        if field in self.fields:
+            return self.field_functions[field](value=numpy.nan)
+        else:
+            raise FieldException("No field {} on AT element {}".format(field, self._element))
     
     def set_value(self, field, set_value):
-        self.field_functions[field](value=set_value)
+        if field in self.fields:
+            self.field_functions[field](value=set_value)
+        else:
+            raise FieldException("No field {} on AT element {}".format(field, self._element))
     
     def PolynomA(self, cell, value): #use value as get/set flag as well as the set value
         if numpy.isnan(value):
@@ -43,7 +50,7 @@ class ATModel(object):
         if numpy.isnan(value):
             return float(physics.find_orbit4(self.at.pull_ring(), refpts=index)[1][cell])
         else:
-            raise ThisIsReadbackOnlyError
+            raise HandleException("Must read beam position using {}".format(pytac.RB))
     
     def Frequency(self, value):
         if numpy.isnan(value):
