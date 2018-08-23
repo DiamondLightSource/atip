@@ -1,7 +1,38 @@
 import pytac
 import atip
 import sys
-import os
+from at import load_mat
+
+
+LATTICE_FILE = './vmx.mat'
+
+
+def ring():
+    ring = load_mat.load(LATTICE_FILE)
+    return ring
+
+def elements_by_type(lat):
+    elems_dict = {}
+    for x in range(len(lat)):
+        elem_type = type(lat[x]).__dict__['__doc__'].split()[1]
+        if elems_dict.get(elem_type)==None:
+            elems_dict[elem_type] = [lat[x]]
+        else:
+            elems_dict[elem_type].append(lat[x])
+    return(elems_dict)
+
+def preload_at(lat):
+    class elems():
+        pass
+    for x in range(len(lat)):
+        lat[x].Index = x+1
+        lat[x].Class = lat[x].__doc__.split()[1]
+    elems_dict = elements_by_type(lat)
+    for x in range(len(elems_dict.keys())):
+        setattr(elems, elems_dict.keys()[x].lower()+"s", elems_dict[elems_dict.keys()[x]])
+    setattr(elems, "all", lat)
+    return(elems)
+
 
 def loader():
     lattice = pytac.load_csv.load('VMX')
