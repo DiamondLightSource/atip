@@ -31,8 +31,8 @@ class ATElementDataSource(object):
         else:
             raise FieldException("No field {} on AT element {}".format(field, self._element))
     
-        def get_fields(self):
-            return set(self._fields)
+    def get_fields(self):
+        return set(self._fields)
     
     def PolynomA(self, cell, value): #use value as get/set flag as well as the set value
         if numpy.isnan(value):
@@ -92,10 +92,10 @@ class ATLatticeDataSource(object):
             self.twiss = physics.get_twiss(self.ring, refpts=self.rp, get_chrom=True)
             return self.field2twiss[field]()
         else:
-            raise FieldException('Lattice model {} does not have field {}'.format(self, field))
+            raise FieldException('Lattice data_source {} does not have field {}'.format(self, field))
     
     def set_value(self, field):
-        raise HandleException('Filed {} cannot be set on lattice model {}'.format(field, self))
+        raise HandleException('Filed {} cannot be set on lattice data_source {}'.format(field, self))
     
     def get_fields(self):
         return set(self.field2twiss.keys())

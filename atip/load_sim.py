@@ -11,5 +11,5 @@ def load(lattice, LATTICE_FILE=None):
         ring[x].Index = x+1
         ring[x].Class = ring[x].__doc__.split()[1] #This ensures all elems have a class but likely will not work for other .mat files
     for e in lattice:
-        e.set_model(ATElementDataSource(ring[e.index-1], at_interface, e.get_fields()), pytac.SIM)
+        e.set_data_source(ATElementDataSource(ring[e.index-1], at_interface, e.get_fields()[pytac.LIVE]), pytac.SIM)
     return lattice
