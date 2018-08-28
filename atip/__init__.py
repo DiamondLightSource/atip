@@ -17,4 +17,4 @@ sys.path.append(source_directory+'/pytac')
 import pytac
 sys.path.append(source_directory+'/at/pyat/build/lib.linux-x86_64-2.7')
 import at
-from . import load_sim, SimulatorModel, ease
+from . import load_sim, SimDataSource, ease

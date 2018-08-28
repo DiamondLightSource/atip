@@ -4,7 +4,7 @@ import pytac
 from at import physics
 from pytac.exceptions import FieldException, HandleException
 
-class ATElementModel(object):
+class ATElementDataSource(object):
     def __init__(self, at_element, at_interface, fields=[]):
         self.field_functions = {'a0' : partial(self.PolynomA, cell=0),
                                 'a1' : partial(self.PolynomA, cell=1),
@@ -63,7 +63,7 @@ class ATElementModel(object):
             self.at.push_changes(self._element)
 
 
-class ATLatticeModel(object):
+class ATLatticeDataSource(object):
     def __init__(self, ring):
         self.ring = ring
         #temporary work around for AT None bug:
