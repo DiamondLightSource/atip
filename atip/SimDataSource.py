@@ -18,7 +18,7 @@ class ATElementDataSource(object):
         self.units = pytac.PHYS #conversion is done in element.(set/get)_value before and after pass
         self.at = at_interface
         self._element = at_element
-        self._fields = list(fields)
+        self._fields = fields
     
     def get_value(self, field, handle):
         if field in self._fields:
