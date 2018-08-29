@@ -2,6 +2,7 @@ import pytac
 import atip
 import sys
 from at import load_mat
+import time as t
 
 
 LATTICE_FILE = './vmx.mat'
@@ -77,15 +78,26 @@ def enablePrint():
 
 
 def elements_by_field(elems):
-    all_fields = set()
-    for x in range(len(elems)):
-        all_fields.update(elems[x].get_fields()[pytac.LIVE])
-    all_fields = list(all_fields)
     fields_dict = {}
-    for x in range(len(all_fields)):
-        fields_dict[all_fields[x]] = set()
     for x in range(len(elems)):
         fields = elems[x].get_fields()[pytac.LIVE]
         for y in range(len(fields)):
-            fields_dict[fields[y]].add(x)
+            if fields[y] not in fields_dict.keys():
+                fields_dict[fields[y]] = []
+            fields_dict[fields[y]].append(x)
     return fields_dict
+
+
+class timer(object):
+    def __init__(self):
+        self.start_time = 0
+        self.end_time = 0
+
+    def start(self):
+        self.start_time = t.time()
+
+    def stop(self):
+        self.end_time = t.time()
+
+    def time(self):
+        return (self.end_time - self.start_time)
