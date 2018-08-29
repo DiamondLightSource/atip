@@ -9,14 +9,10 @@ LATTICE_FILE = './vmx.mat'
 
 def ring():
     ring = load_mat.load(LATTICE_FILE)
-    return ring
-
-
-def flesh_out(ring):
     for x in range(len(ring)):
         ring[x].Index = x+1
         ring[x].Class = ring[x].__doc__.split()[1]
-    return(ring)
+    return ring
 
 
 def elements_by_type(lat):
