@@ -4,6 +4,7 @@ import pytac
 from at import physics
 from pytac.exceptions import FieldException, HandleException
 
+
 class ATElementDataSource(object):
     def __init__(self, at_element, at_interface, fields=[]):
         self.field_functions = {'a0' : partial(self.PolynomA, cell=0),
@@ -86,7 +87,6 @@ class ATLatticeDataSource(object):
                             'tune' : partial(self.read_twiss, cell=1, field=None, limiter=None),
                             'chrom' : partial(self.read_twiss, cell=2, field=None, limiter=None)}
 
-    
     def get_value(self, field):
         if field in self.field2twiss.keys():
             self.twiss = physics.get_twiss(self.ring, refpts=self.rp, get_chrom=True)

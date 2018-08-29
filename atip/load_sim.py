@@ -2,6 +2,7 @@ import pytac
 from at import load_mat
 from SimDataSource import ATElementDataSource, ATLatticeDataSource
 
+
 def load(lattice, LATTICE_FILE=None):
     if LATTICE_FILE is None:
         LATTICE_FILE = './vmx.mat'

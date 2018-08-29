@@ -9,7 +9,6 @@ Reqs:
     pip install pytest
     pip install cothread
 """
-
 import sys
 import os
 source_directory = os.path.realpath('../')

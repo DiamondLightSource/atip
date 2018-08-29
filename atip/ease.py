@@ -11,6 +11,7 @@ def ring():
     ring = load_mat.load(LATTICE_FILE)
     return ring
 
+
 def elements_by_type(lat):
     elems_dict = {}
     for x in range(len(lat)):
@@ -20,6 +21,7 @@ def elements_by_type(lat):
         else:
             elems_dict[elem_type].append(lat[x])
     return(elems_dict)
+
 
 def preload_at(lat):
     class elems():
@@ -40,6 +42,7 @@ def loader():
     lattice = atip.load_sim.load(lattice)
     return lattice
 
+
 def preload(lattice):
     class elems:
         None
@@ -48,6 +51,7 @@ def preload(lattice):
     for family in range(len(families)):
         setattr(elems, families[family].lower()+"s", lattice.get_elements(families[family]))
     return(elems)
+
 
 def get_attributes(object):
     pub_attr = []
@@ -60,8 +64,10 @@ def get_attributes(object):
             priv_attr.append(all_attr[x])
     return({'Public': pub_attr, 'Private': priv_attr})
 
+
 def blockPrint():
     sys.stdout = open(os.devnull, 'w')
+
 
 def enablePrint():
     sys.stdout = sys.__stdout__
