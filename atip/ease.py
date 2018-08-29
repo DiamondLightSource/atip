@@ -74,3 +74,18 @@ def blockPrint():
 
 def enablePrint():
     sys.stdout = sys.__stdout__
+
+
+def elements_by_field(elems):
+    all_fields = set()
+    for x in range(len(elems)):
+        all_fields.update(elems[x].get_fields()[pytac.LIVE])
+    all_fields = list(all_fields)
+    fields_dict = {}
+    for x in range(len(all_fields)):
+        fields_dict[all_fields[x]] = set()
+    for x in range(len(elems)):
+        fields = elems[x].get_fields()[pytac.LIVE]
+        for y in range(len(fields)):
+            fields_dict[fields[y]].add(x)
+    return fields_dict
