@@ -1,6 +1,7 @@
 import pytac
 import atip
 import sys
+import os
 from at import load_mat
 import time as t
 
@@ -20,7 +21,7 @@ def elements_by_type(lat):
     elems_dict = {}
     for x in range(len(lat)):
         elem_type = type(lat[x]).__dict__['__doc__'].split()[1]
-        if elems_dict.get(elem_type)==None:
+        if elems_dict.get(elem_type) is None:
             elems_dict[elem_type] = [lat[x]]
         else:
             elems_dict[elem_type].append(lat[x])
@@ -35,7 +36,8 @@ def preload_at(lat):
         lat[x].Class = lat[x].__doc__.split()[1]
     elems_dict = elements_by_type(lat)
     for x in range(len(elems_dict.keys())):
-        setattr(elems, elems_dict.keys()[x].lower()+"s", elems_dict[elems_dict.keys()[x]])
+        setattr(elems, elems_dict.keys()[x].lower()+"s",
+                elems_dict[elems_dict.keys()[x]])
     setattr(elems, "all", lat)
     return(elems)
 
@@ -53,7 +55,8 @@ def preload(lattice):
     setattr(elems, "all", lattice.get_elements(None, None))
     families = list(lattice.get_all_families())
     for family in range(len(families)):
-        setattr(elems, families[family].lower()+"s", lattice.get_elements(families[family]))
+        setattr(elems, families[family].lower()+"s",
+                lattice.get_elements(families[family]))
     return(elems)
 
 
