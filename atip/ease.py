@@ -72,11 +72,11 @@ def get_attributes(object):
     return({'Public': pub_attr, 'Private': priv_attr})
 
 
-def blockPrint():
+def block_print():
     sys.stdout = open(os.devnull, 'w')
 
 
-def enablePrint():
+def enable_print():
     sys.stdout = sys.__stdout__
 
 

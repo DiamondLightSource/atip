@@ -1,6 +1,6 @@
 import pytac
 from at import load_mat
-from SimDataSource import ATElementDataSource, ATLatticeDataSource
+from sim_data_source import ATElementDataSource, ATLatticeDataSource
 """
 UNSIMULATED_FIELDS = ['db0', 'enabled', 'x_fofb_disabled', 'x_sofb_disabled',
                       'y_fofb_disabled', 'y_sofb_disabled', 'h_fofb_disabled',
