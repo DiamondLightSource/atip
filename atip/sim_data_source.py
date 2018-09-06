@@ -79,13 +79,13 @@ class ATLatticeDataSource(object):
                             'y': partial(self.read_twiss, cell=0, field='closed_orbit', limiter=2),
                             'py': partial(self.read_twiss, cell=0, field='closed_orbit', limiter=3),
                             'm44': partial(self.read_twiss, cell=0, field='m44', limiter=None),
-                            'idx': partial(self.read_twiss, cell=0, field='idx', limiter=None),
                             's_pos': partial(self.read_twiss, cell=0, field='s_pos', limiter=None),
                             'alpha': partial(self.read_twiss, cell=0, field='alpha', limiter=None),
                             'beta': partial(self.read_twiss, cell=0, field='beta', limiter=None),
                             'mu': partial(self.read_twiss, cell=0, field='mu', limiter=None),
                             'dispersion': partial(self.read_twiss, cell=0, field='dispersion', limiter=None),
-                            'tune': partial(self.read_twiss, cell=1, field=None, limiter=None),
+                            'tune_x': partial(self.read_twiss, cell=1, field=None, limiter=0),
+                            'tune_y': partial(self.read_twiss, cell=1, field=None, limiter=1),
                             'chrom': partial(self.read_twiss, cell=2, field=None, limiter=None)}
 
     def get_value(self, field, handle=None):
