@@ -44,7 +44,6 @@ def preload_at(lat):
 
 def loader():
     lattice = pytac.load_csv.load('VMX')
-    lattice._lattice.pop()
     lattice = atip.load_sim.load(lattice)
     return lattice
 
