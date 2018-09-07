@@ -86,7 +86,8 @@ class ATLatticeDataSource(object):
                             'dispersion': partial(self.read_twiss, cell=0, field='dispersion', limiter=None),
                             'tune_x': partial(self.read_twiss, cell=1, field=None, limiter=0),
                             'tune_y': partial(self.read_twiss, cell=1, field=None, limiter=1),
-                            'chrom': partial(self.read_twiss, cell=2, field=None, limiter=None)}
+                            'chromaticity_x': partial(self.read_twiss, cell=2, field=None, limiter=0),
+                            'chromaticity_y': partial(self.read_twiss, cell=2, field=None, limiter=1)}
 
     def get_value(self, field, handle=None):
         if field in self.field2twiss.keys():
@@ -97,16 +98,18 @@ class ATLatticeDataSource(object):
             raise FieldException('Lattice data_source {} does not have field {}'.format(self, field))
 
     def set_value(self, field):
-        raise HandleException('Filed {} cannot be set on lattice data_source {}'.format(field, self))
+        raise HandleException('Field {} cannot be set on lattice data_source {}'.format(field, self))
 
     def get_fields(self):
         return self.field2twiss.keys()
 
     def read_twiss(self, cell, field, limiter):
-        if field is None:
+        if (field is None) and (limiter is None):
             return self.twiss[cell]
         elif limiter is None:
             return self.twiss[cell][field]
+        elif field is None:
+            return self.twiss[cell][:, limiter]
         else:
             return self.twiss[cell][field][:, limiter]
 
