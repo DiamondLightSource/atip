@@ -15,7 +15,8 @@ def load(lattice, LATTICE_FILE=None):
     if LATTICE_FILE is None:
         LATTICE_FILE = './vmx.mat'
     ring = load_mat.load(LATTICE_FILE)
-    at_interface = ATLatticeDataSource(ring)
+    lattice.set_data_source(ATLatticeDataSource(ring), pytac.SIM)
+    at_interface = lattice._data_source_manager._data_sources[pytac.SIM]
     for x in range(len(ring)):
         ring[x].Index = x+1
 # This ensures all elems have a class but will not work for other lattice files
