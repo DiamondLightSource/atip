@@ -75,11 +75,11 @@ class ATLatticeDataSource(object):
         # work around end.
         self.twiss = physics.get_twiss(self.ring, refpts=self.rp, get_chrom=True)
         self.field2twiss = {'x': partial(self.read_twiss, cell=0, field='closed_orbit', limiter=0),
-                            'px': partial(self.read_twiss, cell=0, field='closed_orbit', limiter=1),
+                            'phase_x': partial(self.read_twiss, cell=0, field='closed_orbit', limiter=1),
                             'y': partial(self.read_twiss, cell=0, field='closed_orbit', limiter=2),
-                            'py': partial(self.read_twiss, cell=0, field='closed_orbit', limiter=3),
+                            'phase_y': partial(self.read_twiss, cell=0, field='closed_orbit', limiter=3),
                             'm44': partial(self.read_twiss, cell=0, field='m44', limiter=None),
-                            's_pos': partial(self.read_twiss, cell=0, field='s_pos', limiter=None),
+                            's_position': partial(self.read_twiss, cell=0, field='s_pos', limiter=None),
                             'alpha': partial(self.read_twiss, cell=0, field='alpha', limiter=None),
                             'beta': partial(self.read_twiss, cell=0, field='beta', limiter=None),
                             'mu': partial(self.read_twiss, cell=0, field='mu', limiter=None),
