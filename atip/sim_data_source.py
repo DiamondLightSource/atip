@@ -67,6 +67,7 @@ class ATElementDataSource(object):
 
 class ATLatticeDataSource(object):
     def __init__(self, ring):
+        self.units = pytac.PHYS
         self.ring = ring
         # temporary work around for AT None bug:
         self.rp = []
@@ -84,10 +85,10 @@ class ATLatticeDataSource(object):
                             'beta': partial(self.read_twiss, cell=0, field='beta', limiter=None),
                             'mu': partial(self.read_twiss, cell=0, field='mu', limiter=None),
                             'dispersion': partial(self.read_twiss, cell=0, field='dispersion', limiter=None),
-                            'tune_x': partial(self.read_twiss, cell=1, field=None, limiter=0),
-                            'tune_y': partial(self.read_twiss, cell=1, field=None, limiter=1),
-                            'chromaticity_x': partial(self.read_twiss, cell=2, field=None, limiter=0),
-                            'chromaticity_y': partial(self.read_twiss, cell=2, field=None, limiter=1)}
+                            'tune_x': partial(self.read_twiss, cell=1, field=0, limiter='fractional digits'),
+                            'tune_y': partial(self.read_twiss, cell=1, field=1, limiter='fractional digits'),
+                            'chromaticity_x': partial(self.read_twiss, cell=2, field=0, limiter=None),
+                            'chromaticity_y': partial(self.read_twiss, cell=2, field=1, limiter=None)}
 
     def get_value(self, field, handle=None):
         if field in self.field2twiss.keys():
@@ -109,9 +110,15 @@ class ATLatticeDataSource(object):
         elif limiter is None:
             return self.twiss[cell][field]
         elif field is None:
-            return self.twiss[cell][:, limiter]
+            if limiter.count('fractional digits'):
+                return self.twiss[cell] % 1
+            else:
+                return self.twiss[cell][:, limiter]
         else:
-            return self.twiss[cell][field][:, limiter]
+            if limiter.count('fractional digits'):
+                return self.twiss[cell][field] % 1
+            else:
+                return self.twiss[cell][field][:, limiter]
 
     def push_changes(self, element):
         self.ring[element.Index-1] = element
