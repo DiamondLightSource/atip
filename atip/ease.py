@@ -103,3 +103,7 @@ class timer(object):
 
     def time(self):
         return (self.end_time - self.start_time)
+
+
+def get_sim_ring(elems):
+    return elems.all[0]._data_source_manager._data_sources[pytac.SIM].at.ring
