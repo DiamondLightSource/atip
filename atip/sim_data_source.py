@@ -47,6 +47,8 @@ class ATElementDataSource(object):
         if numpy.isnan(value):
             return self._element.PolynomB[cell]
         else:
+            if self._element.Class == 'quadrupole':
+                self._element.K = value
             self._element.PolynomB[cell] = value
             self.at.push_changes(self._element)
 
@@ -110,12 +112,12 @@ class ATLatticeDataSource(object):
         elif limiter is None:
             return self.twiss[cell][field]
         elif field is None:
-            if limiter=='fractional digits':
+            if limiter == 'fractional digits':
                 return self.twiss[cell] % 1
             else:
                 return self.twiss[cell][:, limiter]
         else:
-            if limiter=='fractional digits':
+            if limiter == 'fractional digits':
                 return self.twiss[cell][field] % 1
             else:
                 return self.twiss[cell][field][:, limiter]
