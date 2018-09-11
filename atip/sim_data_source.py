@@ -110,12 +110,12 @@ class ATLatticeDataSource(object):
         elif limiter is None:
             return self.twiss[cell][field]
         elif field is None:
-            if limiter.count('fractional digits'):
+            if limiter=='fractional digits':
                 return self.twiss[cell] % 1
             else:
                 return self.twiss[cell][:, limiter]
         else:
-            if limiter.count('fractional digits'):
+            if limiter=='fractional digits':
                 return self.twiss[cell][field] % 1
             else:
                 return self.twiss[cell][field][:, limiter]
