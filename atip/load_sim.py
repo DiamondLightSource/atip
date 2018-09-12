@@ -8,7 +8,7 @@ UNSIMULATED_FIELDS = ['db0', 'enabled', 'x_fofb_disabled', 'x_sofb_disabled',
 """
 
 
-SIMULATED_FIELDS = ['a0', 'a1', 'b0', 'b1', 'b2', 'x', 'y', 'f']
+SIMULATED_FIELDS = ['a1', 'b1', 'b2', 'x', 'y', 'f', 'x_kick', 'y_kick']
 
 
 def load(lattice, LATTICE_FILE=None):
