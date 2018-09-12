@@ -13,8 +13,8 @@ class ATElementDataSource(object):
                                 'x': partial(self.Orbit, field='x'),
                                 'y': partial(self.Orbit, field='y'),
                                 'f': self.Frequency,
-                                'x_kick': self.h_kick,
-                                'y_kick': self.v_kick}
+                                'x_kick': self.x_kick,
+                                'y_kick': self.y_kick}
         self.units = pytac.PHYS
         self.at = at_interface
         self._element = at_element
@@ -66,39 +66,39 @@ class ATElementDataSource(object):
             self._element.Frequency = value
             self.at.push_changes(self._element)
 
-def x_kick(self, value):
-    if self._element.Class == 'sextupole':
-        if numpy.isnan(value):
-            value = self._element.PolynomB[0]
-            value = - value * self._element.Length
-            return value
+    def x_kick(self, value):
+        if self._element.Class == 'sextupole':
+            if numpy.isnan(value):
+                value = self._element.PolynomB[0]
+                value = - value * self._element.Length
+                return value
+            else:
+                value = - value / self._element.Length
+                self._element.PolynomB[0] = value
+                self.at.push_changes(self._element)
         else:
-            value = - value / self._element.Length
-            self._element.PolynomB[0] = value
-            self.at.push_changes(self._element)
-    else:
-        if numpy.isnan(value):
-            return self._element.KickAngle[0]
-        else:
-            self._element.KickAngle[0] = value
-            self.at.push_changes(self._element)
+            if numpy.isnan(value):
+                return self._element.KickAngle[0]
+            else:
+                self._element.KickAngle[0] = value
+                self.at.push_changes(self._element)
 
-def y_kick(self, value):
-    if self._element.Class == 'sextupole':
-        if numpy.isnan(value):
-            value = self._element.PolynomA[0]
-            value = value * self._element.Length
-            return value
+    def y_kick(self, value):
+        if self._element.Class == 'sextupole':
+            if numpy.isnan(value):
+                value = self._element.PolynomA[0]
+                value = value * self._element.Length
+                return value
+            else:
+                value = value / self._element.Length
+                self._element.PolynomA[0] = value
+                self.at.push_changes(self._element)
         else:
-            value = value / self._element.Length
-            self._element.PolynomA[0] = value
-            self.at.push_changes(self._element)
-    else:
-        if numpy.isnan(value):
-            return self._element.KickAngle[1]
-        else:
-            self._element.KickAngle[1] = value
-            self.at.push_changes(self._element)
+            if numpy.isnan(value):
+                return self._element.KickAngle[1]
+            else:
+                self._element.KickAngle[1] = value
+                self.at.push_changes(self._element)
 
 
 class ATLatticeDataSource(object):
