@@ -7,14 +7,14 @@ from pytac.exceptions import FieldException, HandleException
 
 class ATElementDataSource(object):
     def __init__(self, at_element, at_interface, fields=[]):
-        self.field_functions = {'a0': partial(self.PolynomA, cell=0),
-                                'a1': partial(self.PolynomA, cell=1),
-                                'b0': partial(self.PolynomB, cell=0),
+        self.field_functions = {'a1': partial(self.PolynomA, cell=1),
                                 'b1': partial(self.PolynomB, cell=1),
                                 'b2': partial(self.PolynomB, cell=2),
                                 'x': partial(self.Orbit, field='x'),
                                 'y': partial(self.Orbit, field='y'),
-                                'f': self.Frequency}
+                                'f': self.Frequency,
+                                'x_kick': self.h_kick,
+                                'y_kick': self.v_kick}
         self.units = pytac.PHYS
         self.at = at_interface
         self._element = at_element
@@ -64,6 +64,40 @@ class ATElementDataSource(object):
             return self._element.Frequency
         else:
             self._element.Frequency = value
+            self.at.push_changes(self._element)
+
+def x_kick(self, value):
+    if self._element.Class == 'sextupole':
+        if numpy.isnan(value):
+            value = self._element.PolynomB[0]
+            value = - value * self._element.Length
+            return value
+        else:
+            value = - value / self._element.Length
+            self._element.PolynomB[0] = value
+            self.at.push_changes(self._element)
+    else:
+        if numpy.isnan(value):
+            return self._element.KickAngle[0]
+        else:
+            self._element.KickAngle[0] = value
+            self.at.push_changes(self._element)
+
+def y_kick(self, value):
+    if self._element.Class == 'sextupole':
+        if numpy.isnan(value):
+            value = self._element.PolynomA[0]
+            value = value * self._element.Length
+            return value
+        else:
+            value = value / self._element.Length
+            self._element.PolynomA[0] = value
+            self.at.push_changes(self._element)
+    else:
+        if numpy.isnan(value):
+            return self._element.KickAngle[1]
+        else:
+            self._element.KickAngle[1] = value
             self.at.push_changes(self._element)
 
 
