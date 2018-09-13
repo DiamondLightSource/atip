@@ -21,4 +21,4 @@ from . import load_sim, sim_data_source, ease  # noqa: E402
 """Error 402 is suppressed as we cannot import these modules at the top of the
 file as pytac and at must be added to the path first or the imports will fail.
 """
-__all__ = ["load_sim", "sim_data_source", "ease"]
+__all__ = ["load_sim", "sim_data_source", "ease", "tester"]

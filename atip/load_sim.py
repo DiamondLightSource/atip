@@ -1,3 +1,4 @@
+import numpy
 import pytac
 from at import load_mat
 from sim_data_source import ATElementDataSource, ATLatticeDataSource
@@ -15,6 +16,7 @@ def load(lattice, LATTICE_FILE=None):
     if LATTICE_FILE is None:
         LATTICE_FILE = './vmx.mat'
     ring = load_mat.load(LATTICE_FILE)
+    ring = fix_dtype(ring)
     lattice.set_data_source(ATLatticeDataSource(ring), pytac.SIM)
     at_interface = lattice._data_source_manager._data_sources[pytac.SIM]
     for x in range(len(ring)):
@@ -30,3 +32,15 @@ def load(lattice, LATTICE_FILE=None):
         e.set_data_source(ATElementDataSource(ring[e.index-1], at_interface,
                           sim_fields), pytac.SIM)
     return lattice
+
+
+def fix_dtype(ring):
+    for element in ring:
+        attributes = element.__dict__.keys()
+        for attribute in attributes:
+            if isinstance(vars(element)[attribute], numpy.ndarray):
+                try:
+                    vars(element)[attribute] = numpy.float64(vars(element)[attribute])
+                except ValueError:
+                    vars(element)[attribute].dtype = '<f8'
+    return ring
