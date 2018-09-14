@@ -1,6 +1,7 @@
 import numpy
 import pytac
 from at import load_mat
+from pytac.load_csv import UNIT_UC
 from sim_data_source import ATElementDataSource, ATLatticeDataSource
 """
 UNSIMULATED_FIELDS = ['db0', 'enabled', 'x_fofb_disabled', 'x_sofb_disabled',
@@ -31,6 +32,9 @@ def load(lattice, LATTICE_FILE=None):
                 sim_fields.append(live_fields[x])
         e.set_data_source(ATElementDataSource(ring[e.index-1], at_interface,
                           sim_fields), pytac.SIM)
+    for f in lattice.get_fields()[pytac.SIM]:
+        if f not in lattice._data_source_manager._uc.keys():
+            lattice._data_source_manager._uc[f] = UNIT_UC
     return lattice
 
 
@@ -41,6 +45,9 @@ def fix_dtype(ring):
             if isinstance(vars(element)[attribute], numpy.ndarray):
                 try:
                     vars(element)[attribute] = numpy.float64(vars(element)[attribute])
+                    vars(element)[attribute] = numpy.asfortranarray(vars(element)[attribute])
                 except ValueError:
                     vars(element)[attribute].dtype = '<f8'
     return ring
+
+
