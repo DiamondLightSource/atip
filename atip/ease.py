@@ -136,3 +136,9 @@ def plot_beam_position(elems, ds, x_plot=True, y_plot=True):
         plt.show()
     else:
         raise TypeError('Please plot at least one of x or y.')
+
+
+def get_defaults(lattice):
+    print('default handle: {}'.format(lattice.get_default_handle()))
+    print('default units: {}'.format(lattice.get_default_units()))
+    print('default data source: {}'.format(lattice.get_default_data_source()))
