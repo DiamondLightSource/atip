@@ -2,8 +2,9 @@ import pytac
 import atip
 import sys
 import os
-from at import load_mat
 import time as t
+from at import load_mat
+import matplotlib.pyplot as plt
 
 
 LATTICE_FILE = './vmx.mat'
@@ -107,3 +108,31 @@ class timer(object):
 
 def get_sim_ring(elems):
     return elems.all[0]._data_source_manager._data_sources[pytac.SIM].at.ring
+
+
+def plot_beam_position(elems, ds, x_plot=True, y_plot=True):    
+    x = []
+    y = []
+    for elem in elems.bpms:
+        if bool(x_plot):
+            x.append(elem.get_value('x', data_source=ds))
+        if bool(y_plot):
+            y.append(elem.get_value('y', data_source=ds))
+    if bool(x_plot) and bool(y_plot):
+        plt.subplot(1, 2, 1)
+        plt.plot(x)
+        plt.title('X Position')
+        plt.subplot(1, 2, 2)
+        plt.plot(y)
+        plt.title('Y Position')
+        plt.show()
+    elif bool(x_plot):
+        plt.plot(x)
+        plt.title('X Position')
+        plt.show()
+    elif bool(y_plot):
+        plt.plot(y)
+        plt.title('Y Position')
+        plt.show()
+    else:
+        raise TypeError('Please plot at least one of x or y.')
