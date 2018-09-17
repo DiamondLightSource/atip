@@ -9,6 +9,7 @@ from pytac.exceptions import FieldException, HandleException
 class ATElementDataSource(DataSource):
     def __init__(self, at_element, at_interface, fields=[]):
         self.field_functions = {'a1': partial(self.PolynomA, cell=1),
+                                'b0': partial(self.PolynomB, cell=0),
                                 'b1': partial(self.PolynomB, cell=1),
                                 'b2': partial(self.PolynomB, cell=2),
                                 'x': partial(self.Orbit, field='x'),
