@@ -119,7 +119,7 @@ class ATLatticeDataSource(object):
                             'tune_y': partial(self.read_twiss, cell=1, field=1, limiter='fractional digits'),
                             'chromaticity_x': partial(self.read_twiss, cell=2, field=0, limiter=None),
                             'chromaticity_y': partial(self.read_twiss, cell=2, field=1, limiter=None),
-                            'energy': partial(self.get_energy, magnitude=float(1.e+06))}
+                            'energy': partial(self.get_energy, magnitude=1.e+06)}
 
     def get_value(self, field, handle=None):
         if field in self.field2twiss.keys():
@@ -152,7 +152,7 @@ class ATLatticeDataSource(object):
                 return self.twiss[cell][field][:, limiter]
 
     def get_energy(self, magnitude):
-        return int(self.ring[0].Energy / magnitude)
+        return int(self.ring[0].Energy[0] / magnitude)
 
     def push_changes(self, element):
         self.ring[element.Index-1] = element
