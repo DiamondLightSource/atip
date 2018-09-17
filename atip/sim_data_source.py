@@ -1,11 +1,12 @@
-from functools import partial
 import numpy
 import pytac
 from at import physics
+from functools import partial
+from pytac.data_source import DataSource
 from pytac.exceptions import FieldException, HandleException
 
 
-class ATElementDataSource(object):
+class ATElementDataSource(DataSource):
     def __init__(self, at_element, at_interface, fields=[]):
         self.field_functions = {'a1': partial(self.PolynomA, cell=1),
                                 'b1': partial(self.PolynomB, cell=1),
@@ -95,7 +96,7 @@ class ATElementDataSource(object):
                 self.at.push_changes(self._element)
 
 
-class ATLatticeDataSource(object):
+class ATLatticeDataSource(DataSource):
     def __init__(self, ring):
         self.units = pytac.PHYS
         self.ring = ring
