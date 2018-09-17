@@ -110,7 +110,7 @@ def get_sim_ring(elems):
     return elems.all[0]._data_source_manager._data_sources[pytac.SIM].at.ring
 
 
-def plot_beam_position(elems, ds, x_plot=True, y_plot=True):    
+def plot_beam_position(elems, ds, x_plot=True, y_plot=True):
     x = []
     y = []
     for elem in elems.bpms:

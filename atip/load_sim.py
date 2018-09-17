@@ -49,5 +49,3 @@ def fix_dtype(ring):
                 except ValueError:
                     vars(element)[attribute].dtype = '<f8'
     return ring
-
-
