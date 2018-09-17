@@ -69,12 +69,9 @@ class ATElementDataSource(object):
     def x_kick(self, value):
         if self._element.Class == 'sextupole':
             if numpy.isnan(value):
-                value = self._element.PolynomB[0]
-                value = - value * self._element.Length
-                return value
+                return (- self._element.PolynomB[0] * self._element.Length)
             else:
-                value = - value / self._element.Length
-                self._element.PolynomB[0] = value
+                self._element.PolynomB[0] = (- value / self._element.Length)
                 self.at.push_changes(self._element)
         else:
             if numpy.isnan(value):
@@ -86,12 +83,9 @@ class ATElementDataSource(object):
     def y_kick(self, value):
         if self._element.Class == 'sextupole':
             if numpy.isnan(value):
-                value = self._element.PolynomA[0]
-                value = value * self._element.Length
-                return value
+                return (self._element.PolynomA[0] * self._element.Length)
             else:
-                value = value / self._element.Length
-                self._element.PolynomA[0] = value
+                self._element.PolynomA[0] = (value / self._element.Length)
                 self.at.push_changes(self._element)
         else:
             if numpy.isnan(value):
