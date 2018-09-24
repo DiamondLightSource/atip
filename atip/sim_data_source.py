@@ -156,5 +156,6 @@ class ATLatticeDataSource(DataSource):
     def get_energy(self, magnitude):
         return int(self.ring[0].Energy[0] / magnitude)
 
-    def push_changes(self, element):
-        self.ring[element.Index-1] = element
+    def push_changes(self, *elements):
+        for element in elements:
+            self.ring[element.Index-1] = element
