@@ -8,6 +8,8 @@ name = "pypi"
 
 [packages]
 matplotlib = "*"
+numpy = "*"
+scipy = "*"
 
 [requires]
 python_version = "2.7"

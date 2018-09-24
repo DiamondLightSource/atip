@@ -15,6 +15,7 @@ import os
 source_directory = os.path.realpath('../')
 sys.path.append(source_directory+'/pytac')
 sys.path.append(source_directory+'/at/pyat/build/lib.linux-x86_64-2.7')
+sys.path.append(source_directory+'/atip/atip')  # fix for mypython3
 
 # Initialise all modules.
 from . import load_sim, sim_data_source, ease  # noqa: E402
