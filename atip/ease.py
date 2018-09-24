@@ -94,16 +94,23 @@ def elements_by_field(elems):
 class timer(object):
     def __init__(self):
         self.start_time = 0
-        self.end_time = 0
 
     def start(self):
         self.start_time = t.time()
 
     def stop(self):
-        self.end_time = t.time()
+        if self.start_time is 0:
+            raise Exception("You need to start the timer first, moron.")
+        else:
+            final_time = (t.time() - self.start_time)
+            self.start_time = 0
+            return final_time
 
     def time(self):
-        return (self.end_time - self.start_time)
+        if self.start_time is 0:
+            raise Exception("You need to start the timer first, moron.")
+        else:
+            return (t.time() - self.start_time)
 
 
 def get_sim_ring(elems):
