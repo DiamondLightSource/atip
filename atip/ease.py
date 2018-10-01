@@ -1,3 +1,4 @@
+import numpy
 import pytac
 import atip
 import sys
@@ -15,6 +16,20 @@ def ring():
     for x in range(len(ring)):
         ring[x].Index = x+1
         ring[x].Class = ring[x].__doc__.split()[1]
+    ring = fix_dtype(ring)
+    return ring
+
+
+def fix_dtype(ring):
+    for element in ring:
+        attributes = element.__dict__.keys()
+        for attribute in attributes:
+            if isinstance(vars(element)[attribute], numpy.ndarray):
+                try:
+                    vars(element)[attribute] = numpy.float64(vars(element)[attribute])
+                    vars(element)[attribute] = numpy.asfortranarray(vars(element)[attribute])
+                except ValueError:
+                    vars(element)[attribute].dtype = '<f8'
     return ring
 
 
