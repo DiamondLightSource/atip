@@ -128,8 +128,8 @@ class timer(object):
             return (t.time() - self.start_time)
 
 
-def get_sim_ring(elems):
-    return elems.all[0]._data_source_manager._data_sources[pytac.SIM].at.ring
+def get_sim_ring(lattice):
+    return lattice._data_source_manager._data_sources[pytac.SIM].ad.get_ring()
 
 
 def plot_beam_position(elems, ds, x_plot=True, y_plot=True):

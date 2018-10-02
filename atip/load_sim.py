@@ -1,7 +1,7 @@
 import numpy
 import pytac
 from at import load_mat
-from pytac.load_csv import UNIT_UC
+from pytac.load_csv import DEFAULT_UC
 from sim_data_source import *
 """
 UNSIMULATED_FIELDS = ['db0', 'enabled', 'x_fofb_disabled', 'x_sofb_disabled',
@@ -35,7 +35,7 @@ def load(lattice, LATTICE_FILE=None):
                           pytac.SIM)
     for f in lattice.get_fields()[pytac.SIM]:
         if f not in lattice._data_source_manager._uc.keys():
-            lattice._data_source_manager._uc[f] = UNIT_UC
+            lattice._data_source_manager._uc[f] = DEFAULT_UC
     return lattice
 
 
