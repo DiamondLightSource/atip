@@ -62,7 +62,7 @@ class ATElementDataSource(DataSource):
     def Orbit(self, cell, value):
         index = self._element.Index-1
         if numpy.isnan(value):
-            return float(self.ad.get_twiss[0]['closed_orbit'][index][cell])
+            return float(self.ad.get_twiss()[0]['closed_orbit'][index][cell])
         else:
             raise HandleException("Must read beam position using {}".format(pytac.RB))
 
@@ -108,7 +108,7 @@ class ATLatticeDataSource(DataSource):
         self.ad = accelerator_data
         # temporary work around for AT None bug:
         self.rp = []
-        for x in range(len(self.ring)):
+        for x in range(len(self.ad.get_ring())):
             self.rp.append(x)
         # work around end.
         self.field2twiss = {'x': partial(self.read_twiss, cell=0, field='closed_orbit', limiter=0),
@@ -157,7 +157,7 @@ class ATLatticeDataSource(DataSource):
                 return twiss[cell][field][:, limiter]
 
     def get_energy(self, magnitude):
-        return int(self.ring[0].Energy[0] / magnitude)
+        return int(self.ad.get_ring()[0].Energy[0] / magnitude)
 
 
 class ATAcceleratorData(object):

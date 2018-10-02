@@ -2,7 +2,7 @@ import numpy
 import pytac
 from at import load_mat
 from pytac.load_csv import UNIT_UC
-from sim_data_source import ATElementDataSource, ATLatticeDataSource
+from sim_data_source import *
 """
 UNSIMULATED_FIELDS = ['db0', 'enabled', 'x_fofb_disabled', 'x_sofb_disabled',
                       'y_fofb_disabled', 'y_sofb_disabled', 'h_fofb_disabled',
@@ -18,7 +18,8 @@ def load(lattice, LATTICE_FILE=None):
         LATTICE_FILE = './vmx.mat'
     ring = load_mat.load(LATTICE_FILE)
     ring = fix_dtype(ring)
-    lattice.set_data_source(ATLatticeDataSource(ring), pytac.SIM)
+    ad = ATAcceleratorData(ring, 1)
+    lattice.set_data_source(ATLatticeDataSource(ad), pytac.SIM)
     at_interface = lattice._data_source_manager._data_sources[pytac.SIM]
     for x in range(len(ring)):
         ring[x].Index = x+1
@@ -30,8 +31,8 @@ def load(lattice, LATTICE_FILE=None):
         for x in range(len(live_fields)):
             if live_fields[x] in SIMULATED_FIELDS:
                 sim_fields.append(live_fields[x])
-        e.set_data_source(ATElementDataSource(ring[e.index-1], at_interface,
-                          sim_fields), pytac.SIM)
+        e.set_data_source(ATElementDataSource(ring[e.index-1], ad, sim_fields),
+                          pytac.SIM)
     for f in lattice.get_fields()[pytac.SIM]:
         if f not in lattice._data_source_manager._uc.keys():
             lattice._data_source_manager._uc[f] = UNIT_UC
