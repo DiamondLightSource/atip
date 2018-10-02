@@ -6,9 +6,9 @@ from functools import partial
 from pytac.data_source import DataSource
 from pytac.exceptions import FieldException, HandleException
 try:
-    from Queue import Queue
-except ModuleNotFoundError:
-    from queue import Queue
+    from Queue import Queue  # with a python version < 3.0
+except ModuleNotFoundError:  # python 3 support
+    from queue import Queue  # with a python version >= 3.0
 
 
 class ATElementDataSource(DataSource):
