@@ -164,3 +164,17 @@ def get_defaults(lattice):
     print('default handle: {}'.format(lattice.get_default_handle()))
     print('default units: {}'.format(lattice.get_default_units()))
     print('default data source: {}'.format(lattice.get_default_data_source()))
+
+
+
+def transfer_values(lattice):
+    fields_dict = {'SEXT': ['a1', 'b2'], 'QUAD': ['b1'], 'BEND': ['b0'],
+                   'RF': ['f']}#, 'VSTR': ['y_kick'], 'HSTR': ['x_kick']}
+    for family, fields in fields_dict.items():
+        for field in fields:
+            values = []
+            lattice.set_default_data_source(pytac.LIVE)
+            values.append(lattice.get_element_values(family, field, pytac.SP))
+            lattice.set_default_data_source(pytac.SIM)
+            lattice.set_element_values(family, field, values)
+    return lattice
