@@ -157,19 +157,18 @@ def plot_beam_position(elems, ds, x_plot=True, y_plot=True):
         plt.title('Y Position')
         plt.show()
     else:
-        raise TypeError('Please plot at least one of x or y.')
+        raise TypeError("Please plot at least one of x or y.")
 
 
 def get_defaults(lattice):
-    print('default handle: {}'.format(lattice.get_default_handle()))
-    print('default units: {}'.format(lattice.get_default_units()))
-    print('default data source: {}'.format(lattice.get_default_data_source()))
-
+    print('Default handle: {0}'.format(lattice.get_default_handle()))
+    print('Default units: {0}'.format(lattice.get_default_units()))
+    print('Default data source: {0}'.format(lattice.get_default_data_source()))
 
 
 def transfer_values(lattice):
     fields_dict = {'SEXT': ['a1', 'b2'], 'QUAD': ['b1'], 'BEND': ['b0'],
-                   'RF': ['f']}#, 'VSTR': ['y_kick'], 'HSTR': ['x_kick']}
+                   'RF': ['f']}  # , 'VSTR': ['y_kick'], 'HSTR': ['x_kick']}
     for family, fields in fields_dict.items():
         for field in fields:
             values = []

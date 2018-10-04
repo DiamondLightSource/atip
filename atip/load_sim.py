@@ -2,7 +2,7 @@ import numpy
 import pytac
 from at import load_mat
 from pytac.load_csv import DEFAULT_UC
-from sim_data_source import *
+from sim_data_source import ATElementDataSource, ATLatticeDataSource, ATAcceleratorData
 """
 UNSIMULATED_FIELDS = ['db0', 'enabled', 'x_fofb_disabled', 'x_sofb_disabled',
                       'y_fofb_disabled', 'y_sofb_disabled', 'h_fofb_disabled',
@@ -20,7 +20,6 @@ def load(lattice, LATTICE_FILE=None):
     ring = fix_dtype(ring)
     ad = ATAcceleratorData(ring, 1)
     lattice.set_data_source(ATLatticeDataSource(ad), pytac.SIM)
-    at_interface = lattice._data_source_manager._data_sources[pytac.SIM]
     for x in range(len(ring)):
         ring[x].Index = x+1
 # This ensures all elems have a class but will not work for other lattice files

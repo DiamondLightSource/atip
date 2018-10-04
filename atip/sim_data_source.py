@@ -31,13 +31,15 @@ class ATElementDataSource(DataSource):
         if field in self._fields:
             return self.field_functions[field](value=numpy.nan)
         else:
-            raise FieldException("No field {} on AT element {}".format(field, self._element))
+            raise FieldException("No field {0} on AT element {1}."
+                                 .format(field, self._element))
 
     def set_value(self, field, set_value):
         if field in self._fields:
             self.field_functions[field](value=set_value)
         else:
-            raise FieldException("No field {} on AT element {}".format(field, self._element))
+            raise FieldException("No field {0} on AT element {1}."
+                                 .format(field, self._element))
 
     def get_fields(self):
         return self._fields
@@ -64,7 +66,8 @@ class ATElementDataSource(DataSource):
         if numpy.isnan(value):
             return float(self.ad.get_twiss()[0]['closed_orbit'][index][cell])
         else:
-            raise HandleException("Must read beam position using {}".format(pytac.RB))
+            raise HandleException("Must read beam position using {0}."
+                                  .format(pytac.RB))
 
     def Frequency(self, value):
         if numpy.isnan(value):
@@ -106,11 +109,6 @@ class ATLatticeDataSource(DataSource):
     def __init__(self, accelerator_data):
         self.units = pytac.PHYS
         self.ad = accelerator_data
-        # temporary work around for AT None bug:
-        self.rp = []
-        for x in range(len(self.ad.get_ring())):
-            self.rp.append(x)
-        # work around end.
         self.field2twiss = {'x': partial(self.read_twiss, cell=0, field='closed_orbit', limiter=0),
                             'phase_x': partial(self.read_twiss, cell=0, field='closed_orbit', limiter=1),
                             'y': partial(self.read_twiss, cell=0, field='closed_orbit', limiter=2),
@@ -131,10 +129,12 @@ class ATLatticeDataSource(DataSource):
         if field in self.field2twiss.keys():
             return self.field2twiss[field]()
         else:
-            raise FieldException('Lattice data_source {} does not have field {}'.format(self, field))
+            raise FieldException("Lattice data source {0} does not have field "
+                                 "{1}".format(self, field))
 
     def set_value(self, field):
-        raise HandleException('Field {} cannot be set on lattice data_source {}'.format(field, self))
+        raise HandleException("Field {0} cannot be set on lattice data source "
+                              "{0}.".format(field, self))
 
     def get_fields(self):
         return self.field2twiss.keys()
