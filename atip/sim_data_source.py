@@ -165,12 +165,7 @@ class ATAcceleratorData(object):
         self.q = Queue()
         self.ring = ring
         self.thread_number = threads
-        # temporary work around for AT None bug:
-        self.rp = []
-        for x in range(len(self.ring)):
-            self.rp.append(x)
-        # work around end.
-        self.twiss = physics.get_twiss(self.ring, refpts=self.rp, get_chrom=True)
+        self.twiss = physics.get_twiss(self.ring, get_chrom=True)
         for i in range(self.thread_number):
             update = Thread(target=self.update_ring)
             update.setDaemon(True)
@@ -185,7 +180,7 @@ class ATAcceleratorData(object):
             element = self.q.get()
             self.ring[element.Index-1] = element
             if self.q.empty():
-                self.twiss = physics.get_twiss(self.ring, refpts=self.rp, get_chrom=True)
+                self.twiss = physics.get_twiss(self.ring, get_chrom=True)
             self.q.task_done()
 
     def get_twiss(self):
