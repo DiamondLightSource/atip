@@ -1,4 +1,3 @@
-import numpy
 import pytac
 from at import load_mat
 from pytac.load_csv import DEFAULT_UC
@@ -17,7 +16,6 @@ def load(lattice, LATTICE_FILE=None):
     if LATTICE_FILE is None:
         LATTICE_FILE = './vmx.mat'
     ring = load_mat.load(LATTICE_FILE)
-    ring = fix_dtype(ring)
     ad = ATAcceleratorData(ring, 1)
     lattice.set_data_source(ATLatticeDataSource(ad), pytac.SIM)
     for x in range(len(ring)):
@@ -36,16 +34,3 @@ def load(lattice, LATTICE_FILE=None):
         if f not in lattice._data_source_manager._uc.keys():
             lattice._data_source_manager._uc[f] = DEFAULT_UC
     return lattice
-
-
-def fix_dtype(ring):
-    for element in ring:
-        attributes = element.__dict__.keys()
-        for attribute in attributes:
-            if isinstance(vars(element)[attribute], numpy.ndarray):
-                try:
-                    vars(element)[attribute] = numpy.float64(vars(element)[attribute])
-                    vars(element)[attribute] = numpy.asfortranarray(vars(element)[attribute])
-                except ValueError:
-                    vars(element)[attribute].dtype = '<f8'
-    return ring
