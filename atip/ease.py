@@ -1,11 +1,12 @@
+import os
+import sys
+import atip
 import numpy
 import pytac
-import atip
-import sys
-import os
 import time as t
 from at import load_mat
 import matplotlib.pyplot as plt
+from pytac.exceptions import FieldException, ControlSystemException
 
 
 LATTICE_FILE = './vmx.mat'
@@ -166,14 +167,21 @@ def get_defaults(lattice):
     print('Default data source: {0}'.format(lattice.get_default_data_source()))
 
 
-def transfer_values(lattice):
+def transfer(lattice):
     fields_dict = {'SEXT': ['a1', 'b2'], 'QUAD': ['b1'], 'BEND': ['b0'],
-                   'RF': ['f']}  # , 'VSTR': ['y_kick'], 'HSTR': ['x_kick']}
+                   'RF': ['f'], 'VSTR': ['y_kick'], 'HSTR': ['x_kick']}
     for family, fields in fields_dict.items():
+        elems = lattice.get_elements(family)
         for field in fields:
-            values = []
-            lattice.set_default_data_source(pytac.LIVE)
-            values.append(lattice.get_element_values(family, field, pytac.SP))
-            lattice.set_default_data_source(pytac.SIM)
-            lattice.set_element_values(family, field, values)
+            for e in elems:
+                try:
+                    e.set_value(field, e.get_value(field, units=pytac.PHYS,
+                                                   data_source=pytac.LIVE),
+                                handle=pytac.SP, units=pytac.PHYS,
+                                data_source=pytac.SIM)
+                except FieldException:
+                    raise MemoryError("This programmer's memory is clearly "
+                                      "faulty as you've found a bug in pytac.")
+                except Exception as ex:  # ControlSystemException:
+                    print("Cannot read from {0} on {1}.".format(field, elem))
     return lattice
