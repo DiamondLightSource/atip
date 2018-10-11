@@ -170,3 +170,28 @@ def transfer(lattice):
                 except (ControlSystemException, Exception):  # Tempoary.
                     print("Cannot read from {0} on {1}.".format(field, e))
     return lattice
+
+
+def class_compare(lattice, ring):
+    pytac_to_at = {'BPM': 'Monitor', 'BPM10': 'Monitor', 'DRIFT': 'Drift',
+                   'MPW12': 'Drift', 'MPW15': 'Drift', 'HCHICA': 'Corrector',
+                   'VTRIM': 'Drift', 'HTRIM': 'Drift', 'AP': 'Aperture',
+                   'VSTR': 'Corrector', 'HSTR': 'Corrector', 'source': 'Marker',
+                   'RF': 'RFCavity', 'SEXT': 'Sextupole', 'QUAD': 'Quadrupole',
+                   'BEND': 'Dipole'}  # V/HTRIM are act as drifts at the moment.
+    if len(lattice) != len(ring):
+        raise IndexError("Lattice and ring must be the same length.")
+    results = []
+    for i in range(len(lattice)):
+        pytac_class = lattice[i].type_
+        at_class = ring[i].Class
+        pytac_mapped = pytac_to_at[pytac_class]
+        if at_class.lower() != pytac_mapped.lower():
+            results.append(False)
+        else:
+            results.append(True)
+    broken = []
+    for i in range(len(results)):
+        if not results[i]:
+            broken.append(i)
+    return broken
