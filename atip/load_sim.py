@@ -16,12 +16,14 @@ def load(lattice, LATTICE_FILE=None):
     if LATTICE_FILE is None:
         LATTICE_FILE = './vmx.mat'
     ring = load_mat.load(LATTICE_FILE)
+    for x in range(len(ring)):
+        if not hasattr(ring[x], 'Index'):
+            ring[x].Index = x+1
+        # Fix becasue APs are using old version of AT.
+        if ring[x].PassMethod == 'ThinCorrectorPass':
+            ring[x].PassMethod = 'CorrectorPass'
     ad = ATAcceleratorData(ring, 1)
     lattice.set_data_source(ATLatticeDataSource(ad), pytac.SIM)
-    for x in range(len(ring)):
-        ring[x].Index = x+1
-# This ensures all elems have a class but will not work for other lattice files
-        ring[x].Class = ring[x].__doc__.split()[1]
     for e in lattice:
         sim_fields = []
         live_fields = list(e.get_fields()[pytac.LIVE])

@@ -15,7 +15,9 @@ def ring():
     ring = load_mat.load(LATTICE_FILE)
     for x in range(len(ring)):
         ring[x].Index = x+1
-        ring[x].Class = ring[x].__doc__.split()[1]
+        # Fix becasue APs are using old version of AT.
+        if ring[x].PassMethod == 'ThinCorrectorPass':
+            ring[x].PassMethod = 'CorrectorPass'
     return ring
 
 
@@ -172,24 +174,29 @@ def transfer(lattice):
     return lattice
 
 
-def class_compare(lattice, ring):
+def class_compare(lattice, ring=None):
     pytac_to_at = {'BPM': 'Monitor', 'BPM10': 'Monitor', 'DRIFT': 'Drift',
                    'MPW12': 'Drift', 'MPW15': 'Drift', 'HCHICA': 'Corrector',
                    'VTRIM': 'Drift', 'HTRIM': 'Drift', 'AP': 'Aperture',
                    'VSTR': 'Corrector', 'HSTR': 'Corrector', 'source': 'Marker',
                    'RF': 'RFCavity', 'SEXT': 'Sextupole', 'QUAD': 'Quadrupole',
                    'BEND': 'Dipole'}  # V/HTRIM are act as drifts at the moment.
+    if ring == None:
+        ring = get_sim_ring(lattice)
     if len(lattice) != len(ring):
         raise IndexError("Lattice and ring must be the same length.")
     results = []
     for i in range(len(lattice)):
         pytac_class = lattice[i].type_
         at_class = ring[i].Class
-        pytac_mapped = pytac_to_at[pytac_class]
-        if at_class.lower() != pytac_mapped.lower():
-            results.append(False)
-        else:
+        if pytac_class.lower() == at_class.lower():
             results.append(True)
+        else:
+            pytac_mapped = pytac_to_at[pytac_class]
+            if at_class.lower() != pytac_mapped.lower():
+                results.append(False)
+            else:
+                results.append(True)
     broken = []
     for i in range(len(results)):
         if not results[i]:
