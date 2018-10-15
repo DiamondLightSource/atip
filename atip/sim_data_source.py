@@ -122,7 +122,7 @@ class ATLatticeDataSource(DataSource):
                             'tune_y': partial(self.read_tune, field=1),
                             'chromaticity_x': partial(self.read_chrom, field=0),
                             'chromaticity_y': partial(self.read_chrom, field=1),
-                            'energy': partial(self.get_energy, magnitude=1.e+06)}
+                            'energy': self.get_energy}
 
     def get_value(self, field, handle=None):
         if field in self.field2twiss.keys():
@@ -151,7 +151,7 @@ class ATLatticeDataSource(DataSource):
         return self.ad.get_twiss()[2][field]
 
     def get_energy(self, magnitude):
-        return int(self.ad.get_ring()[0].Energy[0] / magnitude)
+        return int(self.ad.get_ring()[0].Energy)
 
 
 class ATAcceleratorData(object):
