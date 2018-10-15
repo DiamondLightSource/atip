@@ -1,4 +1,3 @@
-import numpy
 import pytac
 from at import physics
 from threading import Thread
@@ -29,7 +28,7 @@ class ATElementDataSource(DataSource):
 
     def get_value(self, field, handle=None):
         if field in self._fields:
-            return self.field_functions[field](value=numpy.nan)
+            return self.field_functions[field](value=None)
         else:
             raise FieldException("No field {0} on AT element {1}."
                                  .format(field, self._element))
@@ -46,14 +45,14 @@ class ATElementDataSource(DataSource):
 
     def PolynomA(self, cell, value):
         # use value as get/set flag as well as the set value.
-        if numpy.isnan(value):
+        if value is None:
             return self._element.PolynomA[cell]
         else:
             self._element.PolynomA[cell] = value
             self.ad.push_changes(self._element)
 
     def PolynomB(self, cell, value):
-        if numpy.isnan(value):
+        if value is None:
             return self._element.PolynomB[cell]
         else:
             if self._element.Class == 'quadrupole':
@@ -63,14 +62,14 @@ class ATElementDataSource(DataSource):
 
     def Orbit(self, cell, value):
         index = self._element.Index-1
-        if numpy.isnan(value):
+        if value is None:
             return float(self.ad.get_twiss()[0]['closed_orbit'][index][cell])
         else:
             raise HandleException("Must read beam position using {0}."
                                   .format(pytac.RB))
 
     def Frequency(self, value):
-        if numpy.isnan(value):
+        if value is None:
             return self._element.Frequency
         else:
             self._element.Frequency = value
@@ -78,13 +77,13 @@ class ATElementDataSource(DataSource):
 
     def x_kick(self, value):
         if self._element.Class == 'sextupole':
-            if numpy.isnan(value):
+            if value is None:
                 return (- self._element.PolynomB[0] * self._element.Length)
             else:
                 self._element.PolynomB[0] = (- value / self._element.Length)
                 self.ad.push_changes(self._element)
         else:
-            if numpy.isnan(value):
+            if value is None:
                 return self._element.KickAngle[0]
             else:
                 self._element.KickAngle[0] = value
@@ -92,13 +91,13 @@ class ATElementDataSource(DataSource):
 
     def y_kick(self, value):
         if self._element.Class == 'sextupole':
-            if numpy.isnan(value):
+            if value is None:
                 return (self._element.PolynomA[0] * self._element.Length)
             else:
                 self._element.PolynomA[0] = (value / self._element.Length)
                 self.ad.push_changes(self._element)
         else:
-            if numpy.isnan(value):
+            if value is None:
                 return self._element.KickAngle[1]
             else:
                 self._element.KickAngle[1] = value
@@ -109,20 +108,20 @@ class ATLatticeDataSource(DataSource):
     def __init__(self, accelerator_data):
         self.units = pytac.PHYS
         self.ad = accelerator_data
-        self.field2twiss = {'x': partial(self.read_twiss, cell=0, field='closed_orbit', limiter=0),
-                            'phase_x': partial(self.read_twiss, cell=0, field='closed_orbit', limiter=1),
-                            'y': partial(self.read_twiss, cell=0, field='closed_orbit', limiter=2),
-                            'phase_y': partial(self.read_twiss, cell=0, field='closed_orbit', limiter=3),
-                            'm44': partial(self.read_twiss, cell=0, field='m44', limiter=None),
-                            's_position': partial(self.read_twiss, cell=0, field='s_pos', limiter=None),
-                            'alpha': partial(self.read_twiss, cell=0, field='alpha', limiter=None),
-                            'beta': partial(self.read_twiss, cell=0, field='beta', limiter=None),
-                            'mu': partial(self.read_twiss, cell=0, field='mu', limiter=None),
-                            'dispersion': partial(self.read_twiss, cell=0, field='dispersion', limiter=None),
-                            'tune_x': partial(self.read_twiss, cell=1, field=0, limiter='fractional digits'),
-                            'tune_y': partial(self.read_twiss, cell=1, field=1, limiter='fractional digits'),
-                            'chromaticity_x': partial(self.read_twiss, cell=2, field=0, limiter=None),
-                            'chromaticity_y': partial(self.read_twiss, cell=2, field=1, limiter=None),
+        self.field2twiss = {'x': partial(self.read_closed_orbit, field=0),
+                            'phase_x': partial(self.read_closed_orbit, field=1),
+                            'y': partial(self.read_closed_orbit, field=2),
+                            'phase_y': partial(self.read_closed_orbit, field=3),
+                            'm44': partial(self.read_twiss0, field='m44'),
+                            's_position': partial(self.read_twiss0, field='s_pos'),
+                            'alpha': partial(self.read_twiss0, field='alpha'),
+                            'beta': partial(self.read_twiss0, field='beta'),
+                            'mu': partial(self.read_twiss0, field='mu'),
+                            'dispersion': partial(self.read_twiss0, field='dispersion'),
+                            'tune_x': partial(self.read_tune, field=0),
+                            'tune_y': partial(self.read_tune, field=1),
+                            'chromaticity_x': partial(self.read_chrom, field=0),
+                            'chromaticity_y': partial(self.read_chrom, field=1),
                             'energy': partial(self.get_energy, magnitude=1.e+06)}
 
     def get_value(self, field, handle=None):
@@ -139,22 +138,17 @@ class ATLatticeDataSource(DataSource):
     def get_fields(self):
         return self.field2twiss.keys()
 
-    def read_twiss(self, cell, field, limiter):
-        twiss = self.ad.get_twiss()
-        if (field is None) and (limiter is None):
-            return twiss[cell]
-        elif limiter is None:
-            return twiss[cell][field]
-        elif field is None:
-            if limiter == 'fractional digits':
-                return twiss[cell] % 1
-            else:
-                return twiss[cell][:, limiter]
-        else:
-            if limiter == 'fractional digits':
-                return twiss[cell][field] % 1
-            else:
-                return twiss[cell][field][:, limiter]
+    def read_closed_orbit(self, field):
+        return self.ad.get_twiss()[0]['closed_orbit'][field]
+
+    def read_twiss0(self, field):
+        return self.ad.get_twiss()[0][field]
+
+    def read_tune(self, field):
+        return (self.ad.get_twiss()[1][field] % 1)
+
+    def read_chrom(self, field):
+        return self.ad.get_twiss()[2][field]
 
     def get_energy(self, magnitude):
         return int(self.ad.get_ring()[0].Energy[0] / magnitude)
