@@ -2,23 +2,16 @@ import pytac
 from at import load_mat
 from pytac.load_csv import DEFAULT_UC
 from sim_data_source import ATElementDataSource, ATLatticeDataSource, ATAcceleratorData
-"""
-UNSIMULATED_FIELDS = ['db0', 'enabled', 'x_fofb_disabled', 'x_sofb_disabled',
-                      'y_fofb_disabled', 'y_sofb_disabled', 'h_fofb_disabled',
-                      'h_sofb_disabled', 'v_fofb_disabled', 'v_sofb_disabled']
-"""
 
 
 SIMULATED_FIELDS = ['a1', 'b0', 'b1', 'b2', 'x', 'y', 'f', 'x_kick', 'y_kick']
 
 
-def load(lattice, LATTICE_FILE=None):
-    if LATTICE_FILE is None:
-        LATTICE_FILE = './vmx.mat'
+def load(lattice, LATTICE_FILE):
     ring = load_mat.load(LATTICE_FILE)
     for x in range(len(ring)):
         if not hasattr(ring[x], 'Index'):
-            ring[x].Index = x+1
+            ring[x].Index = x + 1
         # Fix becasue APs are using old version of AT.
         if ring[x].PassMethod == 'ThinCorrectorPass':
             ring[x].PassMethod = 'CorrectorPass'

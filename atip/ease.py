@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from pytac.exceptions import FieldException, ControlSystemException
 
 
-LATTICE_FILE = './vmx.mat'
+LATTICE_FILE = '../../Documents/MATLAB/vmx.mat'
 
 
 def ring():
@@ -48,7 +48,7 @@ def preload_at(lat):
 
 def loader():
     lattice = pytac.load_csv.load('VMX')
-    lattice = atip.load_sim.load(lattice)
+    lattice = atip.load_sim.load(lattice, LATTICE_FILE)
     return lattice
 
 
