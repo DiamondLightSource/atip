@@ -64,7 +64,7 @@ class ATElementDataSource(DataSource):
     def Orbit(self, cell, value):
         index = self._element.Index-1
         if value is None:
-            return float(self.ad.get_twiss()[0]['closed_orbit'][index][cell])
+            return float(self.ad.get_twiss()[3]['closed_orbit'][:, cell][index])
         else:
             raise HandleException("Must read beam position using {0}."
                                   .format(pytac.RB))
@@ -113,12 +113,12 @@ class ATLatticeDataSource(DataSource):
                             'phase_x': partial(self.read_closed_orbit, field=1),
                             'y': partial(self.read_closed_orbit, field=2),
                             'phase_y': partial(self.read_closed_orbit, field=3),
-                            'm44': partial(self.read_twiss0, field='m44'),
-                            's_position': partial(self.read_twiss0, field='s_pos'),
-                            'alpha': partial(self.read_twiss0, field='alpha'),
-                            'beta': partial(self.read_twiss0, field='beta'),
-                            'mu': partial(self.read_twiss0, field='mu'),
-                            'dispersion': partial(self.read_twiss0, field='dispersion'),
+                            'm44': partial(self.read_twiss3, field='m44'),
+                            's_position': partial(self.read_twiss3, field='s_pos'),
+                            'alpha': partial(self.read_twiss3, field='alpha'),
+                            'beta': partial(self.read_twiss3, field='beta'),
+                            'mu': partial(self.read_twiss3, field='mu'),
+                            'dispersion': partial(self.read_twiss3, field='dispersion'),
                             'tune_x': partial(self.read_tune, field=0),
                             'tune_y': partial(self.read_tune, field=1),
                             'chromaticity_x': partial(self.read_chrom, field=0),
@@ -140,10 +140,10 @@ class ATLatticeDataSource(DataSource):
         return self.field2twiss.keys()
 
     def read_closed_orbit(self, field):
-        return self.ad.get_twiss()[0]['closed_orbit'][field]
+        return self.ad.get_twiss()[3]['closed_orbit'][:, field]
 
-    def read_twiss0(self, field):
-        return self.ad.get_twiss()[0][field]
+    def read_twiss3(self, field):
+        return self.ad.get_twiss()[3][field]
 
     def read_tune(self, field):
         return (self.ad.get_twiss()[1][field] % 1)
@@ -151,8 +151,8 @@ class ATLatticeDataSource(DataSource):
     def read_chrom(self, field):
         return self.ad.get_twiss()[2][field]
 
-    def get_energy(self, magnitude):
-        return int(self.ad.get_ring()[0].Energy)
+    def get_energy(self):
+        return float(self.ad.get_ring()[0].Energy)
 
 
 class ATAcceleratorData(object):
