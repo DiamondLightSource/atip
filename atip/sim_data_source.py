@@ -55,7 +55,7 @@ class ATElementDataSource(DataSource):
         if value is None:
             return self._element.PolynomB[cell]
         else:
-            if self._element.Class == 'quadrupole':
+            if self._element.Class.lower() == 'quadrupole':
                 self._element.K = value
             self._element.PolynomB[cell] = value
             self.ad.push_changes(self._element)
@@ -76,7 +76,7 @@ class ATElementDataSource(DataSource):
             self.ad.push_changes(self._element)
 
     def x_kick(self, value):
-        if self._element.Class == 'sextupole':
+        if self._element.Class.lower() == 'sextupole':
             if value is None:
                 return (- self._element.PolynomB[0] * self._element.Length)
             else:
@@ -90,7 +90,7 @@ class ATElementDataSource(DataSource):
                 self.ad.push_changes(self._element)
 
     def y_kick(self, value):
-        if self._element.Class == 'sextupole':
+        if self._element.Class.lower() == 'sextupole':
             if value is None:
                 return (self._element.PolynomA[0] * self._element.Length)
             else:
