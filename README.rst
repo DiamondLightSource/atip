@@ -48,10 +48,10 @@ lattice object.
 
 ATElementDataSource:
     * ``get_value(field, handle)`` - get the value for a given field on the
-element. N.B. The ``handle`` argument is arbitrary and can be ignored as it is
-not used, it is simply there to conform with the ``DataSource`` syntax in Pytac.
+      element. N.B. The ``handle`` argument is arbitrary and can be ignored as it is
+      not used, it is simply there to conform with the ``DataSource`` syntax in Pytac.
     * ``set_value(field, set_value)`` - set the value for a given field on the
-element.
+    element.
     * ``get_fields()`` - return the fields on the element.
 
 ATLatticeDataSource:
@@ -63,7 +63,7 @@ lattice.
     * ``get_fields()`` - return the fields on the lattice.
 
 ATAcceleratorData:
-    * ``push_changes(\*elements)`` - push the changes from the individual
+    * ``push_changes(*elements)`` - push the changes from the individual
 element(s) to the centralised ring.
     * ``get_twiss()`` - returns the result of the latest twiss data calculation
 for the simulated lattice.
