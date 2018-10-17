@@ -44,32 +44,30 @@ API:
 ----
 load_sim:
     * ``load(lattice, LATTICE_FILE)`` - loads the simulator onto the passed
-lattice object.
+      lattice object.
 
 ATElementDataSource:
     * ``get_value(field, handle)`` - get the value for a given field on the
-      element. N.B. The ``handle`` argument is arbitrary and can be ignored as it is
-      not used, it is simply there to conform with the ``DataSource`` syntax in Pytac.
+      element.
     * ``set_value(field, set_value)`` - set the value for a given field on the
-    element.
+      element.
     * ``get_fields()`` - return the fields on the element.
 
 ATLatticeDataSource:
     * ``get_value(field, handle)`` - get the value for a given field on the
-lattice. N.B. The ``handle`` argument is arbitrary and can be ignored as it is
-not used, it is simply there to conform with the ``DataSource`` syntax in Pytac.
+      lattice.
     * ``set_value(field, set_value)`` - set the value for a given field on the
-lattice.
+      lattice.
     * ``get_fields()`` - return the fields on the lattice.
 
 ATAcceleratorData:
     * ``push_changes(*elements)`` - push the changes from the individual
-element(s) to the centralised ring.
+      element(s) to the centralised ring.
     * ``get_twiss()`` - returns the result of the latest twiss data calculation
-for the simulated lattice.
+      for the simulated lattice.
     * ``get_element(index)`` - returns a copy of the specified element from the
-centralised ring. N.B. An ``index`` of 1 returns the first element in the
-lattice, i.e. ``lattice[0]``.
+      centralised ring. N.B. An ``index`` of 1 returns the first element in the
+      lattice, i.e. ``lattice[0]``.
     * ``get_ring()`` - returns a copy of the entire centralised ring.
 
 Notes:
@@ -77,6 +75,10 @@ Notes:
 In order for atip to function correctly atip, AT and pytac must all be installed
 into the same source directory; however, AT and pytac can be located anywhere if
 the file paths to them are edited in ``__init__.py``.
+
+Any function, in atip, that takes a ``handle`` argument does so only to conform
+with the ``DataSource`` syntax in pytac. Inside atip it is entirely arbitrary
+and can be ignored as it is not used.
 
 The load function in ``load_sim.py`` takes arguments of ``lattice``, an instance
 of a standard pytac lattice, and ``LATTICE_FILE``, the file path to a ``.mat``
