@@ -66,8 +66,9 @@ class ATElementDataSource(DataSource):
         if value is None:
             return float(self.ad.get_twiss()[3]['closed_orbit'][:, cell][index])
         else:
-            raise HandleException("Must read beam position using {0}."
-                                  .format(pytac.RB))
+            field = 'x' if cell is 0 else 'y'
+            raise HandleException("Field {0} cannot be set on element data "
+                                  "source {1}.".format(field, self))
 
     def Frequency(self, value):
         if value is None:
