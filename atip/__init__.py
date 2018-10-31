@@ -10,12 +10,18 @@ Reqs:
     pip install cothread
 """
 # Add AT & Pytac to path.
-import sys
 import os
+import sys
+import subprocess
 source_directory = os.path.realpath('../')
+python_version = sys.version[:3]
+os.environ['PYTHONPATH'] = source_directory+"/atip/at_installation"
+process = subprocess.Popen(['python', 'setup.py', 'build', '--build-base='+source_directory+'/atip/at_installation'], cwd=source_directory+'/at/pyat')  # Don't try this at home!
+process.wait()
+sys.path.append(source_directory+'/atip/at_installation/lib.linux-x86_64-'+python_version)
 sys.path.append(source_directory+'/pytac')
-sys.path.append(source_directory+'/at/pyat/build/lib.linux-x86_64-2.7')
 sys.path.append(source_directory+'/atip/atip')  # fix for mypython3
+
 
 # Initialise all modules.
 from . import load_sim, sim_data_source, ease  # noqa: E402
