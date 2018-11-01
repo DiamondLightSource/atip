@@ -5,7 +5,7 @@ https://github.com/pypa/sampleproject
 """
 
 
-from setuptools import setup, find_packages
+from setuptools import setup
 from os import path
 # io.open is needed for projects that support Python 2.7
 from io import open
@@ -48,7 +48,7 @@ setup(
 
     keywords='accelerator physics',
 
-    packages = ['atip']
+    packages=['atip'],
 
     include_package_data=True,
 

@@ -64,7 +64,8 @@ class ATElementDataSource(DataSource):
     def Orbit(self, cell, value):
         index = self._element.Index-1
         if value is None:
-            return float(self._ad.get_twiss()[3]['closed_orbit'][:, cell][index])
+            return float(self._ad.get_twiss()[3]['closed_orbit'][:,
+                                                                 cell][index])
         else:
             field = 'x' if cell is 0 else 'y'
             raise HandleException("Field {0} cannot be set on element data "
@@ -111,20 +112,20 @@ class ATLatticeDataSource(DataSource):
         self.units = pytac.PHYS
         self._ad = accelerator_data
         self._field2twiss = {'x': partial(self.read_closed_orbit, field=0),
-                            'phase_x': partial(self.read_closed_orbit, field=1),
-                            'y': partial(self.read_closed_orbit, field=2),
-                            'phase_y': partial(self.read_closed_orbit, field=3),
-                            'm44': partial(self.read_twiss3, field='m44'),
-                            's_position': partial(self.read_twiss3, field='s_pos'),
-                            'alpha': partial(self.read_twiss3, field='alpha'),
-                            'beta': partial(self.read_twiss3, field='beta'),
-                            'mu': partial(self.read_twiss3, field='mu'),
-                            'dispersion': partial(self.read_twiss3, field='dispersion'),
-                            'tune_x': partial(self.read_tune, field=0),
-                            'tune_y': partial(self.read_tune, field=1),
-                            'chromaticity_x': partial(self.read_chrom, field=0),
-                            'chromaticity_y': partial(self.read_chrom, field=1),
-                            'energy': self.get_energy}
+                             'phase_x': partial(self.read_closed_orbit, field=1),
+                             'y': partial(self.read_closed_orbit, field=2),
+                             'phase_y': partial(self.read_closed_orbit, field=3),
+                             'm44': partial(self.read_twiss3, field='m44'),
+                             's_position': partial(self.read_twiss3, field='s_pos'),
+                             'alpha': partial(self.read_twiss3, field='alpha'),
+                             'beta': partial(self.read_twiss3, field='beta'),
+                             'mu': partial(self.read_twiss3, field='mu'),
+                             'dispersion': partial(self.read_twiss3, field='dispersion'),
+                             'tune_x': partial(self.read_tune, field=0),
+                             'tune_y': partial(self.read_tune, field=1),
+                             'chromaticity_x': partial(self.read_chrom, field=0),
+                             'chromaticity_y': partial(self.read_chrom, field=1),
+                             'energy': self.get_energy}
 
     def get_value(self, field, handle=None):
         if field in self._field2twiss.keys():
@@ -163,7 +164,7 @@ class ATAcceleratorData(object):
         self.new_changes = True
         self._rp = numpy.ones(len(self._ring), dtype=bool)
         self._twiss = physics.get_twiss(self._ring, refpts=self._rp,
-                                       get_chrom=True)
+                                        get_chrom=True)
         for i in range(self._thread_number):
             update = Thread(target=self.recalculate_twiss)
             update.setDaemon(True)
@@ -173,7 +174,7 @@ class ATAcceleratorData(object):
         while True:
             if self.new_changes is True:
                 self._twiss = physics.get_twiss(self._ring, refpts=self._rp,
-                                               get_chrom=True)
+                                                get_chrom=True)
                 self.new_changes = False
 
     def get_twiss(self):

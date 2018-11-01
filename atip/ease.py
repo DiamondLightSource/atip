@@ -180,7 +180,7 @@ def class_compare(lattice, ring=None):
                    'VTRIM': 'Drift', 'HTRIM': 'Drift', 'AP': 'Aperture',
                    'VSTR': 'Corrector', 'HSTR': 'Corrector', 'source': 'Marker',
                    'RF': 'RFCavity', 'SEXT': 'Sextupole', 'QUAD': 'Quadrupole',
-                   'BEND': 'Dipole'}  # V/HTRIM are act as drifts at the moment.
+                   'BEND': 'Dipole'}  # V/HTRIM act as drifts at the moment.
     if ring is None:
         ring = get_sim_ring(lattice)
     if len(lattice) != len(ring):
