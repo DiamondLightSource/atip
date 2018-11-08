@@ -13,14 +13,10 @@ Reqs:
 import os
 import sys
 import subprocess
-source_directory = os.path.realpath('../')
-python_version = sys.version[:3]
-os.environ['PYTHONPATH'] = source_directory+"/atip/at_installation"
-process = subprocess.Popen(['python', 'setup.py', 'build', '--build-base='+source_directory+'/atip/at_installation'], cwd=source_directory+'/at/pyat')  # Don't try this at home!
-process.wait()
-sys.path.append(source_directory+'/atip/at_installation/lib.linux-x86_64-'+python_version)
-sys.path.append(source_directory+'/pytac')
-sys.path.append(source_directory+'/atip/atip')  # fix for mypython3
+source_dir = os.path.realpath('../')
+sys.path.append(os.path.join(source_dir, 'at/pyat'))
+sys.path.append(os.path.join(source_dir, 'pytac'))
+sys.path.append(os.path.join(source_dir, 'atip/atip'))  # fix for python3
 
 
 # Initialise all modules.
