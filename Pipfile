@@ -4,9 +4,15 @@ verify_ssl = true
 name = "pypi"
 
 [dev-packages]
+pytest = "*"
+pytest-cov = "*"
+coveralls = "*"
+mock = "*"
 "flake8" = "*"
+sphinx = "*"
+sphinx-rtd-theme = "*"
+pytest-lazy-fixture = "*"
 
 [packages]
-matplotlib = "*"
 numpy = "*"
 scipy = "*"
