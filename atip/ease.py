@@ -3,7 +3,7 @@ import sys
 import atip
 import pytac
 import time as t
-from at import load_mat
+from at import load
 import matplotlib.pyplot as plt
 from pytac.exceptions import FieldException, ControlSystemException
 
@@ -12,7 +12,7 @@ LATTICE_FILE = '../../Documents/MATLAB/vmx.mat'
 
 
 def ring():
-    ring = load_mat.load(LATTICE_FILE)
+    ring = load.load_mat(LATTICE_FILE)
     for x in range(len(ring)):
         ring[x].Index = x+1
         # Fix becasue APs are using old version of AT.
