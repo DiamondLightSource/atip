@@ -1,5 +1,5 @@
 import pytac
-from at import load_mat
+import at
 from pytac.load_csv import DEFAULT_UC
 from sim_data_source import ATElementDataSource, ATLatticeDataSource, ATAcceleratorData
 
@@ -8,7 +8,7 @@ SIMULATED_FIELDS = ['a1', 'b0', 'b1', 'b2', 'x', 'y', 'f', 'x_kick', 'y_kick']
 
 
 def load(lattice, LATTICE_FILE):
-    ring = load_mat.load(LATTICE_FILE)
+    ring = at.load.load_mat(LATTICE_FILE)
     for x in range(len(ring)):
         if not hasattr(ring[x], 'Index'):
             ring[x].Index = x + 1

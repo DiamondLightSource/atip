@@ -1,6 +1,6 @@
 import numpy
 import pytac
-from at import physics
+import at
 from threading import Thread
 from functools import partial
 from pytac.data_source import DataSource
@@ -58,7 +58,7 @@ class ATElementDataSource(DataSource):
         if value is None:
             return self._element.PolynomB[cell]
         else:
-            if self._element.Class.lower() == 'quadrupole':
+            if isinstance(self._element, at.elements.Quadrupole):
                 self._element.K = value
             self._element.PolynomB[cell] = value
             self._ad.new_changes = True
@@ -81,7 +81,7 @@ class ATElementDataSource(DataSource):
             self._ad.new_changes = True
 
     def x_kick(self, value):
-        if self._element.Class.lower() == 'sextupole':
+        if isinstance(self._element, at.elements.Sextupole):
             if value is None:
                 return (- self._element.PolynomB[0] * self._element.Length)
             else:
@@ -95,7 +95,7 @@ class ATElementDataSource(DataSource):
                 self._ad.new_changes = True
 
     def y_kick(self, value):
-        if self._element.Class.lower() == 'sextupole':
+        if isinstance(self._element, at.elements.Sextupole):
             if value is None:
                 return (self._element.PolynomA[0] * self._element.Length)
             else:
@@ -165,8 +165,8 @@ class ATAcceleratorData(object):
         self._thread_number = threads
         self.new_changes = True
         self._rp = numpy.ones(len(self._ring), dtype=bool)
-        self._twiss = physics.get_twiss(self._ring, refpts=self._rp,
-                                        get_chrom=True)
+        self._twiss = at.physics.get_twiss(self._ring, refpts=self._rp,
+                                           get_chrom=True)
         for i in range(self._thread_number):
             update = Thread(target=self.recalculate_twiss)
             update.setDaemon(True)
@@ -175,8 +175,8 @@ class ATAcceleratorData(object):
     def recalculate_twiss(self):
         while True:
             if self.new_changes is True:
-                self._twiss = physics.get_twiss(self._ring, refpts=self._rp,
-                                                get_chrom=True)
+                self._twiss = at.physics.get_twiss(self._ring, refpts=self._rp,
+                                                   get_chrom=True)
                 self.new_changes = False
 
     def get_twiss(self):
