@@ -1,1 +1,11 @@
+# compiled python
+*.pyc
+
+# pytest cache
+*.cache
+
+# virtual environments
+venv*
+
+# temporary files
 *~

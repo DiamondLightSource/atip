@@ -125,9 +125,9 @@ def plot_beam_position(elems, ds, x_plot=True, y_plot=True):
     y = []
     for elem in elems.bpms:
         if bool(x_plot):
-            x.append(elem.get_value('x', data_source=ds))
+            x.append(elem.get_value('x', handle=pytac.RB, data_source=ds))
         if bool(y_plot):
-            y.append(elem.get_value('y', data_source=ds))
+            y.append(elem.get_value('y', handle=pytac.RB, data_source=ds))
     if bool(x_plot) and bool(y_plot):
         plt.subplot(1, 2, 1)
         plt.plot(x)
@@ -178,9 +178,9 @@ def class_compare(lattice, ring=None):
     pytac_to_at = {'BPM': 'Monitor', 'BPM10': 'Monitor', 'DRIFT': 'Drift',
                    'MPW12': 'Drift', 'MPW15': 'Drift', 'HCHICA': 'Corrector',
                    'VTRIM': 'Drift', 'HTRIM': 'Drift', 'AP': 'Aperture',
-                   'VSTR': 'Corrector', 'HSTR': 'Corrector', 'source': 'Marker',
+                   'VSTR': 'Corrector', 'HSTR': 'Corrector', 'BEND': 'Dipole',
                    'RF': 'RFCavity', 'SEXT': 'Sextupole', 'QUAD': 'Quadrupole',
-                   'BEND': 'Dipole'}  # V/HTRIM act as drifts at the moment.
+                   'source': 'Marker'}  # V/HTRIM act as drifts at the moment.
     if ring is None:
         ring = get_sim_ring(lattice)
     if len(lattice) != len(ring):
