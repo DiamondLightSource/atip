@@ -141,9 +141,18 @@ class ATLatticeDataSource(DataSource):
 
 class ATAcceleratorData(object):
     def __init__(self, ring, threads):
-        self._rp = numpy.ones(len(ring), dtype=bool)  # consider using new string syntax?
+        """new_changes is initially False so that phys data is not needlessly 
+        recalculated immediately by the threads.
+        """
         self._lattice_object = at.Lattice(ring)
-        self.new_changes = True  # True so that phys data is initially set.
+        self._rp = numpy.ones(len(ring), dtype=bool)  # consider using new string syntax?
+        self.new_changes = False
+        self._lattice_object.radiation_on()
+        self._emittance = self._lattice_object.ohmi_envelope(self._rp)
+        self._lattice_object.radiation_off()
+        self._lindata = self._lattice_object.linopt(refpts=self._rp,
+                                                    get_chrom=True,
+                                                    coupled=False)
         for i in range(threads):
             update = Thread(target=self.calculate_phys_data)
             update.setDaemon(True)
@@ -152,19 +161,19 @@ class ATAcceleratorData(object):
     def calculate_phys_data(self):
         while True:
             if self.new_changes is True:
+                self._lattice_object.radiation_on()
+                self._emittance = self._lattice_object.ohmi_envelope(self._rp)
                 self._lattice_object.radiation_off()
                 self._lindata = self._lattice_object.linopt(refpts=self._rp,
                                                             get_chrom=True,
                                                             coupled=False)
-                self._lattice_object.radiation_on()
-                self._emittance = self._lattice_object.ohmi_envelope(self._rp)
                 self.new_changes = False
 
     def get_element(self, index):
         return self._lattice_object[index-1]
 
     def get_ring(self):
-        return self._lattice_object._Lattice
+        return self._lattice_object._lattice
 
     def get_lattice_object(self):
         return self._lattice_object
@@ -191,7 +200,7 @@ class ATAcceleratorData(object):
         return self._lindata[3]['s_pos']
 
     def get_energy(self):
-        return self._lattice_object.Energy
+        return self._lattice_object.energy
 
     def get_alpha(self):
         return self._lindata[3]['alpha']
