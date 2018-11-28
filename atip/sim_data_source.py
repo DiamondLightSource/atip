@@ -1,23 +1,24 @@
 import at
 import numpy
 import pytac
-from threading import Thread
+from warnings import warn
 from functools import partial
+from threading import Thread, Event
 from pytac.data_source import DataSource
 from pytac.exceptions import FieldException, HandleException
 
 
 class ATElementDataSource(DataSource):
     def __init__(self, at_element, accelerator_data, fields=[]):
-        self._field_func = {'a1': partial(self.PolynomA, cell=1),
-                            'b0': partial(self.PolynomB, cell=0),
-                            'b1': partial(self.PolynomB, cell=1),
-                            'b2': partial(self.PolynomB, cell=2),
-                            'x': partial(self.Orbit, cell=0),
-                            'y': partial(self.Orbit, cell=2),
-                            'x_kick': self.x_kick,
-                            'y_kick': self.y_kick,
-                            'f': self.Frequency}
+        self._field_funcs = {'a1': partial(self.PolynomA, 1),
+                             'b0': partial(self.PolynomB, 0),
+                             'b1': partial(self.PolynomB, 1),
+                             'b2': partial(self.PolynomB, 2),
+                             'x': partial(self.Orbit, 0),
+                             'y': partial(self.Orbit, 2),
+                             'x_kick': self.x_kick,
+                             'y_kick': self.y_kick,
+                             'f': self.Frequency}
         self.units = pytac.PHYS
         self._element = at_element
         self._ad = accelerator_data
@@ -25,14 +26,14 @@ class ATElementDataSource(DataSource):
 
     def get_value(self, field, handle=None):
         if field in self._fields:
-            return self._field_func[field](value=None)
+            return self._field_funcs[field](value=None)
         else:
             raise FieldException("No field {0} on AT element {1}."
                                  .format(field, self._element))
 
     def set_value(self, field, set_value):
         if field in self._fields:
-            self._field_func[field](value=set_value)
+            self._field_funcs[field](value=set_value)
         else:
             raise FieldException("No field {0} on AT element {1}."
                                  .format(field, self._element))
@@ -46,7 +47,7 @@ class ATElementDataSource(DataSource):
             return self._element.PolynomA[cell]
         else:
             self._element.PolynomA[cell] = value
-            self._ad.new_changes = True
+            self._ad.new_changes.set()
 
     def PolynomB(self, cell, value):
         if value is None:
@@ -55,7 +56,7 @@ class ATElementDataSource(DataSource):
             if isinstance(self._element, at.elements.Quadrupole):
                 self._element.K = value
             self._element.PolynomB[cell] = value
-            self._ad.new_changes = True
+            self._ad.new_changes.set()
 
     def Orbit(self, cell, value):
         index = self._element.Index-1
@@ -71,7 +72,7 @@ class ATElementDataSource(DataSource):
             return self._element.Frequency
         else:
             self._element.Frequency = value
-            self._ad.new_changes = True
+            self._ad.new_changes.set()
 
     def x_kick(self, value):
         if isinstance(self._element, at.elements.Sextupole):
@@ -79,13 +80,13 @@ class ATElementDataSource(DataSource):
                 return (- self._element.PolynomB[0] * self._element.Length)
             else:
                 self._element.PolynomB[0] = (- value / self._element.Length)
-                self._ad.new_changes = True
+                self._ad.new_changes.set()
         else:
             if value is None:
                 return self._element.KickAngle[0]
             else:
                 self._element.KickAngle[0] = value
-                self._ad.new_changes = True
+                self._ad.new_changes.set()
 
     def y_kick(self, value):
         if isinstance(self._element, at.elements.Sextupole):
@@ -93,40 +94,40 @@ class ATElementDataSource(DataSource):
                 return (self._element.PolynomA[0] * self._element.Length)
             else:
                 self._element.PolynomA[0] = (value / self._element.Length)
-                self._ad.new_changes = True
+                self._ad.new_changes.set()
         else:
             if value is None:
                 return self._element.KickAngle[1]
             else:
                 self._element.KickAngle[1] = value
-                self._ad.new_changes = True
+                self._ad.new_changes.set()
 
 
 class ATLatticeDataSource(DataSource):
     def __init__(self, accelerator_data):
         self.units = pytac.PHYS
         self._ad = accelerator_data
-        self._field_func = {'chromaticity_x': partial(self._ad.get_chrom, cell=0),
-                            'chromaticity_y': partial(self._ad.get_chrom, cell=1),
-                            'emittance_x': partial(self._ad.get_emit, cell=0),
-                            'emittance_y': partial(self._ad.get_emit, cell=1),
-                            'phase_x': partial(self._ad.get_orbit, cell=1),
-                            'phase_y': partial(self._ad.get_orbit, cell=3),
-                            'tune_x': partial(self._ad.get_tune, cell=0),
-                            'tune_y': partial(self._ad.get_tune, cell=1),
-                            'x': partial(self._ad.get_orbit, cell=0),
-                            'y': partial(self._ad.get_orbit, cell=2),
-                            'dispersion': self._ad.get_dispersion,
-                            's_position': self._ad.get_spos,
-                            'energy': self._ad.get_energy,
-                            'alpha': self._ad.get_alpha,
-                            'beta': self._ad.get_beta,
-                            'm44': self._ad.get_m44,
-                            'mu': self._ad.get_mu}
+        self._field_funcs = {'chromaticity_x': partial(self._ad.get_chrom, 0),
+                             'chromaticity_y': partial(self._ad.get_chrom, 1),
+                             'emittance_x': partial(self._ad.get_emit, 0),
+                             'emittance_y': partial(self._ad.get_emit, 1),
+                             'phase_x': partial(self._ad.get_orbit, 1),
+                             'phase_y': partial(self._ad.get_orbit, 3),
+                             'tune_x': partial(self._ad.get_tune, 0),
+                             'tune_y': partial(self._ad.get_tune, 1),
+                             'x': partial(self._ad.get_orbit, 0),
+                             'y': partial(self._ad.get_orbit, 2),
+                             'dispersion': self._ad.get_disp,
+                             'energy': self._ad.get_energy,
+                             's_position': self._ad.get_s,
+                             'alpha': self._ad.get_alpha,
+                             'beta': self._ad.get_beta,
+                             'm44': self._ad.get_m44,
+                             'mu': self._ad.get_mu}
 
     def get_value(self, field, handle=None):
-        if field in self._field_func.keys():
-            return self._field_func[field]()
+        if field in self._field_funcs.keys():
+            return self._field_funcs[field]()
         else:
             raise FieldException("Lattice data source {0} does not have field "
                                  "{1}".format(self, field))
@@ -136,23 +137,22 @@ class ATLatticeDataSource(DataSource):
                               "{0}.".format(field, self))
 
     def get_fields(self):
-        return self._field_func.keys()
+        return self._field_funcs.keys()
 
 
 class ATAcceleratorData(object):
     def __init__(self, ring, threads):
-        """new_changes is initially False so that phys data is not needlessly 
-        recalculated immediately by the threads.
+        """The phys data must be initially calculated here so that the thread
+        has something to reference.
         """
-        self._lattice_object = at.Lattice(ring)
-        self._rp = numpy.ones(len(ring), dtype=bool)  # consider using new string syntax?
-        self.new_changes = False
-        self._lattice_object.radiation_on()
-        self._emittance = self._lattice_object.ohmi_envelope(self._rp)
-        self._lattice_object.radiation_off()
-        self._lindata = self._lattice_object.linopt(refpts=self._rp,
-                                                    get_chrom=True,
-                                                    coupled=False)
+        self._lattice = at.Lattice(ring)
+        self._rp = numpy.ones(len(ring), dtype=bool)  # consider using '-'?
+        self.new_changes = Event()
+        self._paused = Event()
+        self._lattice.radiation_on()
+        self._emittance = self._lattice.ohmi_envelope(self._rp)
+        self._lattice.radiation_off()
+        self._lindata = self._lattice.linopt(0, self._rp, True, coupled=False)
         for i in range(threads):
             update = Thread(target=self.calculate_phys_data)
             update.setDaemon(True)
@@ -160,23 +160,32 @@ class ATAcceleratorData(object):
 
     def calculate_phys_data(self):
         while True:
-            if self.new_changes is True:
-                self._lattice_object.radiation_on()
-                self._emittance = self._lattice_object.ohmi_envelope(self._rp)
-                self._lattice_object.radiation_off()
-                self._lindata = self._lattice_object.linopt(refpts=self._rp,
-                                                            get_chrom=True,
-                                                            coupled=False)
-                self.new_changes = False
+            if (self.new_changes.is_set() is True) and (self._paused.is_set()
+                                                        is False):
+                try:
+                    self._lattice.radiation_on()
+                    self._emittance = self._lattice.ohmi_envelope(self._rp)
+                    self._lattice.radiation_off()
+                    self._lindata = self._lattice.linopt(0, self._rp, True,
+                                                         coupled=False)
+                except ValueError as e:
+                    warn(at.AtWarning(e))
+                self.new_changes.clear()
+
+    def toggle_calculations(self):
+        if self._paused.is_set() is False:
+            self._paused.set()
+        else:
+            self._paused.clear()
 
     def get_element(self, index):
-        return self._lattice_object[index-1]
+        return self._lattice[index-1]
 
     def get_ring(self):
-        return self._lattice_object._lattice
+        return self._lattice._lattice
 
     def get_lattice_object(self):
-        return self._lattice_object
+        return self._lattice.copy()
 
     def get_chrom(self, cell):
         return self._lindata[2][cell]
@@ -193,14 +202,14 @@ class ATAcceleratorData(object):
     def get_tune(self, cell):
         return (self._lindata[1][cell] % 1)
 
-    def get_dispersion(self):
+    def get_disp(self):
         return self._lindata[3]['dispersion']
 
-    def get_spos(self):
+    def get_s(self):
         return self._lindata[3]['s_pos']
 
     def get_energy(self):
-        return self._lattice_object.energy
+        return self._lattice.energy
 
     def get_alpha(self):
         return self._lindata[3]['alpha']

@@ -5,7 +5,6 @@ import pytac
 import time as t
 from at import load
 import matplotlib.pyplot as plt
-from pytac.exceptions import FieldException, ControlSystemException
 
 
 LATTICE_FILE = '../../Documents/MATLAB/vmx.mat'
@@ -18,6 +17,8 @@ def ring():
         # Fix becasue APs are using old version of AT.
         if ring[x].PassMethod == 'ThinCorrectorPass':
             ring[x].PassMethod = 'CorrectorPass'
+        if ring[x].PassMethod == 'GWigSymplecticPass':
+            ring[x].PassMethod = 'DriftPass'
     return ring
 
 
@@ -29,7 +30,7 @@ def elements_by_type(lat):
             elems_dict[elem_type] = [lat[x]]
         else:
             elems_dict[elem_type].append(lat[x])
-    return(elems_dict)
+    return elems_dict
 
 
 def preload_at(lat):
@@ -43,12 +44,18 @@ def preload_at(lat):
         setattr(elems, elems_dict.keys()[x].lower()+"s",
                 elems_dict[elems_dict.keys()[x]])
     setattr(elems, "all", lat)
-    return(elems)
+    return elems
 
 
 def loader():
     lattice = pytac.load_csv.load('VMX')
     lattice = atip.load_sim.load(lattice, LATTICE_FILE)
+    return lattice
+
+
+def load_diad():
+    lattice = pytac.load_csv.load('DIAD')
+    lattice = atip.load_sim.load(lattice, (LATTICE_FILE[:-7]+'diad.mat'))
     return lattice
 
 
@@ -60,19 +67,19 @@ def preload(lattice):
     for family in range(len(families)):
         setattr(elems, families[family].lower()+"s",
                 lattice.get_elements(families[family]))
-    return(elems)
+    return elems
 
 
-def get_attributes(object):
+def get_attributes(obj):
     pub_attr = []
     priv_attr = []
-    all_attr = object.__dict__.keys()
+    all_attr = obj.__dict__.keys()
     for x in range(len(all_attr)):
         if all_attr[x][0] != '_':
             pub_attr.append(all_attr[x])
         else:
             priv_attr.append(all_attr[x])
-    return({'Public': pub_attr, 'Private': priv_attr})
+    return{'Public': pub_attr, 'Private': priv_attr}
 
 
 def block_print():
@@ -120,6 +127,14 @@ def get_sim_ring(lattice):
     return lattice._data_source_manager._data_sources[pytac.SIM]._ad.get_ring()
 
 
+def get_sim_elem(elem):
+    return elem._data_source_manager._data_sources[pytac.SIM]._element
+
+
+def toggle_threads(lattice):
+    lattice._data_source_manager._data_sources[pytac.SIM]._ad.toggle_calculations()
+
+
 def plot_beam_position(elems, ds, x_plot=True, y_plot=True):
     x = []
     y = []
@@ -155,23 +170,16 @@ def get_defaults(lattice):
 
 
 def transfer(lattice):
-    fields_dict = {'SEXT': ['a1', 'b2'], 'QUAD': ['b1'], 'BEND': ['b0'],
-                   'RF': ['f'], 'VSTR': ['y_kick'], 'HSTR': ['x_kick']}
-    for family, fields in fields_dict.items():
-        elems = lattice.get_elements(family)
-        for field in fields:
-            for e in elems:
-                try:
-                    e.set_value(field, e.get_value(field, units=pytac.PHYS,
-                                                   data_source=pytac.LIVE),
-                                handle=pytac.SP, units=pytac.PHYS,
-                                data_source=pytac.SIM)
-                except FieldException:
-                    raise MemoryError("This programmer's memory is clearly "
-                                      "faulty as you've found a bug in pytac.")
-                except (ControlSystemException, Exception):  # Tempoary.
-                    print("Cannot read from {0} on {1}.".format(field, e))
-    return lattice
+    fields_dict = {'SQUAD': 'a1', 'SEXT': 'b2', 'QUAD': 'b1', 'BEND': 'b0',
+                   'RF': 'f', 'VSTR': 'y_kick', 'HSTR': 'x_kick'}
+    values = []
+    toggle_threads(lattice)
+    for family, field in fields_dict.items():
+        lattice.set_default_data_source(pytac.LIVE)
+        values = lattice.get_element_values(family, field, pytac.RB)
+        lattice.set_default_data_source(pytac.SIM)
+        lattice.set_element_values(family, field, values)
+    toggle_threads(lattice)
 
 
 def class_compare(lattice, ring=None):
