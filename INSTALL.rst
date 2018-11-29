@@ -50,10 +50,10 @@ Footnotes
 .. [1] Your directory structure should look like::
 
  .<source-directory>
- |\____atip
- |\____pytac
- |\____at
-       \____pyat
+ .    |____atip
+ .    |____pytac
+ .    |____at
+ .         |____pyat
 
 
 .. [2] Taken from: `at/pyat/README.rst`
