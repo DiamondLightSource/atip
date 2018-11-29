@@ -164,7 +164,6 @@ def plot_beam_position(elems, ds, x_plot=True, y_plot=True):
 
 
 def get_defaults(lattice):
-    print('Default handle: {0}'.format(lattice.get_default_handle()))
     print('Default units: {0}'.format(lattice.get_default_units()))
     print('Default data source: {0}'.format(lattice.get_default_data_source()))
 
@@ -175,6 +174,7 @@ def transfer(lattice):
     values = []
     toggle_threads(lattice)
     for family, field in fields_dict.items():
+        print('Transfering {0}s...'.format(family.lower()))
         lattice.set_default_data_source(pytac.LIVE)
         values = lattice.get_element_values(family, field, pytac.RB)
         lattice.set_default_data_source(pytac.SIM)

@@ -2,7 +2,7 @@
 ATIP - Accelerator Toolbox Interface for Pytac
 ==============================================
 ATIP is intended to integrate a simulator using the python implementation of `AT
-<https://github.com/atcollab/at>`_, pyat, into `pytac
+<https://github.com/atcollab/at>`_, pyat, into `Pytac
 <https://github.com/dls-controls/pytac>`_ so that it can be addressed in the
 same manner as the live machine.
 
@@ -26,7 +26,7 @@ Implementation:
 The accelerator data for the simulator is held in the centralised
 ``ATAcceleratorData`` class which the element and lattice data sources
 reference. Each instance of ``ATElementDataSource`` holds the pyat element
-equivalent the pytac element it is attached to; when a get request is made the
+equivalent the Pytac element it is attached to; when a get request is made the
 appropriate data from that AT element is returned, however, when a set request
 is sent the class updates it's copy of that element with the changes
 incorporated and then it pushes that element with the new data to

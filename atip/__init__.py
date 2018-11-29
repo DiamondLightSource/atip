@@ -1,13 +1,5 @@
 """ATIP: Accelerator Toolbox Interface for Pytac.
-
-Reqs:
-    AT, Pytac and ATIP all installed in the same source directory.
-    pipenv install --dev
-    pipenv shell
-    pip install numpy
-    pip install scipy
-    pip install pytest
-    pip install cothread
+See README.rst & INSTALL.rst for more information.
 """
 # Add AT & Pytac to path.
 import os

@@ -1,7 +1,7 @@
 numpy>=1.10
 scipy>=0.16
 pytest>=2.9
-pytest-cov
+pytest-cov==2.5.1
 pytest-lazy-fixture
 mock
 flake8
