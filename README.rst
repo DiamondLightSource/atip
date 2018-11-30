@@ -1,10 +1,10 @@
 ==============================================
 ATIP - Accelerator Toolbox Interface for Pytac
 ==============================================
-ATIP is intended to integrate a simulator using the python implementation of `AT
-<https://github.com/atcollab/at>`_, pyat, into `Pytac
-<https://github.com/dls-controls/pytac>`_ so that it can be addressed in the
-same manner as the live machine.
+ATIP is intended to integrate a simulator using the python implementation of
+`AT <https://github.com/atcollab/at>`_, pyat, into
+`Pytac <https://github.com/dls-controls/pytac>`_ so that it can be addressed
+in the same manner as the live machine.
 
 General Use:
 ------------
@@ -15,11 +15,11 @@ simulator is accessed through the ``pytac.SIM`` data sources on the lattice and
 each of the elements. For normal operation, the simulator should be referenced
 like the live machine but with the data source specified as ``pytac.SIM``
 instead of ``pytac.LIVE``, i.e. a get request to a bpm would be
-``<bpm-element>.get_value('x', data_source=pytac.SIM)``. It is worth noting that
-generally the simulated data sources behave exactly like the live machine, but
-in a few cases they do differ e.g. the simulator has a number of fields that the
-live accelerator doesn't have and the live machine has a few that the simulator
-doesn't.
+``<bpm-element>.get_value('x', data_source=pytac.SIM)``. It is worth noting
+that generally the simulated data sources behave exactly like the live machine,
+but in a few cases they do differ e.g. the simulator has a number of fields
+that the live accelerator doesn't have and the live machine has a few that the
+simulator doesn't.
 
 Implementation:
 ---------------
@@ -33,12 +33,12 @@ incorporated and then it pushes that element with the new data to
 ``ATAcceleratorData``. Inside that class the changed element is added to the
 end of a queue of changes, in the background there is a separate thread,
 independent of the main thread, that is constantly checking the queue, removing
-the oldest change from it and updating the central AT ring accordingly, once the
-last change from the queue is processed the thread recalculates the twiss data
-for the ring. This means that the twiss data held by the ``ATAcceleratorData``
-class, and returned from the ``get_twiss()`` method, is updated after every
-batch of changes and that without excessive calculation a very recent version of
-twiss data is always available.
+the oldest change from it and updating the central AT ring accordingly, once
+the last change from the queue is processed the thread recalculates the twiss
+data for the ring. This means that the twiss data held by the
+``ATAcceleratorData`` class, and returned from the ``get_twiss()`` method, is
+updated after every batch of changes and that without excessive calculation a
+very recent version of twiss data is always available.
 
 API:
 ----
@@ -72,17 +72,17 @@ ATAcceleratorData:
 
 Notes:
 ------
-In order for atip to function correctly atip, AT and pytac must all be installed
-into the same source directory; however, AT and pytac can be located anywhere if
-the file paths to them are edited in ``__init__.py``.
+In order for atip to function correctly atip, AT and pytac must all be
+installed into the same source directory; however, AT and pytac can be located
+anywhere if the file paths to them are edited in ``__init__.py``.
 
 Any function, in atip, that takes a ``handle`` argument does so only to conform
 with the ``DataSource`` syntax in pytac. Inside atip it is entirely arbitrary
 and can be ignored as it is not used.
 
-The load function in ``load_sim.py`` takes arguments of ``lattice``, an instance
-of a standard pytac lattice, and ``LATTICE_FILE``, the file path to a ``.mat``
-file from which to load the accelerator data for the AT simulation.
+The load function in ``load_sim.py`` takes arguments of ``lattice``, an
+instance of a standard pytac lattice, and ``LATTICE_FILE``, the file path to a
+``.mat`` file from which to load the accelerator data for the AT simulation.
 
 In ``ATElementDataSource``, in ``sim_data_source.py``, the set value is used as
 a get/set flag as well as the value to be set; if it is a get request value is
@@ -91,8 +91,8 @@ interpret this and act accordingly.
 
 In ``ATLatticeDataSource`` a complex system is used to interpret, split and
 return the twiss data, this is due to the format that AT returns twiss data in
-(sequences inside a dictionary, inside a tuple); a special consideration is also
-made for the tune, to return only the fractional digits.
+(sequences inside a dictionary, inside a tuple); a special consideration is
+also made for the tune, to return only the fractional digits.
 
-A number of functions that perform tasks that are frequent or longwinded are
+A number of functions that perform tasks that are frequent or long-winded are
 included in ``ease.py`` to make life easier for the user.

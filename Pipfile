@@ -5,10 +5,10 @@ name = "pypi"
 
 [dev-packages]
 pytest = "*"
-pytest-cov = "*"
+pytest-cov = "==2.5.1"
 coveralls = "*"
 mock = "*"
-"flake8" = "*"
+flake8 = "*"
 sphinx = "*"
 sphinx-rtd-theme = "*"
 pytest-lazy-fixture = "*"

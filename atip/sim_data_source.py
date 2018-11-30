@@ -157,7 +157,6 @@ class ATElementDataSource(DataSource):
         Returns:
             float: The value of the specified cell of PolynomA.
         """
-        # use value as get/set flag as well as the set value.
         if value is None:
             return self._element.PolynomA[cell]
         else:
@@ -184,7 +183,7 @@ class ATElementDataSource(DataSource):
             return self._element.PolynomB[cell]
         else:
             if isinstance(self._element, at.elements.Quadrupole):
-                self._element.K = value
+                self._element.K = value  # Why can't K map in AT?
             self._element.PolynomB[cell] = value
             self._ad.new_changes.set()
 
@@ -347,8 +346,13 @@ class ATAcceleratorData(object):
     **Methods:**
     """
     def __init__(self, ring, threads):
-        """The phys data must be initially calculated here so that the thread
-        has something to reference.
+        """If an error or execption is raised in the running thread then it
+        does not continue running so no subsequent calculations are performed.
+        Converting errors to warnings might fix this?
+
+        The phys data must be initially calculated here so that if the thread
+        stops the attributes _emittance and _lindata don't exist so they cannot
+        be referenced, causing errors.
         """
         self._lattice = at.Lattice(ring)
         self._rp = numpy.ones(len(ring), dtype=bool)  # consider using '-'?
@@ -367,7 +371,7 @@ class ATAcceleratorData(object):
         """Target function for the background thread. Recalculates the physics
         data dependant on the status of the _paused and new_changes flags. The
         thread is constantly running but the calculations only take place if
-        the changes flag is True and the paused flad is False.
+        the changes flag is True and the paused flag is False.
         """
         while True:
             if (self.new_changes.is_set() is True) and (self._paused.is_set()
@@ -378,7 +382,7 @@ class ATAcceleratorData(object):
                     self._lattice.radiation_off()
                     self._lindata = self._lattice.linopt(0, self._rp, True,
                                                          coupled=False)
-                except ValueError as e:  # Possibly remove?
+                except Exception as e:  # Possibly remove?
                     warn(at.AtWarning(e))
                 self.new_changes.clear()
 
@@ -494,7 +498,7 @@ class ATAcceleratorData(object):
         """
         return self._lindata[3]['beta']
 
-    def get_m44(self):
+    def get_m44(self):  # Do we really need to return such an unruly array?
         """Return the 4x4 transfer matrix at every element in the lattice.
 
         Returns:
@@ -502,7 +506,7 @@ class ATAcceleratorData(object):
         """
         return self._lindata[3]['m44']
 
-    def get_mu(self):
+    def get_mu(self):  # What even is mu?
         """Return mu at every element in the lattice.
 
         Returns:
