@@ -19,10 +19,6 @@ class ATElementDataSource(DataSource):
         units (str): pytac.ENG or pytac.PHYS, pytac.PHYS by default.
 
     .. Private Attributes:
-           _field_funcs (dict): A dictionary which maps element fields to the
-                                 correct data handling function. Some of these
-                                 functions, via partial(), are passed a cell
-                                 argument so only relevant data is returned.
            _element (at.elements.Element): A pointer to the AT element
                                             equivalent of the Pytac element,
                                             which this data source instance
@@ -33,10 +29,18 @@ class ATElementDataSource(DataSource):
            _fields (list): A list of all the fields that are present on this
                             element. N.B. not all possible fields i.e. _fields
                             != _field_funcs.keys()
+           _field_funcs (dict): A dictionary which maps element fields to the
+                                 correct data handling function. Some of these
+                                 functions, via partial(), are passed a cell
+                                 argument so only relevant data is returned.
 
     **Methods:**
     """
     def __init__(self, at_element, accelerator_data, fields=[]):
+        self.units = pytac.PHYS
+        self._element = at_element
+        self._ad = accelerator_data
+        self._fields = fields
         self._field_funcs = {'x_kick': partial(self._KickAngle, 0),
                              'y_kick': partial(self._KickAngle, 1),
                              'a1': partial(self._PolynomA, 1),
@@ -46,10 +50,6 @@ class ATElementDataSource(DataSource):
                              'x': partial(self._Orbit, 0),
                              'y': partial(self._Orbit, 2),
                              'f': self._Frequency}
-        self.units = pytac.PHYS
-        self._element = at_element
-        self._ad = accelerator_data
-        self._fields = fields
 
     def get_fields(self):
         """Get all the fields that are defined for the data source on this
@@ -85,7 +85,7 @@ class ATElementDataSource(DataSource):
                                  .format(field, self._element))
 
     def set_value(self, field, set_value):
-        """Get the value for a field.
+        """Set the value for a field.
 
         N.B. The 'value' argument passed to the data handling functions is used
         as a get/set flag. In this case the value to be set is passed this
@@ -233,7 +233,26 @@ class ATElementDataSource(DataSource):
 
 
 class ATLatticeDataSource(DataSource):
-    def __init__(self, accelerator_data):
+    """A simulator data source to allow the physics data of the AT lattice to
+    be be addressed using the standard Pytac syntax.
+
+    **Attributes**
+
+    Attributes:
+        units (str): pytac.ENG or pytac.PHYS, pytac.PHYS by default.
+
+    .. Private Attributes:
+           _ad (ATAcceleratorData): A pointer to the centralised accelerator
+                                     data object.
+           _field_funcs (dict): A dictionary which maps lattice fields to the
+                                 correct data function on the centralised
+                                 accelerator data object. Some of these
+                                 functions, via partial(), are passed a cell
+                                 argument so only relevant data is returned.
+
+    **Methods:**
+    """
+    def __init__(self, accelerator_data):  # Add get/set multiple elements?
         self.units = pytac.PHYS
         self._ad = accelerator_data
         self._field_funcs = {'chromaticity_x': partial(self._ad.get_chrom, 0),
@@ -254,22 +273,79 @@ class ATLatticeDataSource(DataSource):
                              'm44': self._ad.get_m44,
                              'mu': self._ad.get_mu}
 
+    def get_fields(self):
+        """Get all the fields that are defined for this data source on the
+        lattice.
+
+        Returns:
+            list: A list of all the fields that are present on this element.
+        """
+        return self._field_funcs.keys()
+
     def get_value(self, field, handle=None):
+        """Get the value for a field on the lattice.
+
+        Args:
+            field (str): The requested field.
+            handle (any): Handle is not needed and is only here to conform with
+                           the structure of the DataSource base class.
+
+        Returns:
+            float: The value of specified field on this data source.
+
+        Raises:
+            FieldException: if the specied field does not exist.
+        """
         if field in self._field_funcs.keys():
             return self._field_funcs[field]()
         else:
             raise FieldException("Lattice data source {0} does not have field "
                                  "{1}".format(self, field))
 
-    def set_value(self, field):
+    def set_value(self, field, value):
+        """Set the value for a field.
+
+        N.B. Currently a HandleException is always raised. 
+
+        Args:
+            field (str): The requested field.
+            value (float): The value to be set.
+
+        Raises:
+            HandleException: as setting to the lattice is not supported.
+        """
         raise HandleException("Field {0} cannot be set on lattice data source "
                               "{0}.".format(field, self))
 
-    def get_fields(self):
-        return self._field_funcs.keys()
-
 
 class ATAcceleratorData(object):
+    """A centralised class which holds the data for the simulator, and provides
+    the lattice's physics data to simulator data sources. This class ensures
+    that this data is up to date through the use of threading, a thread
+    constantly runs in the background and recalculates the physics data every
+    time a change is made via the use of flags (threading events).
+
+    **Attributes**
+
+    Attributes:
+        new_changes (threading.Event): A flag to indicate that changes to the
+                                        AT ring have been made.
+
+    .. Private Attributes:
+           _lattice (at.lattice_object.Lattice): The centralised instance of
+                                                  the AT ring which the physics
+                                                  data is calculated.
+           _rp (numpy.array): A boolean array to be used as refpoints for the
+                               physics calculations.
+           _paused (threading.Event): A flag used to temporarily pause the
+                                       physics calculations.
+           _emittance (tuple): Emittance, the output of the AT physics function
+                                ohmi_envelope, see at.lattice.radiation.
+           _lindata (tuple): Linear optics data, the output of the AT physics
+                              function linopt, see at.lattice.linear.
+
+    **Methods:**
+    """
     def __init__(self, ring, threads):
         """The phys data must be initially calculated here so that the thread
         has something to reference.
@@ -278,7 +354,7 @@ class ATAcceleratorData(object):
         self._rp = numpy.ones(len(ring), dtype=bool)  # consider using '-'?
         self.new_changes = Event()
         self._paused = Event()
-        self._lattice.radiation_on()
+        self._lattice.radiation_on()  # should this be added to lattice_object?
         self._emittance = self._lattice.ohmi_envelope(self._rp)
         self._lattice.radiation_off()
         self._lindata = self._lattice.linopt(0, self._rp, True, coupled=False)
@@ -288,6 +364,11 @@ class ATAcceleratorData(object):
             update.start()
 
     def calculate_phys_data(self):
+        """Target function for the background thread. Recalculates the physics
+        data dependant on the status of the _paused and new_changes flags. The
+        thread is constantly running but the calculations only take place if
+        the changes flag is True and the paused flad is False.
+        """
         while True:
             if (self.new_changes.is_set() is True) and (self._paused.is_set()
                                                         is False):
@@ -297,57 +378,134 @@ class ATAcceleratorData(object):
                     self._lattice.radiation_off()
                     self._lindata = self._lattice.linopt(0, self._rp, True,
                                                          coupled=False)
-                except ValueError as e:
+                except ValueError as e:  # Possibly remove?
                     warn(at.AtWarning(e))
                 self.new_changes.clear()
 
     def toggle_calculations(self):
+        """Pause or unpause the pysics calculations by setting or clearing the
+        _paused flag.
+        """
         if self._paused.is_set() is False:
             self._paused.set()
         else:
             self._paused.clear()
 
     def get_element(self, index):
+        """Return the AT element coresponding to the given index.
+
+        Args:
+            index (int): The index of the AT element to return.
+
+        Returns:
+            at.elements.Element: The element specified by the given index.
+        """
         return self._lattice[index-1]
 
     def get_ring(self):
+        """Return the AT ring.
+
+        Returns:
+            list: A copy of the AT ring.
+        """
         return self._lattice._lattice
 
     def get_lattice_object(self):
+        """Return a copy of the AT lattice object.
+
+        Returns:
+            at.lattice_object.Lattice: A copy of the AT lattice object.
+        """
         return self._lattice.copy()
 
     def get_chrom(self, cell):
+        """Return the specified cell of the chromaticity for the lattice.
+
+        Returns:
+            float: The x or y chromaticity for the lattice.
+        """
         return self._lindata[2][cell]
 
     def get_emit(self, cell):
-        """The emittance of the last element is returned as it should be
+        """Return the specified cell of the emittance for the lattice.
+
+        N.B. The emittance of the last element is returned as it should be
         constant throughout the lattice and so cell is returned is arbitrary.
+
+        Returns:
+            float: The x or y emittance for the lattice.
         """
         return self._emittance[2]['emitXY'][:, cell][0]
 
     def get_orbit(self, cell):
+        """Return the specified cell of the closed orbit for the lattice.
+
+        Returns:
+            numpy.array: The x, x phase, y or y phase for the lattice as an
+                          array of floats the length of the lattice.
+        """
         return self._lindata[3]['closed_orbit'][:, cell]
 
     def get_tune(self, cell):
+        """Return the specified cell of the tune for the lattice.
+
+        Returns:
+            float: The x or y tune for the lattice.
+        """
         return (self._lindata[1][cell] % 1)
 
     def get_disp(self):
+        """Return the dispersion at every element in the lattice.
+
+        Returns:
+            numpy.array: The dispersion vector for each element.
+        """
         return self._lindata[3]['dispersion']
 
     def get_s(self):
-        return self._lindata[3]['s_pos']
+        """Return the s position of every element in the lattice
+
+        Returns:
+            list: The s position of each element.
+        """
+        return list(self._lindata[3]['s_pos'])
 
     def get_energy(self):
+        """Return the energy of the lattice. Taken from the AT attribute.
+
+        Returns:
+            float: The energy of the lattice.
+        """
         return self._lattice.energy
 
-    def get_alpha(self):
+    def get_alpha(self):  # Why aren't we seperating this by x and y?
+        """Return the alpha vector at every element in the lattice.
+
+        Returns:
+            numpy.array: The alpha vector for each element.
+        """
         return self._lindata[3]['alpha']
 
     def get_beta(self):
+        """Return the beta vector at every element in the lattice.
+
+        Returns:
+            numpy.array: The beta vector for each element.
+        """
         return self._lindata[3]['beta']
 
     def get_m44(self):
+        """Return the 4x4 transfer matrix at every element in the lattice.
+
+        Returns:
+            numpy.array: The 4x4 transfer matrix for each element.
+        """
         return self._lindata[3]['m44']
 
     def get_mu(self):
+        """Return mu at every element in the lattice.
+
+        Returns:
+            numpy.array: The mu array for each element.
+        """
         return self._lindata[3]['mu']
