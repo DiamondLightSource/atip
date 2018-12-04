@@ -31,7 +31,8 @@ def load(lattice, LATTICE_FILE):
         if ring[x].PassMethod == 'ThinCorrectorPass':
             ring[x].PassMethod = 'CorrectorPass'
     # Initialise an instance of the AT Accelerator Data Object.
-    ad = ATAcceleratorData(ring, 1)
+    ad = ATAcceleratorData(ring)
+    ad.start_thread()
     # Set the simulator data source on the lattice.
     lattice.set_data_source(ATLatticeDataSource(ad), pytac.SIM)
     # Determine which fields each simulated element should have.

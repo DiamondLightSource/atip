@@ -131,6 +131,14 @@ def get_sim_elem(elem):
     return elem._data_source_manager._data_sources[pytac.SIM]._element
 
 
+def get_ad(lattice):
+    return lattice._data_source_manager._data_sources[pytac.SIM]._ad
+
+
+def get_thread(lattice):
+    return lattice._data_source_manager._data_sources[pytac.SIM]._ad._calculation_thread
+
+
 def toggle_threads(lattice):
     lattice._data_source_manager._data_sources[pytac.SIM]._ad.toggle_calculations()
 

@@ -9,3 +9,6 @@ venv*
 
 # temporary files
 *~
+
+# experimental files
+atip/junk/*

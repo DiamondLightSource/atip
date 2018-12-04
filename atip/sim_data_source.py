@@ -346,7 +346,7 @@ class ATAcceleratorData(object):
 
     **Methods:**
     """
-    def __init__(self, ring, threads):
+    def __init__(self, ring):
         """If an error or execption is raised in the running thread then it
         does not continue running so subsequent calculations are not performed.
         Converting errors to warnings fixes this.
@@ -357,24 +357,30 @@ class ATAcceleratorData(object):
         """
         self._lattice = at.Lattice(ring)
         self._rp = numpy.ones(len(ring), dtype=bool)
-        self.new_changes = Event()
-        self._paused = Event()
         self._lattice.radiation_on()
         self._emittance = self._lattice.ohmi_envelope(self._rp)
         self._lattice.radiation_off()
         self._lindata = self._lattice.linopt(0, self._rp, True, coupled=False)
-        for i in range(threads):
-            update = Thread(target=self.calculate_phys_data)
-            update.setDaemon(True)
-            update.start()
+        self.new_changes = Event()
+        self._paused = Event()
+        self._running = Event()
+        self._calculation_thread = Thread(target=self.recalculate_phys_data)
 
-    def calculate_phys_data(self):
+    def start_thread(self):
+        if self._running.is_set() is False:
+            self._calculation_thread.setDaemon(True)
+            self._running.set()
+            self._calculation_thread.start()
+        else:
+            raise RuntimeError("Cannot start thread as it is already running.")
+
+    def recalculate_phys_data(self):
         """Target function for the background thread. Recalculates the physics
         data dependant on the status of the _paused and new_changes flags. The
         thread is constantly running but the calculations only take place if
         the changes flag is True and the paused flag is False.
         """
-        while True:
+        while self._running.is_set() is True:
             if (self.new_changes.is_set() is True) and (self._paused.is_set()
                                                         is False):
                 try:
@@ -386,6 +392,10 @@ class ATAcceleratorData(object):
                 except Exception as e:
                     warn(at.AtWarning(e))
                 self.new_changes.clear()
+
+    def stop_thread(self):
+        self._running.clear()
+        self._calculation_thread.join()
 
     def toggle_calculations(self):
         """Pause or unpause the pysics calculations by setting or clearing the
