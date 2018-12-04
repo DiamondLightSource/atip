@@ -311,7 +311,8 @@ class ATLatticeDataSource(DataSource):
             value (float): The value to be set.
 
         Raises:
-            HandleException: as setting to the lattice is not supported.
+            HandleException: as setting values to lattice fields is not
+                              currently supported.
         """
         raise HandleException("Field {0} cannot be set on lattice data source "
                               "{0}.".format(field, self))
