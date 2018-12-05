@@ -51,3 +51,25 @@ def mocked_ado(at_ring):
                              numpy.eye(4) * 0.8),
                      'mu': (base[:, :2] * numpy.array([176, 82]))})
     return ado
+
+
+@pytest.fixture()
+def initial_emit(at_ring):
+    return ([], [],
+            {'emitXY': numpy.ones((len(at_ring) + 1, 2)) * [1.32528e-10, 0.]})
+
+@pytest.fixture()
+def initial_lin(at_ring):
+    return ([], [0.38156245, 0.85437543], [0.17919002, 0.12242263],
+            {'closed_orbit': numpy.zeros((len(at_ring) + 1, 6)),
+             'dispersion': numpy.array([[1.72683082e-3, 4.04368253e-9,
+                                         3.51285681e-28, -8.95277691e-29]]),
+             's_pos': numpy.cumsum([0.0] + [getattr(elem, 'Length', 0) for elem
+                                            in at_ring]),
+             'alpha': numpy.array([[1.59491386e-07, -2.97115147e-6]]),
+             'beta': numpy.array([[6.8999954, 2.64467888]]),
+             'm44': numpy.array([[[-0.73565363, 4.67376566, 0., 0.],
+                                  [-0.09816788, -0.73565385, 0., 0.],
+                                  [0., 0., 0.60980387, -2.09605131],
+                                  [0., 0., 0.29967874, 0.60979916]]]),
+             'mu': numpy.array([[14.96379821, 5.36819914]])})

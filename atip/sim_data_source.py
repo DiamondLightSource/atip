@@ -355,8 +355,8 @@ class ATAcceleratorData(object):
         accidentally referenced before the attributes _emittance and _lindata
         can be referenced, this causes errors as they wouldn't exist yet.
         """
-        self._lattice = at.Lattice(ring)
-        self._rp = numpy.ones(len(ring), dtype=bool)
+        self._lattice = at.Lattice(ring, keep_all=True)
+        self._rp = numpy.array(range(len(ring) + 1))
         self._lattice.radiation_on()
         self._emittance = self._lattice.ohmi_envelope(self._rp)
         self._lattice.radiation_off()

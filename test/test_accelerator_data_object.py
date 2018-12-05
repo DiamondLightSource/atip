@@ -7,20 +7,45 @@ import numpy
 from atip.sim_data_source import ATAcceleratorData
 
 
-def test_accelerator_data_object_creation(at_ring):
+def test_accelerator_data_object_creation(at_ring, initial_emit, initial_lin):
     ado = ATAcceleratorData(at_ring)
-    # Check inital state of flags.
+    # Check initial state of flags.
     assert ado.new_changes.is_set() == False
     assert ado._paused.is_set() == False
     assert ado._running.is_set() == False
-    # Check emittance and lindata are initially calculated.
-    # How though?
-#    for emit in ado._emittance:
-#        assert isinstance(emit, numpy.ndarray)
-#        assert all(numpy.array(emit.shape, dtype=bool)) == True
-#    assert isinstance(ado._lindata, numpy.ndarray)
-#    assert all(numpy.array(ado._lindata.shape, dtype=bool)) == True
-
+    # Check emittance and lindata are initially calculated correctly.
+    numpy.testing.assert_almost_equal(initial_emit[2]['emitXY'][:, 0][0],
+                                      ado.get_emit(0), decimal=15)
+    numpy.testing.assert_almost_equal(initial_emit[2]['emitXY'][:, 1][0],
+                                      ado.get_emit(1), decimal=15)
+    numpy.testing.assert_almost_equal(initial_lin[1][0], ado.get_tune(0),
+                                      decimal=8)
+    numpy.testing.assert_almost_equal(initial_lin[1][1], ado.get_tune(1),
+                                      decimal=8)
+    numpy.testing.assert_almost_equal(initial_lin[2][0], ado.get_chrom(0),
+                                      decimal=8)
+    numpy.testing.assert_almost_equal(initial_lin[2][1], ado.get_chrom(1),
+                                      decimal=8)
+    numpy.testing.assert_almost_equal(initial_lin[3]['closed_orbit'][:, 0],
+                                      ado.get_orbit(0))
+    numpy.testing.assert_almost_equal(initial_lin[3]['closed_orbit'][:, 1],
+                                      ado.get_orbit(1))
+    numpy.testing.assert_almost_equal(initial_lin[3]['closed_orbit'][:, 2],
+                                      ado.get_orbit(2))
+    numpy.testing.assert_almost_equal(initial_lin[3]['closed_orbit'][:, 3],
+                                      ado.get_orbit(3))
+    numpy.testing.assert_almost_equal(initial_lin[3]['dispersion'][-1],
+                                      ado.get_disp()[-1], decimal=11)
+    numpy.testing.assert_almost_equal(initial_lin[3]['s_pos'], ado.get_s(),
+                                      decimal=8)
+    numpy.testing.assert_almost_equal(initial_lin[3]['alpha'][-1],
+                                      ado.get_alpha()[-1], decimal=14)
+    numpy.testing.assert_almost_equal(initial_lin[3]['beta'][-1],
+                                      ado.get_beta()[-1], decimal=8)
+    numpy.testing.assert_almost_equal(initial_lin[3]['m44'][-1],
+                                      ado.get_m44()[-1], decimal=8)
+    numpy.testing.assert_almost_equal(initial_lin[3]['mu'][-1], ado.get_mu()[-1],
+                                      decimal=8)
 
 def test_start_and_stop_thread(at_ring):
     ado = ATAcceleratorData(at_ring)
@@ -36,7 +61,8 @@ def test_start_and_stop_thread(at_ring):
     assert ado._calculation_thread.is_alive() == False
 
 
-def test_recalculate_phys_data():
+def test_recalculate_phys_data(at_ring):
+    ado  = ATAcceleratorData(at_ring)
     # Potential to compare to hard-coded values for a known lattice.
     pass
 
@@ -52,16 +78,19 @@ def test_toggle_calculations(at_ring):
     # pause > make a change > check no calc > unpause > check calc
 
 
-def test_get_element():
-    pass
+def test_get_element(at_ring):
+    ado = ATAcceleratorData(at_ring)
+    assert ado.get_element(1) == at_ring[0]
 
 
-def test_get_ring():
-    pass
+def test_get_ring(at_ring):
+    ado = ATAcceleratorData(at_ring)
+    assert ado.get_ring() == at_ring
 
 
-def test_get_lattice_object():
-    pass
+def test_get_lattice_object(at_ring):
+    ado = ATAcceleratorData(at_ring)
+    assert ado.get_lattice_object() == ado._lattice
 
 
 def test_get_chrom(mocked_ado):
