@@ -2,14 +2,14 @@
 import at
 import numpy
 import pytac
+import time
 from warnings import warn
 from functools import partial
-from threading import Thread, Event
-from pytac.data_source import DataSource
+from threading import Thread, Event, Condition, Lock
 from pytac.exceptions import FieldException, HandleException
 
 
-class ATElementDataSource(DataSource):
+class ATElementDataSource(pytac.data_source.DataSource):
     """A simulator data source to enable AT elements to be addressed using the
     standard Pytac syntax.
 
@@ -231,7 +231,7 @@ class ATElementDataSource(DataSource):
             self._ad.new_changes.set()
 
 
-class ATLatticeDataSource(DataSource):
+class ATLatticeDataSource(pytac.data_source.DataSource):
     """A simulator data source to allow the physics data of the AT lattice to
     be be addressed using the standard Pytac syntax.
 
@@ -364,9 +364,18 @@ class ATAcceleratorData(object):
         self.new_changes = Event()
         self._paused = Event()
         self._running = Event()
+        self._calculation_lock = Condition(Lock())
         self._calculation_thread = Thread(target=self.recalculate_phys_data)
 
     def start_thread(self):
+        """Start the thread created in __init__ in the background. This
+        function is separated from __init__ so that multiple Accelerator Data
+        objects can be created without the need to waste processing power on
+        threads when they are not required.
+
+        Raises:
+            RuntimeError: if the thread has already been started.
+        """
         if self._running.is_set() is False:
             self._calculation_thread.setDaemon(True)
             self._running.set()
@@ -381,6 +390,7 @@ class ATAcceleratorData(object):
         the changes flag is True and the paused flag is False.
         """
         while self._running.is_set() is True:
+            self._calculation_lock.acquire()
             if (self.new_changes.is_set() is True) and (self._paused.is_set()
                                                         is False):
                 try:
@@ -391,11 +401,24 @@ class ATAcceleratorData(object):
                                                          coupled=False)
                 except Exception as e:
                     warn(at.AtWarning(e))
+                self._calculation_lock.notify_all()
+                self._calculation_lock.release()
+                time.sleep(0.1)  # there must be a better way?
                 self.new_changes.clear()
 
     def stop_thread(self):
-        self._running.clear()
-        self._calculation_thread.join()
+        """Stop the recalculation thread if it is running. This enables threads
+        to be switched off when they are not being used so they do not
+        unneccessarily use processing power.
+
+        Raises:
+            RuntimeError: if the thread is not yet running.
+        """
+        if self._running.is_set() is True:
+            self._running.clear()
+            self._calculation_thread.join()
+        else:
+            raise RuntimeError("Cannot stop thread as it is not running.")
 
     def toggle_calculations(self):
         """Pause or unpause the pysics calculations by setting or clearing the
@@ -405,6 +428,16 @@ class ATAcceleratorData(object):
             self._paused.set()
         else:
             self._paused.clear()
+
+    def wait_for_calculations(self, timeout=10):
+        """Wait until the physics calculations have been performed on all
+        changes to the ring, i.e. the physics data is fully up to date.
+
+        Returns:
+            bool: False if the timeout elapsed before the calculations
+                   concluded, else True.
+        """
+        return self._calculation_lock.wait(timeout)
 
     def get_element(self, index):
         """Return the AT element coresponding to the given index.

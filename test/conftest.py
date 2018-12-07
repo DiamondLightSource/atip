@@ -35,7 +35,7 @@ def at_ring():
 
 @pytest.fixture()
 def mocked_ado(at_ring):
-    base = numpy.ones((len(at_ring),4))
+    base = numpy.ones((len(at_ring), 4))
     ado = atip.sim_data_source.ATAcceleratorData(at_ring)
     ado._lattice = mock.PropertyMock(energy=5)
     ado._emittance = ([], [], {'emitXY': (base[:, :2] * numpy.array([1.4,
@@ -57,6 +57,7 @@ def mocked_ado(at_ring):
 def initial_emit(at_ring):
     return ([], [],
             {'emitXY': numpy.ones((len(at_ring) + 1, 2)) * [1.32528e-10, 0.]})
+
 
 @pytest.fixture()
 def initial_lin(at_ring):
