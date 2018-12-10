@@ -81,12 +81,12 @@ def test_elem_set_value_raises_FieldException_if_nonexistant_field(at_elem,
 
 @pytest.mark.parametrize('field', ['x_kick', 'y_kick', 'a1', 'b0', 'b1', 'b2',
                                    'f'])
-def test_elem_set_value_sets_new_changes_flag(at_elem, field):
+def test_elem_set_value_sets_up_to_date_flag(at_elem, field):
     ad = mock.Mock()
     ateds = atip.sim_data_source.ATElementDataSource(at_elem, ad, [field])
     ateds.set_value(field, 1)
-    assert len(ad.new_changes.mock_calls) == 1
-    assert ad.new_changes.mock_calls[0] == mock.call.set()
+    assert len(ad.up_to_date.mock_calls) == 1
+    assert ad.up_to_date.mock_calls[0] == mock.call.clear()
 
 
 @pytest.mark.parametrize('field,attr_str', [('x_kick', 'at_elem.KickAngle[0]'),

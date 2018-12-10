@@ -1,4 +1,5 @@
 import atip
+import at
 import pytest
 import numpy
 
@@ -38,24 +39,26 @@ def initial_phys_data(ado, initial_emit, initial_lin):
         numpy.testing.assert_almost_equal(initial_lin[3]['mu'][-1],
                                           ado.get_mu()[-1], decimal=8)
         return True
-    except:
+    except Exception:
         return False
 
 
 def test_accelerator_data_object_creation(at_ring, initial_emit, initial_lin):
     ado = atip.sim_data_source.ATAcceleratorData(at_ring)
     # Check initial state of flags.
-    assert ado.new_changes.is_set() is False
+    assert ado.up_to_date.is_set() is True
     assert ado._paused.is_set() is False
     assert ado._running.is_set() is False
     # Check emittance and lindata are initially calculated correctly.
-    assert initial_phys_data(ado, initial_emit, initial_lin) == 0
+    assert initial_phys_data(ado, initial_emit, initial_lin) is True
 
 
 def test_start_and_stop_thread(at_ring):
     ado = atip.sim_data_source.ATAcceleratorData(at_ring)
     assert ado._running.is_set() is False
     assert ado._calculation_thread.is_alive() is False
+    with pytest.raises(RuntimeError):
+        ado.stop_thread()
     ado.start_thread()
     with pytest.raises(RuntimeError):
         ado.start_thread()
@@ -70,17 +73,40 @@ def test_recalculate_phys_data(at_ring, initial_emit, initial_lin):
     ado = atip.sim_data_source.ATAcceleratorData(at_ring)
     assert initial_phys_data(ado, initial_emit, initial_lin) is True
     ado.start_thread()
-    # set hstr x_kick
-    # read orbit x
-    # set vstr y_kick
-    # read orbit y
-    # set quad b1
-    # read tune
-    # set squad a1
-    # read emit
-    # set sext b2
-    # read chrom
+    # Check that errors raised inside thread are converted to warnings.
+    ado._lattice[6].PolynomB[0] = 1.e10
+    with pytest.warns(at.AtWarning):
+        ado.up_to_date.clear()
+        ado.wait_for_calculations(5)
+    ado._lattice[6].PolynomB[0] = 0.0
+    # Set corrector x_kick but on a sextupole as no correctors in the test ring
+    ado._lattice[22].PolynomB[0] = -7.e-5
+    # Set corrector y_kick but on a sextupole as no correctors in the test ring
+    ado._lattice[22].PolynomA[0] = 7.e-5
+    # Set quadrupole b1
+    ado._lattice[6].PolynomB[1] = 2.5
+    # Set skew quadrupole a1
+    ado._lattice[8].PolynomA[1] = 2.25e-3
+    # Set sextupole b2
+    ado._lattice[22].PolynomB[2] = -75
+    # Clear the flag and then wait for the calculations
+    ado.up_to_date.clear()
+    ado.wait_for_calculations(5)
+    # Get the applicable physics data
+    orbit = [ado.get_orbit(0)[0], ado.get_orbit(2)[0]]
+    chrom = [ado.get_chrom(0), ado.get_chrom(1)]
+    tune = [ado.get_tune(0), ado.get_tune(1)]
+    emit = [ado.get_emit(0), ado.get_emit(1)]
     ado.stop_thread()
+    # Check the results against known values
+    numpy.testing.assert_almost_equal(orbit, [5.18918914e-06, -8.92596857e-06],
+                                      decimal=10)
+    numpy.testing.assert_almost_equal(chrom, [0.11732846, 0.04300947],
+                                      decimal=8)
+    numpy.testing.assert_almost_equal(tune, [0.37444833, 0.86048592],
+                                      decimal=8)
+    numpy.testing.assert_almost_equal(emit, [1.34308653e-10, 3.74339964e-13],
+                                      decimal=15)
 
 
 def test_toggle_calculations_and_wait_for_calculations(at_ring, initial_emit,
@@ -95,11 +121,11 @@ def test_toggle_calculations_and_wait_for_calculations(at_ring, initial_emit,
     # pause > make a change > check no calc > unpause > check calc
     ado.toggle_calculations()
     ado._lattice[6].PolynomB[1] = 2.5
-    ado.new_changes.set()
-    assert ado.wait_for_calculations(1) is False
+    ado.up_to_date.clear()
+    assert ado.wait_for_calculations(5) is False
     assert initial_phys_data(ado, initial_emit, initial_lin) is True
     ado.toggle_calculations()
-    assert ado.wait_for_calculations(0) is True
+    assert ado.wait_for_calculations(10) is True
     assert initial_phys_data(ado, initial_emit, initial_lin) is False
     ado.stop_thread()
 

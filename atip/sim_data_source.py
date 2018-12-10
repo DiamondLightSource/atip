@@ -2,10 +2,9 @@
 import at
 import numpy
 import pytac
-import time
 from warnings import warn
 from functools import partial
-from threading import Thread, Event, Condition, Lock
+from threading import Thread, Event
 from pytac.exceptions import FieldException, HandleException
 
 
@@ -107,9 +106,9 @@ class ATElementDataSource(pytac.data_source.DataSource):
     def _KickAngle(self, cell, value):
         """A data handling function used to get or set a specific cell of the
         KickAngle attribute of the AT element. Whenever a change is made the
-        new changes threadding flag is set on the central accelerator data
-        object, so as to trigger a recalculation of the physics data ensuring
-        it is up to date.
+        'up_to_date' threadding event is cleared on the central accelerator
+        data object, so as to trigger a recalculation of the physics data
+        ensuring it is up to date.
 
         If the Corrector is attached to a Sextupole then the KickAngle needs to
         be assigned/returned to/from cell 0 of the applicable Polynom attribute
@@ -135,20 +134,20 @@ class ATElementDataSource(pytac.data_source.DataSource):
                     self._element.PolynomB[0] = (- value / self._element.Length)
                 elif cell is 1:
                     self._element.PolynomA[0] = (value / self._element.Length)
-                self._ad.new_changes.set()
+                self._ad.up_to_date.clear()
         else:
             if value is None:
                 return self._element.KickAngle[cell]
             else:
                 self._element.KickAngle[cell] = value
-                self._ad.new_changes.set()
+                self._ad.up_to_date.clear()
 
     def _PolynomA(self, cell, value):
         """A data handling function used to get or set a specific cell of the
-        PolynomA attribute of the AT element. Whenever a change is made the new
-        changes threadding flag is set on the central accelerator data object,
-        so as to trigger a recalculation of the physics data ensuring it is up
-        to date.
+        PolynomA attribute of the AT element. Whenever a change is made the
+        'up_to_date' threadding event is cleared on the central accelerator
+        data object, so as to trigger a recalculation of the physics data
+        ensuring it is up to date.
 
         Args:
             cell (int): Which cell of PolynomA to get/set.
@@ -161,14 +160,14 @@ class ATElementDataSource(pytac.data_source.DataSource):
             return self._element.PolynomA[cell]
         else:
             self._element.PolynomA[cell] = value
-            self._ad.new_changes.set()
+            self._ad.up_to_date.clear()
 
     def _PolynomB(self, cell, value):
         """A data handling function used to get or set a specific cell of the
-        PolynomB attribute of the AT element. Whenever a change is made the new
-        changes threadding flag is set on the central accelerator data object,
-        so as to trigger a recalculation of the physics data ensuring it is up
-        to date.
+        PolynomB attribute of the AT element. Whenever a change is made the
+        'up_to_date' threadding event is cleared on the central accelerator
+        data object, so as to trigger a recalculation of the physics data
+        ensuring it is up to date.
 
         N.B. In the case of Quadrupoles K must also be set to the same value.
 
@@ -185,7 +184,7 @@ class ATElementDataSource(pytac.data_source.DataSource):
             if isinstance(self._element, at.elements.Quadrupole):
                 self._element.K = value
             self._element.PolynomB[cell] = value
-            self._ad.new_changes.set()
+            self._ad.up_to_date.clear()
 
     def _Orbit(self, cell, value):
         """A data handling function used to get or set a specific cell of the
@@ -214,9 +213,10 @@ class ATElementDataSource(pytac.data_source.DataSource):
 
     def _Frequency(self, value):
         """A data handling function used to get or set the Frequency attribute
-        of the AT element. Whenever a change is made the new changes threadding
-        flag is set on the central accelerator data object, so as to trigger a
-        recalculation of the physics data ensuring it is up to date.
+        of the AT element. Whenever a change is made the 'up_to_date'
+        threadding event is cleared on the central accelerator data object, so
+        as to trigger a recalculation of the physics data ensuring it is up to
+        date.
 
         Args:
             value (float): The value to be set, if it is not None.
@@ -228,7 +228,7 @@ class ATElementDataSource(pytac.data_source.DataSource):
             return self._element.Frequency
         else:
             self._element.Frequency = value
-            self._ad.new_changes.set()
+            self._ad.up_to_date.clear()
 
 
 class ATLatticeDataSource(pytac.data_source.DataSource):
@@ -328,8 +328,9 @@ class ATAcceleratorData(object):
     **Attributes**
 
     Attributes:
-        new_changes (threading.Event): A flag to indicate that changes to the
-                                        AT ring have been made.
+        up_to_date (threading.Event): A flag that indicates if the physics data
+                                       is up to date with all the changes made
+                                       to the AT ring.
 
     .. Private Attributes:
            _lattice (at.lattice_object.Lattice): The centralised instance of
@@ -337,34 +338,39 @@ class ATAcceleratorData(object):
                                                   data is calculated.
            _rp (numpy.array): A boolean array to be used as refpoints for the
                                physics calculations.
-           _paused (threading.Event): A flag used to temporarily pause the
-                                       physics calculations.
            _emittance (tuple): Emittance, the output of the AT physics function
                                 ohmi_envelope, see at.lattice.radiation.
            _lindata (tuple): Linear optics data, the output of the AT physics
                               function linopt, see at.lattice.linear.
+           _paused (threading.Event): A flag used to temporarily pause the
+                                       physics calculations.
+           _running (threading.Event): A flag used to indicate if the thread is
+                                        running or not, it is also used to turn
+                                        the thread off.
+           _calculation_thread (threading.Thread): A thread to constantly check
+                                                    for new changes to the AT
+                                                    ring and recalculate the
+                                                    physics data upon a change.
 
     **Methods:**
     """
     def __init__(self, ring):
-        """If an error or execption is raised in the running thread then it
-        does not continue running so subsequent calculations are not performed.
-        Converting errors to warnings fixes this.
-
-        The phys data must be initially calculated here so that it can't be
-        accidentally referenced before the attributes _emittance and _lindata
-        can be referenced, this causes errors as they wouldn't exist yet.
+        """To avoid errors, the physics data must be initially calculated here
+        otherwise it could be accidentally referenced before the attributes
+        _emittance and _lindata exist due to delay in the calculation thread.
         """
         self._lattice = at.Lattice(ring, keep_all=True)
+        # Initial phys data calculation.
         self._rp = numpy.array(range(len(ring) + 1))
         self._lattice.radiation_on()
         self._emittance = self._lattice.ohmi_envelope(self._rp)
         self._lattice.radiation_off()
         self._lindata = self._lattice.linopt(0, self._rp, True, coupled=False)
-        self.new_changes = Event()
+        # Threading stuff initialisation.
+        self.up_to_date = Event()
+        self.up_to_date.set()
         self._paused = Event()
         self._running = Event()
-        self._calculation_lock = Condition(Lock())
         self._calculation_thread = Thread(target=self.recalculate_phys_data)
 
     def start_thread(self):
@@ -385,14 +391,18 @@ class ATAcceleratorData(object):
 
     def recalculate_phys_data(self):
         """Target function for the background thread. Recalculates the physics
-        data dependant on the status of the _paused and new_changes flags. The
-        thread is constantly running but the calculations only take place if
-        the changes flag is True and the paused flag is False.
+        data dependant on the status of the '_paused' and 'up_to_date' flags.
+        The thread is constantly running but the calculations only take place
+        if both flags are False.
+
+        If an error or execption is raised in the running thread then it does
+        not continue running so subsequent calculations are not performed. To
+        fix this we convert all errors raised inside the thread to warnings.
         """
-        while self._running.is_set() is True:
-            self._calculation_lock.acquire()
-            if (self.new_changes.is_set() is True) and (self._paused.is_set()
-                                                        is False):
+        while True:
+            if self._running.is_set() is False:
+                return
+            elif (self.up_to_date.is_set() or self._paused.is_set()) is False:
                 try:
                     self._lattice.radiation_on()
                     self._emittance = self._lattice.ohmi_envelope(self._rp)
@@ -401,15 +411,13 @@ class ATAcceleratorData(object):
                                                          coupled=False)
                 except Exception as e:
                     warn(at.AtWarning(e))
-                self._calculation_lock.notify_all()
-                self._calculation_lock.release()
-                time.sleep(0.1)  # there must be a better way?
-                self.new_changes.clear()
+                self.up_to_date.set()
 
     def stop_thread(self):
         """Stop the recalculation thread if it is running. This enables threads
         to be switched off when they are not being used so they do not
-        unneccessarily use processing power.
+        unneccessarily use processing power. We join the thread to block until
+        it has finished.
 
         Raises:
             RuntimeError: if the thread is not yet running.
@@ -430,14 +438,14 @@ class ATAcceleratorData(object):
             self._paused.clear()
 
     def wait_for_calculations(self, timeout=10):
-        """Wait until the physics calculations have been performed on all
+        """Wait until the physics calculations have taken account of all
         changes to the ring, i.e. the physics data is fully up to date.
 
         Returns:
             bool: False if the timeout elapsed before the calculations
                    concluded, else True.
         """
-        return self._calculation_lock.wait(timeout)
+        return self.up_to_date.wait(timeout)
 
     def get_element(self, index):
         """Return the AT element coresponding to the given index.

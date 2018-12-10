@@ -2,7 +2,8 @@
 ATIP Installation
 =================
 
-Disclaimer4
+This guide is for linux and is based off the current structures of AT and
+Pytac, if you find a mistake please raise an issue on ATIP's GitHub page.
 
 Initial Setup and Installation
 ------------------------------
