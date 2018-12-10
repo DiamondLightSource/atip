@@ -13,7 +13,7 @@ LATTICE_FILE = '../../Documents/MATLAB/vmx.mat'
 def ring():
     ring = load.load_mat(LATTICE_FILE)
     for x in range(len(ring)):
-        ring[x].Index = x+1
+        ring[x].Index = x + 1
         # Fix becasue APs are using old version of AT.
         if ring[x].PassMethod == 'ThinCorrectorPass':
             ring[x].PassMethod = 'CorrectorPass'
@@ -37,11 +37,11 @@ def preload_at(lat):
     class elems():
         pass
     for x in range(len(lat)):
-        lat[x].Index = x+1
+        lat[x].Index = x + 1
         lat[x].Class = lat[x].__doc__.split()[1]
     elems_dict = elements_by_type(lat)
     for x in range(len(elems_dict.keys())):
-        setattr(elems, elems_dict.keys()[x].lower()+"s",
+        setattr(elems, elems_dict.keys()[x].lower() + "s",
                 elems_dict[elems_dict.keys()[x]])
     setattr(elems, "all", lat)
     return elems
@@ -55,7 +55,7 @@ def loader():
 
 def load_diad():
     lattice = pytac.load_csv.load('DIAD')
-    lattice = atip.load_sim.load(lattice, (LATTICE_FILE[:-7]+'diad.mat'))
+    lattice = atip.load_sim.load(lattice, (LATTICE_FILE[:-7] + 'diad.mat'))
     return lattice
 
 
@@ -65,7 +65,7 @@ def preload(lattice):
     setattr(elems, "all", lattice.get_elements(None, None))
     families = list(lattice.get_all_families())
     for family in range(len(families)):
-        setattr(elems, families[family].lower()+"s",
+        setattr(elems, families[family].lower() + "s",
                 lattice.get_elements(families[family]))
     return elems
 

@@ -1,7 +1,7 @@
 """Module containing all three of the AT simulator data sources."""
 import at
-import numpy
 import pytac
+import numpy
 from warnings import warn
 from functools import partial
 from threading import Thread, Event

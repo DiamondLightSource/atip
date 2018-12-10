@@ -30,6 +30,8 @@ def load(lattice, LATTICE_FILE):
         # Fix becasue APs are using old version of AT.
         if ring[x].PassMethod == 'ThinCorrectorPass':
             ring[x].PassMethod = 'CorrectorPass'
+        if ring[x].PassMethod == 'GWigSymplecticPass':
+            ring[x].PassMethod = 'DriftPass'
     # Initialise an instance of the AT Accelerator Data Object.
     ad = ATAcceleratorData(ring)
     ad.start_thread()
