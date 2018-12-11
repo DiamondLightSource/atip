@@ -1,19 +1,15 @@
-import os
-import sys
 import atip
+import at
 import pytac
 import time as t
-from at import load
 import matplotlib.pyplot as plt
 
 
-LATTICE_FILE = '../../Documents/MATLAB/vmx.mat'
-
-
-def ring():
-    ring = load.load_mat(LATTICE_FILE)
+def ring(filepath='../../Documents/MATLAB/vmx.mat'):
+    ring = at.load.load_mat(filepath)
     for x in range(len(ring)):
         ring[x].Index = x + 1
+        ring[x].Class = str(type(ring[x])).split("'")[-2].split(".")[-1]
         # Fix becasue APs are using old version of AT.
         if ring[x].PassMethod == 'ThinCorrectorPass':
             ring[x].PassMethod = 'CorrectorPass'
@@ -49,13 +45,14 @@ def preload_at(lat):
 
 def loader():
     lattice = pytac.load_csv.load('VMX')
-    lattice = atip.load_sim.load(lattice, LATTICE_FILE)
+    lattice = atip.load_sim.load(lattice, ring())
     return lattice
 
 
 def load_diad():
     lattice = pytac.load_csv.load('DIAD')
-    lattice = atip.load_sim.load(lattice, (LATTICE_FILE[:-7] + 'diad.mat'))
+    lattice = atip.load_sim.load(lattice,
+                                 ring('../../Documents/MATLAB/diad.mat'))
     return lattice
 
 
@@ -80,14 +77,6 @@ def get_attributes(obj):
         else:
             priv_attr.append(all_attr[x])
     return{'Public': pub_attr, 'Private': priv_attr}
-
-
-def block_print():
-    sys.stdout = open(os.devnull, 'w')
-
-
-def enable_print():
-    sys.stdout = sys.__stdout__
 
 
 def elements_by_field(elems):
@@ -168,7 +157,7 @@ def plot_beam_position(elems, ds, x_plot=True, y_plot=True):
         plt.title('Y Position')
         plt.show()
     else:
-        raise TypeError("Please plot at least one of x or y.")
+        raise ValueError("Please plot at least one of x or y.")
 
 
 def get_defaults(lattice):

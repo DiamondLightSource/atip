@@ -4,6 +4,21 @@ import pytest
 import numpy
 
 
+class temporary_thread(object):
+    """A class designed to make use of the  'with' statement's context manager
+    to ensure that a thread opened in a test is never left running after that
+    test has concluded, which would unnecessarily slow down subsequent tests.
+    """
+    def __init__(self, accelerator_data_object):
+        self.ado = accelerator_data_object
+
+    def __enter__(self):
+        self.ado.start_thread()
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.ado.stop_thread()
+
+
 def initial_phys_data(ado, initial_emit, initial_lin):
     try:
         numpy.testing.assert_almost_equal(initial_emit[2]['emitXY'][:, 0][0],
@@ -72,32 +87,32 @@ def test_start_and_stop_thread(at_ring):
 def test_recalculate_phys_data(at_ring, initial_emit, initial_lin):
     ado = atip.sim_data_source.ATAcceleratorData(at_ring)
     assert initial_phys_data(ado, initial_emit, initial_lin) is True
-    ado.start_thread()
-    # Check that errors raised inside thread are converted to warnings.
-    ado._lattice[6].PolynomB[0] = 1.e10
-    with pytest.warns(at.AtWarning):
+    thread = temporary_thread(ado)
+    with thread:
+        # Check that errors raised inside thread are converted to warnings.
+        ado._lattice[6].PolynomB[0] = 1.e10
+        with pytest.warns(at.AtWarning):
+            ado.up_to_date.clear()
+            ado.wait_for_calculations(5)
+        ado._lattice[6].PolynomB[0] = 0.0
+        # Set corrector x_kick but on a sextupole as no correctors in the test ring
+        ado._lattice[22].PolynomB[0] = -7.e-5
+        # Set corrector y_kick but on a sextupole as no correctors in the test ring
+        ado._lattice[22].PolynomA[0] = 7.e-5
+        # Set quadrupole b1
+        ado._lattice[6].PolynomB[1] = 2.5
+        # Set skew quadrupole a1
+        ado._lattice[8].PolynomA[1] = 2.25e-3
+        # Set sextupole b2
+        ado._lattice[22].PolynomB[2] = -75
+        # Clear the flag and then wait for the calculations
         ado.up_to_date.clear()
         ado.wait_for_calculations(5)
-    ado._lattice[6].PolynomB[0] = 0.0
-    # Set corrector x_kick but on a sextupole as no correctors in the test ring
-    ado._lattice[22].PolynomB[0] = -7.e-5
-    # Set corrector y_kick but on a sextupole as no correctors in the test ring
-    ado._lattice[22].PolynomA[0] = 7.e-5
-    # Set quadrupole b1
-    ado._lattice[6].PolynomB[1] = 2.5
-    # Set skew quadrupole a1
-    ado._lattice[8].PolynomA[1] = 2.25e-3
-    # Set sextupole b2
-    ado._lattice[22].PolynomB[2] = -75
-    # Clear the flag and then wait for the calculations
-    ado.up_to_date.clear()
-    ado.wait_for_calculations(5)
-    # Get the applicable physics data
-    orbit = [ado.get_orbit(0)[0], ado.get_orbit(2)[0]]
-    chrom = [ado.get_chrom(0), ado.get_chrom(1)]
-    tune = [ado.get_tune(0), ado.get_tune(1)]
-    emit = [ado.get_emit(0), ado.get_emit(1)]
-    ado.stop_thread()
+        # Get the applicable physics data
+        orbit = [ado.get_orbit(0)[0], ado.get_orbit(2)[0]]
+        chrom = [ado.get_chrom(0), ado.get_chrom(1)]
+        tune = [ado.get_tune(0), ado.get_tune(1)]
+        emit = [ado.get_emit(0), ado.get_emit(1)]
     # Check the results against known values
     numpy.testing.assert_almost_equal(orbit, [5.18918914e-06, -8.92596857e-06],
                                       decimal=10)
@@ -117,17 +132,17 @@ def test_toggle_calculations_and_wait_for_calculations(at_ring, initial_emit,
     assert ado._paused.is_set() is True
     ado.toggle_calculations()
     assert ado._paused.is_set() is False
-    ado.start_thread()
-    # pause > make a change > check no calc > unpause > check calc
-    ado.toggle_calculations()
-    ado._lattice[6].PolynomB[1] = 2.5
-    ado.up_to_date.clear()
-    assert ado.wait_for_calculations(5) is False
-    assert initial_phys_data(ado, initial_emit, initial_lin) is True
-    ado.toggle_calculations()
-    assert ado.wait_for_calculations(10) is True
-    assert initial_phys_data(ado, initial_emit, initial_lin) is False
-    ado.stop_thread()
+    thread = temporary_thread(ado)
+    with thread:
+        # pause > make a change > check no calc > unpause > check calc
+        ado.toggle_calculations()
+        ado._lattice[6].PolynomB[1] = 2.5
+        ado.up_to_date.clear()
+        assert ado.wait_for_calculations(5) is False
+        assert initial_phys_data(ado, initial_emit, initial_lin) is True
+        ado.toggle_calculations()
+        assert ado.wait_for_calculations(10) is True
+        assert initial_phys_data(ado, initial_emit, initial_lin) is False
 
 
 def test_get_element(at_ring):
