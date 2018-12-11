@@ -70,11 +70,11 @@ ATAcceleratorData:
     * ``stop_thread()`` - kill the background calculation thread after it has
       completed it's current round of calculations.
     * ``toggle_calculations()`` - pause or unpause the recalculation thread.
-    * ``wait_fo_calculations(timeout)`` - wait up to 'timeout' seconds for the
-      current calculations to conclude.
+    * ``wait_fo_calculations(timeout)`` - wait up to timeout seconds for
+      the current calculations to conclude.
     * ``get_element(index)`` - return a shallow copy of the specified AT
       element.
-      in the centralised AT ring. N.B. An ``index`` of 1 returns ``ring[0]``.
+      in the centralised AT ring. N.B. An 'index' of 1 returns ring[0].
     * ``get_ring()`` - return a shallow copy of the entire centralised ring.
     * ``get_lattice_object()`` - return a shallow of the centralised AT lattice
       object.
@@ -135,4 +135,4 @@ A number of functions that perform tasks that are frequent or long-winded are
 included in ``ease.py`` to make life easier for the user.
 
 For further information on any of ATIP's functions or classes please read the
-documentation here.
+documentation `here <https://pytac.readthedocs.io/en/latest/>`_.

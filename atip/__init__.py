@@ -5,8 +5,8 @@ See README.rst & INSTALL.rst for more information.
 import os
 import sys
 source_dir = os.path.realpath('../')
-sys.path.append(os.path.join(source_dir, 'at/pyat'))
 sys.path.append(os.path.join(source_dir, 'pytac'))
+sys.path.append(os.path.join(source_dir, 'at/pyat'))
 sys.path.append(os.path.join(source_dir, 'atip/atip'))  # fix for python3
 
 

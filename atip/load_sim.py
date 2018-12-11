@@ -14,16 +14,17 @@ def load(lattice, ring):
 
     Args:
         lattice (pytac.lattice.Lattice): An instance of a Pytac lattice.
-        ring (list/str/at.lattice_object.Lattice): An Accelerator Toolbox ring,
-                                                    or the path to the .mat
-                                                    file from which the AT ring
-                                                    can be loaded, or an
-                                                    instance of an AT lattice
-                                                    object.
+        ring (list or str or at.lattice_object.Lattice): An Accelerator Toolbox
+                                                          ring, or the path to
+                                                          the .mat file from
+                                                          which the AT ring
+                                                          can be loaded, or an
+                                                          instance of an AT
+                                                          lattice object.
 
     Returns:
         pytac.lattice.Lattice: The same Pytac lattice object, but now with a
-                                simulator data source fully loaded onto it.
+        simulator data source fully loaded onto it.
     """
     # Load the AT(simulator) ring locally, if an AT ring was not passed.
     if isinstance(ring, str):

@@ -12,3 +12,6 @@ venv*
 
 # experimental files
 atip/junk/*
+
+# built documentation
+docs/_build
