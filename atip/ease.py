@@ -125,11 +125,11 @@ def get_ad(lattice):
 
 
 def get_thread(lattice):
-    return lattice._data_source_manager._data_sources[pytac.SIM]._ad._calculation_thread
+    return get_ad(lattice)._calculation_thread
 
 
-def toggle_threads(lattice):
-    lattice._data_source_manager._data_sources[pytac.SIM]._ad.toggle_calculations()
+def toggle_thread(lattice):
+    get_ad(lattice).toggle_calculations()
 
 
 def plot_beam_position(elems, ds, x_plot=True, y_plot=True):
@@ -169,14 +169,14 @@ def transfer(lattice):
     fields_dict = {'SQUAD': 'a1', 'SEXT': 'b2', 'QUAD': 'b1', 'BEND': 'b0',
                    'RF': 'f', 'VSTR': 'y_kick', 'HSTR': 'x_kick'}
     values = []
-    toggle_threads(lattice)
+    toggle_thread(lattice)
     for family, field in fields_dict.items():
         print('Transfering {0}s...'.format(family.lower()))
         lattice.set_default_data_source(pytac.LIVE)
         values = lattice.get_element_values(family, field, pytac.RB)
         lattice.set_default_data_source(pytac.SIM)
         lattice.set_element_values(family, field, values)
-    toggle_threads(lattice)
+    toggle_thread(lattice)
 
 
 def class_compare(lattice, ring=None):

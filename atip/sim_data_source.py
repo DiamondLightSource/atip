@@ -63,7 +63,7 @@ class ATElementDataSource(pytac.data_source.DataSource):
         """Get the value for a field.
 
         N.B. The 'value' argument passed to the data handling functions is used
-        as a get/set flag. In this case it is passed as 'None' to signify that
+        as a get/set flag. In this case, it is passed as 'None' to signify that
         data is to be returned not set.
 
         Args:
@@ -72,10 +72,10 @@ class ATElementDataSource(pytac.data_source.DataSource):
                            the structure of the DataSource base class.
 
         Returns:
-            float: The value of specified field on this data source.
+            float: The value of the specified field on this data source.
 
         Raises:
-            FieldException: if the specied field does not exist.
+            FieldException: if the specified field does not exist.
         """
         if field in self._fields:
             return self._field_funcs[field](value=None)
@@ -87,7 +87,7 @@ class ATElementDataSource(pytac.data_source.DataSource):
         """Set the value for a field.
 
         N.B. The 'value' argument passed to the data handling functions is used
-        as a get/set flag. In this case the value to be set is passed this
+        as a get/set flag. In this case, the value to be set is passed this
         signifies that the given data should be set.
 
         Args:
@@ -95,7 +95,7 @@ class ATElementDataSource(pytac.data_source.DataSource):
             set_value (float): The value to be set.
 
         Raises:
-            FieldException: if the specied field does not exist.
+            FieldException: if the specified field does not exist.
         """
         if field in self._fields:
             self._field_funcs[field](value=set_value)
@@ -106,13 +106,13 @@ class ATElementDataSource(pytac.data_source.DataSource):
     def _KickAngle(self, cell, value):
         """A data handling function used to get or set a specific cell of the
         KickAngle attribute of the AT element. Whenever a change is made the
-        'up_to_date' threadding event is cleared on the central accelerator
+        'up_to_date' threading event is cleared on the central accelerator
         data object, so as to trigger a recalculation of the physics data
         ensuring it is up to date.
 
         If the Corrector is attached to a Sextupole then the KickAngle needs to
         be assigned/returned to/from cell 0 of the applicable Polynom attribute
-        and so a conversion must take place. For independant Correctors the
+        and so a conversion must take place. For independent Correctors the
         KickAngle can be assigned/returned directly to/from the element's
         KickAngle attribute without any conversion.
 
@@ -126,12 +126,12 @@ class ATElementDataSource(pytac.data_source.DataSource):
         if isinstance(self._element, at.elements.Sextupole):
             if value is None:
                 if cell is 0:
-                    return (- self._element.PolynomB[0] * self._element.Length)
+                    return -(self._element.PolynomB[0] * self._element.Length)
                 elif cell is 1:
                     return (self._element.PolynomA[0] * self._element.Length)
             else:
                 if cell is 0:
-                    self._element.PolynomB[0] = (- value / self._element.Length)
+                    self._element.PolynomB[0] = -(value / self._element.Length)
                 elif cell is 1:
                     self._element.PolynomA[0] = (value / self._element.Length)
                 self._ad.up_to_date.clear()
@@ -145,7 +145,7 @@ class ATElementDataSource(pytac.data_source.DataSource):
     def _PolynomA(self, cell, value):
         """A data handling function used to get or set a specific cell of the
         PolynomA attribute of the AT element. Whenever a change is made the
-        'up_to_date' threadding event is cleared on the central accelerator
+        'up_to_date' threading event is cleared on the central accelerator
         data object, so as to trigger a recalculation of the physics data
         ensuring it is up to date.
 
@@ -165,7 +165,7 @@ class ATElementDataSource(pytac.data_source.DataSource):
     def _PolynomB(self, cell, value):
         """A data handling function used to get or set a specific cell of the
         PolynomB attribute of the AT element. Whenever a change is made the
-        'up_to_date' threadding event is cleared on the central accelerator
+        'up_to_date' threading event is cleared on the central accelerator
         data object, so as to trigger a recalculation of the physics data
         ensuring it is up to date.
 
@@ -189,8 +189,8 @@ class ATElementDataSource(pytac.data_source.DataSource):
     def _Orbit(self, cell, value):
         """A data handling function used to get or set a specific cell of the
         orbit data for the AT element. This is the only function on this data
-        source to get data from the central accelerator data object, as orbit
-        is calculated over the whole lattice.
+        source to get data from the central accelerator data object, it must
+        because the orbit is calculated over the whole lattice.
 
         Args:
             cell (int): Which cell of closed_orbit to get/set.
@@ -203,7 +203,7 @@ class ATElementDataSource(pytac.data_source.DataSource):
         Raises:
             HandleException: if a set operation is attempted (value != None).
         """
-        index = self._element.Index-1
+        index = self._element.Index - 1
         if value is None:
             return float(self._ad.get_orbit(cell)[index])
         else:
@@ -214,7 +214,7 @@ class ATElementDataSource(pytac.data_source.DataSource):
     def _Frequency(self, value):
         """A data handling function used to get or set the Frequency attribute
         of the AT element. Whenever a change is made the 'up_to_date'
-        threadding event is cleared on the central accelerator data object, so
+        threading event is cleared on the central accelerator data object, so
         as to trigger a recalculation of the physics data ensuring it is up to
         date.
 
@@ -233,7 +233,7 @@ class ATElementDataSource(pytac.data_source.DataSource):
 
 class ATLatticeDataSource(pytac.data_source.DataSource):
     """A simulator data source to allow the physics data of the AT lattice to
-    be be addressed using the standard Pytac syntax.
+    be addressed using the standard Pytac syntax.
 
     **Attributes**
 
@@ -290,10 +290,10 @@ class ATLatticeDataSource(pytac.data_source.DataSource):
                            the structure of the DataSource base class.
 
         Returns:
-            float: The value of specified field on this data source.
+            float: The value of the specified field on this data source.
 
         Raises:
-            FieldException: if the specied field does not exist.
+            FieldException: if the specified field does not exist.
         """
         if field in self._field_funcs.keys():
             return self._field_funcs[field]()
@@ -304,7 +304,7 @@ class ATLatticeDataSource(pytac.data_source.DataSource):
     def set_value(self, field, value):
         """Set the value for a field.
 
-        N.B. Currently a HandleException is always raised.
+        N.B. Currently, a HandleException is always raised.
 
         Args:
             field (str): The requested field.
@@ -371,7 +371,8 @@ class ATAcceleratorData(object):
         self.up_to_date.set()
         self._paused = Event()
         self._running = Event()
-        self._calculation_thread = Thread(target=self.recalculate_phys_data)
+        self._calculation_thread = Thread(target=self._recalculate_phys_data,
+                                          name='atip_calculation_thread')
 
     def start_thread(self):
         """Start the thread created in __init__ in the background. This
@@ -389,13 +390,13 @@ class ATAcceleratorData(object):
         else:
             raise RuntimeError("Cannot start thread as it is already running.")
 
-    def recalculate_phys_data(self):
+    def _recalculate_phys_data(self):
         """Target function for the background thread. Recalculates the physics
         data dependant on the status of the '_paused' and 'up_to_date' flags.
         The thread is constantly running but the calculations only take place
         if both flags are False.
 
-        If an error or execption is raised in the running thread then it does
+        If an error or exception is raised in the running thread then it does
         not continue running so subsequent calculations are not performed. To
         fix this we convert all errors raised inside the thread to warnings.
         """
@@ -416,7 +417,7 @@ class ATAcceleratorData(object):
     def stop_thread(self):
         """Stop the recalculation thread if it is running. This enables threads
         to be switched off when they are not being used so they do not
-        unneccessarily use processing power. We join the thread to block until
+        unnecessarily use processing power. We join the thread to block until
         it has finished.
 
         Raises:
@@ -429,7 +430,7 @@ class ATAcceleratorData(object):
             raise RuntimeError("Cannot stop thread as it is not running.")
 
     def toggle_calculations(self):
-        """Pause or unpause the pysics calculations by setting or clearing the
+        """Pause or unpause the physics calculations by setting or clearing the
         _paused flag.
         """
         if self._paused.is_set() is False:
@@ -456,7 +457,7 @@ class ATAcceleratorData(object):
         Returns:
             at.elements.Element: The element specified by the given index.
         """
-        return self._lattice[index-1]
+        return self._lattice[index - 1]
 
     def get_ring(self):
         """Return the AT ring.
@@ -485,8 +486,8 @@ class ATAcceleratorData(object):
     def get_emit(self, cell):
         """Return the specified cell of the emittance for the lattice.
 
-        N.B. The emittance of the last element is returned as it should be
-        constant throughout the lattice and so cell is returned is arbitrary.
+        N.B. The emittance of the first element is returned as it is constant
+        throughout the lattice, and so which cell is returned is arbitrary.
 
         Returns:
             float: The x or y emittance for the lattice.
@@ -503,7 +504,8 @@ class ATAcceleratorData(object):
         return self._lindata[3]['closed_orbit'][:, cell]
 
     def get_tune(self, cell):
-        """Return the specified cell of the tune for the lattice.
+        """Return the specified cell of the tune for the lattice, a special
+        consideration is made to return only the fractional digits.
 
         Returns:
             float: The x or y tune for the lattice.
@@ -551,7 +553,7 @@ class ATAcceleratorData(object):
         return self._lindata[3]['beta']
 
     def get_m44(self):
-        """Return the 4x4 transfer matrix at every element in the lattice.
+        """Return the 4x4 transfer matrix for every element in the lattice.
 
         Returns:
             numpy.array: The 4x4 transfer matrix for each element.

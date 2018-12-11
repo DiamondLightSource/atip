@@ -1,7 +1,8 @@
 """Module responsible for handling the loading of simulator data sources."""
 import at
 import pytac
-from sim_data_source import ATElementDataSource, ATLatticeDataSource, ATAcceleratorData
+from sim_data_source import ATAcceleratorData
+from sim_data_source import ATElementDataSource, ATLatticeDataSource
 
 
 # List of all the element fields that can be currently simulated.

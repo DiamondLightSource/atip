@@ -1,98 +1,138 @@
 ==============================================
 ATIP - Accelerator Toolbox Interface for Pytac
 ==============================================
-ATIP is intended to integrate a simulator using the python implementation of
-`AT <https://github.com/atcollab/at>`_, pyat, into
+
+ATIP is intended to integrate a simulator, using the python implementation of
+`AT <https://github.com/atcollab/at>`_ (pyAT), into
 `Pytac <https://github.com/dls-controls/pytac>`_ so that it can be addressed
 in the same manner as the live machine.
 
+Installation:
+-------------
+
+See the `INSTALL.rst` document.
+
 General Use:
 ------------
-The integrated atip lattice is created by loading the simulated data sources
-onto a pytac lattice using the ``load()`` function found in ``load_sim.py``.
-Once loaded the integrated lattice acts like a normal pytac lattice, the
+
+The integrated ATIP lattice is created by loading the simulated data sources
+onto a Pytac lattice using the ``load()`` function found in ``load_sim.py``.
+Once loaded, the integrated lattice acts like a normal Pytac lattice; the
 simulator is accessed through the ``pytac.SIM`` data sources on the lattice and
 each of the elements. For normal operation, the simulator should be referenced
 like the live machine but with the data source specified as ``pytac.SIM``
 instead of ``pytac.LIVE``, i.e. a get request to a bpm would be
 ``<bpm-element>.get_value('x', data_source=pytac.SIM)``. It is worth noting
 that generally the simulated data sources behave exactly like the live machine,
-but in a few cases they do differ e.g. the simulator has a number of fields
-that the live accelerator doesn't have and the live machine has a few that the
-simulator doesn't.
+but in a few cases they do differ e.g. the simulator has a number of lattice
+fields that the live accelerator doesn't have and the live machine has a few
+element fields that the simulator doesn't.
 
 Implementation:
 ---------------
+
 The accelerator data for the simulator is held in the centralised
-``ATAcceleratorData`` class which the element and lattice data sources
-reference. Each instance of ``ATElementDataSource`` holds the pyat element
-equivalent the Pytac element it is attached to; when a get request is made the
-appropriate data from that AT element is returned, however, when a set request
-is sent the class updates it's copy of that element with the changes
-incorporated and then it pushes that element with the new data to
-``ATAcceleratorData``. Inside that class the changed element is added to the
-end of a queue of changes, in the background there is a separate thread,
-independent of the main thread, that is constantly checking the queue, removing
-the oldest change from it and updating the central AT ring accordingly, once
-the last change from the queue is processed the thread recalculates the twiss
-data for the ring. This means that the twiss data held by the
-``ATAcceleratorData`` class, and returned from the ``get_twiss()`` method, is
-updated after every batch of changes and that without excessive calculation a
-very recent version of twiss data is always available.
+``ATAcceleratorData`` class, which the element and lattice data sources
+reference. Each instance of ``ATElementDataSource`` holds the pyAT element
+equivalent of the Pytac element it is attached to; when a get request is made
+the appropriate data from that AT element is returned, however, when a set
+request is made the class updates its copy of that element with the changes
+incorporated and then alerts the centralised accelerator data object that new
+changes have been made. Inside ``ATAcceleratorData`` a background thread is
+constantly running, whenever a change is made the thread recalculates the
+physics data of the lattice to ensure that it is up to date. This means that
+the emittance and linear optics data held by the ``ATAcceleratorData`` class,
+is updated after every batch of changes and that without excessive calculation
+a very recent version of the lattice's physics data is always available.
 
 API:
 ----
+
 load_sim:
-    * ``load(lattice, LATTICE_FILE)`` - loads the simulator onto the passed
-      lattice object.
+    * ``load(lattice, ring)`` - loads the simulator onto the passed Pytac
+      lattice; ring can be an AT ring, or an instance of an AT lattice object,
+      or the path to a .mat file from which a ring can be loaded.
 
 ATElementDataSource:
-    * ``get_value(field, handle)`` - get the value for a given field on the
-      element.
+    * ``get_value(field)`` - get the value for a given field on the element.
     * ``set_value(field, set_value)`` - set the value for a given field on the
       element.
     * ``get_fields()`` - return the fields on the element.
 
 ATLatticeDataSource:
-    * ``get_value(field, handle)`` - get the value for a given field on the
-      lattice.
+    * ``get_value(field)`` - get the value for a given field on the lattice.
     * ``set_value(field, set_value)`` - set the value for a given field on the
       lattice.
     * ``get_fields()`` - return the fields on the lattice.
 
 ATAcceleratorData:
-    * ``push_changes(*elements)`` - push the changes from the individual
-      element(s) to the centralised ring.
-    * ``get_twiss()`` - returns the result of the latest twiss data calculation
-      for the simulated lattice.
-    * ``get_element(index)`` - returns a copy of the specified element from the
-      centralised ring. N.B. An ``index`` of 1 returns the first element in the
-      lattice, i.e. ``lattice[0]``.
-    * ``get_ring()`` - returns a copy of the entire centralised ring.
+    * ``start_thread()`` - start the background calculation thread.
+    * ``stop_thread()`` - kill the background calculation thread after it has
+      completed it's current round of calculations.
+    * ``toggle_calculations()`` - pause or unpause the recalculation thread.
+    * ``wait_fo_calculations(timeout)`` - wait up to 'timeout' seconds for the
+      current calculations to conclude.
+    * ``get_element(index)`` - return a shallow copy of the specified AT
+      element.
+      in the centralised AT ring. N.B. An ``index`` of 1 returns ``ring[0]``.
+    * ``get_ring()`` - return a shallow copy of the entire centralised ring.
+    * ``get_lattice_object()`` - return a shallow of the centralised AT lattice
+      object.
+    * ``get_chrom(cell)`` - return the specified cell of the lattice's
+      'chromaticity'; 0 for 'x', 1 for 'y'.
+    * ``get_emit(cell)`` - return the specified cell of the lattice's
+      'emittance'; 0 for 'x', 1 for 'y'.
+    * ``get_orbit(cell)`` - return the specified cell of the lattice's closed'
+      orbit'; 0 for 'x', 1 for 'phase_x', 2 for 'y', 3 for 'phase_y'.
+    * ``get_tune(cell)`` - return the specified cell of the lattice's 'tune'; 0
+      for 'x', 1 for 'y'.
+    * ``get_disp()`` - return the 'dispersion' at every element in the lattice.
+    * ``get_s()`` - return the 's position' of every element in the lattice.
+    * ``get_energy()`` - return the energy of the lattice.
+    * ``get_alpha()`` - return the 'alpha' vector at every element in the
+      lattice.
+    * ``get_beta()`` - return the 'beta' vector at every element in the lattice.
+    * ``get_m44()`` - return the 4x4 transfer matrix for every element in the
+      lattice.
+    * ``get_mu()`` - return 'mu' at every element in the lattice.
 
-Notes:
-------
-In order for atip to function correctly atip, AT and pytac must all be
-installed into the same source directory; however, AT and pytac can be located
-anywhere if the file paths to them are edited in ``__init__.py``.
 
-Any function, in atip, that takes a ``handle`` argument does so only to conform
-with the ``DataSource`` syntax in pytac. Inside atip it is entirely arbitrary
-and can be ignored as it is not used.
+Specific Notes:
+---------------
 
-The load function in ``load_sim.py`` takes arguments of ``lattice``, an
-instance of a standard pytac lattice, and ``LATTICE_FILE``, the file path to a
-``.mat`` file from which to load the accelerator data for the AT simulation.
+In order for ATIP to function correctly; ATIP, AT and Pytac must all be located
+in the same source directory. However, if the file paths to AT and Pytac are
+edited in ``__init__.py`` then they can be located anywhere.
 
-In ``ATElementDataSource``, in ``sim_data_source.py``, the set value is used as
-a get/set flag as well as the value to be set; if it is a get request value is
-set to ``None``, otherwise it is the value to be set, the processing methods
-interpret this and act accordingly.
+Any function, in ATIP, that takes a ``handle`` argument does so only to conform
+with the ``DataSource`` syntax inherited Pytac. Inside ATIP it is entirely
+arbitrary and can be ignored as it is not used.
 
-In ``ATLatticeDataSource`` a complex system is used to interpret, split and
-return the twiss data, this is due to the format that AT returns twiss data in
-(sequences inside a dictionary, inside a tuple); a special consideration is
-also made for the tune, to return only the fractional digits.
+In ``ATElementDataSource``, the set value is used as a get/set flag as well as
+the value to be set; if it is a get request then ``value`` is set to ``None``,
+otherwise the value to be set is passed, the processing methods interpret this
+and behave accordingly.
+
+Both ``ATElementDataSource`` and ``ATLatticeDataSource`` use a dictionary of
+functions that correspond to fields to interpret which data is to be returned
+or set. In the case where a cell needs to be passed to the data handling
+functions, for further specification, functools' ``partial()`` is used.
+
+The ``ATAcceleratorData`` calculation thread makes use of threading events like
+flags to indicate whether it should perform a recalculation or not, as well as
+being used to start and stop the thread.
+
+The ``start_thread()`` and ``stop_thread()`` methods on ``ATAcceleratorData``
+are there so an accelerator data object can exist without having the background
+calculation thread running. This prevents the unnecessary wasting of
+processing power when recalculation is not required.
+
+``ATAcceleratorData`` has many methods because the physics data must be split
+into a more manageable format before it is returned, so that the user is not
+given an excess of superfulous data.
 
 A number of functions that perform tasks that are frequent or long-winded are
 included in ``ease.py`` to make life easier for the user.
+
+For further information on any of ATIP's functions or classes please read the
+documentation here.

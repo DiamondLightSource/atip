@@ -95,9 +95,9 @@ def test_recalculate_phys_data(at_ring, initial_emit, initial_lin):
             ado.up_to_date.clear()
             ado.wait_for_calculations(5)
         ado._lattice[6].PolynomB[0] = 0.0
-        # Set corrector x_kick but on a sextupole as no correctors in the test ring
+        # Set corrector x_kick but on a sextupole as no correctors in test ring
         ado._lattice[22].PolynomB[0] = -7.e-5
-        # Set corrector y_kick but on a sextupole as no correctors in the test ring
+        # Set corrector y_kick but on a sextupole as no correctors in test ring
         ado._lattice[22].PolynomA[0] = 7.e-5
         # Set quadrupole b1
         ado._lattice[6].PolynomB[1] = 2.5
