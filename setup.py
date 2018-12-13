@@ -54,7 +54,7 @@ setup(
 
     zip_safe=False,
 
-    install_requires=['pytac, at-python'],
+    install_requires=['pytac', 'at-python'],
 
     python_requires='>=2.7.4',
 )
