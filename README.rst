@@ -135,4 +135,4 @@ A number of functions that perform tasks that are frequent or long-winded are
 included in ``ease.py`` to make life easier for the user.
 
 For further information on any of ATIP's functions or classes please read the
-documentation `here <https://pytac.readthedocs.io/en/latest/>`_.
+documentation `here <https://atip.readthedocs.io/en/latest/>`_.
