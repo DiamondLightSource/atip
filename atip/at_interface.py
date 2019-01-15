@@ -1,8 +1,9 @@
 """Module containing an interface with the AT simulator."""
+from threading import Thread, Event
+from warnings import warn
+
 import at
 import numpy
-from warnings import warn
-from threading import Thread, Event
 
 
 class ATSimulator(object):

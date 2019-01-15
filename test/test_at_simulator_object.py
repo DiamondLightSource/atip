@@ -1,7 +1,8 @@
-import atip
 import at
-import pytest
 import numpy
+import pytest
+
+import atip
 
 
 class temporary_thread(object):
@@ -58,7 +59,7 @@ def initial_phys_data(atsim, initial_emit, initial_lin):
         return False
 
 
-def test_accelerator_data_object_creation(at_ring, initial_emit, initial_lin):
+def test_ATSimulator_creation(at_ring, initial_emit, initial_lin):
     atsim = atip.at_interface.ATSimulator(at_ring)
     # Check initial state of flags.
     assert atsim.up_to_date.is_set() is True

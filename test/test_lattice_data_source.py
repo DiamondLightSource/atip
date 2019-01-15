@@ -1,8 +1,9 @@
 import mock
-import atip
+import numpy
 import pytac
 import pytest
-import numpy
+
+import atip
 
 
 @pytest.mark.parametrize('func_str,field,cell',

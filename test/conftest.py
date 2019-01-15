@@ -1,9 +1,11 @@
 import os
-import mock
-import atip
+
 import at
-import pytest
+import mock
 import numpy
+import pytest
+
+import atip
 
 
 @pytest.fixture()

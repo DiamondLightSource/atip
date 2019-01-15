@@ -1,7 +1,8 @@
 """Module containing the pytac data sources for the AT simulator."""
+from functools import partial
+
 import at
 import pytac
-from functools import partial
 from pytac.exceptions import FieldException, HandleException
 
 

@@ -32,18 +32,18 @@ Implementation:
 ---------------
 
 The accelerator data for the simulator is held in the centralised
-``ATAcceleratorData`` class, which the element and lattice data sources
-reference. Each instance of ``ATElementDataSource`` holds the pyAT element
-equivalent of the Pytac element it is attached to; when a get request is made
-the appropriate data from that AT element is returned, however, when a set
-request is made the class updates its copy of that element with the changes
-incorporated and then alerts the centralised accelerator data object that new
-changes have been made. Inside ``ATAcceleratorData`` a background thread is
-constantly running, whenever a change is made the thread recalculates the
+``ATSimulator`` class, which the element and lattice data sources reference.
+Each instance of ``ATElementDataSource`` holds the pyAT element equivalent of
+the Pytac element that it is attached to; when a get request is made the
+appropriate data from that AT element is returned, however, when a set request
+is made the class updates its copy of that element with the changes
+incorporated and then alerts the centralised `ATSimulator` object that new
+changes have been made. Inside an ``ATSimulator`` instance a background thread
+is constantly running, whenever a change is made the thread recalculates the
 physics data of the lattice to ensure that it is up to date. This means that
-the emittance and linear optics data held by the ``ATAcceleratorData`` class,
-is updated after every batch of changes and that without excessive calculation
-a very recent version of the lattice's physics data is always available.
+the emittance and linear optics data held by ``ATSimulator``, is updated after
+every batch of changes and that without excessive calculation a very recent
+version of the lattice's physics data is always available.
 
 API:
 ----
@@ -65,17 +65,16 @@ ATLatticeDataSource:
       lattice.
     * ``get_fields()`` - return the fields on the lattice.
 
-ATAcceleratorData:
+ATSimulator:
     * ``start_thread()`` - start the background calculation thread.
     * ``stop_thread()`` - kill the background calculation thread after it has
       completed it's current round of calculations.
     * ``toggle_calculations()`` - pause or unpause the recalculation thread.
-    * ``wait_fo_calculations(timeout)`` - wait up to timeout seconds for
+    * ``wait_fo_calculations(timeout)`` - wait up to 'timeout' seconds for
       the current calculations to conclude.
     * ``get_element(index)`` - return a shallow copy of the specified AT
-      element.
-      in the centralised AT ring. N.B. An 'index' of 1 returns ring[0].
-    * ``get_ring()`` - return a shallow copy of the entire centralised ring.
+      element from the central AT ring, N.B. An 'index' of 1 returns ring[0].
+    * ``get_ring()`` - return a shallow copy of the entire centralised AT ring.
     * ``get_lattice_object()`` - return a shallow of the centralised AT lattice
       object.
     * ``get_chrom(cell)`` - return the specified cell of the lattice's
@@ -91,7 +90,8 @@ ATAcceleratorData:
     * ``get_energy()`` - return the energy of the lattice.
     * ``get_alpha()`` - return the 'alpha' vector at every element in the
       lattice.
-    * ``get_beta()`` - return the 'beta' vector at every element in the lattice.
+    * ``get_beta()`` - return the 'beta' vector at every element in the
+      lattice.
     * ``get_m44()`` - return the 4x4 transfer matrix for every element in the
       lattice.
     * ``get_mu()`` - return 'mu' at every element in the lattice.
@@ -101,8 +101,7 @@ Specific Notes:
 ---------------
 
 In order for ATIP to function correctly; ATIP, AT and Pytac must all be located
-in the same source directory. However, if the file paths to AT and Pytac are
-edited in ``__init__.py`` then they can be located anywhere.
+in the same source directory.
 
 Any function, in ATIP, that takes a ``handle`` argument does so only to conform
 with the ``DataSource`` syntax inherited Pytac. Inside ATIP it is entirely
@@ -118,16 +117,16 @@ functions that correspond to fields to interpret which data is to be returned
 or set. In the case where a cell needs to be passed to the data handling
 functions, for further specification, functools' ``partial()`` is used.
 
-The ``ATAcceleratorData`` calculation thread makes use of threading events like
-flags to indicate whether it should perform a recalculation or not, as well as
-being used to start and stop the thread.
+In ``ATSimulator``, the calculation thread makes use of threading events, which
+act like flags, to indicate whether it should perform a recalculation or not;
+as well as using them to start and stop the thread.
 
-The ``start_thread()`` and ``stop_thread()`` methods on ``ATAcceleratorData``
-are there so an accelerator data object can exist without having the background
-calculation thread running. This prevents the unnecessary wasting of
-processing power when recalculation is not required.
+The ``start_thread()`` and ``stop_thread()`` methods on ``ATSimulator`` are
+there so an `ATSimulator` object can exist without having the background
+calculation thread running. This prevents the unnecessary wasting of processing
+power when recalculation is not required.
 
-``ATAcceleratorData`` has many methods because the physics data must be split
+``ATSimulator`` has many methods because the physics data from AT must be split
 into a more manageable format before it is returned, so that the user is not
 given an excess of superfulous data.
 
