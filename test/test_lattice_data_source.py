@@ -6,26 +6,26 @@ import numpy
 
 
 @pytest.mark.parametrize('func_str,field,cell',
-                         [('ad.get_chrom', 'chromaticity_x', 0),
-                          ('ad.get_chrom', 'chromaticity_y', 1),
-                          ('ad.get_emit', 'emittance_x', 0),
-                          ('ad.get_emit', 'emittance_y', 1),
-                          ('ad.get_orbit', 'phase_x', 1),
-                          ('ad.get_orbit', 'phase_y', 3),
-                          ('ad.get_tune', 'tune_x', 0),
-                          ('ad.get_tune', 'tune_y', 1),
-                          ('ad.get_orbit', 'x', 0),
-                          ('ad.get_orbit', 'y', 2),
-                          ('ad.get_disp', 'dispersion', None),
-                          ('ad.get_energy', 'energy', None),
-                          ('ad.get_s', 's_position', None),
-                          ('ad.get_alpha', 'alpha', None),
-                          ('ad.get_beta', 'beta', None),
-                          ('ad.get_m44', 'm44', None),
-                          ('ad.get_mu', 'mu', None)])
+                         [('atsim.get_chrom', 'chromaticity_x', 0),
+                          ('atsim.get_chrom', 'chromaticity_y', 1),
+                          ('atsim.get_emit', 'emittance_x', 0),
+                          ('atsim.get_emit', 'emittance_y', 1),
+                          ('atsim.get_orbit', 'phase_x', 1),
+                          ('atsim.get_orbit', 'phase_y', 3),
+                          ('atsim.get_tune', 'tune_x', 0),
+                          ('atsim.get_tune', 'tune_y', 1),
+                          ('atsim.get_orbit', 'x', 0),
+                          ('atsim.get_orbit', 'y', 2),
+                          ('atsim.get_disp', 'dispersion', None),
+                          ('atsim.get_energy', 'energy', None),
+                          ('atsim.get_s', 's_position', None),
+                          ('atsim.get_alpha', 'alpha', None),
+                          ('atsim.get_beta', 'beta', None),
+                          ('atsim.get_m44', 'm44', None),
+                          ('atsim.get_mu', 'mu', None)])
 def test_lat_field_funcs(func_str, field, cell):
-    ad = mock.Mock()
-    atlds = atip.sim_data_source.ATLatticeDataSource(ad)
+    atsim = mock.Mock()
+    atlds = atip.sim_data_sources.ATLatticeDataSource(atsim)
     ff = atlds._field_funcs
     if cell is not None:
         assert ff[field].func == eval(func_str)
@@ -58,12 +58,13 @@ def test_lat_get_value():
     it relys on has alreadly been tested for all fields."""
     def c(cell):
         return [2.0, 2.5][cell]
-    ad = mock.Mock()
-    ad.get_disp.return_value = numpy.array([[8.8, 1.7, 3.5], [7.8, 1, -1.4]])
-    ad.get_chrom.return_value = c(0)
-    atlds = atip.sim_data_source.ATLatticeDataSource(ad)
+    atsim = mock.Mock()
+    atsim.get_disp.return_value = numpy.array([[8.8, 1.7, 3.5],
+                                               [7.8, 1, -1.4]])
+    atsim.get_chrom.return_value = c(0)
+    atlds = atip.sim_data_sources.ATLatticeDataSource(atsim)
     assert atlds.get_value('chromaticity_x') == 2.0
-    assert ad.get_chrom.called_with(0)
+    assert atsim.get_chrom.called_with(0)
     numpy.testing.assert_equal(atlds.get_value('dispersion'),
                                numpy.array([[8.8, 1.7, 3.5], [7.8, 1, -1.4]]))
 

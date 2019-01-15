@@ -23,7 +23,7 @@ def at_elem_preset():
 
 @pytest.fixture()
 def atlds():
-    return atip.sim_data_source.ATLatticeDataSource(mock.Mock())
+    return atip.sim_data_sources.ATLatticeDataSource(mock.Mock())
 
 
 @pytest.fixture()
@@ -34,23 +34,23 @@ def at_ring():
 
 
 @pytest.fixture()
-def mocked_ado(at_ring):
+def mocked_atsim(at_ring):
     base = numpy.ones((len(at_ring), 4))
-    ado = atip.sim_data_source.ATAcceleratorData(at_ring)
-    ado._lattice = mock.PropertyMock(energy=5)
-    ado._emittance = ([], [], {'emitXY': (base[:, :2] * numpy.array([1.4,
-                                                                     0.45]))})
-    ado._lindata = ([], [3.14, 0.12], [2, 1],
-                    {'closed_orbit': (base * numpy.array([0.6, 57, 0.2, 9])),
-                     'dispersion': (base * numpy.array([8.8, 1.7, 23, 3.5])),
-                     's_pos': numpy.array([0.1 * (i + 1) for i in
-                                           range(len(at_ring))]),
-                     'alpha': (base[:, :2] * numpy.array([-0.03, 0.03])),
-                     'beta': (base[:, :2] * numpy.array([9.6, 6])),
-                     'm44': (numpy.ones((len(at_ring), 4, 4)) *
-                             numpy.eye(4) * 0.8),
-                     'mu': (base[:, :2] * numpy.array([176, 82]))})
-    return ado
+    atsim = atip.at_interface.ATSimulator(at_ring)
+    atsim._lattice = mock.PropertyMock(energy=5)
+    atsim._emittance = ([], [],
+                        {'emitXY': (base[:, :2] * numpy.array([1.4, 0.45]))})
+    atsim._lindata = ([], [3.14, 0.12], [2, 1],
+                      {'closed_orbit': (base * numpy.array([0.6, 57, 0.2, 9])),
+                       'dispersion': (base * numpy.array([8.8, 1.7, 23, 3.5])),
+                       's_pos': numpy.array([0.1 * (i + 1) for i in
+                                             range(len(at_ring))]),
+                       'alpha': (base[:, :2] * numpy.array([-0.03, 0.03])),
+                       'beta': (base[:, :2] * numpy.array([9.6, 6])),
+                       'm44': (numpy.ones((len(at_ring), 4, 4)) *
+                               numpy.eye(4) * 0.8),
+                       'mu': (base[:, :2] * numpy.array([176, 82]))})
+    return atsim
 
 
 @pytest.fixture()

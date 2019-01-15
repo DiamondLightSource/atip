@@ -1,6 +1,5 @@
-numpy>=1.10
-scipy>=0.16
-pytest>=2.9
+numpy
+pytest
 pytest-cov
 pytest-lazy-fixture
 mock
