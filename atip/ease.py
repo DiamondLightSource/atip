@@ -57,9 +57,11 @@ def load_diad():
 
 
 def preload(lattice):
+    """This is the only function that I think Pytac really needs.
+    """
     class elems:
         None
-    setattr(elems, "all", lattice.get_elements(None, None))
+    setattr(elems, "all", lattice.get_elements())
     families = list(lattice.get_all_families())
     for family in range(len(families)):
         setattr(elems, families[family].lower() + "s",
@@ -80,6 +82,9 @@ def get_attributes(obj):
 
 
 def elements_by_field(elems):
+    """This would be the only other fucntion that I think might be useful in
+        Pytac, but it's not that needed.
+    """
     fields_dict = {}
     for x in range(len(elems)):
         fields = elems[x].get_fields()[pytac.LIVE]
@@ -113,26 +118,32 @@ class timer(object):
 
 
 def get_sim_ring(lattice):
-    return lattice._data_source_manager._data_sources[pytac.SIM]._ad.get_ring()
+    lo = get_atsim(lattice).get_at_lattice()
+    ring = []
+    for i in range(len(lo)):
+        ring.append(lo[i])
+    return ring
 
 
 def get_sim_elem(elem):
     return elem._data_source_manager._data_sources[pytac.SIM]._element
 
 
-def get_ad(lattice):
-    return lattice._data_source_manager._data_sources[pytac.SIM]._ad
+def get_atsim(lattice):
+    return lattice._data_source_manager._data_sources[pytac.SIM]._atsim
 
 
 def get_thread(lattice):
-    return get_ad(lattice)._calculation_thread
+    return get_atsim(lattice)._calculation_thread
 
 
 def toggle_thread(lattice):
-    get_ad(lattice).toggle_calculations()
+    get_atsim(lattice).toggle_calculations()
 
 
 def plot_beam_position(elems, ds, x_plot=True, y_plot=True):
+    """Pytac could possibly benefit from this function too.
+    """
     x = []
     y = []
     for elem in elems.bpms:

@@ -28,16 +28,15 @@ def load(pytac_lattice, at_ring):
         simulator data source fully loaded onto it.
     """
     # Load the AT(simulator) ring locally, if an AT ring was not passed.
-    if isinstance(at_ring, str):
-        at_ring = at.load.load_mat(at_ring)
-    elif isinstance(at_ring, at.lattice.lattice_object.Lattice):
-        at_ring = at_ring._lattice
+    if isinstance(at_ring, at.lattice.lattice_object.Lattice):
+        at_lattice = at_ring
     else:
-        if not isinstance(at_ring, list):
-            raise TypeError("Please enter a valid AT ring, AT lattice object, "
-                            "or filepath to a suitable .mat file.")
+        if isinstance(at_ring, str):
+            at_ring = at.load.load_mat(at_ring)
+        at_lattice = at.Lattice(at_ring, name=pytac_lattice.name,
+                                energy=pytac_lattice.get_value('energy'))
     # Initialise an instance of the ATSimulator Object.
-    atsim = ATSimulator(at_ring)
+    atsim = ATSimulator(at_lattice)
     atsim.start_thread()
     # Set the simulator data source on the pytac lattice.
     pytac_lattice.set_data_source(ATLatticeDataSource(atsim), pytac.SIM)
@@ -50,7 +49,7 @@ def load(pytac_lattice, at_ring):
             if live_fields[x] in SIMULATED_FIELDS:
                 sim_fields.append(live_fields[x])
         # Set the simulator data source on each element.
-        e.set_data_source(ATElementDataSource(at_ring[e.index-1], atsim,
+        e.set_data_source(ATElementDataSource(at_lattice[e.index-1], atsim,
                                               sim_fields), pytac.SIM)
     # Give any lattice fields not on the live machine a unit conversion object.
     for field in pytac_lattice.get_fields()[pytac.SIM]:

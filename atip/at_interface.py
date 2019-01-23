@@ -22,14 +22,14 @@ class ATSimulator(object):
 
     .. Private Attributes:
            _lattice (at.lattice_object.Lattice): The centralised instance of
-                                                  the AT ring which the physics
-                                                  data is calculated.
+                                                  an AT lattice from which the
+                                                  physics data is calculated.
            _rp (numpy.array): A boolean array to be used as refpoints for the
                                physics calculations.
            _emittance (tuple): Emittance, the output of the AT physics function
-                                ohmi_envelope, see at.lattice.radiation.
+                                ohmi_envelope (see at.lattice.radiation.py).
            _lindata (tuple): Linear optics data, the output of the AT physics
-                              function linopt, see at.lattice.linear.
+                              function linopt (see at.lattice.linear.py).
            _paused (threading.Event): A flag used to temporarily pause the
                                        physics calculations.
            _running (threading.Event): A flag used to indicate if the thread is
@@ -40,7 +40,7 @@ class ATSimulator(object):
                                                     ring and recalculate the
                                                     physics data upon a change.
     """
-    def __init__(self, ring):
+    def __init__(self, at_lattice):
         """
         .. Note:: To avoid errors, the physics data must be initially
            calculated here, during creation, otherwise it could be accidentally
@@ -49,13 +49,13 @@ class ATSimulator(object):
            in the thread.
 
         Args:
-            ring (list): An instance of an AT ring.
+            at_lattice (list): An instance of an AT lattice object.
 
         **Methods:**
         """
-        self._lattice = at.Lattice(ring, keep_all=True)
+        self._lattice = at_lattice
+        self._rp = numpy.ones(len(at_lattice), dtype=bool)
         # Initial phys data calculation.
-        self._rp = numpy.array(range(len(ring) + 1))
         self._lattice.radiation_on()
         self._emittance = self._lattice.ohmi_envelope(self._rp)
         self._lattice.radiation_off()
@@ -150,7 +150,7 @@ class ATSimulator(object):
         """
         return self.up_to_date.wait(timeout)
 
-    def get_element(self, index):
+    def get_at_element(self, index):
         """Return the AT element coresponding to the given index.
 
         Args:
@@ -161,15 +161,7 @@ class ATSimulator(object):
         """
         return self._lattice[index - 1]
 
-    def get_ring(self):
-        """Return the AT ring.
-
-        Returns:
-            list: A copy of the AT ring.
-        """
-        return self._lattice._lattice
-
-    def get_lattice_object(self):
+    def get_at_lattice(self):
         """Return a copy of the AT lattice object.
 
         Returns:
