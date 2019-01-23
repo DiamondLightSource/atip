@@ -29,16 +29,17 @@ def atlds():
 
 
 @pytest.fixture()
-def at_ring():
+def at_lattice():
     ring = at.load.load_mat(os.path.join(os.path.realpath('../'),
                             'at/pyat/test_matlab/hmba.mat'))
-    return ring
+    lattice = at.lattice_object.Lattice(ring)
+    return lattice
 
 
 @pytest.fixture()
-def mocked_atsim(at_ring):
-    base = numpy.ones((len(at_ring), 4))
-    atsim = atip.at_interface.ATSimulator(at_ring)
+def mocked_atsim(at_lattice):
+    base = numpy.ones((len(at_lattice), 4))
+    atsim = atip.at_interface.ATSimulator(at_lattice)
     atsim._lattice = mock.PropertyMock(energy=5)
     atsim._emittance = ([], [],
                         {'emitXY': (base[:, :2] * numpy.array([1.4, 0.45]))})
@@ -46,29 +47,29 @@ def mocked_atsim(at_ring):
                       {'closed_orbit': (base * numpy.array([0.6, 57, 0.2, 9])),
                        'dispersion': (base * numpy.array([8.8, 1.7, 23, 3.5])),
                        's_pos': numpy.array([0.1 * (i + 1) for i in
-                                             range(len(at_ring))]),
+                                             range(len(at_lattice))]),
                        'alpha': (base[:, :2] * numpy.array([-0.03, 0.03])),
                        'beta': (base[:, :2] * numpy.array([9.6, 6])),
-                       'm44': (numpy.ones((len(at_ring), 4, 4)) *
+                       'm44': (numpy.ones((len(at_lattice), 4, 4)) *
                                numpy.eye(4) * 0.8),
                        'mu': (base[:, :2] * numpy.array([176, 82]))})
     return atsim
 
 
 @pytest.fixture()
-def initial_emit(at_ring):
-    return ([], [],
-            {'emitXY': numpy.ones((len(at_ring) + 1, 2)) * [1.32528e-10, 0.]})
+def initial_emit(at_lattice):
+    return ([], [], {'emitXY':
+                     numpy.ones((len(at_lattice), 2)) * [1.32528e-10, 0.]})
 
 
 @pytest.fixture()
-def initial_lin(at_ring):
+def initial_lin(at_lattice):
     return ([], [0.38156245, 0.85437543], [0.17919002, 0.12242263],
-            {'closed_orbit': numpy.zeros((len(at_ring) + 1, 6)),
+            {'closed_orbit': numpy.zeros((len(at_lattice), 6)),
              'dispersion': numpy.array([[1.72683082e-3, 4.04368253e-9,
                                          3.51285681e-28, -8.95277691e-29]]),
              's_pos': numpy.cumsum([0.0] + [getattr(elem, 'Length', 0) for elem
-                                            in at_ring]),
+                                            in at_lattice]),
              'alpha': numpy.array([[1.59491386e-07, -2.97115147e-6]]),
              'beta': numpy.array([[6.8999954, 2.64467888]]),
              'm44': numpy.array([[[-0.73565363, 4.67376566, 0., 0.],

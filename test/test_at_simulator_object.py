@@ -20,14 +20,14 @@ class temporary_thread(object):
         self.atsim.stop_thread()
 
 
-def initial_phys_data(atsim, initial_emit, initial_lin):
+def _initial_phys_data(atsim, initial_emit, initial_lin):
     try:
         numpy.testing.assert_almost_equal(initial_emit[2]['emitXY'][:, 0][0],
-                                          atsim.get_emit(0), decimal=15)
+                                          atsim.get_emit(0), decimal=6)
         numpy.testing.assert_almost_equal(initial_emit[2]['emitXY'][:, 1][0],
-                                          atsim.get_emit(1), decimal=15)
+                                          atsim.get_emit(1), decimal=14)
         numpy.testing.assert_almost_equal(initial_lin[1][0], atsim.get_tune(0),
-                                          decimal=8)
+                                          decimal=6)
         numpy.testing.assert_almost_equal(initial_lin[1][1], atsim.get_tune(1),
                                           decimal=8)
         numpy.testing.assert_almost_equal(initial_lin[2][0],
@@ -43,7 +43,7 @@ def initial_phys_data(atsim, initial_emit, initial_lin):
         numpy.testing.assert_almost_equal(initial_lin[3]['closed_orbit'][:, 3],
                                           atsim.get_orbit(3))
         numpy.testing.assert_almost_equal(initial_lin[3]['dispersion'][-1],
-                                          atsim.get_disp()[-1], decimal=11)
+                                          atsim.get_disp()[-1], decimal=6)
         numpy.testing.assert_almost_equal(initial_lin[3]['s_pos'],
                                           atsim.get_s(), decimal=8)
         numpy.testing.assert_almost_equal(initial_lin[3]['alpha'][-1],
@@ -59,18 +59,18 @@ def initial_phys_data(atsim, initial_emit, initial_lin):
         return False
 
 
-def test_ATSimulator_creation(at_ring, initial_emit, initial_lin):
-    atsim = atip.at_interface.ATSimulator(at_ring)
+def test_ATSimulator_creation(at_lattice, initial_emit, initial_lin):
+    atsim = atip.at_interface.ATSimulator(at_lattice)
     # Check initial state of flags.
     assert atsim.up_to_date.is_set() is True
     assert atsim._paused.is_set() is False
     assert atsim._running.is_set() is False
     # Check emittance and lindata are initially calculated correctly.
-    assert initial_phys_data(atsim, initial_emit, initial_lin) is True
+    assert _initial_phys_data(atsim, initial_emit, initial_lin) is True
 
 
-def test_start_and_stop_thread(at_ring):
-    atsim = atip.at_interface.ATSimulator(at_ring)
+def test_start_and_stop_thread(at_lattice):
+    atsim = atip.at_interface.ATSimulator(at_lattice)
     assert atsim._running.is_set() is False
     assert atsim._calculation_thread.is_alive() is False
     with pytest.raises(RuntimeError):
@@ -85,9 +85,9 @@ def test_start_and_stop_thread(at_ring):
     assert atsim._calculation_thread.is_alive() is False
 
 
-def test_recalculate_phys_data(at_ring, initial_emit, initial_lin):
-    atsim = atip.at_interface.ATSimulator(at_ring)
-    assert initial_phys_data(atsim, initial_emit, initial_lin) is True
+def test_recalculate_phys_data(at_lattice, initial_emit, initial_lin):
+    atsim = atip.at_interface.ATSimulator(at_lattice)
+    assert _initial_phys_data(atsim, initial_emit, initial_lin) is True
     thread = temporary_thread(atsim)
     with thread:
         # Check that errors raised inside thread are converted to warnings.
@@ -125,9 +125,9 @@ def test_recalculate_phys_data(at_ring, initial_emit, initial_lin):
                                       decimal=15)
 
 
-def test_toggle_calculations_and_wait_for_calculations(at_ring, initial_emit,
+def test_toggle_calculations_and_wait_for_calculations(at_lattice, initial_emit,
                                                        initial_lin):
-    atsim = atip.at_interface.ATSimulator(at_ring)
+    atsim = atip.at_interface.ATSimulator(at_lattice)
     assert atsim._paused.is_set() is False
     atsim.toggle_calculations()
     assert atsim._paused.is_set() is True
@@ -137,28 +137,23 @@ def test_toggle_calculations_and_wait_for_calculations(at_ring, initial_emit,
     with thread:
         # pause > make a change > check no calc > unpause > check calc
         atsim.toggle_calculations()
-        atsim._lattice[6].PolynomB[1] = 2.5
+        atsim._lattice[7].PolynomB[1] = 2.5
         atsim.up_to_date.clear()
         assert atsim.wait_for_calculations(5) is False
-        assert initial_phys_data(atsim, initial_emit, initial_lin) is True
+        assert _initial_phys_data(atsim, initial_emit, initial_lin) is True
         atsim.toggle_calculations()
         assert atsim.wait_for_calculations(10) is True
-        assert initial_phys_data(atsim, initial_emit, initial_lin) is False
+        assert _initial_phys_data(atsim, initial_emit, initial_lin) is False
 
 
-def test_get_element(at_ring):
-    atsim = atip.at_interface.ATSimulator(at_ring)
-    assert atsim.get_element(1) == at_ring[0]
+def test_get_at_element(at_lattice):
+    atsim = atip.at_interface.ATSimulator(at_lattice)
+    assert atsim.get_at_element(1) == at_lattice[0]
 
 
-def test_get_ring(at_ring):
-    atsim = atip.at_interface.ATSimulator(at_ring)
-    assert atsim.get_ring() == at_ring
-
-
-def test_get_lattice_object(at_ring):
-    atsim = atip.at_interface.ATSimulator(at_ring)
-    assert atsim.get_lattice_object() == atsim._lattice
+def test_get_at_lattice(at_lattice):
+    atsim = atip.at_interface.ATSimulator(at_lattice)
+    assert atsim.get_at_lattice() == atsim._lattice
 
 
 def test_get_chrom(mocked_atsim):
@@ -171,15 +166,15 @@ def test_get_emit(mocked_atsim):
     assert mocked_atsim.get_emit(1) == 0.45
 
 
-def test_get_orbit(mocked_atsim, at_ring):
+def test_get_orbit(mocked_atsim, at_lattice):
     numpy.testing.assert_almost_equal(mocked_atsim.get_orbit(0),
-                                      numpy.ones(len(at_ring)) * 0.6)
+                                      numpy.ones(len(at_lattice)) * 0.6)
     numpy.testing.assert_almost_equal(mocked_atsim.get_orbit(1),
-                                      numpy.ones(len(at_ring)) * 57)
+                                      numpy.ones(len(at_lattice)) * 57)
     numpy.testing.assert_almost_equal(mocked_atsim.get_orbit(2),
-                                      numpy.ones(len(at_ring)) * 0.2)
+                                      numpy.ones(len(at_lattice)) * 0.2)
     numpy.testing.assert_almost_equal(mocked_atsim.get_orbit(3),
-                                      numpy.ones(len(at_ring)) * 9)
+                                      numpy.ones(len(at_lattice)) * 9)
 
 
 def test_get_tune(mocked_atsim):
@@ -187,40 +182,40 @@ def test_get_tune(mocked_atsim):
     numpy.testing.assert_almost_equal(mocked_atsim.get_tune(1), 0.12)
 
 
-def test_get_disp(mocked_atsim, at_ring):
+def test_get_disp(mocked_atsim, at_lattice):
     numpy.testing.assert_almost_equal(mocked_atsim.get_disp(),
-                                      (numpy.ones((len(at_ring), 4)) *
+                                      (numpy.ones((len(at_lattice), 4)) *
                                        numpy.array([8.8, 1.7, 23, 3.5])))
 
 
-def test_get_s(mocked_atsim, at_ring):
+def test_get_s(mocked_atsim, at_lattice):
     numpy.testing.assert_almost_equal(mocked_atsim.get_s(),
                                       numpy.array([0.1 * (i + 1) for i in
-                                                   range(len(at_ring))]))
+                                                   range(len(at_lattice))]))
 
 
 def test_get_energy(mocked_atsim):
     assert mocked_atsim.get_energy() == 5
 
 
-def test_get_alpha(mocked_atsim, at_ring):
+def test_get_alpha(mocked_atsim, at_lattice):
     numpy.testing.assert_almost_equal(mocked_atsim.get_alpha(),
-                                      (numpy.ones((len(at_ring), 2)) *
+                                      (numpy.ones((len(at_lattice), 2)) *
                                        numpy.array([-0.03, 0.03])))
 
 
-def test_get_beta(mocked_atsim, at_ring):
+def test_get_beta(mocked_atsim, at_lattice):
     numpy.testing.assert_almost_equal(mocked_atsim.get_beta(),
-                                      numpy.ones((len(at_ring), 2)) * [9.6, 6])
+                                      numpy.ones((len(at_lattice), 2)) * [9.6, 6])
 
 
-def test_get_m44(mocked_atsim, at_ring):
+def test_get_m44(mocked_atsim, at_lattice):
     numpy.testing.assert_almost_equal(mocked_atsim.get_m44(),
-                                      (numpy.ones((len(at_ring), 4, 4)) *
+                                      (numpy.ones((len(at_lattice), 4, 4)) *
                                        numpy.eye(4) * 0.8))
 
 
-def test_get_mu(mocked_atsim, at_ring):
+def test_get_mu(mocked_atsim, at_lattice):
     numpy.testing.assert_almost_equal(mocked_atsim.get_mu(),
-                                      (numpy.ones((len(at_ring), 2)) *
+                                      (numpy.ones((len(at_lattice), 2)) *
                                        numpy.array([176, 82])))
