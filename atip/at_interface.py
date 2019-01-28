@@ -59,7 +59,8 @@ class ATSimulator(object):
         self._lattice.radiation_on()
         self._emittance = self._lattice.ohmi_envelope(self._rp)
         self._lattice.radiation_off()
-        self._lindata = self._lattice.linopt(0, self._rp, True, coupled=False)
+        self._lindata = self._lattice.linopt(refpts=self._rp, get_chrom=True,
+                                             coupled=False)
         # Threading stuff initialisation.
         self.up_to_date = Event()
         self.up_to_date.set()
@@ -107,7 +108,8 @@ class ATSimulator(object):
                     self._lattice.radiation_on()
                     self._emittance = self._lattice.ohmi_envelope(self._rp)
                     self._lattice.radiation_off()
-                    self._lindata = self._lattice.linopt(0, self._rp, True,
+                    self._lindata = self._lattice.linopt(refpts= self._rp,
+                                                         get_chrom=True,
                                                          coupled=False)
                 except Exception as e:
                     warn(at.AtWarning(e))

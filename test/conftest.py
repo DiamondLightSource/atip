@@ -66,14 +66,14 @@ def initial_emit(at_lattice):
 def initial_lin(at_lattice):
     return ([], [0.38156245, 0.85437543], [0.17919002, 0.12242263],
             {'closed_orbit': numpy.zeros((len(at_lattice), 6)),
-             'dispersion': numpy.array([[1.72683082e-3, 4.04368253e-9,
-                                         3.51285681e-28, -8.95277691e-29]]),
+             'dispersion': numpy.array([[1.72682010e-3, 4.04368254e-9,
+                                         5.88659608e-28, -8.95277691e-29]]),
              's_pos': numpy.cumsum([0.0] + [getattr(elem, 'Length', 0) for elem
-                                            in at_lattice]),
-             'alpha': numpy.array([[1.59491386e-07, -2.97115147e-6]]),
-             'beta': numpy.array([[6.8999954, 2.64467888]]),
-             'm44': numpy.array([[[-0.73565363, 4.67376566, 0., 0.],
+                                            in at_lattice[:-1]]),
+             'alpha': numpy.array([[0.384261343, 1.00253822]]),
+             'beta': numpy.array([[7.91882634, 5.30280084]]),
+             'm44': numpy.array([[[-0.47537132, 6.62427828, 0., 0.],
                                   [-0.09816788, -0.73565385, 0., 0.],
-                                  [0., 0., 0.60980387, -2.09605131],
+                                  [0., 0., -0.18476435, -3.7128728 ],
                                   [0., 0., 0.29967874, 0.60979916]]]),
-             'mu': numpy.array([[14.96379821, 5.36819914]])})
+             'mu': numpy.array([[14.59693301, 4.58153046]])})
