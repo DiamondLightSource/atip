@@ -27,12 +27,14 @@ def load(pytac_lattice, at_ring):
         pytac.lattice.Lattice: The same Pytac lattice object, but now with a
         simulator data source fully loaded onto it.
     """
-    # Load the AT(simulator) ring locally, if an AT ring was not passed.
     if isinstance(at_ring, at.lattice.lattice_object.Lattice):
         at_lattice = at_ring
+    # If no AT lattice object was passed, then load one.
     else:
+        # Load the AT ring locally, if a file path was passed.
         if isinstance(at_ring, str):
             at_ring = at.load.load_mat(at_ring)
+        # Load an AT lattice object from the AT ring.
         at_lattice = at.Lattice(at_ring, name=pytac_lattice.name,
                                 energy=pytac_lattice.get_value('energy'))
     # Initialise an instance of the ATSimulator Object.

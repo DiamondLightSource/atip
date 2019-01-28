@@ -100,8 +100,10 @@ ATSimulator:
 Specific Notes:
 ---------------
 
-In order for ATIP to function correctly; ATIP, AT and Pytac must all be located
-in the same source directory.
+In order for ATIP to function correctly; ATIP, AT, and Pytac must all be
+located in the same source directory. It also goes without saying that the AT
+and Pytac lattices passed to AT must be directly equivelent so that ATIP can
+function correctly, i.e. same length and elements in the same positions.
 
 Any function, in ATIP, that takes a ``handle`` argument does so only to conform
 with the ``DataSource`` syntax inherited Pytac. Inside ATIP it is entirely

@@ -126,7 +126,7 @@ def get_sim_ring(lattice):
 
 
 def get_sim_elem(elem):
-    return elem._data_source_manager._data_sources[pytac.SIM]._element
+    return elem._data_source_manager._data_sources[pytac.SIM]._at_element
 
 
 def get_atsim(lattice):

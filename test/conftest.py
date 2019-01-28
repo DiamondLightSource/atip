@@ -40,7 +40,7 @@ def at_lattice():
 def mocked_atsim(at_lattice):
     base = numpy.ones((len(at_lattice), 4))
     atsim = atip.at_interface.ATSimulator(at_lattice)
-    atsim._lattice = mock.PropertyMock(energy=5)
+    atsim._at_lattice = mock.PropertyMock(energy=5)
     atsim._emittance = ([], [],
                         {'emitXY': (base[:, :2] * numpy.array([1.4, 0.45]))})
     atsim._lindata = ([], [3.14, 0.12], [2, 1],

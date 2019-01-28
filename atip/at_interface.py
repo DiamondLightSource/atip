@@ -8,7 +8,7 @@ import numpy
 
 class ATSimulator(object):
     """A centralised class which makes use of AT to simulate the physics data
-    for the copy of the lattice which it holds. This class ensures that this
+    for the copy of the AT lattice which it holds. This class ensures that this
     data is up to date through the use of threading, a thread constantly runs
     in the background and recalculates the physics data every time a change is
     made via the use of flags (threading events).
@@ -18,12 +18,13 @@ class ATSimulator(object):
     Attributes:
         up_to_date (threading.Event): A flag that indicates if the physics data
                                        is up to date with all the changes made
-                                       to the AT ring.
+                                       to the AT lattice.
 
     .. Private Attributes:
-           _lattice (at.lattice_object.Lattice): The centralised instance of
-                                                  an AT lattice from which the
-                                                  physics data is calculated.
+           _at_lattice (at.lattice_object.Lattice): The centralised instance of
+                                                     an AT lattice from which
+                                                     the physics data is
+                                                     calculated.
            _rp (numpy.array): A boolean array to be used as refpoints for the
                                physics calculations.
            _emittance (tuple): Emittance, the output of the AT physics function
@@ -37,7 +38,7 @@ class ATSimulator(object):
                                         the thread off.
            _calculation_thread (threading.Thread): A thread to constantly check
                                                     for new changes to the AT
-                                                    ring and recalculate the
+                                                    lattice and recalculate the
                                                     physics data upon a change.
     """
     def __init__(self, at_lattice):
@@ -53,14 +54,14 @@ class ATSimulator(object):
 
         **Methods:**
         """
-        self._lattice = at_lattice
+        self._at_lattice = at_lattice
         self._rp = numpy.ones(len(at_lattice), dtype=bool)
         # Initial phys data calculation.
-        self._lattice.radiation_on()
-        self._emittance = self._lattice.ohmi_envelope(self._rp)
-        self._lattice.radiation_off()
-        self._lindata = self._lattice.linopt(refpts=self._rp, get_chrom=True,
-                                             coupled=False)
+        self._at_lattice.radiation_on()
+        self._emittance = self._at_lattice.ohmi_envelope(self._rp)
+        self._at_lattice.radiation_off()
+        self._lindata = self._at_lattice.linopt(refpts=self._rp,
+                                                get_chrom=True, coupled=False)
         # Threading stuff initialisation.
         self.up_to_date = Event()
         self.up_to_date.set()
@@ -105,12 +106,12 @@ class ATSimulator(object):
                 return
             elif (self.up_to_date.is_set() or self._paused.is_set()) is False:
                 try:
-                    self._lattice.radiation_on()
-                    self._emittance = self._lattice.ohmi_envelope(self._rp)
-                    self._lattice.radiation_off()
-                    self._lindata = self._lattice.linopt(refpts= self._rp,
-                                                         get_chrom=True,
-                                                         coupled=False)
+                    self._at_lattice.radiation_on()
+                    self._emittance = self._at_lattice.ohmi_envelope(self._rp)
+                    self._at_lattice.radiation_off()
+                    self._lindata = self._at_lattice.linopt(refpts= self._rp,
+                                                            get_chrom=True,
+                                                            coupled=False)
                 except Exception as e:
                     warn(at.AtWarning(e))
                 self.up_to_date.set()
@@ -141,7 +142,7 @@ class ATSimulator(object):
 
     def wait_for_calculations(self, timeout=10):
         """Wait until the physics calculations have taken account of all
-        changes to the ring, i.e. the physics data is fully up to date.
+        changes to the AT lattice, i.e. the physics data is fully up to date.
 
         Args:
             timeout (float, optional): The number of seconds to wait for.
@@ -161,7 +162,7 @@ class ATSimulator(object):
         Returns:
             at.elements.Element: The element specified by the given index.
         """
-        return self._lattice[index - 1]
+        return self._at_lattice[index - 1]
 
     def get_at_lattice(self):
         """Return a copy of the AT lattice object.
@@ -169,48 +170,48 @@ class ATSimulator(object):
         Returns:
             at.lattice_object.Lattice: A copy of the AT lattice object.
         """
-        return self._lattice.copy()
+        return self._at_lattice.copy()
 
     def get_chrom(self, cell):
-        """Return the specified cell of the chromaticity for the lattice.
+        """Return the specified cell of the chromaticity for the AT lattice.
 
         Args:
             cell (int): The desired cell of chromaticity.
 
         Returns:
-            float: The x or y chromaticity for the lattice.
+            float: The x or y chromaticity for the AT lattice.
         """
         return self._lindata[2][cell]
 
     def get_emit(self, cell):
-        """Return the specified cell of the emittance for the lattice.
+        """Return the specified cell of the emittance for the AT lattice.
 
         .. Note:: The emittance of the first element is returned as it is
-           constant throughout the lattice, and so which element's emittance is
-           returned is arbitrary.
+           constant throughout the AT lattice, and so which element's emittance
+           is returned is arbitrary.
 
         Args:
             cell (int): The desired cell of emittance.
 
         Returns:
-            float: The x or y emittance for the lattice.
+            float: The x or y emittance for the AT lattice.
         """
         return self._emittance[2]['emitXY'][:, cell][0]
 
     def get_orbit(self, cell):
-        """Return the specified cell of the closed orbit for the lattice.
+        """Return the specified cell of the closed orbit for the AT lattice.
 
         Args:
             cell (int): The desired cell of closed orbit.
 
         Returns:
-            numpy.array: The x, x phase, y or y phase for the lattice as an
-            array of floats the length of the lattice.
+            numpy.array: The x, x phase, y or y phase for the AT lattice as an
+            array of floats the length of the AT lattice.
         """
         return self._lindata[3]['closed_orbit'][:, cell]
 
     def get_tune(self, cell):
-        """Return the specified cell of the tune for the lattice.
+        """Return the specified cell of the tune for the AT lattice.
 
         .. Note:: A special consideration is made so only the fractional digits
            of the tune are returned.
@@ -219,12 +220,12 @@ class ATSimulator(object):
             cell (int): The desired cell of tune.
 
         Returns:
-            float: The x or y tune for the lattice.
+            float: The x or y tune for the AT lattice.
         """
         return (self._lindata[1][cell] % 1)
 
     def get_disp(self):
-        """Return the dispersion at every element in the lattice.
+        """Return the dispersion at every element in the AT lattice.
 
         Returns:
             numpy.array: The dispersion vector for each element.
@@ -232,7 +233,7 @@ class ATSimulator(object):
         return self._lindata[3]['dispersion']
 
     def get_s(self):
-        """Return the s position of every element in the lattice
+        """Return the s position of every element in the AT lattice
 
         Returns:
             list: The s position of each element.
@@ -240,15 +241,15 @@ class ATSimulator(object):
         return list(self._lindata[3]['s_pos'])
 
     def get_energy(self):
-        """Return the energy of the lattice. Taken from the AT attribute.
+        """Return the energy of the AT lattice. Taken from the AT attribute.
 
         Returns:
-            float: The energy of the lattice.
+            float: The energy of the AT lattice.
         """
-        return self._lattice.energy
+        return self._at_lattice.energy
 
     def get_alpha(self):
-        """Return the alpha vector at every element in the lattice.
+        """Return the alpha vector at every element in the AT lattice.
 
         Returns:
             numpy.array: The alpha vector for each element.
@@ -256,7 +257,7 @@ class ATSimulator(object):
         return self._lindata[3]['alpha']
 
     def get_beta(self):
-        """Return the beta vector at every element in the lattice.
+        """Return the beta vector at every element in the AT lattice.
 
         Returns:
             numpy.array: The beta vector for each element.
@@ -264,7 +265,7 @@ class ATSimulator(object):
         return self._lindata[3]['beta']
 
     def get_m44(self):
-        """Return the 4x4 transfer matrix for every element in the lattice.
+        """Return the 4x4 transfer matrix for every element in the AT lattice.
 
         Returns:
             numpy.array: The 4x4 transfer matrix for each element.
@@ -272,7 +273,7 @@ class ATSimulator(object):
         return self._lindata[3]['m44']
 
     def get_mu(self):
-        """Return mu at every element in the lattice.
+        """Return mu at every element in the AT lattice.
 
         Returns:
             numpy.array: The mu array for each element.

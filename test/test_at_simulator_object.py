@@ -91,21 +91,21 @@ def test_recalculate_phys_data(at_lattice, initial_emit, initial_lin):
     thread = temporary_thread(atsim)
     with thread:
         # Check that errors raised inside thread are converted to warnings.
-        atsim._lattice[5].PolynomB[0] = 1.e10
+        atsim._at_lattice[5].PolynomB[0] = 1.e10
         with pytest.warns(at.AtWarning):
             atsim.up_to_date.clear()
             atsim.wait_for_calculations(5)
-        atsim._lattice[5].PolynomB[0] = 0.0
+        atsim._at_lattice[5].PolynomB[0] = 0.0
         # Set corrector x_kick but on a sextupole as no correctors in test ring
-        atsim._lattice[21].PolynomB[0] = -7.e-5
+        atsim._at_lattice[21].PolynomB[0] = -7.e-5
         # Set corrector y_kick but on a sextupole as no correctors in test ring
-        atsim._lattice[21].PolynomA[0] = 7.e-5
+        atsim._at_lattice[21].PolynomA[0] = 7.e-5
         # Set quadrupole b1
-        atsim._lattice[5].PolynomB[1] = 2.5
+        atsim._at_lattice[5].PolynomB[1] = 2.5
         # Set skew quadrupole a1
-        atsim._lattice[7].PolynomA[1] = 2.25e-3
+        atsim._at_lattice[7].PolynomA[1] = 2.25e-3
         # Set sextupole b2
-        atsim._lattice[21].PolynomB[2] = -75
+        atsim._at_lattice[21].PolynomB[2] = -75
         # Clear the flag and then wait for the calculations
         atsim.up_to_date.clear()
         atsim.wait_for_calculations(5)
@@ -137,7 +137,7 @@ def test_toggle_calculations_and_wait_for_calculations(at_lattice, initial_emit,
     with thread:
         # pause > make a change > check no calc > unpause > check calc
         atsim.toggle_calculations()
-        atsim._lattice[5].PolynomB[1] = 2.5
+        atsim._at_lattice[5].PolynomB[1] = 2.5
         atsim.up_to_date.clear()
         assert atsim.wait_for_calculations(5) is False
         assert _initial_phys_data(atsim, initial_emit, initial_lin) is True
@@ -153,7 +153,7 @@ def test_get_at_element(at_lattice):
 
 def test_get_at_lattice(at_lattice):
     atsim = atip.at_interface.ATSimulator(at_lattice)
-    assert atsim.get_at_lattice() == atsim._lattice
+    assert atsim.get_at_lattice() == atsim._at_lattice
 
 
 def test_get_chrom(mocked_atsim):
