@@ -136,16 +136,17 @@ class ATElementDataSource(pytac.data_source.DataSource):
             float: The kick angle of the specified cell.
         """
         if isinstance(self._at_element, at.elements.Sextupole):
+            length = self._at_element.Length
             if value is None:
                 if cell is 0:
-                    return -(self._at_element.PolynomB[0] * self._at_element.Length)
+                    return -(self._at_element.PolynomB[0] * length)
                 elif cell is 1:
-                    return (self._at_element.PolynomA[0] * self._at_element.Length)
+                    return (self._at_element.PolynomA[0] * length)
             else:
                 if cell is 0:
-                    self._at_element.PolynomB[0] = -(value / self._at_element.Length)
+                    self._at_element.PolynomB[0] = -(value / length)
                 elif cell is 1:
-                    self._at_element.PolynomA[0] = (value / self._at_element.Length)
+                    self._at_element.PolynomA[0] = (value / length)
                 self._atsim.up_to_date.clear()
         else:
             if value is None:

@@ -109,7 +109,7 @@ class ATSimulator(object):
                     self._at_lattice.radiation_on()
                     self._emittance = self._at_lattice.ohmi_envelope(self._rp)
                     self._at_lattice.radiation_off()
-                    self._lindata = self._at_lattice.linopt(refpts= self._rp,
+                    self._lindata = self._at_lattice.linopt(refpts=self._rp,
                                                             get_chrom=True,
                                                             coupled=False)
                 except Exception as e:

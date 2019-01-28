@@ -125,8 +125,8 @@ def test_recalculate_phys_data(at_lattice, initial_emit, initial_lin):
                                       decimal=15)
 
 
-def test_toggle_calculations_and_wait_for_calculations(at_lattice, initial_emit,
-                                                       initial_lin):
+def test_toggle_calculations_and_wait_for_calculations(at_lattice, initial_lin,
+                                                       initial_emit):
     atsim = atip.at_interface.ATSimulator(at_lattice)
     assert atsim._paused.is_set() is False
     atsim.toggle_calculations()
@@ -206,7 +206,8 @@ def test_get_alpha(mocked_atsim, at_lattice):
 
 def test_get_beta(mocked_atsim, at_lattice):
     numpy.testing.assert_almost_equal(mocked_atsim.get_beta(),
-                                      numpy.ones((len(at_lattice), 2)) * [9.6, 6])
+                                      (numpy.ones((len(at_lattice), 2)) *
+                                       numpy.array([9.6, 6])))
 
 
 def test_get_m44(mocked_atsim, at_lattice):
