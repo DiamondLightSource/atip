@@ -8,5 +8,5 @@ sphinx
 sphinx-rtd-theme
 coveralls
 cothread
-#pytac
-#at-python
+pytac
+at-python

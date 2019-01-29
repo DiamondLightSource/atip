@@ -2,8 +2,8 @@
 import at
 import pytac
 
-from at_interface import ATSimulator
-from sim_data_sources import ATElementDataSource, ATLatticeDataSource
+from atip.at_interface import ATSimulator
+from atip.sim_data_sources import ATElementDataSource, ATLatticeDataSource
 
 
 # List of all the element fields that can be currently simulated.
