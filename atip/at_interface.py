@@ -41,7 +41,7 @@ class ATSimulator(object):
                                                     lattice and recalculate the
                                                     physics data upon a change.
     """
-    def __init__(self, at_lattice):
+    def __init__(self, at_lattice, callback=None):
         """
         .. Note:: To avoid errors, the physics data must be initially
            calculated here, during creation, otherwise it could be accidentally
@@ -50,7 +50,10 @@ class ATSimulator(object):
            in the thread.
 
         Args:
-            at_lattice (list): An instance of an AT lattice object.
+            at_lattice (at.lattice_object.Lattice): An instance of an AT
+                                                     lattice object.
+            callback (callable): To be called after completion of each round of
+                                                     physics calculations.
 
         **Methods:**
         """
@@ -68,7 +71,8 @@ class ATSimulator(object):
         self._paused = Event()
         self._running = Event()
         self._calculation_thread = Thread(target=self._recalculate_phys_data,
-                                          name='atip_calculation_thread')
+                                          name='atip_calculation_thread',
+                                          args=[callback])
 
     def start_thread(self):
         """Start the thread created in __init__ in the background. This
@@ -86,7 +90,7 @@ class ATSimulator(object):
         else:
             raise RuntimeError("Cannot start thread as it is already running.")
 
-    def _recalculate_phys_data(self):
+    def _recalculate_phys_data(self, callback):
         """Target function for the background thread. Recalculates the physics
         data dependant on the status of the '_paused' and 'up_to_date' flags.
         The thread is constantly running but the calculations only take place
@@ -96,6 +100,10 @@ class ATSimulator(object):
            it does not continue running so subsequent calculations are not
            performed. To fix this we convert all errors raised inside the
            thread to warnings.
+
+        Args:
+            callback (callable): to be called after each round of calculations,
+                                  indicating that they have concluded.
 
         Warns:
             at.AtWarning: any error or exception that was raised in the thread,
@@ -114,6 +122,8 @@ class ATSimulator(object):
                                                             coupled=False)
                 except Exception as e:
                     warn(at.AtWarning(e))
+                if callback is not None:
+                    callback()
                 self.up_to_date.set()
 
     def stop_thread(self):

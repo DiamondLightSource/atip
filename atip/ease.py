@@ -20,26 +20,20 @@ def ring(filepath='../../Documents/MATLAB/vmx.mat'):
 
 def elements_by_type(lat):
     elems_dict = {}
-    for x in range(len(lat)):
-        elem_type = type(lat[x]).__dict__['__doc__'].split()[1]
-        if elems_dict.get(elem_type) is None:
-            elems_dict[elem_type] = [lat[x]]
-        else:
-            elems_dict[elem_type].append(lat[x])
+    for elem in lat:
+        elem_type = type(elem).__dict__['__doc__'].split()[1]
+        if elem_type not in elems_dict:
+            elems_dict[elem_type] = []
+        elems_dict[elem_type].append(elem)
     return elems_dict
 
 
 def preload_at(lat):
     class elems():
         pass
-    for x in range(len(lat)):
-        lat[x].Index = x + 1
-        lat[x].Class = lat[x].__doc__.split()[1]
-    elems_dict = elements_by_type(lat)
-    for x in range(len(elems_dict.keys())):
-        setattr(elems, elems_dict.keys()[x].lower() + "s",
-                elems_dict[elems_dict.keys()[x]])
     setattr(elems, "all", lat)
+    for elem_type, elements in elements_by_type(lat).items():
+        setattr(elems, elem_type.lower() + "s", elements)
     return elems
 
 
@@ -62,10 +56,8 @@ def preload(lattice):
     class elems:
         None
     setattr(elems, "all", lattice.get_elements())
-    families = list(lattice.get_all_families())
-    for family in range(len(families)):
-        setattr(elems, families[family].lower() + "s",
-                lattice.get_elements(families[family]))
+    for family in list(lattice.get_all_families()):
+        setattr(elems, family.lower() + "s", lattice.get_elements(family))
     return elems
 
 
@@ -73,25 +65,25 @@ def get_attributes(obj):
     pub_attr = []
     priv_attr = []
     all_attr = obj.__dict__.keys()
-    for x in range(len(all_attr)):
-        if all_attr[x][0] != '_':
-            pub_attr.append(all_attr[x])
+    for attr in all_attr:
+        if attr[0] != '_':
+            pub_attr.append(attr)
         else:
-            priv_attr.append(all_attr[x])
+            priv_attr.append(attr)
     return{'Public': pub_attr, 'Private': priv_attr}
 
 
-def elements_by_field(elems):
+def elements_by_field(elems, data_source=pytac.LIVE):
     """This would be the only other fucntion that I think might be useful in
         Pytac, but it's not that needed.
     """
     fields_dict = {}
-    for x in range(len(elems)):
-        fields = elems[x].get_fields()[pytac.LIVE]
-        for y in range(len(fields)):
-            if fields[y] not in fields_dict.keys():
-                fields_dict[fields[y]] = []
-            fields_dict[fields[y]].append(x)
+    for elem in elems:
+        fields = elem.get_fields()[data_source]
+        for field in fields:
+            if field not in fields_dict:
+                fields_dict[field] = []
+        fields_dict[field].append(elem.index)
     return fields_dict
 
 
@@ -118,6 +110,8 @@ class timer(object):
 
 
 def get_sim_ring(lattice):
+    """Ugly way to convert an AT lattice object back to a plain list.
+    """
     lo = get_atsim(lattice).get_at_lattice()
     ring = []
     for i in range(len(lo)):
