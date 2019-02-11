@@ -1,6 +1,6 @@
 id,field,pv,value
 0,beam_current,SR-DI-DCCT-01:SIGNAL,300
-0,feedback_status,CS-CS-MSTAT-01:FBSTAT,0
+0,feedback_status,CS-CS-MSTAT-01:FBSTAT,2
 3,enabled,SR01C-DI-EBPM-01:CF:ENABLED_S,1
 3,x_fofb_disabled,SR01C-PC-HBPM-01:FAST:DISABLED,0
 3,x_sofb_disabled,SR01C-PC-HBPM-01:SLOW:DISABLED,0

@@ -13,7 +13,7 @@ class soft_ioc(object):
         self.create_records()
         self.create_feedback_records(feedback_pvs)
         # add special case out record for SOFB to write to
-        builder.aOut('CS-CS-MSTAT-01:FBHEART', initial_value=0)
+        builder.aOut('CS-CS-MSTAT-01:FBHEART', initial_value=10)
         builder.LoadDatabase()
         softioc.iocInit()
 

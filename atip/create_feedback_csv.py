@@ -1,3 +1,4 @@
+import os
 import csv
 import atip.ease as e
 import pytac
@@ -8,7 +9,7 @@ elems = list(set(elements.hstrs + elements.vstrs + elements.bpms))
 elems.sort(key=lambda x: x.index)
 data = [("id", "field", "pv", "value"),
         (0, 'beam_current', 'SR-DI-DCCT-01:SIGNAL', 300),
-        (0, 'feedback_status', 'CS-CS-MSTAT-01:FBSTAT', 0)]
+        (0, 'feedback_status', 'CS-CS-MSTAT-01:FBSTAT', 2)]
 
 for elem in elems:
     if 'HSTR' in elem.families:
@@ -41,6 +42,7 @@ for elem in elems:
         data.append((elem.index, 'y_sofb_disabled',
                      elem.get_pv_name('y_sofb_disabled', pytac.RB), 0))
 
-with open("feedback.csv", "wb") as file:
+here = os.path.abspath(os.path.dirname(__file__))
+with open(os.path.join(here, 'feedback.csv'), "wb") as file:
     csv_writer = csv.writer(file)
     csv_writer.writerows(data)
