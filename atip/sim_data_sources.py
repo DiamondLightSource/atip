@@ -52,11 +52,11 @@ class ATElementDataSource(pytac.data_source.DataSource):
         self._field_funcs = {'x_kick': partial(self._KickAngle, 0),
                              'y_kick': partial(self._KickAngle, 1),
                              'a1': partial(self._PolynomA, 1),
-                             'b0': partial(self._PolynomB, 0),
                              'b1': partial(self._PolynomB, 1),
                              'b2': partial(self._PolynomB, 2),
                              'x': partial(self._Orbit, 0),
                              'y': partial(self._Orbit, 2),
+                             'b0': self._BendingAngle,
                              'f': self._Frequency}
 
     def get_fields(self):
@@ -224,6 +224,24 @@ class ATElementDataSource(pytac.data_source.DataSource):
             field = 'x' if cell is 0 else 'y'
             raise HandleException("Field {0} cannot be set on element data "
                                   "source {1}.".format(field, self))
+
+    def _BendingAngle(self, value):
+        """A data handling function used to get or set the BendingAngle
+        attribute of the AT element. Whenever a change is made the 'up_to_date'
+        threading event is cleared on the central ATSimulator object, so as to
+        trigger a recalculation of the physics data ensuring it is up to date.
+
+        Args:
+            value (float): The value to be set, if it is not None.
+
+        Returns:
+            float: The value of the element's BendingAngle attribute.
+        """
+        if value is None:
+            return self._at_element.BendingAngle
+        else:
+            self._at_element.BendingAngle = value
+            self._atsim.up_to_date.clear()
 
     def _Frequency(self, value):
         """A data handling function used to get or set the Frequency attribute

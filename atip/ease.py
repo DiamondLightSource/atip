@@ -29,8 +29,7 @@ def elements_by_type(lat):
 
 
 def preload_at(lat):
-    class elems():
-        pass
+    elems = object()
     setattr(elems, "all", lat)
     for elem_type, elements in elements_by_type(lat).items():
         setattr(elems, elem_type.lower() + "s", elements)
@@ -53,8 +52,7 @@ def load_diad():
 def preload(lattice):
     """This is the only function that I think Pytac really needs.
     """
-    class elems:
-        None
+    elems = object()
     setattr(elems, "all", lattice.get_elements())
     for family in list(lattice.get_all_families()):
         setattr(elems, family.lower() + "s", lattice.get_elements(family))
