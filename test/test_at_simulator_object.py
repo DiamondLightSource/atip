@@ -153,7 +153,8 @@ def test_get_at_element(at_lattice):
 
 def test_get_at_lattice(at_lattice):
     atsim = atip.at_interface.ATSimulator(at_lattice)
-    assert atsim.get_at_lattice() == atsim._at_lattice
+    for elem1, elem2 in zip(atsim.get_at_lattice(), atsim._at_lattice):
+        assert elem1 == elem2
 
 
 def test_get_chrom(mocked_atsim):

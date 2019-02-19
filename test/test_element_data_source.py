@@ -10,10 +10,10 @@ import atip
                          [('ateds._KickAngle', 'x_kick', 0),
                           ('ateds._KickAngle', 'y_kick', 1),
                           ('ateds._PolynomA', 'a1', 1),
-                          ('ateds._PolynomB', 'b0', 0),
                           ('ateds._PolynomB', 'b1', 1),
                           ('ateds._PolynomB', 'b2', 2),
                           ('ateds._Orbit', 'x', 0), ('ateds._Orbit', 'y', 2),
+                          ('ateds._BendingAngle', 'b0', None),
                           ('ateds._Frequency', 'f', None)])
 def test_elem_field_funcs(at_elem, func_str, field, cell):
     ateds = atip.sim_data_sources.ATElementDataSource(at_elem, mock.Mock(),
@@ -44,7 +44,7 @@ def test_elem_get_value_raises_FieldException_if_nonexistent_field(at_elem,
 
 
 @pytest.mark.parametrize('field,value', [('x_kick', 0.1), ('y_kick', 0.01),
-                                         ('f', 500), ('a1', 13), ('b0', 8),
+                                         ('f', 500), ('a1', 13), ('b0', 0.13),
                                          ('b1', -0.07), ('b2', 42)])
 def test_elem_get_value(at_elem_preset, field, value):
     ateds = atip.sim_data_sources.ATElementDataSource(at_elem_preset,
@@ -93,7 +93,7 @@ def test_elem_set_value_sets_up_to_date_flag(at_elem, field):
 @pytest.mark.parametrize('field,attr_str', [('x_kick', 'at_elem.KickAngle[0]'),
                                             ('y_kick', 'at_elem.KickAngle[1]'),
                                             ('a1', 'at_elem.PolynomA[1]'),
-                                            ('b0', 'at_elem.PolynomB[0]'),
+                                            ('b0', 'at_elem.BendingAngle'),
                                             ('b1', 'at_elem.PolynomB[1]'),
                                             ('b2', 'at_elem.PolynomB[2]'),
                                             ('f', 'at_elem.Frequency')])
@@ -122,11 +122,3 @@ def test_elem_set_value_on_Sextupole():
     ateds.set_value('y_kick', 5)
     assert s.PolynomA[0] == (5 / 0.1)
     assert s.PolynomB[0] == (- 1 / 0.1)
-
-
-def test_elem_set_value_on_Quadrupole():
-    q = at.elements.Quadrupole('Q1', 0.1, k=0, PolynomB=[0, 0, 0, 0])
-    ateds = atip.sim_data_sources.ATElementDataSource(q, mock.Mock(), ['b1'])
-    ateds.set_value('b1', 0.5)
-    assert q.PolynomB[1] == 0.5
-    assert q.K == 0.5

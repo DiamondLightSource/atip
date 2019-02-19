@@ -182,9 +182,6 @@ class ATElementDataSource(pytac.data_source.DataSource):
         object, so as to trigger a recalculation of the physics data ensuring
         it is up to date.
 
-        .. Note:: In the case of Quadrupoles K must also be manually set to the
-           same value.
-
         Args:
             cell (int): Which cell of PolynomB to get/set.
             value (float): The value to be set, if it is not None.
@@ -195,8 +192,6 @@ class ATElementDataSource(pytac.data_source.DataSource):
         if value is None:
             return self._at_element.PolynomB[cell]
         else:
-            if isinstance(self._at_element, at.elements.Quadrupole):
-                self._at_element.K = value
             self._at_element.PolynomB[cell] = value
             self._atsim.up_to_date.clear()
 
