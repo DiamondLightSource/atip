@@ -2,10 +2,10 @@ import atip
 import at
 import pytac
 import time as t
-#import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 
-def ring(filepath='ioc/diad.mat'):
+def ring(filepath='../ioc/diad.mat'):
     ring = at.load.load_mat(filepath)
     for x in range(len(ring)):
         ring[x].Index = x + 1
@@ -134,6 +134,7 @@ def get_thread(lattice):
 def toggle_thread(lattice):
     get_atsim(lattice).toggle_calculations()
 
+
 """
 def plot_beam_position(elems, ds, x_plot=True, y_plot=True):
     # Pytac could possibly benefit from this function too.
@@ -163,6 +164,7 @@ def plot_beam_position(elems, ds, x_plot=True, y_plot=True):
     else:
         raise ValueError("Please plot at least one of x or y.")
 """
+
 
 def get_defaults(lattice):
     print('Default units: {0}'.format(lattice.get_default_units()))

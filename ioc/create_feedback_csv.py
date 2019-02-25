@@ -3,15 +3,22 @@ import csv
 import atip.ease as e
 import pytac
 
+# Load the lattice and elements.
 lattice = e.loader()
 elements = e.preload(lattice)
-elems = list(set(elements.hstrs + elements.vstrs + elements.bpms))
-elems.sort(key=lambda x: x.index)
+# Only keep the elements from the families that we are concerned with.
+elements = list(set(elements.hstrs + elements.vstrs + elements.bpms))
+# Sort the elements by index, in ascending order.
+elements.sort(key=lambda x: x.index)
+# Data to be written is stored as a list of tuples each with structure:
+#     element index (int), field (str), pv (str), value (int).
+# We have special cases for two lattice fields that RFFB reads from.
 data = [("id", "field", "pv", "value"),
         (0, 'beam_current', 'SR-DI-DCCT-01:SIGNAL', 300),
         (0, 'feedback_status', 'CS-CS-MSTAT-01:FBSTAT', 2)]
 
-for elem in elems:
+# Iterate over our elements to get the PV names.
+for elem in elements:
     if 'HSTR' in elem.families:
         data.append((elem.index, 'error_sum',
                      elem.get_device('x_kick').name + ':ERCSUM', 0))
@@ -42,6 +49,7 @@ for elem in elems:
         data.append((elem.index, 'y_sofb_disabled',
                      elem.get_pv_name('y_sofb_disabled', pytac.RB), 0))
 
+# Write the collected data to the .csv file.
 here = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(here, 'feedback.csv'), "wb") as file:
     csv_writer = csv.writer(file)

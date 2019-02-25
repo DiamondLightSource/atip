@@ -5,8 +5,8 @@ require('cothread==2.12')
 require('epicsdbbuilder==1.0')
 require('numpy>=1.10')
 require('scipy>=0.16')
-#require('pytac')
-#require('at-python')
+# require('pytac')
+# require('at-python')
 
 
 here = os.path.realpath('.')
