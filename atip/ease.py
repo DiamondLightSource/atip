@@ -2,10 +2,10 @@ import atip
 import at
 import pytac
 import time as t
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 
-def ring(filepath='../../Documents/MATLAB/vmx.mat'):
+def ring(filepath='ioc/diad.mat'):
     ring = at.load.load_mat(filepath)
     for x in range(len(ring)):
         ring[x].Index = x + 1
@@ -29,7 +29,8 @@ def elements_by_type(lat):
 
 
 def preload_at(lat):
-    elems = object()
+    class elems():
+        pass
     setattr(elems, "all", lat)
     for elem_type, elements in elements_by_type(lat).items():
         setattr(elems, elem_type.lower() + "s", elements)
@@ -37,22 +38,23 @@ def preload_at(lat):
 
 
 def loader():
-    lattice = pytac.load_csv.load('VMX')
-    lattice = atip.load_sim.load(lattice, ring())
+    lattice = pytac.load_csv.load('DIAD')
+    lattice = atip.load_sim.load(lattice, at.Lattice(ring(), periodicity=1))
     return lattice
 
 
-def load_diad():
-    lattice = pytac.load_csv.load('DIAD')
+def load_vmx():
+    lattice = pytac.load_csv.load('VMX')
     lattice = atip.load_sim.load(lattice,
-                                 ring('../../Documents/MATLAB/diad.mat'))
+                                 ring('../../Documents/MATLAB/vmx.mat'))
     return lattice
 
 
 def preload(lattice):
     """This is the only function that I think Pytac really needs.
     """
-    elems = object()
+    class elems():
+        pass
     setattr(elems, "all", lattice.get_elements())
     for family in list(lattice.get_all_families()):
         setattr(elems, family.lower() + "s", lattice.get_elements(family))
@@ -132,10 +134,9 @@ def get_thread(lattice):
 def toggle_thread(lattice):
     get_atsim(lattice).toggle_calculations()
 
-
+"""
 def plot_beam_position(elems, ds, x_plot=True, y_plot=True):
-    """Pytac could possibly benefit from this function too.
-    """
+    # Pytac could possibly benefit from this function too.
     x = []
     y = []
     for elem in elems.bpms:
@@ -161,7 +162,7 @@ def plot_beam_position(elems, ds, x_plot=True, y_plot=True):
         plt.show()
     else:
         raise ValueError("Please plot at least one of x or y.")
-
+"""
 
 def get_defaults(lattice):
     print('Default units: {0}'.format(lattice.get_default_units()))

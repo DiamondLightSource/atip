@@ -51,8 +51,8 @@ def load(pytac_lattice, at_ring):
             if live_fields[x] in SIMULATED_FIELDS:
                 sim_fields.append(live_fields[x])
         # Set the simulator data source on each element.
-        e.set_data_source(ATElementDataSource(at_lattice[e.index-1], atsim,
-                                              sim_fields), pytac.SIM)
+        e.set_data_source(ATElementDataSource(at_lattice[e.index-1], e.index,
+                                              atsim, sim_fields), pytac.SIM)
     # Give any lattice fields not on the live machine a unit conversion object.
     for field in pytac_lattice.get_fields()[pytac.SIM]:
         if field not in pytac_lattice._data_source_manager._uc.keys():

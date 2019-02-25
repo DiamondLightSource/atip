@@ -1,0 +1,10 @@
+#!/bin/sh
+
+PYIOC_VERSION=2-11
+PYIOC=/dls_sw/prod/R3.14.12.3/support/pythonSoftIoc/$PYIOC_VERSION/pythonIoc
+
+# If run with argument assume debug mode
+[ -n "$1" ]  &&  export EPICS_CAS_SERVER_PORT=6064
+
+cd "$(dirname "$0")/ioc"
+exec $PYIOC atip_ioc_entry.py "$@"

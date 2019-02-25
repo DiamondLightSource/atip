@@ -20,6 +20,7 @@ class ATElementDataSource(pytac.data_source.DataSource):
                                                equivalent of the Pytac element,
                                                which this data source instance
                                                is attached to.
+           _index (int): The element's index in the ring, starting from 1.
            _atsim (ATSimulator): A pointer to the centralised instance of an
                                   ATSimulator object.
            _fields (list): A list of all the fields that are present on this
@@ -30,7 +31,7 @@ class ATElementDataSource(pytac.data_source.DataSource):
                                  functions, via partial(), are passed a cell
                                  argument so only relevant data is returned.
     """
-    def __init__(self, at_element, atsim, fields=[]):
+    def __init__(self, at_element, index, atsim, fields=[]):
         """
         .. Note:: This data source, currently, cannot understand the simulated
            equivelent of shared devices on the live machine, or multiple
@@ -40,6 +41,7 @@ class ATElementDataSource(pytac.data_source.DataSource):
             at_element (at.elements.Element): The AT element corresponding to
                                                the Pytac element which this
                                                data source is attached to.
+            index (int): The element's index in the ring, starting from 1.
             atsim (ATSimulator): An instance of an ATSimulator object.
             fields (list, optional): The fields found on this element.
 
@@ -47,6 +49,7 @@ class ATElementDataSource(pytac.data_source.DataSource):
         """
         self.units = pytac.PHYS
         self._at_element = at_element
+        self._index = index
         self._atsim = atsim
         self._fields = fields
         self._field_funcs = {'x_kick': partial(self._KickAngle, 0),
@@ -212,9 +215,8 @@ class ATElementDataSource(pytac.data_source.DataSource):
         Raises:
             HandleException: if a set operation is attempted (value != None).
         """
-        index = self._at_element.Index - 1
         if value is None:
-            return float(self._atsim.get_orbit(cell)[index])
+            return float(self._atsim.get_orbit(cell)[self._index - 1])
         else:
             field = 'x' if cell is 0 else 'y'
             raise HandleException("Field {0} cannot be set on element data "
