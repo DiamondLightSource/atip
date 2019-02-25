@@ -7,6 +7,15 @@
 # virtual environments
 venv*
 
+# build artifacts
+build
+dist
+*.egg-info/
+
+# coverage
+.coverage
+htmlcov/
+
 # temporary files
 *~
 
