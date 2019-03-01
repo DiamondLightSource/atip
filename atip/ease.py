@@ -2,10 +2,12 @@ import atip
 import at
 import pytac
 import time as t
+import os
 # import matplotlib.pyplot as plt
 
 
-def ring(filepath='../ioc/diad.mat'):
+def ring(filepath=os.path.join(os.path.realpath(__file__),
+                               os.path.realpath('ioc/diad.mat'))):
     ring = at.load.load_mat(filepath)
     for x in range(len(ring)):
         ring[x].Index = x + 1
