@@ -10,15 +10,15 @@ import atip
 
 @pytest.fixture()
 def at_elem():
-    e = at.elements.Drift('D1', 0.0, KickAngle=[0, 0], Index=1, Frequency=0,
-                          k=0.0, PolynomA=[0, 0, 0, 0], PolynomB=[0, 0, 0, 0],
+    e = at.elements.Drift('D1', 0.0, KickAngle=[0, 0], Frequency=0, k=0.0,
+                          PolynomA=[0, 0, 0, 0], PolynomB=[0, 0, 0, 0],
                           BendingAngle=0.0)
     return e
 
 
 @pytest.fixture()
 def at_elem_preset():
-    e = at.elements.Drift('D1', 0.5, KickAngle=[0.1, 0.01], Index=6, k=-0.07,
+    e = at.elements.Drift('D1', 0.5, KickAngle=[0.1, 0.01], k=-0.07,
                           Frequency=500, PolynomA=[1.3, 13, 22, 90],
                           PolynomB=[8, -0.07, 42, 1], BendingAngle=0.13)
     return e
@@ -33,7 +33,7 @@ def atlds():
 def at_lattice():
     ring = at.load.load_mat(os.path.join(os.path.realpath('../'),
                             'at/pyat/test_matlab/hmba.mat'))
-    lattice = at.lattice_object.Lattice(ring)
+    lattice = at.lattice_object.Lattice(ring, keep_all=False)
     return lattice
 
 
