@@ -163,10 +163,11 @@ class ATIPServer(object):
             ['x_fofb_disabled', 'x_sofb_disabled', 'y_fofb_disabled',
              'y_sofb_disabled', 'h_fofb_disabled', 'h_sofb_disabled',
              'v_fofb_disabled', 'v_sofb_disabled', 'error_sum',
-             'enabled', 'state']
+             'enabled', 'state', 'beam_current', feedback_status']
 
         Args:
-            index (int): The index of the element on which to set the value.
+            index (int): The index of the element on which to set the value;
+                          starting from 1, 0 is used to set on the lattice.
             field (string): The field to set the value to.
             value (number): The value to be set.
 

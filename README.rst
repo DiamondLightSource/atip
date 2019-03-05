@@ -78,11 +78,10 @@ ATSimulator:
     * ``toggle_calculations()`` - pause or unpause the recalculation thread.
     * ``wait_for_calculations(timeout)`` - wait up to 'timeout' seconds for
       the current calculations to conclude.
-    * ``get_element(index)`` - return a shallow copy of the specified AT
+    * ``get_at_element(index)`` - return a shallow copy of the specified AT
       element from the central AT ring, N.B. An 'index' of 1 returns ring[0].
-    * ``get_ring()`` - return a shallow copy of the entire centralised AT ring.
-    * ``get_lattice_object()`` - return a shallow of the centralised AT lattice
-      object.
+    * ``get_at_lattice()`` - return a shallow copy of the entire centralised AT
+      lattice object.
     * ``get_chrom(cell)`` - return the specified cell of the lattice's
       'chromaticity'; 0 for 'x', 1 for 'y'.
     * ``get_emit(cell)`` - return the specified cell of the lattice's
