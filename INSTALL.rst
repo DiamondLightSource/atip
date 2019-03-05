@@ -31,16 +31,16 @@ Initial Setup and Installation
 
     $ cd <source-directory>/pytac
     $ pipenv shell
-    $ pip install -r requirements.txt
+    $ pipenv install --dev --skip-lock
     $ python -m pytest
     $ exit
 
 
-4. Install ATIP::
+4. Install ATIP, and run the tests to check that it works correctly::
 
     $ cd <source-directory>/atip
     $ pipenv shell
-    $ pip install -r requirements.txt
+    $ pipenv install -dev --skip-lock
     $ python -m pytest
 
 

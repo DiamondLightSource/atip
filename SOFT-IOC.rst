@@ -1,0 +1,43 @@
+===========================================================
+Running ATIP as a Virtual Accelerator using Python Soft IOC
+===========================================================
+
+Using Python Soft IOC ATIP can emulate machine PVs so that the ATIP simulator can be addressed in the same manner as the live machine.
+
+Initialisation:
+---------------
+
+Before starting please ensure you have working up to date versions of Pytac,
+AT, and ATIP.
+Inside the top-level atip directory::
+
+    $ ./start-ioc
+
+
+After a minute or two, you should be presented with something like this::
+
+    Starting iocInit
+    ###########################################################################
+    ## EPICS R3.14.12.3 $Date: Mon 2012-12-17 14:11:47 -0600$
+    ## EPICS Base built Nov  8 2018
+    ###########################################################################
+    iocRun: All initialization complete
+    Python 2.7.3 (default, Nov  9 2013, 21:59:00) 
+    [GCC 4.4.7 20120313 (Red Hat 4.4.7-3)] on linux2
+    Type "help", "copyright", "credits" or "license" for more information.
+    (InteractiveConsole)
+    >>> 
+
+
+Leave the server running and in a new terminal update the EPICS port::
+
+    $ export EPICS_CA_SERVER_PORT=6064
+    $ python
+    Python 2.7.5 (default, Sep 12 2018, 05:31:16) 
+    [GCC 4.8.5 20150623 (Red Hat 4.8.5-36)] on linux2
+    Type "help", "copyright", "credits" or "license" for more information.
+    >>> 
+
+
+You are then free to address the simulator as you would the live machine,
+either through Pytac or by directly accessing the PVs.

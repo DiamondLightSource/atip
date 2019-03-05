@@ -10,7 +10,7 @@ in the same manner as the live machine.
 Installation:
 -------------
 
-See the `INSTALL.rst` document.
+See the ``INSTALL.rst`` document.
 
 General Use:
 ------------
@@ -28,6 +28,12 @@ but in a few cases they do differ e.g. the simulator has a number of lattice
 fields that the live accelerator doesn't have and the live machine has a few
 element fields that the simulator doesn't.
 
+Virtual Accelerator:
+--------------------
+
+ATIP can be used as a virtual accelerator, see ``SOFT-IOC.rst`` for further
+information.
+
 Implementation:
 ---------------
 
@@ -37,7 +43,7 @@ Each instance of ``ATElementDataSource`` holds the pyAT element equivalent of
 the Pytac element that it is attached to; when a get request is made the
 appropriate data from that AT element is returned, however, when a set request
 is made the class updates its copy of that element with the changes
-incorporated and then alerts the centralised `ATSimulator` object that new
+incorporated and then alerts the centralised ``ATSimulator`` object that new
 changes have been made. Inside an ``ATSimulator`` instance a background thread
 is constantly running, whenever a change is made the thread recalculates the
 physics data of the lattice to ensure that it is up to date. This means that
@@ -70,7 +76,7 @@ ATSimulator:
     * ``stop_thread()`` - kill the background calculation thread after it has
       completed it's current round of calculations.
     * ``toggle_calculations()`` - pause or unpause the recalculation thread.
-    * ``wait_fo_calculations(timeout)`` - wait up to 'timeout' seconds for
+    * ``wait_for_calculations(timeout)`` - wait up to 'timeout' seconds for
       the current calculations to conclude.
     * ``get_element(index)`` - return a shallow copy of the specified AT
       element from the central AT ring, N.B. An 'index' of 1 returns ring[0].
@@ -124,7 +130,7 @@ act like flags, to indicate whether it should perform a recalculation or not;
 as well as using them to start and stop the thread.
 
 The ``start_thread()`` and ``stop_thread()`` methods on ``ATSimulator`` are
-there so an `ATSimulator` object can exist without having the background
+there so an ``ATSimulator`` object can exist without having the background
 calculation thread running. This prevents the unnecessary wasting of processing
 power when recalculation is not required.
 
