@@ -1,11 +1,11 @@
 import os
 import csv
-import atip.ease as e
+import atip
 import pytac
 
 # Load the lattice and elements.
-lattice = e.loader()
-elements = e.preload(lattice)
+lattice = atip.utils.loader()
+elements = atip.utils.preload(lattice)
 # Only keep the elements from the families that we are concerned with.
 elements = list(set(elements.hstrs + elements.vstrs + elements.bpms))
 # Sort the elements by index, in ascending order.

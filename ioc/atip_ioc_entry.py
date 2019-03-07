@@ -10,20 +10,16 @@ require('scipy>=0.16')
 
 
 here = os.path.realpath('.')
-sys.path.append(here[:-4])
+sys.path.append(os.path.split(here)[0])
 
 
 from softioc import builder, softioc
-import at
-import pytac
 import atip
 import atip_server
 
 
 # Create lattice.
-at_ring = at.load.load_mat(os.path.join(here, 'diad.mat'))
-pytac_lattice = pytac.load_csv.load('DIAD')
-lattice = atip.load_sim.load(pytac_lattice, at.Lattice(at_ring, periodicity=1))
+lattice = atip.utils.loader()
 
 # Create PVs.
 server = atip_server.ATIPServer(lattice, os.path.join(here, 'feedback.csv'))

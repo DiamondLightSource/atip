@@ -1,66 +1,14 @@
 import atip
-import at
 import pytac
 import time as t
-import os
 # import matplotlib.pyplot as plt
 
 
-def ring(filepath=os.path.join(os.path.realpath(__file__),
-                               os.path.realpath('ioc/diad.mat'))):
-    ring = at.load.load_mat(filepath)
-    for x in range(len(ring)):
-        ring[x].Index = x + 1
-        ring[x].Class = str(type(ring[x])).split("'")[-2].split(".")[-1]
-        # Fix becasue APs are using old version of AT.
-        if ring[x].PassMethod == 'ThinCorrectorPass':
-            ring[x].PassMethod = 'CorrectorPass'
-        if ring[x].PassMethod == 'GWigSymplecticPass':
-            ring[x].PassMethod = 'DriftPass'
-    return ring
-
-
-def elements_by_type(lat):
-    elems_dict = {}
-    for elem in lat:
-        elem_type = type(elem).__dict__['__doc__'].split()[1]
-        if elem_type not in elems_dict:
-            elems_dict[elem_type] = []
-        elems_dict[elem_type].append(elem)
-    return elems_dict
-
-
-def preload_at(lat):
-    class elems():
-        pass
-    setattr(elems, "all", lat)
-    for elem_type, elements in elements_by_type(lat).items():
-        setattr(elems, elem_type.lower() + "s", elements)
-    return elems
-
-
-def loader():
-    lattice = pytac.load_csv.load('DIAD')
-    lattice = atip.load_sim.load(lattice, at.Lattice(ring(), periodicity=1))
-    return lattice
-
-
-def load_vmx():
-    lattice = pytac.load_csv.load('VMX')
-    lattice = atip.load_sim.load(lattice,
-                                 ring('../../Documents/MATLAB/vmx.mat'))
-    return lattice
-
-
-def preload(lattice):
-    """This is the only function that I think Pytac really needs.
-    """
-    class elems():
-        pass
-    setattr(elems, "all", lattice.get_elements())
-    for family in list(lattice.get_all_families()):
-        setattr(elems, family.lower() + "s", lattice.get_elements(family))
-    return elems
+ring = atip.utils.load_ring
+loader = atip.utils.loader
+elements_by_type = atip.utils.elements_by_type
+preload_at = atip.utils.preload_at
+preload = atip.utils.preload
 
 
 def get_attributes(obj):
@@ -112,14 +60,7 @@ class timer(object):
 
 
 def get_sim_ring(lattice):
-    """Ugly way to convert an AT lattice object back to a plain list.
-    """
-    lo = get_atsim(lattice).get_at_lattice()
-    ring = []
-    for i in range(len(lo)):
-        ring.append(lo[i])
-    return ring
-
+    return get_atsim(lattice).get_at_lattice()[:]
 
 def get_sim_elem(elem):
     return elem._data_source_manager._data_sources[pytac.SIM]._at_element
