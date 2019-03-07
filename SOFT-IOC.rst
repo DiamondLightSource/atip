@@ -13,6 +13,7 @@ Initialisation:
 
 Before starting please ensure you have working up to date versions of Pytac,
 AT, and ATIP.
+
 Inside the top-level atip directory::
 
     $ ./start-ioc
@@ -50,10 +51,11 @@ special method for setting them. This is done on the ATIP server object, inside
 the server terminal. As arguments, it takes the element's index in the ring
 (starting from 1, 0 is used to set on the lattice), the field (possible fields
 are:
-   ['x_fofb_disabled', 'x_sofb_disabled', 'y_fofb_disabled', 'y_sofb_disabled',
+    'x_fofb_disabled', 'x_sofb_disabled', 'y_fofb_disabled', 'y_sofb_disabled',
     'h_fofb_disabled', 'h_sofb_disabled', 'v_fofb_disabled', 'v_sofb_disabled',
-    'error_sum', 'enabled', 'state', 'beam_current', feedback_status']
+    'error_sum', 'enabled', 'state', 'beam_current', feedback_status'
 ), and the value to be set.
+
 For example disabling SOFB on the first BPM, or reducing the beam current::
 
     >>> server.set_feedback_record(3, 'enabled', 0)
