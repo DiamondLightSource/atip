@@ -13,7 +13,7 @@ elements.sort(key=lambda x: x.index)
 # Data to be written is stored as a list of tuples each with structure:
 #     element index (int), field (str), pv (str), value (int).
 # We have special cases for two lattice fields that RFFB reads from.
-data = [("id", "field", "pv", "value"),
+data = [("index", "field", "pv", "value"),
         (0, 'beam_current', 'SR-DI-DCCT-01:SIGNAL', 300),
         (0, 'feedback_status', 'CS-CS-MSTAT-01:FBSTAT', 2)]
 

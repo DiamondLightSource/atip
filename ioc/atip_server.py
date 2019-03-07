@@ -42,10 +42,10 @@ class ATIPServer(object):
         self._out_records = {}
         self._rb_only_records = []
         self._feedback_records = {}
-        self.create_records()
-        self.create_feedback_records(feedback_csv)
+        self._create_records()
+        self._create_feedback_records(feedback_csv)
 
-    def create_records(self):
+    def _create_records(self):
         """Create all the standard records from both lattice and element pytac
         fields. Several assumptions have been made for simplicity and
         efficiency, these are:
@@ -69,7 +69,7 @@ class ATIPServer(object):
                     set_pv = element.get_pv_name('b0', pytac.SP).split(':', 1)
                     builder.SetDeviceName(set_pv[0])
                     out_record = builder.aOut(set_pv[1], initial_value=value,
-                                              validate=self.validate)
+                                              validate=self._validate)
                     # how to solve the index problem?
                     self._in_records[in_record] = (element.index, 'b0')
                     self._out_records[out_record] = in_record
@@ -92,7 +92,7 @@ class ATIPServer(object):
                         builder.SetDeviceName(set_pv[0])
                         out_record = builder.aOut(set_pv[1],
                                                   initial_value=value,
-                                                  validate=self.validate)
+                                                  validate=self._validate)
                         wrapperless_record = out_record._RecordWrapper__device
                         self._out_records[wrapperless_record] = in_record
         # Now for lattice fields
@@ -109,7 +109,7 @@ class ATIPServer(object):
                 self._in_records[in_record] = (0, field)
                 self._rb_only_records.append(in_record)
 
-    def validate(self, record, value):
+    def _validate(self, record, value):
         """The callback function passed to out records, it is called after
         successful record processing has been completed. It updates the out
         record's corresponding in record with the value that has been set, it
@@ -143,7 +143,7 @@ class ATIPServer(object):
                                                 data_source=pytac.SIM))
         return True
 
-    def create_feedback_records(self, feedback_csv):
+    def _create_feedback_records(self, feedback_csv):
         """Create all the feedback records from the .csv file at the location
         passed, see create_feedback_csv.py for more information.
 
@@ -156,9 +156,10 @@ class ATIPServer(object):
             prefix, pv = line['pv'].split(':', 1)
             builder.SetDeviceName(prefix)
             in_record = builder.longIn(pv, initial_value=int(line['value']))
-            self._feedback_records[(line['id'], line['field'])] = in_record
+            self._feedback_records[(int(line['index']),
+                                    line['field'])] = in_record
 
-    def set_feeback_pvs(self, index, field, value):
+    def set_feedback_record(self, index, field, value):
         """Set a value to the feedback in records, possible fields are:
             ['x_fofb_disabled', 'x_sofb_disabled', 'y_fofb_disabled',
              'y_sofb_disabled', 'h_fofb_disabled', 'h_sofb_disabled',

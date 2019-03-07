@@ -26,7 +26,7 @@ pytac_lattice = pytac.load_csv.load('DIAD')
 lattice = atip.load_sim.load(pytac_lattice, at.Lattice(at_ring, periodicity=1))
 
 # Create PVs.
-atip_server.ATIPServer(lattice, os.path.join(here, 'feedback.csv'))
+server = atip_server.ATIPServer(lattice, os.path.join(here, 'feedback.csv'))
 
 # Add special case out record for SOFB to write to.
 builder.SetDeviceName('CS-CS-MSTAT-01')

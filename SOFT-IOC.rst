@@ -40,3 +40,21 @@ Leave the server running and in a new terminal update the EPICS port::
 
 In this terminal you are then free to address the simulator as you would the
 live machine, either through Pytac or by directly accessing the PVs.
+
+Feedback Records:
+-----------------
+
+A number of PVs related to the feedback systems are supported. They can be read
+from in the same way as any other PV, but for testing and debugging there is a
+special method for setting them. This is done on the ATIP server object, inside
+the server terminal. As arguments, it takes the element's index in the ring
+(starting from 1, 0 is used to set on the lattice), the field (possible fields
+are:
+   ['x_fofb_disabled', 'x_sofb_disabled', 'y_fofb_disabled', 'y_sofb_disabled',
+    'h_fofb_disabled', 'h_sofb_disabled', 'v_fofb_disabled', 'v_sofb_disabled',
+    'error_sum', 'enabled', 'state', 'beam_current', feedback_status']
+), and the value to be set.
+For example disabling SOFB on the first BPM, or reducing the beam current::
+
+    >>> server.set_feedback_record(3, 'enabled', 0)
+    >>> server.set_feedback_record(0, 'beam_current', 280)
