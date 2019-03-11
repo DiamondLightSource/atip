@@ -56,6 +56,7 @@ class ATIPServer(object):
             - That all lattice fields are never setpoint and so only in records
                need to be created for them.
         """
+        print("Starting element record creation...")
         bend_set = False
         for element in self.lattice:
             if element.type_ == 'BEND':
@@ -95,6 +96,7 @@ class ATIPServer(object):
                                                   validate=self._validate)
                         wrapperless_record = out_record._RecordWrapper__device
                         self._out_records[wrapperless_record] = in_record
+        print("Finished element records, now creating lattice records...")
         # Now for lattice fields
         lat_fields = self.lattice.get_fields()
         for field in set(lat_fields[pytac.LIVE]) & set(lat_fields[pytac.SIM]):
@@ -108,6 +110,7 @@ class ATIPServer(object):
                 in_record = builder.aIn(get_pv[1], initial_value=value)
                 self._in_records[in_record] = (0, field)
                 self._rb_only_records.append(in_record)
+        print("Finished lattice records, now creating feedback records...")
 
     def _validate(self, record, value):
         """The callback function passed to out records, it is called after
@@ -158,6 +161,10 @@ class ATIPServer(object):
             in_record = builder.longIn(pv, initial_value=int(line['value']))
             self._feedback_records[(int(line['index']),
                                     line['field'])] = in_record
+        total_records = (len(self._in_records) + len(self._out_records)
+                         + len(self._feedback_records))
+        print("Finished creating {0} records.".format(total_records))
+
 
     def set_feedback_record(self, index, field, value):
         """Set a value to the feedback in records, possible fields are:
