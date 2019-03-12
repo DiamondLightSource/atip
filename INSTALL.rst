@@ -8,42 +8,37 @@ if you find a mistake please raise an issue on ATIP's GitHub page.
 Initial Setup and Installation
 ------------------------------
 
-1. Download AT, Pytac and ATIP into the same directory [1]_::
+Install AT, Pytac and ATIP from GitHub:
+    1. Download AT, Pytac and ATIP into the same directory [1]_::
 
-    $ cd <source-directory>
-    $ git clone https://github.com/atcollab/at.git
-    $ git clone https://github.com/dls-controls/pytac.git
-    $ git clone https://github.com/T-Nicholls/atip.git
+        $ cd <source-directory>
+        $ git clone https://github.com/atcollab/at.git
+        $ git clone https://github.com/dls-controls/pytac.git
+        $ git clone https://github.com/T-Nicholls/atip.git
 
+    2. Create a virtual enviroment and install the dependencies::
 
-2. Install AT [2]_, and run the tests to check that it works correctly::
+        $ cd atip
+        $ virtualenv --no-site-packages venv
+        $ source venv/bin/activate
+        $ pip install -r requirements
 
-    $ cd <source-directory>/at/pyat
-    $ virtualenv --no-site-packages venv
-    $ source venv/bin/activate
-    $ pip install -r requirements.txt
-    $ python setup.py develop
-    $ python -m pytest test
-    $ deactivate
+    3. Build AT's .so files::
 
+        $ cd ../at/pyat
+        $ python setup.py develop
 
-3. Install Pytac [3]_, and run the tests to check that it works correctly::
+    4. Run the tests to ensure all modules are working correctly::
 
-    $ cd <source-directory>/pytac
-    $ pipenv shell
-    $ pipenv install --dev --skip-lock
-    $ python -m pytest
-    $ exit
+        $ python -m pytest test
+        $ cd ../../pytac
+        $ python -m pytest
+        $ cd ../atip
+        $ python -m pytest
 
+Install ATIP using pip (not yet supported)::
 
-4. Install ATIP, and run the tests to check that it works correctly::
-
-    $ cd <source-directory>/atip
-    $ pipenv shell
-    $ pipenv install -dev --skip-lock
-    $ python -m pytest
-
-
+    $ pip install atip
 
 Footnotes
 ---------
@@ -55,9 +50,3 @@ Footnotes
  .    |____pytac
  .    |____at
  .         |____pyat
-
-
-.. [2] Taken from: `at/pyat/README.rst`
-
-
-.. [3] Taken from: `pytac/docs/installation.rst`
