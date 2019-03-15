@@ -59,13 +59,14 @@ def generate_data():
                          elem.get_pv_name('y_sofb_disabled', pytac.RB), 0))
         # Add elements for Tune Feedback
         # Allow for duplication of elements in other families
-        if "Q1D" in elem.families:
-            # We must slice PV name because there is no field for OFFSET1
-            pv_b1 = elem.get_pv_name("b1", pytac.RB)
-            last_colon = pv_b1.rfind(":")
-            pv_stem = pv_b1[:last_colon]
-            data.append((elem.index, "OFFSET1",
-                        "{}:OFFSET1".format(pv_stem), 0))
+        for family in TUNE_QUAD_FAMILIES:
+            if family in elem.families:
+                # We must slice PV name because there is no field for OFFSET1
+                pv_b1 = elem.get_pv_name("b1", pytac.RB)
+                last_colon = pv_b1.rfind(":")
+                pv_stem = pv_b1[:last_colon]
+                data.append((elem.index, "OFFSET1",
+                            "{}:OFFSET1".format(pv_stem), 0))
 
     return data
 
