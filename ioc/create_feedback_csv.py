@@ -7,15 +7,24 @@ import pytac
 def generate_data():
     # Load the lattice and elements.
     lattice = atip.utils.loader()
-    elements = atip.utils.preload(lattice)
+    all_elements = atip.utils.preload(lattice)
     # Only keep the elements from the families that we are concerned with.
-    elements = list(set(elements.hstrs + elements.vstrs + elements.bpms))
+    elements = list(set(
+        all_elements.hstrs
+        + all_elements.vstrs
+        + all_elements.bpms)
+    )
 
     # Also get families for tune feedback
-    TUNE_QUAD_FAMILIES = ('Q1D', 'Q2D', 'Q3D', 'Q3B', 'Q2B', 'Q1B')
-    for family in TUNE_QUAD_FAMILIES:
-        elems_in_family = lattice.get_elements(family=family)
-        elements.extend(elems_in_family)
+    tune_quad_elements = set(
+        all_elements.q1ds
+        + all_elements.q2ds
+        + all_elements.q3ds
+        + all_elements.q3bs
+        + all_elements.q2bs
+        + all_elements.q1bs
+    )
+    elements.extend(list(tune_quad_elements))
 
     # Sort the elements by index, in ascending order.
     elements.sort(key=lambda x: x.index)
@@ -58,15 +67,11 @@ def generate_data():
             data.append((elem.index, 'y_sofb_disabled',
                          elem.get_pv_name('y_sofb_disabled', pytac.RB), 0))
         # Add elements for Tune Feedback
-        # Allow for duplication of elements in other families
-        for family in TUNE_QUAD_FAMILIES:
-            if family in elem.families:
-                # We must slice PV name because there is no field for OFFSET1
-                pv_b1 = elem.get_pv_name("b1", pytac.RB)
-                last_colon = pv_b1.rfind(":")
-                pv_stem = pv_b1[:last_colon]
-                data.append((elem.index, "OFFSET1",
-                            "{}:OFFSET1".format(pv_stem), 0))
+        elif elem in tune_quad_elements:
+            # We must build the PV name because there is no field for OFFSET1
+            pv_stem = elem.get_device("b1").name
+            data.append((elem.index, "OFFSET1",
+                        "{}:OFFSET1".format(pv_stem), 0))
 
     return data
 
