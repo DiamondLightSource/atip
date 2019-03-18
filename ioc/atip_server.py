@@ -161,6 +161,19 @@ class ATIPServer(object):
             in_record = builder.longIn(pv, initial_value=int(line['value']))
             self._feedback_records[(int(line['index']),
                                     line['field'])] = in_record
+
+        # Storage ring electron BPMs enabled
+        # Special case: since cannot currently create waveform records via CSV,
+        # create by hand and add to list of feedback records
+        N_BPM=173
+        builder.SetDeviceName("SR-DI-EBPM-01")
+        bpm_enabled_record = builder.Waveform(
+            ":ENABLED",
+            NELM=N_BPM,
+            initial_value=[1]*N_BPM
+        )
+        self._feedback_records[0, "bpm_enabled"] = bpm_enabled_record
+
         total_records = (len(self._in_records) + len(self._out_records)
                          + len(self._feedback_records))
         print("Finished creating {0} records.".format(total_records))
