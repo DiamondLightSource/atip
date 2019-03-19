@@ -71,7 +71,7 @@ class ATElementDataSource(pytac.data_source.DataSource):
         """
         return self._fields
 
-    def get_value(self, field, handle=None):
+    def get_value(self, field, handle=None, throw=None):
         """Get the value for a field.
 
         .. Note:: The 'value' argument passed to the data handling functions is
@@ -81,6 +81,9 @@ class ATElementDataSource(pytac.data_source.DataSource):
         Args:
             field (str): The requested field.
             handle (str, optional): Handle is not needed and is only here to
+                                     conform with the structure of the
+                                     DataSource base class.
+            throw (bool, optional): Throw is not needed and is only here to
                                      conform with the structure of the
                                      DataSource base class.
 
@@ -96,7 +99,7 @@ class ATElementDataSource(pytac.data_source.DataSource):
             raise FieldException("No field {0} on AT element {1}."
                                  .format(field, self._at_element))
 
-    def set_value(self, field, set_value):
+    def set_value(self, field, set_value, throw=None):
         """Set the value for a field.
 
         .. Note:: The 'value' argument passed to the data handling functions is
@@ -106,6 +109,9 @@ class ATElementDataSource(pytac.data_source.DataSource):
         Args:
             field (str): The requested field.
             set_value (float): The value to be set.
+            throw (bool, optional): Throw is not needed and is only here to
+                                     conform with the structure of the
+                                     DataSource base class.
 
         Raises:
             FieldException: if the specified field does not exist.
@@ -317,12 +323,15 @@ class ATLatticeDataSource(pytac.data_source.DataSource):
         """
         return self._field_funcs.keys()
 
-    def get_value(self, field, handle=None):
+    def get_value(self, field, handle=None, throw=None):
         """Get the value for a field on the pytac lattice.
 
         Args:
             field (str): The requested field.
             handle (str, optional): Handle is not needed and is only here to
+                                     conform with the structure of the
+                                     DataSource base class.
+            throw (bool, optional): Throw is not needed and is only here to
                                      conform with the structure of the
                                      DataSource base class.
 
@@ -338,7 +347,7 @@ class ATLatticeDataSource(pytac.data_source.DataSource):
             raise FieldException("Lattice data source {0} does not have field "
                                  "{1}".format(self, field))
 
-    def set_value(self, field, value):
+    def set_value(self, field, value, throw=None):
         """Set the value for a field.
 
         .. Note:: Currently, a HandleException is always raised.
@@ -346,6 +355,9 @@ class ATLatticeDataSource(pytac.data_source.DataSource):
         Args:
             field (str): The requested field.
             value (float): The value to be set.
+            throw (bool, optional): Throw is not needed and is only here to
+                                     conform with the structure of the
+                                     DataSource base class.
 
         Raises:
             HandleException: as setting values to pytac lattice fields is not
