@@ -175,7 +175,6 @@ class ATIPServer(object):
                          + len(self._feedback_records))
         print("Finished creating {0} records.".format(total_records))
 
-
     def set_feedback_record(self, index, field, value):
         """Set a value to the feedback in records, possible fields are:
             ['x_fofb_disabled', 'x_sofb_disabled', 'y_fofb_disabled',

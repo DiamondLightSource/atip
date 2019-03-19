@@ -13,10 +13,12 @@ here = os.path.realpath('.')
 sys.path.append(os.path.split(here)[0])
 
 
-from softioc import builder, softioc
-import atip
-import atip_server
-
+from softioc import builder, softioc  # noqa: E402
+import atip  # noqa: E402
+import atip_server  # noqa: E402
+"""Error 402 is suppressed as we cannot import these modules at the top of the
+file as they must be below the requires and the path editing.
+"""
 
 # Create lattice.
 lattice = atip.utils.loader()

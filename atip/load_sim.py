@@ -10,18 +10,20 @@ from atip.sim_data_sources import ATElementDataSource, ATLatticeDataSource
 SIMULATED_FIELDS = ['a1', 'b0', 'b1', 'b2', 'x', 'y', 'f', 'x_kick', 'y_kick']
 
 
-def load(pytac_lattice, at_ring):
+def load(pytac_lattice, at_ring, callback=None):
     """Load simulator data sources onto the lattice and its elements.
 
     Args:
         pytac_lattice (pytac.lattice.Lattice): An instance of a Pytac lattice.
         at_ring (list, str or at.lattice_object.Lattice): Accelerator Toolbox
-                                                          ring, or the path to
-                                                          the .mat file from
-                                                          which the AT ring
-                                                          can be loaded, or an
-                                                          instance of an AT
-                                                          lattice object.
+                                                           ring, or the path to
+                                                           the .mat file from
+                                                           which the AT ring
+                                                           can be loaded, or an
+                                                           instance of an AT
+                                                           lattice object.
+        callback (callable): To be called after completion of each round of
+                              physics calculations.
 
     Returns:
         pytac.lattice.Lattice: The same Pytac lattice object, but now with a
@@ -38,7 +40,10 @@ def load(pytac_lattice, at_ring):
         at_lattice = at.Lattice(at_ring, name=pytac_lattice.name,
                                 energy=pytac_lattice.get_value('energy'))
     # Initialise an instance of the ATSimulator Object.
-    atsim = ATSimulator(at_lattice)
+    if (not callable(callback)) and (callback is not None):
+        raise TypeError("If passed, 'callback' should be callable, {0} is "
+                        "not.".format(callback))
+    atsim = ATSimulator(at_lattice, callback)
     atsim.start_thread()
     # Set the simulator data source on the pytac lattice.
     pytac_lattice.set_data_source(ATLatticeDataSource(atsim), pytac.SIM)

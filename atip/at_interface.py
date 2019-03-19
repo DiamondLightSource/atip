@@ -53,10 +53,13 @@ class ATSimulator(object):
             at_lattice (at.lattice_object.Lattice): An instance of an AT
                                                      lattice object.
             callback (callable): To be called after completion of each round of
-                                                     physics calculations.
+                                  physics calculations.
 
         **Methods:**
         """
+        if (not callable(callback)) and (callback is not None):
+            raise TypeError("If passed, 'callback' should be callable, {0} is "
+                            "not.".format(callback))
         self._at_lattice = at_lattice
         self._rp = numpy.ones(len(at_lattice), dtype=bool)
         # Initial phys data calculation.

@@ -4,6 +4,7 @@ import csv
 import atip
 import pytac
 
+
 def generate_data():
     # Load the lattice and elements.
     lattice = atip.utils.loader()
@@ -75,12 +76,14 @@ def generate_data():
 
     return data
 
+
 def write_data_to_file(data, filename):
     # Write the collected data to the .csv file.
     here = os.path.abspath(os.path.dirname(__file__))
     with open(os.path.join(here, filename), "wb") as file:
         csv_writer = csv.writer(file)
         csv_writer.writerows(data)
+
 
 def parse_arguments():
     parser = argparse.ArgumentParser(
@@ -93,6 +96,7 @@ def parse_arguments():
         default="feedback.csv",
     )
     return parser.parse_args()
+
 
 if __name__ == "__main__":
 

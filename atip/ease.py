@@ -62,6 +62,7 @@ class timer(object):
 def get_sim_ring(lattice):
     return get_atsim(lattice).get_at_lattice()[:]
 
+
 def get_sim_elem(elem):
     return elem._data_source_manager._data_sources[pytac.SIM]._at_element
 

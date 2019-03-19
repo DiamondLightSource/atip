@@ -1,4 +1,5 @@
 import at
+import mock
 import numpy
 import pytest
 
@@ -144,6 +145,16 @@ def test_toggle_calculations_and_wait_for_calculations(at_lattice, initial_lin,
         atsim.toggle_calculations()
         assert atsim.wait_for_calculations(10) is True
         assert _initial_phys_data(atsim, initial_emit, initial_lin) is False
+
+
+def test_recalculate_phys_data_callback(at_lattice):
+    callback_func = mock.Mock()
+    atsim = atip.at_interface.ATSimulator(at_lattice, callback_func)
+    thread = temporary_thread(atsim)
+    with thread:
+        atsim.up_to_date.clear()
+        atsim.wait_for_calculations()
+    callback_func.assert_called_once_with()
 
 
 def test_get_at_element(at_lattice):
