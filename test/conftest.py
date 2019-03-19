@@ -3,6 +3,7 @@ import os
 import at
 import mock
 import numpy
+import pytac
 import pytest
 
 import atip
@@ -31,10 +32,25 @@ def atlds():
 
 @pytest.fixture()
 def at_lattice():
-    ring = at.load.load_mat(os.path.join(os.path.realpath('../'),
-                            'at/pyat/test_matlab/hmba.mat'))
+    ring = atip.utils.load_ring('HMBA')
     lattice = at.lattice_object.Lattice(ring, keep_all=False)
     return lattice
+
+
+@pytest.fixture()
+def pytac_lattice():
+    return pytac.load_csv.load('DIAD')
+
+
+@pytest.fixture()
+def mat_filepath():
+    here = os.path.dirname(__file__)
+    return os.path.realpath(os.path.join(here, '../rings/diad.mat'))
+
+
+@pytest.fixture()
+def at_ring(mat_filepath):
+    return at.load.load_mat(mat_filepath)
 
 
 @pytest.fixture()
