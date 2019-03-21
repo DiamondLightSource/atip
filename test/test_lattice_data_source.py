@@ -7,32 +7,29 @@ import atip
 
 
 @pytest.mark.parametrize('func_str,field,cell',
-                         [('atsim.get_chrom', 'chromaticity_x', 0),
-                          ('atsim.get_chrom', 'chromaticity_y', 1),
-                          ('atsim.get_emit', 'emittance_x', 0),
-                          ('atsim.get_emit', 'emittance_y', 1),
-                          ('atsim.get_orbit', 'phase_x', 1),
-                          ('atsim.get_orbit', 'phase_y', 3),
-                          ('atsim.get_tune', 'tune_x', 0),
-                          ('atsim.get_tune', 'tune_y', 1),
-                          ('atsim.get_orbit', 'x', 0),
-                          ('atsim.get_orbit', 'y', 2),
-                          ('atsim.get_disp', 'dispersion', None),
-                          ('atsim.get_energy', 'energy', None),
-                          ('atsim.get_s', 's_position', None),
-                          ('atsim.get_alpha', 'alpha', None),
-                          ('atsim.get_beta', 'beta', None),
-                          ('atsim.get_m44', 'm44', None),
-                          ('atsim.get_mu', 'mu', None)])
-def test_lat_field_funcs(func_str, field, cell):
-    atsim = mock.Mock()
-    atlds = atip.sim_data_sources.ATLatticeDataSource(atsim)
-    ff = atlds._field_funcs
+                         [('atlds._atsim.get_chrom', 'chromaticity_x', 0),
+                          ('atlds._atsim.get_chrom', 'chromaticity_y', 1),
+                          ('atlds._atsim.get_emit', 'emittance_x', 0),
+                          ('atlds._atsim.get_emit', 'emittance_y', 1),
+                          ('atlds._atsim.get_orbit', 'phase_x', 1),
+                          ('atlds._atsim.get_orbit', 'phase_y', 3),
+                          ('atlds._atsim.get_tune', 'tune_x', 0),
+                          ('atlds._atsim.get_tune', 'tune_y', 1),
+                          ('atlds._atsim.get_orbit', 'x', 0),
+                          ('atlds._atsim.get_orbit', 'y', 2),
+                          ('atlds._atsim.get_disp', 'dispersion', None),
+                          ('atlds._atsim.get_energy', 'energy', None),
+                          ('atlds._atsim.get_s', 's_position', None),
+                          ('atlds._atsim.get_alpha', 'alpha', None),
+                          ('atlds._atsim.get_beta', 'beta', None),
+                          ('atlds._atsim.get_m44', 'm44', None),
+                          ('atlds._atsim.get_mu', 'mu', None)])
+def test_lat_field_funcs(func_str, field, cell, atlds):
     if cell is not None:
-        assert ff[field].func == eval(func_str)
-        assert ff[field].args[0] == cell
+        assert atlds._field_funcs[field].func == eval(func_str)
+        assert atlds._field_funcs[field].args[0] == cell
     else:
-        assert ff[field] == eval(func_str)
+        assert atlds._field_funcs[field] == eval(func_str)
 
 
 def test_lat_get_fields(atlds):

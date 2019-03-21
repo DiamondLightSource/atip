@@ -9,7 +9,7 @@ import pytest
 import atip
 
 
-@pytest.fixture()
+@pytest.fixture(scope='session')
 def at_elem():
     e = at.elements.Drift('D1', 0.0, KickAngle=[0, 0], Frequency=0, k=0.0,
                           PolynomA=[0, 0, 0, 0], PolynomB=[0, 0, 0, 0],
@@ -17,7 +17,7 @@ def at_elem():
     return e
 
 
-@pytest.fixture()
+@pytest.fixture(scope='session')
 def at_elem_preset():
     e = at.elements.Drift('D1', 0.5, KickAngle=[0.1, 0.01], k=-0.07,
                           Frequency=500, PolynomA=[1.3, 13, 22, 90],
@@ -25,7 +25,7 @@ def at_elem_preset():
     return e
 
 
-@pytest.fixture()
+@pytest.fixture(scope='session')
 def atlds():
     return atip.sim_data_sources.ATLatticeDataSource(mock.Mock())
 
@@ -37,20 +37,25 @@ def at_lattice():
     return lattice
 
 
-@pytest.fixture()
+@pytest.fixture(scope='session')
 def pytac_lattice():
     return pytac.load_csv.load('DIAD')
 
 
-@pytest.fixture()
+@pytest.fixture(scope='session')
 def mat_filepath():
     here = os.path.dirname(__file__)
     return os.path.realpath(os.path.join(here, '../rings/diad.mat'))
 
 
-@pytest.fixture()
+@pytest.fixture(scope='session')
 def at_ring(mat_filepath):
     return at.load.load_mat(mat_filepath)
+
+
+@pytest.fixture()
+def atsim(at_lattice):
+    return atip.at_interface.ATSimulator(at_lattice)
 
 
 @pytest.fixture()

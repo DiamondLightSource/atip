@@ -60,8 +60,7 @@ def _initial_phys_data(atsim, initial_emit, initial_lin):
         return False
 
 
-def test_ATSimulator_creation(at_lattice, initial_emit, initial_lin):
-    atsim = atip.at_interface.ATSimulator(at_lattice)
+def test_ATSimulator_creation(atsim, initial_emit, initial_lin):
     # Check initial state of flags.
     assert atsim.up_to_date.is_set() is True
     assert atsim._paused.is_set() is False
@@ -70,8 +69,7 @@ def test_ATSimulator_creation(at_lattice, initial_emit, initial_lin):
     assert _initial_phys_data(atsim, initial_emit, initial_lin) is True
 
 
-def test_start_and_stop_thread(at_lattice):
-    atsim = atip.at_interface.ATSimulator(at_lattice)
+def test_start_and_stop_thread(atsim):
     assert atsim._running.is_set() is False
     assert atsim._calculation_thread.is_alive() is False
     with pytest.raises(RuntimeError):
@@ -86,8 +84,7 @@ def test_start_and_stop_thread(at_lattice):
     assert atsim._calculation_thread.is_alive() is False
 
 
-def test_recalculate_phys_data(at_lattice, initial_emit, initial_lin):
-    atsim = atip.at_interface.ATSimulator(at_lattice)
+def test_recalculate_phys_data(atsim, initial_emit, initial_lin):
     assert _initial_phys_data(atsim, initial_emit, initial_lin) is True
     thread = temporary_thread(atsim)
     with thread:
@@ -126,9 +123,8 @@ def test_recalculate_phys_data(at_lattice, initial_emit, initial_lin):
                                       decimal=15)
 
 
-def test_toggle_calculations_and_wait_for_calculations(at_lattice, initial_lin,
+def test_toggle_calculations_and_wait_for_calculations(atsim, initial_lin,
                                                        initial_emit):
-    atsim = atip.at_interface.ATSimulator(at_lattice)
     assert atsim._paused.is_set() is False
     atsim.toggle_calculations()
     assert atsim._paused.is_set() is True
@@ -140,10 +136,10 @@ def test_toggle_calculations_and_wait_for_calculations(at_lattice, initial_lin,
         atsim.toggle_calculations()
         atsim._at_lattice[5].PolynomB[1] = 2.5
         atsim.up_to_date.clear()
-        assert atsim.wait_for_calculations(5) is False
+        assert atsim.wait_for_calculations(3) is False
         assert _initial_phys_data(atsim, initial_emit, initial_lin) is True
         atsim.toggle_calculations()
-        assert atsim.wait_for_calculations(10) is True
+        assert atsim.wait_for_calculations() is True
         assert _initial_phys_data(atsim, initial_emit, initial_lin) is False
 
 
@@ -162,13 +158,11 @@ def test_recalculate_phys_data_callback(at_lattice):
     callback_func.assert_called_once_with()
 
 
-def test_get_at_element(at_lattice):
-    atsim = atip.at_interface.ATSimulator(at_lattice)
+def test_get_at_element(atsim, at_lattice):
     assert atsim.get_at_element(1) == at_lattice[0]
 
 
-def test_get_at_lattice(at_lattice):
-    atsim = atip.at_interface.ATSimulator(at_lattice)
+def test_get_at_lattice(atsim, at_lattice):
     for elem1, elem2 in zip(atsim.get_at_lattice(), atsim._at_lattice):
         assert elem1 == elem2
 
