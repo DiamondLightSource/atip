@@ -31,7 +31,7 @@ element fields that the simulator doesn't.
 Virtual Accelerator:
 --------------------
 
-ATIP can be used as a virtual accelerator, see ``SOFT-IOC.rst`` for further
+ATIP can be used as a virtual accelerator, see ``ioc/SOFT-IOC.rst`` for further
 information.
 
 Implementation:

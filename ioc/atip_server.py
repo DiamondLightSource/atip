@@ -179,8 +179,8 @@ class ATIPServer(object):
         """Set a value to the feedback in records, possible fields are:
             ['x_fofb_disabled', 'x_sofb_disabled', 'y_fofb_disabled',
              'y_sofb_disabled', 'h_fofb_disabled', 'h_sofb_disabled',
-             'v_fofb_disabled', 'v_sofb_disabled', 'error_sum',
-             'enabled', 'state', 'beam_current', feedback_status']
+             'v_fofb_disabled', 'v_sofb_disabled', 'error_sum', 'enabled',
+             'state', 'beam_current', feedback_status', 'bpm_enabled']
 
         Args:
             index (int): The index of the element on which to set the value;
