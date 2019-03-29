@@ -45,6 +45,11 @@ class ATIPServer(object):
         self._create_records()
         self._create_feedback_records(feedback_csv)
 
+    @property
+    def total_records(self):
+        return sum([len(self._in_records), len(self._out_records),
+                    len(self._feedback_records)])
+
     def _create_records(self):
         """Create all the standard records from both lattice and element pytac
         fields. Several assumptions have been made for simplicity and
@@ -96,7 +101,8 @@ class ATIPServer(object):
                                                   validate=self._validate)
                         wrapperless_record = out_record._RecordWrapper__device
                         self._out_records[wrapperless_record] = in_record
-        print("Finished element records, now creating lattice records...")
+        print("Finished creating {0} element records, now creating lattice "
+              "records...".format(self.total_records))
         # Now for lattice fields
         lat_fields = self.lattice.get_fields()
         for field in set(lat_fields[pytac.LIVE]) & set(lat_fields[pytac.SIM]):
@@ -110,7 +116,8 @@ class ATIPServer(object):
                 in_record = builder.aIn(get_pv[1], initial_value=value)
                 self._in_records[in_record] = (0, field)
                 self._rb_only_records.append(in_record)
-        print("Finished lattice records, now creating feedback records...")
+        print("Finished creating {0} element and lattice records, now creating"
+              " feedback records...".format(self.total_records))
 
     def _validate(self, record, value):
         """The callback function passed to out records, it is called after
@@ -170,10 +177,7 @@ class ATIPServer(object):
         bpm_enabled_record = builder.Waveform("ENABLED", NELM=N_BPM,
                                               initial_value=[1]*N_BPM)
         self._feedback_records[(0, "bpm_enabled")] = bpm_enabled_record
-
-        total_records = sum([len(self._in_records), len(self._out_records),
-                             len(self._feedback_records)])
-        print("Finished creating {0} records.".format(total_records))
+        print("Finished creating {0} all records.".format(self.total_records))
 
     def set_feedback_record(self, index, field, value):
         """Set a value to the feedback in records, possible fields are:

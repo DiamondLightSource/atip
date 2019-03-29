@@ -22,13 +22,17 @@ file as they must be below the requires and the path editing.
 """
 
 # Determine the ring mode
-try:
-    ring_mode = str(os.environ['RINGMODE'])
-except KeyError:
+if sys.argv[1:]:
+    ring_mode = sys.argv[1]
+else:
     try:
-        ring_mode = str(caget('SR-CS-RING-01:MODE'))
-    except ca_nothing:
-        ring_mode = 'DIAD'
+        ring_mode = str(os.environ['RINGMODE'])
+    except KeyError:
+        try:
+            value = caget('SR-CS-RING-01:MODE', format=2)
+            ring_mode = value.enums[int(value)]
+        except ca_nothing:
+            ring_mode = 'DIAD'
 
 # Create lattice.
 lattice = atip.utils.loader(ring_mode)
