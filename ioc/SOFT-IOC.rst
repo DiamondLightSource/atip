@@ -21,6 +21,9 @@ Inside the top-level atip directory::
 
 After a minute or two, you should be presented with something like this::
 
+    Starting element record creation.
+    Finished creating 2070 element records, now creating lattice records.
+    Finished creating all 4124 records.
     Starting iocInit
     ###########################################################################
     ## EPICS R3.14.12.3 $Date: Mon 2012-12-17 14:11:47 -0600$
@@ -39,8 +42,8 @@ Leave the server running and in a new terminal update the EPICS port::
     $ export EPICS_CA_SERVER_PORT=6064
 
 
-In this terminal you are then free to address the simulator as you would the
-live machine, either through Pytac or by directly accessing the PVs.
+In this new terminal you are then free to address the simulator as you would
+the live machine, either through Pytac or by directly accessing the PVs.
 
 Feedback Records:
 -----------------
@@ -48,13 +51,13 @@ Feedback Records:
 A number of PVs related to the feedback systems are supported. They can be read
 from in the same way as any other PV, but for testing and debugging there is a
 special method for setting them. This is done on the ATIP server object, inside
-the server terminal. As arguments, it takes the element's index in the ring
-(starting from 1, 0 is used to set on the lattice), the field (possible fields
-are:
-    'x_fofb_disabled', 'x_sofb_disabled', 'y_fofb_disabled', 'y_sofb_disabled',
-    'h_fofb_disabled', 'h_sofb_disabled', 'v_fofb_disabled', 'v_sofb_disabled',
-    'error_sum', 'enabled', 'state', 'beam_current', feedback_status'
-), and the value to be set.
+the server terminal (the one you ran `start-ioc` in initially). As arguments,
+it takes the element's index in the ring (starting from 1, 0 is used to set on
+the lattice), the field (possible fields are: ``'x_fofb_disabled',
+'x_sofb_disabled', 'y_fofb_disabled', 'y_sofb_disabled', 'h_fofb_disabled',
+'h_sofb_disabled', 'v_fofb_disabled', 'v_sofb_disabled', 'error_sum',
+'enabled', 'state', 'beam_current', feedback_status', 'bpm_enabled'``), and the
+value to be set.
 
 For example disabling SOFB on the first BPM, or reducing the beam current::
 
@@ -66,10 +69,10 @@ Ring Mode:
 
 You can run the virtual accelerator in any ring mode that is supported by
 Pytac; currently 'VMX', 'VMXSP', and 'DIAD'. The ring mode can be passed as an
-command line argument to start-ioc, if it is not passed in that manner then it
-can be configured by changing the 'RINGMODE' environment variable, if that is
-not set then the ring mode PV 'SR-CS-RING-01:MODE' is checked, if that is also
-not set then the virtual accelerator will default to 'DIAD'. For example::
+command line argument to `start-ioc`, if it is not passed in that manner then
+it can be configured by changing the `RINGMODE` environment variable, if that
+is not set then the ring mode PV `SR-CS-RING-01:MODE` is checked, if that is
+also not set then the virtual accelerator will default to 'DIAD'. For example::
 
     $ ./start-ioc DIAD
     $ export RINGMODE=DIAD

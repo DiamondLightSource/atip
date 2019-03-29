@@ -61,7 +61,7 @@ class ATIPServer(object):
             - That all lattice fields are never setpoint and so only in records
                need to be created for them.
         """
-        print("Starting element record creation...")
+        print("Starting record creation.")
         bend_set = False
         for element in self.lattice:
             if element.type_ == 'BEND':
@@ -102,7 +102,7 @@ class ATIPServer(object):
                         wrapperless_record = out_record._RecordWrapper__device
                         self._out_records[wrapperless_record] = in_record
         print("Finished creating {0} element records, now creating lattice "
-              "records...".format(self.total_records))
+              "records.".format(self.total_records))
         # Now for lattice fields
         lat_fields = self.lattice.get_fields()
         for field in set(lat_fields[pytac.LIVE]) & set(lat_fields[pytac.SIM]):
@@ -116,8 +116,7 @@ class ATIPServer(object):
                 in_record = builder.aIn(get_pv[1], initial_value=value)
                 self._in_records[in_record] = (0, field)
                 self._rb_only_records.append(in_record)
-        print("Finished creating {0} element and lattice records, now creating"
-              " feedback records...".format(self.total_records))
+        print("~*~*Woah, we're halfway there, Wo-oah...*~*~")
 
     def _validate(self, record, value):
         """The callback function passed to out records, it is called after
@@ -177,7 +176,7 @@ class ATIPServer(object):
         bpm_enabled_record = builder.Waveform("ENABLED", NELM=N_BPM,
                                               initial_value=[1]*N_BPM)
         self._feedback_records[(0, "bpm_enabled")] = bpm_enabled_record
-        print("Finished creating {0} all records.".format(self.total_records))
+        print("Finished creating all {0} records.".format(self.total_records))
 
     def set_feedback_record(self, index, field, value):
         """Set a value to the feedback in records, possible fields are:

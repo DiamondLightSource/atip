@@ -14,7 +14,7 @@ sys.path.append(os.path.split(here)[0])
 
 
 from softioc import builder, softioc  # noqa: E402
-from cothread.catools import caget, ca_nothing
+from cothread.catools import caget, ca_nothing  # noqa: E402
 import atip  # noqa: E402
 import atip_server  # noqa: E402
 """Error 402 is suppressed as we cannot import these modules at the top of the
