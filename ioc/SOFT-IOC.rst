@@ -60,3 +60,12 @@ For example disabling SOFB on the first BPM, or reducing the beam current::
 
     >>> server.set_feedback_record(3, 'enabled', 0)
     >>> server.set_feedback_record(0, 'beam_current', 280)
+
+Ring Mode:
+----------
+
+You can run the virtual accelerator in any ring mode that is supported by
+Pytac; currently 'VMX', 'VMXSP', and 'DIAD'. The ring mode can be configured by
+changing the 'RINGMODE' environment variable, if it is not set then the ring
+mode PV 'SR-CS-RING-01:MODE' is checked, if that is also not set then the
+virtual accelerator will default to 'DIAD'.

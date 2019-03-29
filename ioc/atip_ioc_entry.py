@@ -14,14 +14,24 @@ sys.path.append(os.path.split(here)[0])
 
 
 from softioc import builder, softioc  # noqa: E402
+from cothread.catools import caget, ca_nothing
 import atip  # noqa: E402
 import atip_server  # noqa: E402
 """Error 402 is suppressed as we cannot import these modules at the top of the
 file as they must be below the requires and the path editing.
 """
 
+# Determine the ring mode
+try:
+    ring_mode = str(os.environ['RINGMODE'])
+except KeyError:
+    try:
+        ring_mode = str(caget('SR-CS-RING-01:MODE'))
+    except ca_nothing:
+        ring_mode = 'DIAD'
+
 # Create lattice.
-lattice = atip.utils.loader()
+lattice = atip.utils.loader(ring_mode)
 
 # Create PVs.
 server = atip_server.ATIPServer(lattice, os.path.join(here, 'feedback.csv'))

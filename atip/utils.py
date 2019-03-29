@@ -10,7 +10,7 @@ def load_ring(mode='DIAD'):
     ring = at.load.load_mat(filepath)
     for x in range(len(ring)):
         ring[x].Index = x + 1
-        ring[x].Class = str(type(ring[x])).split("'")[-2].split(".")[-1]
+        ring[x].Class = ring[x].__class__.__name__
     return ring
 
 
@@ -29,8 +29,7 @@ def elements_by_type(lat):
                                   'M66', 'Element', 'Drift', 'Corrector',
                                   'Bend', 'Marker', 'Quadrupole']}
     for elem in lat:
-        elem_type = str(type(elem)).split("'")[-2].split(".")[-1]
-        elems_dict[elem_type].append(elem)
+        elems_dict[type(elem).__name__].append(elem)
     return elems_dict
 
 
