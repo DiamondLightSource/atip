@@ -174,7 +174,7 @@ class ATIPServer(object):
         N_BPM = len(self.lattice.get_elements('BPM'))
         builder.SetDeviceName("SR-DI-EBPM-01")
         bpm_enabled_record = builder.Waveform("ENABLED", NELM=N_BPM,
-                                              initial_value=[1]*N_BPM)
+                                              initial_value=[0]*N_BPM)
         self._feedback_records[(0, "bpm_enabled")] = bpm_enabled_record
         print("Finished creating all {0} records.".format(self.total_records))
 
