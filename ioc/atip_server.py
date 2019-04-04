@@ -1,8 +1,9 @@
 import csv
-from softioc import builder
+
 import pytac
 from pytac.device import BasicDevice
 from pytac.exceptions import HandleException, FieldException
+from softioc import builder
 
 
 class ATIPServer(object):
@@ -28,7 +29,7 @@ class ATIPServer(object):
                                        _in_records because they are all
                                        readback only.
     """
-    def __init__(self, lattice, feedback_csv):
+    def __init__(self, lattice, pv_limits, feedback_csv):
         """
         Args:
             lattice (pytac.lattice.Lattice): An instance of a pytac lattice
@@ -42,7 +43,7 @@ class ATIPServer(object):
         self._out_records = {}
         self._rb_only_records = []
         self._feedback_records = {}
-        self._create_records()
+        self._create_records(pv_limits)
         self._create_feedback_records(feedback_csv)
 
     @property
@@ -50,7 +51,7 @@ class ATIPServer(object):
         return sum([len(self._in_records), len(self._out_records),
                     len(self._feedback_records)])
 
-    def _create_records(self):
+    def _create_records(self, pv_limits):
         """Create all the standard records from both lattice and element pytac
         fields. Several assumptions have been made for simplicity and
         efficiency, these are:
@@ -61,6 +62,11 @@ class ATIPServer(object):
             - That all lattice fields are never setpoint and so only in records
                need to be created for them.
         """
+        limits_dict = {}
+        csv_reader = csv.DictReader(open(pv_limits))
+        for line in csv_reader:
+            limits_dict[line['pv']] = (float(line['upper']),
+                                       float(line['lower']))
         print("Starting record creation.")
         bend_set = False
         for element in self.lattice:
@@ -70,16 +76,47 @@ class ATIPServer(object):
                     value = element.get_value('b0', units=pytac.ENG,
                                               data_source=pytac.SIM)
                     get_pv = element.get_pv_name('b0', pytac.RB).split(':', 1)
+                    upper, lower = limits_dict[get_pv[0] + ':' + get_pv[1]]
                     builder.SetDeviceName(get_pv[0])
-                    in_record = builder.aIn(get_pv[1], initial_value=value)
+                    in_record = builder.aIn(get_pv[1], LOPR=lower, HOPR=upper,
+                                            initial_value=value)
                     set_pv = element.get_pv_name('b0', pytac.SP).split(':', 1)
+                    #upper, lower = limits_dict[set_pv[0] + ':' + set_pv[1]]
                     builder.SetDeviceName(set_pv[0])
-                    out_record = builder.aOut(set_pv[1], initial_value=value,
+                    out_record = builder.aOut(set_pv[1], LOPR=lower,
+                                              HOPR=upper, initial_value=value,
                                               validate=self._validate)
                     # how to solve the index problem?
                     self._in_records[in_record] = (element.index, 'b0')
-                    self._out_records[out_record] = in_record
+                    wrapperless_record = out_record._RecordWrapper__device
+                    self._out_records[wrapperless_record] = in_record
                     bend_set = True
+            elif element.type_ in ['VTRIM', 'HTRIM', 'VSTR', 'HSTR', 'SEXT',
+                                   'QUAD', 'RF']:
+                # Create records for families with limits.
+                for field in element.get_fields()[pytac.SIM]:
+                    value = element.get_value(field, units=pytac.ENG,
+                                              data_source=pytac.SIM)
+                    get_pv = element.get_pv_name(field, pytac.RB).split(':', 1)
+                    upper, lower = limits_dict[get_pv[0] + ':' + get_pv[1]]
+                    builder.SetDeviceName(get_pv[0])
+                    in_record = builder.aIn(get_pv[1], LOPR=lower, HOPR=upper,
+                                            initial_value=value)
+                    self._in_records[in_record] = (element.index, field)
+                    try:
+                        set_pv = element.get_pv_name(field,
+                                                     pytac.SP).split(':', 1)
+                    except HandleException:
+                        self._rb_only_records.append(in_record)
+                    else:
+                        #upper, lower = limits_dict[set_pv[0] + ':' + set_pv[1]]
+                        builder.SetDeviceName(set_pv[0])
+                        out_record = builder.aOut(set_pv[1], LOPR=lower,
+                                                  HOPR=upper,
+                                                  initial_value=value,
+                                                  validate=self._validate)
+                        wrapperless_record = out_record._RecordWrapper__device
+                        self._out_records[wrapperless_record] = in_record
             else:
                 # Create records for all other families.
                 for field in element.get_fields()[pytac.SIM]:
@@ -116,6 +153,7 @@ class ATIPServer(object):
                 in_record = builder.aIn(get_pv[1], initial_value=value)
                 self._in_records[in_record] = (0, field)
                 self._rb_only_records.append(in_record)
+        print("Finished lattice records, now creating feedback records.")
         print("~*~*Woah, we're halfway there, Wo-oah...*~*~")
 
     def _validate(self, record, value):

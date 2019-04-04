@@ -1,8 +1,11 @@
-import os
 import argparse
 import csv
-import atip
+import os
+
 import pytac
+from cothread.catools import caget, FORMAT_CTRL
+
+import atip
 
 
 def generate_data():
@@ -77,6 +80,27 @@ def generate_data():
     return data
 
 
+def generate_pv_limits():
+    fams = ['VTRIM', 'HTRIM', 'VSTR', 'HSTR', 'SEXT', 'QUAD', 'BEND', 'RF']
+    data = [("pv", "upper", "lower")]
+    elems = atip.utils.preload(atip.utils.loader())
+    for element in elems.all:
+        if element.type_ in fams:
+            for field in element.get_fields()[pytac.SIM]:
+                pv = element.get_pv_name(field, pytac.RB)
+                ctrl = caget(pv, format=FORMAT_CTRL)
+                data.append((pv, ctrl.upper_ctrl_limit, ctrl.lower_ctrl_limit))
+                try:
+                    pv = element.get_pv_name(field, pytac.SP)
+                except pytac.exceptions.HandleException:
+                    pass
+                else:
+                    ctrl = caget(pv, format=FORMAT_CTRL)
+                    data.append((pv, ctrl.upper_ctrl_limit,
+                                 ctrl.lower_ctrl_limit))
+    return data
+
+
 def write_data_to_file(data, filename):
     # Write the collected data to the .csv file.
     here = os.path.abspath(os.path.dirname(__file__))
@@ -103,3 +127,5 @@ if __name__ == "__main__":
     args = parse_arguments()
     data = generate_data()
     write_data_to_file(data, args.filename)
+    data = generate_pv_limits()
+    write_data_to_file(data, "pv_limits.csv")

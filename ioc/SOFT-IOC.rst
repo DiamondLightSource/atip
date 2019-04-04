@@ -23,6 +23,7 @@ After a minute or two, you should be presented with something like this::
 
     Starting element record creation.
     Finished creating 2070 element records, now creating lattice records.
+    Finished lattice records, now creating feedback records.
     Finished creating all 4124 records.
     Starting iocInit
     ###########################################################################
