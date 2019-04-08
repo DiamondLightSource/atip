@@ -12,6 +12,9 @@ require('scipy>=0.16')
 here = os.path.realpath('.')
 sys.path.append(os.path.split(here)[0])
 
+# Nasty monkey-patch to epicsdbbuilder to bypass ValidFieldValue
+from epicsdbbuilder import dbd
+dbd.ValidateDbField.ValidFieldValue = lambda self, name, value: None
 
 from softioc import builder, softioc  # noqa: E402
 from cothread.catools import caget, ca_nothing  # noqa: E402
@@ -49,3 +52,4 @@ builder.LoadDatabase()
 softioc.iocInit()
 
 softioc.interactive_ioc(globals())
+
