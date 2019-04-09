@@ -4,6 +4,9 @@ from warnings import warn
 
 import at
 import numpy
+import time
+
+import cothread
 
 
 class ATSimulator(object):
@@ -61,6 +64,7 @@ class ATSimulator(object):
             raise TypeError("If passed, 'callback' should be callable, {0} is "
                             "not.".format(callback))
         self._at_lattice = at_lattice
+        self.time = 0
         self._rp = numpy.ones(len(at_lattice), dtype=bool)
         # Initial phys data calculation.
         self._at_lattice.radiation_on()
@@ -73,9 +77,8 @@ class ATSimulator(object):
         self.up_to_date.set()
         self._paused = Event()
         self._running = Event()
-        self._calculation_thread = Thread(target=self._recalculate_phys_data,
-                                          name='atip_calculation_thread',
-                                          args=[callback])
+        self._calculation_thread = cothread.Spawn(self._recalculate_phys_data,
+                                                  callback)
 
     def start_thread(self):
         """Start the thread created in __init__ in the background. This
@@ -86,12 +89,14 @@ class ATSimulator(object):
         Raises:
             RuntimeError: if the thread has already been started.
         """
-        if self._running.is_set() is False:
-            self._calculation_thread.setDaemon(True)
-            self._running.set()
-            self._calculation_thread.start()
-        else:
-            raise RuntimeError("Cannot start thread as it is already running.")
+        self._running.set()
+        # if self._running.is_set() is False:
+        #     self._calculation_thread.setDaemon(True)
+        #     self._running.set()
+        #     self._calculation_thread.start()
+        # else:
+        #     raise RuntimeError("Cannot start thread as it is already running.")
+        pass
 
     def _recalculate_phys_data(self, callback):
         """Target function for the background thread. Recalculates the physics
@@ -117,17 +122,24 @@ class ATSimulator(object):
                 return
             elif (self.up_to_date.is_set() or self._paused.is_set()) is False:
                 try:
+                    self.start = time.time()
                     self._at_lattice.radiation_on()
+                    self.radiation_on = time.time()
+                    print(self.radiation_on - self.start)
                     self._emittance = self._at_lattice.ohmi_envelope(self._rp)
+                    self.emittance_calc = time.time()
+                    print(self.emittance_calc - self.radiation_on)
                     self._at_lattice.radiation_off()
                     self._lindata = self._at_lattice.linopt(refpts=self._rp,
                                                             get_chrom=True,
                                                             coupled=False)
+                    print(time.time() - self.emittance_calc)
                 except Exception as e:
                     warn(at.AtWarning(e))
                 if callback is not None:
                     callback()
                 self.up_to_date.set()
+            cothread.Yield()
 
     def stop_thread(self):
         """Stop the recalculation thread if it is running. This enables threads
@@ -138,11 +150,12 @@ class ATSimulator(object):
         Raises:
             RuntimeError: if the thread is not yet running.
         """
-        if self._running.is_set() is True:
-            self._running.clear()
-            self._calculation_thread.join()
-        else:
-            raise RuntimeError("Cannot stop thread as it is not running.")
+        # if self._running.is_set() is True:
+        #     self._running.clear()
+        #     self._calculation_thread.join()
+        # else:
+        #     raise RuntimeError("Cannot stop thread as it is not running.")
+        pass
 
     def toggle_calculations(self):
         """Pause or unpause the physics calculations by setting or clearing the

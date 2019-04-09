@@ -178,7 +178,7 @@ class ATIPServer(object):
                                           data_source=pytac.SIM)
         in_record.set(value)
         sim = self.lattice._data_source_manager._data_sources[pytac.SIM]._atsim
-        sim.wait_for_calculations()
+        #sim.wait_for_calculations()
         for rb_record in self._rb_only_records:
             index, field = self._in_records[rb_record]
             if index is 0:
