@@ -1,5 +1,6 @@
 import csv
 
+import atip
 import pytac
 from pytac.device import BasicDevice
 from pytac.exceptions import HandleException, FieldException
@@ -13,15 +14,15 @@ class ATIPServer(object):
     **Attributes**
 
     Attributes:
-        lattice (pytac.lattice.Lattice): An instance of a pytac lattice with a
+        lattice (pytac.lattice.Lattice): An instance of a Pytac lattice with a
                                           simulator data source.
     .. Private Attributes:
            _in_records (dict): A dictionary containing all the created in
                                 records and their associated element index and
-                                pytac field, i.e. {in_record: [index, field]}.
-           _out_records (dict): A dictionary containing all the created out
-                                 records and their associated in records, i.e.
-                                 {out_record: in_record}.
+                                Pytac field, i.e. {in_record: [index, field]}.
+           _out_records (dict): A dictionary containing the names of all the
+                                 created out records and their associated in
+                                 records, i.e. {out_record.name: in_record}.
            _rb_only_records (list): A list of all the in records that do not
                                      have an associated out record.
            _feedback_records  (dict): A dictionary containing all the feedback
@@ -29,16 +30,16 @@ class ATIPServer(object):
                                        _in_records because they are all
                                        readback only.
     """
-    def __init__(self, lattice, pv_limits, feedback_csv):
+    def __init__(self, ring_mode, pv_limits, feedback_csv):
         """
         Args:
-            lattice (pytac.lattice.Lattice): An instance of a pytac lattice
+            lattice (pytac.lattice.Lattice): An instance of a Pytac lattice
                                               with a simulator data source.
             feedback_csv (string): The filepath to the .csv file from which to
                                     load the feedback records, for more
                                     information see create_feedback_csv.py.
         """
-        self.lattice = lattice
+        self.lattice = atip.utils.loader(ring_mode, self.update_pvs)
         self._in_records = {}
         self._out_records = {}
         self._rb_only_records = []
@@ -51,8 +52,24 @@ class ATIPServer(object):
         return sum([len(self._in_records), len(self._out_records),
                     len(self._feedback_records)])
 
+    def update_pvs(self):
+        """The callback function passed to ATSimulator during lattice creation,
+        it is called each time a calculation of physics data is completed. It
+        updates all the in records that do not have a corresponding out record
+        with the latest values from the simulator.
+        """
+        for rb_record in self._rb_only_records:
+            index, field = self._in_records[rb_record]
+            if index is 0:
+                rb_record.set(self.lattice.get_value(field, units=pytac.ENG,
+                                                     data_source=pytac.SIM))
+            else:
+                element = self.lattice[index - 1]
+                rb_record.set(element.get_value(field, units=pytac.ENG,
+                                                data_source=pytac.SIM))
+
     def _create_records(self, pv_limits):
-        """Create all the standard records from both lattice and element pytac
+        """Create all the standard records from both lattice and element Pytac
         fields. Several assumptions have been made for simplicity and
         efficiency, these are:
             - That bend elements all share a single PV, and are the only
@@ -81,15 +98,14 @@ class ATIPServer(object):
                     in_record = builder.aIn(get_pv[1], LOPR=lower, HOPR=upper,
                                             initial_value=value)
                     set_pv = element.get_pv_name('b0', pytac.SP).split(':', 1)
-                    #upper, lower = limits_dict[set_pv[0] + ':' + set_pv[1]]
+                    upper, lower = limits_dict[set_pv[0] + ':' + set_pv[1]]
                     builder.SetDeviceName(set_pv[0])
                     out_record = builder.aOut(set_pv[1], LOPR=lower,
                                               HOPR=upper, initial_value=value,
                                               validate=self._validate)
                     # how to solve the index problem?
                     self._in_records[in_record] = (element.index, 'b0')
-                    wrapperless_record = out_record._RecordWrapper__device
-                    self._out_records[wrapperless_record] = in_record
+                    self._out_records[out_record.name] = in_record
                     bend_set = True
             elif element.type_ in ['VTRIM', 'HTRIM', 'VSTR', 'HSTR', 'SEXT',
                                    'QUAD', 'RF']:
@@ -109,14 +125,13 @@ class ATIPServer(object):
                     except HandleException:
                         self._rb_only_records.append(in_record)
                     else:
-                        #upper, lower = limits_dict[set_pv[0] + ':' + set_pv[1]]
+                        upper, lower = limits_dict[set_pv[0] + ':' + set_pv[1]]
                         builder.SetDeviceName(set_pv[0])
                         out_record = builder.aOut(set_pv[1], LOPR=lower,
                                                   HOPR=upper,
                                                   initial_value=value,
                                                   validate=self._validate)
-                        wrapperless_record = out_record._RecordWrapper__device
-                        self._out_records[wrapperless_record] = in_record
+                        self._out_records[out_record.name] = in_record
             else:
                 # Create records for all other families.
                 for field in element.get_fields()[pytac.SIM]:
@@ -136,8 +151,7 @@ class ATIPServer(object):
                         out_record = builder.aOut(set_pv[1],
                                                   initial_value=value,
                                                   validate=self._validate)
-                        wrapperless_record = out_record._RecordWrapper__device
-                        self._out_records[wrapperless_record] = in_record
+                        self._out_records[out_record.name] = in_record
         print("Finished creating {0} element records, now creating lattice "
               "records.".format(self.total_records))
         # Now for lattice fields
@@ -155,40 +169,6 @@ class ATIPServer(object):
                 self._rb_only_records.append(in_record)
         print("Finished lattice records, now creating feedback records.")
         print("~*~*Woah, we're halfway there, Wo-oah...*~*~")
-
-    def _validate(self, record, value):
-        """The callback function passed to out records, it is called after
-        successful record processing has been completed. It updates the out
-        record's corresponding in record with the value that has been set, it
-        then sets the value to the centralised pytac lattice. Next it waits
-        for ATIP to complete its calcuations before updating all the readback
-        only records with the values from ATIP.
-
-        Args:
-            record (softioc.builder.aOut): The record object that has just
-                                            been set to.
-            value (number): The value that has just been set to the record.
-
-        Returns:
-            boolean: Always True since we always accept the data.
-        """
-        in_record = self._out_records[record]
-        index, field = self._in_records[in_record]
-        self.lattice[index - 1].set_value(field, value, units=pytac.ENG,
-                                          data_source=pytac.SIM)
-        in_record.set(value)
-        sim = self.lattice._data_source_manager._data_sources[pytac.SIM]._atsim
-        #sim.wait_for_calculations()
-        for rb_record in self._rb_only_records:
-            index, field = self._in_records[rb_record]
-            if index is 0:
-                rb_record.set(self.lattice.get_value(field, units=pytac.ENG,
-                                                     data_source=pytac.SIM))
-            else:
-                element = self.lattice[index - 1]
-                rb_record.set(element.get_value(field, units=pytac.ENG,
-                                                data_source=pytac.SIM))
-        return True
 
     def _create_feedback_records(self, feedback_csv):
         """Create all the feedback records from the .csv file at the location
@@ -215,6 +195,27 @@ class ATIPServer(object):
                                               initial_value=[0]*N_BPM)
         self._feedback_records[(0, "bpm_enabled")] = bpm_enabled_record
         print("Finished creating all {0} records.".format(self.total_records))
+
+    def _validate(self, record, value):
+        """The callback function passed to out records, it is called after
+        successful record processing has been completed. It updates the out
+        record's corresponding in record with the value that has been set and
+        then sets the value to the centralised Pytac lattice.
+
+        Args:
+            record (softioc.builder.aOut): The record object that has just
+                                            been set to.
+            value (number): The value that has just been set to the record.
+
+        Returns:
+            boolean: Always True since we always accept the data.
+        """
+        in_record = self._out_records[record.name]
+        index, field = self._in_records[in_record]
+        self.lattice[index - 1].set_value(field, value, units=pytac.ENG,
+                                          data_source=pytac.SIM)
+        in_record.set(value)
+        return True
 
     def set_feedback_record(self, index, field, value):
         """Set a value to the feedback in records, possible fields are:

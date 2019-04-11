@@ -40,12 +40,8 @@ def load(pytac_lattice, at_ring, callback=None):
         at_lattice = at.Lattice(at_ring, name=pytac_lattice.name,
                                 energy=pytac_lattice.get_value('energy'))
     # Initialise an instance of the ATSimulator Object.
-    if (not callable(callback)) and (callback is not None):
-        raise TypeError("If passed, 'callback' should be callable, {0} is "
-                        "not.".format(callback))
     atsim = ATSimulator(at_lattice, callback)
-    atsim.start_thread()
-    # Set the simulator data source on the pytac lattice.
+    # Set the simulator data source on the Pytac lattice.
     pytac_lattice.set_data_source(ATLatticeDataSource(atsim), pytac.SIM)
     # Load the sim onto each element.
     for e in pytac_lattice:

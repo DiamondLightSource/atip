@@ -14,11 +14,11 @@ def load_ring(mode='DIAD'):
     return ring
 
 
-def loader(mode='DIAD'):
+def loader(mode='DIAD', callback=None):
     pytac_lattice = pytac.load_csv.load(mode)
     at_lattice = at.Lattice(load_ring(mode), name=pytac_lattice.name,
                             energy=3e9, periodicity=1)
-    lattice = atip.load_sim.load(pytac_lattice, at_lattice)
+    lattice = atip.load_sim.load(pytac_lattice, at_lattice, callback)
     return lattice
 
 

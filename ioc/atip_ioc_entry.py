@@ -14,11 +14,6 @@ require('scipy>=0.16')
 here = os.path.realpath('.')
 sys.path.append(os.path.split(here)[0])
 
-# Nasty monkey-patch to epicsdbbuilder to bypass ValidFieldValue
-from epicsdbbuilder import dbd
-dbd.ValidateDbField.ValidFieldValue = lambda self, name, value: None
-
-import atip  # noqa: E402
 import atip_server  # noqa: E402
 from softioc import builder, softioc  # noqa: E402
 from cothread.catools import caget, ca_nothing  # noqa: E402
@@ -39,11 +34,8 @@ else:
         except ca_nothing:
             ring_mode = 'DIAD'
 
-# Create lattice.
-lattice = atip.utils.loader(ring_mode)
-
 # Create PVs.
-server = atip_server.ATIPServer(lattice, os.path.join(here, 'pv_limits.csv'),
+server = atip_server.ATIPServer(ring_mode, os.path.join(here, 'pv_limits.csv'),
                                 os.path.join(here, 'feedback.csv'))
 
 # Add special case out record for SOFB to write to.
@@ -55,4 +47,3 @@ builder.LoadDatabase()
 softioc.iocInit()
 
 softioc.interactive_ioc(globals())
-

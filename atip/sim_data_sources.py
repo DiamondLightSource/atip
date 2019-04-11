@@ -31,10 +31,10 @@ class ATElementDataSource(pytac.data_source.DataSource):
                                  functions, via partial(), are passed a cell
                                  argument so only relevant data is returned.
     """
-    def __init__(self, at_element, index, atsim, fields=[]):
+    def __init__(self, at_element, index, atsim, fields=None):
         """
         .. Note:: This data source, currently, cannot understand the simulated
-           equivelent of shared devices on the live machine, or multiple
+           equivalent of shared devices on the live machine, or multiple
            devices that address the same field/attribute for that matter.
 
         Args:
@@ -45,13 +45,16 @@ class ATElementDataSource(pytac.data_source.DataSource):
             atsim (ATSimulator): An instance of an ATSimulator object.
             fields (list, optional): The fields found on this element.
 
+        Raises:
+            ValueError: if an unsupported field is passed, i.e. a field not in
+                         _field_funcs.keys().
+
         **Methods:**
         """
         self.units = pytac.PHYS
         self._at_element = at_element
         self._index = index
         self._atsim = atsim
-        self._fields = fields
         self._field_funcs = {'x_kick': partial(self._KickAngle, 0),
                              'y_kick': partial(self._KickAngle, 1),
                              'a1': partial(self._PolynomA, 1),
@@ -61,6 +64,12 @@ class ATElementDataSource(pytac.data_source.DataSource):
                              'y': partial(self._Orbit, 2),
                              'b0': self._BendingAngle,
                              'f': self._Frequency}
+        fields = set() if fields is None else set(fields)
+        if not all(f in set(self._field_funcs.keys()) for f in fields):
+            raise ValueError("Unsupported field {0}."
+                             .format(fields - set(self._field_funcs.keys())))
+        else:
+            self._fields = list(fields)
 
     def get_fields(self):
         """Get all the fields that are defined for the data source on this
@@ -100,7 +109,9 @@ class ATElementDataSource(pytac.data_source.DataSource):
                                  .format(field, self._at_element))
 
     def set_value(self, field, set_value, throw=None):
-        """Set the value for a field.
+        """Set the value for a field. The field and value go onto the queue of
+        changes on the ATSimulator to be passed to make_change when the queue
+        is emptied.
 
         .. Note:: The 'value' argument passed to the data handling functions is
            used as a get/set flag. In this case, the value to be set is passed
@@ -114,20 +125,32 @@ class ATElementDataSource(pytac.data_source.DataSource):
                                      DataSource base class.
 
         Raises:
-            FieldException: if the specified field does not exist.
+            FieldException: if the specified field cannot be set to or does
+                             not exist.
         """
         if field in self._fields:
-            self._field_funcs[field](value=set_value)
+            if field in ['x', 'y']:
+                raise HandleException("Field {0} cannot be set on element data"
+                                      " source {1}.".format(field, self))
+            else:
+                self._atsim.queue.Signal((self, field, set_value))
         else:
             raise FieldException("No field {0} on AT element {1}."
                                  .format(field, self._at_element))
 
+    def make_change(self, field, set_value):
+        """Calls the appropriate field setting function to actually modify the
+        AT element, called in ATSimulator when the queue is being emptied.
+
+        Args:
+            field (str): The requested field.
+            set_value (float): The value to be set.
+        """
+        self._field_funcs[field](value=set_value)
+
     def _KickAngle(self, cell, value):
         """A data handling function used to get or set a specific cell of the
-        KickAngle attribute of the AT element. Whenever a change is made the
-        'up_to_date' threading event is cleared on the central ATSimulator
-        object, so as to trigger a recalculation of the physics data ensuring
-        it is up to date.
+        KickAngle attribute of the AT element.
 
         .. Note:: If the Corrector is attached to a Sextupole then KickAngle
            needs to be assigned/returned to/from cell 0 of the applicable
@@ -156,20 +179,15 @@ class ATElementDataSource(pytac.data_source.DataSource):
                     self._at_element.PolynomB[0] = -(value / length)
                 elif cell is 1:
                     self._at_element.PolynomA[0] = (value / length)
-                self._atsim.up_to_date.clear()
         else:
             if value is None:
                 return self._at_element.KickAngle[cell]
             else:
                 self._at_element.KickAngle[cell] = value
-                self._atsim.up_to_date.clear()
 
     def _PolynomA(self, cell, value):
         """A data handling function used to get or set a specific cell of the
-        PolynomA attribute of the AT element. Whenever a change is made the
-        'up_to_date' threading event is cleared on the central ATSimulator
-        object, so as to trigger a recalculation of the physics data ensuring
-        it is up to date.
+        PolynomA attribute of the AT element.
 
         Args:
             cell (int): Which cell of PolynomA to get/set.
@@ -182,14 +200,10 @@ class ATElementDataSource(pytac.data_source.DataSource):
             return self._at_element.PolynomA[cell]
         else:
             self._at_element.PolynomA[cell] = value
-            self._atsim.up_to_date.clear()
 
     def _PolynomB(self, cell, value):
         """A data handling function used to get or set a specific cell of the
-        PolynomB attribute of the AT element. Whenever a change is made the
-        'up_to_date' threading event is cleared on the central ATSimulator
-        object, so as to trigger a recalculation of the physics data ensuring
-        it is up to date.
+        PolynomB attribute of the AT element.
 
         Args:
             cell (int): Which cell of PolynomB to get/set.
@@ -202,7 +216,6 @@ class ATElementDataSource(pytac.data_source.DataSource):
             return self._at_element.PolynomB[cell]
         else:
             self._at_element.PolynomB[cell] = value
-            self._atsim.up_to_date.clear()
 
     def _Orbit(self, cell, value):
         """A data handling function used to get or set a specific cell of the
@@ -219,11 +232,12 @@ class ATElementDataSource(pytac.data_source.DataSource):
             float: The value of the specified cell of closed_orbit.
 
         Raises:
-            HandleException: if a set operation is attempted (value != None).
+            HandleException: if a set operation is attempted (value !=None).
         """
         if value is None:
             return float(self._atsim.get_orbit(cell)[self._index - 1])
         else:
+            # This shouldn't be possible
             field = 'x' if cell is 0 else 'y'
             raise HandleException("Field {0} cannot be set on element data "
                                   "source {1}.".format(field, self))
@@ -244,7 +258,6 @@ class ATElementDataSource(pytac.data_source.DataSource):
             return self._at_element.BendingAngle
         else:
             self._at_element.BendingAngle = value
-            self._atsim.up_to_date.clear()
 
     def _Frequency(self, value):
         """A data handling function used to get or set the Frequency attribute
@@ -262,7 +275,6 @@ class ATElementDataSource(pytac.data_source.DataSource):
             return self._at_element.Frequency
         else:
             self._at_element.Frequency = value
-            self._atsim.up_to_date.clear()
 
 
 class ATLatticeDataSource(pytac.data_source.DataSource):
@@ -277,7 +289,7 @@ class ATLatticeDataSource(pytac.data_source.DataSource):
     .. Private Attributes:
            _atsim (ATSimulator): A pointer to the centralised instance of an
                                   ATSimulator object.
-           _field_funcs (dict): A dictionary which maps pytac lattice fields to
+           _field_funcs (dict): A dictionary which maps Pytac lattice fields to
                                  the correct data function on the centralised
                                  ATSimulator object. Some of these functions,
                                  via partial(), are passed a cell argument so
@@ -316,7 +328,7 @@ class ATLatticeDataSource(pytac.data_source.DataSource):
 
     def get_fields(self):
         """Get all the fields that are defined for this data source on the
-        pytac lattice.
+        Pytac lattice.
 
         Returns:
             list: A list of all the fields that are present on this element.
@@ -324,7 +336,7 @@ class ATLatticeDataSource(pytac.data_source.DataSource):
         return self._field_funcs.keys()
 
     def get_value(self, field, handle=None, throw=None):
-        """Get the value for a field on the pytac lattice.
+        """Get the value for a field on the Pytac lattice.
 
         Args:
             field (str): The requested field.
@@ -360,7 +372,7 @@ class ATLatticeDataSource(pytac.data_source.DataSource):
                                      DataSource base class.
 
         Raises:
-            HandleException: as setting values to pytac lattice fields is not
+            HandleException: as setting values to Pytac lattice fields is not
                               currently supported.
         """
         raise HandleException("Field {0} cannot be set on lattice data source "

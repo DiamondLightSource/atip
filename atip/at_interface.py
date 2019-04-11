@@ -1,45 +1,38 @@
 """Module containing an interface with the AT simulator."""
-from threading import Thread, Event
 from warnings import warn
 
 import at
 import numpy
-import time
-
 import cothread
 
 
 class ATSimulator(object):
     """A centralised class which makes use of AT to simulate the physics data
-    for the copy of the AT lattice which it holds. This class ensures that this
-    data is up to date through the use of threading, a thread constantly runs
-    in the background and recalculates the physics data every time a change is
-    made via the use of flags (threading events).
+    for the copy of the AT lattice which it holds. It works as follows, when a
+    change is made to the lattice in Pytac it is added to the queue attribute
+    of this class. When the queue has changes on it  a recalculation is
+    triggered, all the changes are applied to the lattice and then the physics
+    data calculated. This ensures that the physics data is up to date.
 
     **Attributes**
 
     Attributes:
-        up_to_date (threading.Event): A flag that indicates if the physics data
-                                       is up to date with all the changes made
-                                       to the AT lattice.
+        queue (cothread.EventQueue): A queue of changes to be made to the
+                                      lattice on the next recalculation cycle.
 
     .. Private Attributes:
-           _at_lattice (at.lattice_object.Lattice): The centralised instance of
-                                                     an AT lattice from which
-                                                     the physics data is
-                                                     calculated.
-           _rp (numpy.array): A boolean array to be used as refpoints for the
+           _at_lat (at.lattice_object.Lattice): The centralised instance of an
+                                                 AT lattice from which the
+                                                 physics data is calculated.
+           _rp (numpy.array): A boolean array to be used as refpts for the
                                physics calculations.
            _emittance (tuple): Emittance, the output of the AT physics function
                                 ohmi_envelope (see at.lattice.radiation.py).
            _lindata (tuple): Linear optics data, the output of the AT physics
                               function linopt (see at.lattice.linear.py).
-           _paused (threading.Event): A flag used to temporarily pause the
-                                       physics calculations.
-           _running (threading.Event): A flag used to indicate if the thread is
-                                        running or not, it is also used to turn
-                                        the thread off.
-           _calculation_thread (threading.Thread): A thread to constantly check
+           _paused (cothread.Event): A flag used to temporarily pause the
+                                      physics calculations.
+           _calculation_thread (cothread.Thread): A thread to check the queue
                                                     for new changes to the AT
                                                     lattice and recalculate the
                                                     physics data upon a change.
@@ -55,54 +48,33 @@ class ATSimulator(object):
         Args:
             at_lattice (at.lattice_object.Lattice): An instance of an AT
                                                      lattice object.
-            callback (callable): To be called after completion of each round of
-                                  physics calculations.
+            callback (callable): Optional, if passed it is called on completion
+                                  of each round of physics calculations.
 
         **Methods:**
         """
         if (not callable(callback)) and (callback is not None):
             raise TypeError("If passed, 'callback' should be callable, {0} is "
                             "not.".format(callback))
-        self._at_lattice = at_lattice
-        self.time = 0
-        self._rp = numpy.ones(len(at_lattice), dtype=bool)
+        self._at_lat = at_lattice
+        self._rp = numpy.ones(len(at_lattice), dtype=bool)  # faster option?
         # Initial phys data calculation.
-        self._at_lattice.radiation_on()
-        self._emittance = self._at_lattice.ohmi_envelope(self._rp)
-        self._at_lattice.radiation_off()
-        self._lindata = self._at_lattice.linopt(refpts=self._rp,
-                                                get_chrom=True, coupled=False)
+        self._at_lat.radiation_on()
+        self._emittance = self._at_lat.ohmi_envelope(self._rp)
+        self._at_lat.radiation_off()
+        self._lindata = self._at_lat.linopt(refpts=self._rp, get_chrom=True,
+                                            coupled=False)
         # Threading stuff initialisation.
-        self.up_to_date = Event()
-        self.up_to_date.set()
-        self._paused = Event()
-        self._running = Event()
+        self.queue = cothread.ThreadedEventQueue()
+        self._paused = cothread.Event()
         self._calculation_thread = cothread.Spawn(self._recalculate_phys_data,
                                                   callback)
 
-    def start_thread(self):
-        """Start the thread created in __init__ in the background. This
-        function is separated from __init__ so that multiple Accelerator Data
-        objects can be created without the need to waste processing power on
-        threads when they are not required.
-
-        Raises:
-            RuntimeError: if the thread has already been started.
-        """
-        self._running.set()
-        # if self._running.is_set() is False:
-        #     self._calculation_thread.setDaemon(True)
-        #     self._running.set()
-        #     self._calculation_thread.start()
-        # else:
-        #     raise RuntimeError("Cannot start thread as it is already running.")
-        pass
-
     def _recalculate_phys_data(self, callback):
-        """Target function for the background thread. Recalculates the physics
-        data dependant on the status of the '_paused' and 'up_to_date' flags.
-        The thread is constantly running but the calculations only take place
-        if both flags are False.
+        """Target function for the Cothread thread. Recalculates the physics
+        data dependant on the status of the '_paused' flag and the length of
+        the queue. The calculations only take place if '_paused' is False and
+        there is one or more changes on the queue.
 
         .. Note:: If an error or exception is raised in the running thread then
            it does not continue running so subsequent calculations are not
@@ -118,53 +90,32 @@ class ATSimulator(object):
                            but as a warning.
         """
         while True:
-            if self._running.is_set() is False:
-                return
-            elif (self.up_to_date.is_set() or self._paused.is_set()) is False:
-                try:
-                    self.start = time.time()
-                    self._at_lattice.radiation_on()
-                    self.radiation_on = time.time()
-                    print(self.radiation_on - self.start)
-                    self._emittance = self._at_lattice.ohmi_envelope(self._rp)
-                    self.emittance_calc = time.time()
-                    print(self.emittance_calc - self.radiation_on)
-                    self._at_lattice.radiation_off()
-                    self._lindata = self._at_lattice.linopt(refpts=self._rp,
+            if len(self.queue) != 0:
+                for i in range(len(self.queue)):  # nuances
+                    data_source, field, value = self.queue.Wait()
+                    data_source.make_change(field, value)
+                if bool(self._paused) is False:
+                    try:
+                        self._at_lat.radiation_on()
+                        self._emittance = self._at_lat.ohmi_envelope(self._rp)
+                        self._at_lat.radiation_off()
+                        self._lindata = self._at_lat.linopt(refpts=self._rp,
                                                             get_chrom=True,
                                                             coupled=False)
-                    print(time.time() - self.emittance_calc)
-                except Exception as e:
-                    warn(at.AtWarning(e))
-                if callback is not None:
-                    callback()
-                self.up_to_date.set()
+                    except Exception as e:
+                        warn(at.AtWarning(e))
+                    if callback is not None:
+                        callback()
             cothread.Yield()
-
-    def stop_thread(self):
-        """Stop the recalculation thread if it is running. This enables threads
-        to be switched off when they are not being used so they do not
-        unnecessarily use processing power. We join the thread to block until
-        it has finished.
-
-        Raises:
-            RuntimeError: if the thread is not yet running.
-        """
-        # if self._running.is_set() is True:
-        #     self._running.clear()
-        #     self._calculation_thread.join()
-        # else:
-        #     raise RuntimeError("Cannot stop thread as it is not running.")
-        pass
 
     def toggle_calculations(self):
         """Pause or unpause the physics calculations by setting or clearing the
-        _paused flag.
+        _paused flag. N.B. this does not pause the emptying of the queue.
         """
-        if self._paused.is_set() is False:
-            self._paused.set()
+        if bool(self._paused) is False:
+            self._paused.Signal()
         else:
-            self._paused.clear()
+            self._paused.Reset()
 
     def wait_for_calculations(self, timeout=10):
         """Wait until the physics calculations have taken account of all
@@ -180,7 +131,7 @@ class ATSimulator(object):
         return self.up_to_date.wait(timeout)
 
     def get_at_element(self, index):
-        """Return the AT element coresponding to the given index.
+        """Return the AT element corresponding to the given index.
 
         Args:
             index (int): The index of the AT element to return.
@@ -188,7 +139,7 @@ class ATSimulator(object):
         Returns:
             at.elements.Element: The element specified by the given index.
         """
-        return self._at_lattice[index - 1]
+        return self._at_lat[index - 1]
 
     def get_at_lattice(self):
         """Return a copy of the AT lattice object.
@@ -196,7 +147,7 @@ class ATSimulator(object):
         Returns:
             at.lattice_object.Lattice: A copy of the AT lattice object.
         """
-        return self._at_lattice.copy()
+        return self._at_lat.copy()
 
     def get_chrom(self, cell):
         """Return the specified cell of the chromaticity for the AT lattice.
@@ -272,7 +223,7 @@ class ATSimulator(object):
         Returns:
             float: The energy of the AT lattice.
         """
-        return self._at_lattice.energy
+        return self._at_lat.energy
 
     def get_alpha(self):
         """Return the alpha vector at every element in the AT lattice.
