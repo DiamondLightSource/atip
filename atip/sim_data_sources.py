@@ -133,6 +133,7 @@ class ATElementDataSource(pytac.data_source.DataSource):
                 raise HandleException("Field {0} cannot be set on element data"
                                       " source {1}.".format(field, self))
             else:
+                self._atsim.up_to_date.Reset()
                 self._atsim.queue.Signal((self, field, set_value))
         else:
             raise FieldException("No field {0} on AT element {1}."

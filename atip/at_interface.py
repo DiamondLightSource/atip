@@ -19,6 +19,9 @@ class ATSimulator(object):
     Attributes:
         queue (cothread.EventQueue): A queue of changes to be made to the
                                       lattice on the next recalculation cycle.
+        up_to_date (cothread.Event): A flag that indicates if the physics data
+                                      is up to date with all the changes made
+                                      to the AT lattice.
 
     .. Private Attributes:
            _at_lat (at.lattice_object.Lattice): The centralised instance of an
@@ -66,6 +69,8 @@ class ATSimulator(object):
                                             coupled=False)
         # Threading stuff initialisation.
         self.queue = cothread.ThreadedEventQueue()
+        self.up_to_date = cothread.Event()
+        self.up_to_date.Signal()
         self._paused = cothread.Event()
         self._calculation_thread = cothread.Spawn(self._recalculate_phys_data,
                                                   callback)
@@ -106,6 +111,7 @@ class ATSimulator(object):
                         warn(at.AtWarning(e))
                     if callback is not None:
                         callback()
+                    self.up_to_date.Signal()
             cothread.Yield()
 
     def toggle_calculations(self):
@@ -128,7 +134,11 @@ class ATSimulator(object):
             bool: False if the timeout elapsed before the calculations
             concluded, else True.
         """
-        return self.up_to_date.wait(timeout)
+        try:
+            self.up_to_date.Wait(timeout)
+            return True
+        except cothread.Timedout:
+            return False
 
     def get_at_element(self, index):
         """Return the AT element corresponding to the given index.

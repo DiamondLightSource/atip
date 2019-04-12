@@ -6,21 +6,6 @@ import pytest
 import atip
 
 
-class temporary_thread(object):
-    """A class designed to make use of the  'with' statement's context manager
-    to ensure that a thread opened in a test is never left running after that
-    test has concluded, which would unnecessarily slow down subsequent tests.
-    """
-    def __init__(self, atsim):
-        self.atsim = atsim
-
-    def __enter__(self):
-        self.atsim.start_thread()
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        self.atsim.stop_thread()
-
-
 def _initial_phys_data(atsim, initial_emit, initial_lin):
     try:
         numpy.testing.assert_almost_equal(initial_emit[2]['emitXY'][:, 0][0],
@@ -62,56 +47,39 @@ def _initial_phys_data(atsim, initial_emit, initial_lin):
 
 def test_ATSimulator_creation(atsim, initial_emit, initial_lin):
     # Check initial state of flags.
-    assert atsim.up_to_date.is_set() is True
-    assert atsim._paused.is_set() is False
-    assert atsim._running.is_set() is False
+    assert bool(atsim._paused) is False
     # Check emittance and lindata are initially calculated correctly.
     assert _initial_phys_data(atsim, initial_emit, initial_lin) is True
 
 
-def test_start_and_stop_thread(atsim):
-    assert atsim._running.is_set() is False
-    assert atsim._calculation_thread.is_alive() is False
-    with pytest.raises(RuntimeError):
-        atsim.stop_thread()
-    atsim.start_thread()
-    with pytest.raises(RuntimeError):
-        atsim.start_thread()
-    assert atsim._running.is_set() is True
-    assert atsim._calculation_thread.is_alive() is True
-    atsim.stop_thread()
-    assert atsim._running.is_set() is False
-    assert atsim._calculation_thread.is_alive() is False
-
-
 def test_recalculate_phys_data(atsim, initial_emit, initial_lin):
     assert _initial_phys_data(atsim, initial_emit, initial_lin) is True
-    thread = temporary_thread(atsim)
-    with thread:
-        # Check that errors raised inside thread are converted to warnings.
-        atsim._at_lattice[5].PolynomB[0] = 1.e10
-        with pytest.warns(at.AtWarning):
-            atsim.up_to_date.clear()
-            atsim.wait_for_calculations(5)
-        atsim._at_lattice[5].PolynomB[0] = 0.0
-        # Set corrector x_kick but on a sextupole as no correctors in test ring
-        atsim._at_lattice[21].PolynomB[0] = -7.e-5
-        # Set corrector y_kick but on a sextupole as no correctors in test ring
-        atsim._at_lattice[21].PolynomA[0] = 7.e-5
-        # Set quadrupole b1
-        atsim._at_lattice[5].PolynomB[1] = 2.5
-        # Set skew quadrupole a1
-        atsim._at_lattice[7].PolynomA[1] = 2.25e-3
-        # Set sextupole b2
-        atsim._at_lattice[21].PolynomB[2] = -75
-        # Clear the flag and then wait for the calculations
-        atsim.up_to_date.clear()
+    # Check that errors raised inside thread are converted to warnings.
+    atsim._at_lat[5].PolynomB[0] = 1.e10
+    with pytest.warns(at.AtWarning):
+        atsim.up_to_date.Reset()
+        atsim.queue.Signal((mock.Mock(), 'f', 0))
         atsim.wait_for_calculations(5)
-        # Get the applicable physics data
-        orbit = [atsim.get_orbit(0)[0], atsim.get_orbit(2)[0]]
-        chrom = [atsim.get_chrom(0), atsim.get_chrom(1)]
-        tune = [atsim.get_tune(0), atsim.get_tune(1)]
-        emit = [atsim.get_emit(0), atsim.get_emit(1)]
+    atsim._at_lat[5].PolynomB[0] = 0.0
+    # Set corrector x_kick but on a sextupole as no correctors in test ring
+    atsim._at_lat[21].PolynomB[0] = -7.e-5
+    # Set corrector y_kick but on a sextupole as no correctors in test ring
+    atsim._at_lat[21].PolynomA[0] = 7.e-5
+    # Set quadrupole b1
+    atsim._at_lat[5].PolynomB[1] = 2.5
+    # Set skew quadrupole a1
+    atsim._at_lat[7].PolynomA[1] = 2.25e-3
+    # Set sextupole b2
+    atsim._at_lat[21].PolynomB[2] = -75
+    # Clear the flag and then wait for the calculations
+    atsim.up_to_date.Reset()
+    atsim.queue.Signal((mock.Mock(), 'f', 0))
+    atsim.wait_for_calculations(5)
+    # Get the applicable physics data
+    orbit = [atsim.get_orbit(0)[0], atsim.get_orbit(2)[0]]
+    chrom = [atsim.get_chrom(0), atsim.get_chrom(1)]
+    tune = [atsim.get_tune(0), atsim.get_tune(1)]
+    emit = [atsim.get_emit(0), atsim.get_emit(1)]
     # Check the results against known values
     numpy.testing.assert_almost_equal(orbit, [5.18918914e-06, -8.92596857e-06],
                                       decimal=10)
@@ -125,22 +93,22 @@ def test_recalculate_phys_data(atsim, initial_emit, initial_lin):
 
 def test_toggle_calculations_and_wait_for_calculations(atsim, initial_lin,
                                                        initial_emit):
-    assert atsim._paused.is_set() is False
+    assert bool(atsim._paused) is False
     atsim.toggle_calculations()
-    assert atsim._paused.is_set() is True
+    assert bool(atsim._paused) is True
     atsim.toggle_calculations()
-    assert atsim._paused.is_set() is False
-    thread = temporary_thread(atsim)
-    with thread:
-        # pause > make a change > check no calc > unpause > check calc
-        atsim.toggle_calculations()
-        atsim._at_lattice[5].PolynomB[1] = 2.5
-        atsim.up_to_date.clear()
-        assert atsim.wait_for_calculations(3) is False
-        assert _initial_phys_data(atsim, initial_emit, initial_lin) is True
-        atsim.toggle_calculations()
-        assert atsim.wait_for_calculations() is True
-        assert _initial_phys_data(atsim, initial_emit, initial_lin) is False
+    assert bool(atsim._paused) is False
+    # pause > make a change > check no calc > unpause > check calc
+    atsim.toggle_calculations()
+    atsim._at_lat[5].PolynomB[1] = 2.5
+    atsim.up_to_date.Reset()
+    atsim.queue.Signal((mock.Mock(), 'f', 0))
+    assert atsim.wait_for_calculations(3) is False
+    assert _initial_phys_data(atsim, initial_emit, initial_lin) is True
+    atsim.toggle_calculations()
+    atsim.queue.Signal((mock.Mock(), 'f', 0))
+    assert atsim.wait_for_calculations() is True
+    assert _initial_phys_data(atsim, initial_emit, initial_lin) is False
 
 
 def test_recalculate_phys_data_callback(at_lattice):
@@ -151,10 +119,9 @@ def test_recalculate_phys_data_callback(at_lattice):
         atip.at_interface.ATSimulator(at_lattice, '')
     callback_func = mock.Mock()
     atsim = atip.at_interface.ATSimulator(at_lattice, callback_func)
-    thread = temporary_thread(atsim)
-    with thread:
-        atsim.up_to_date.clear()
-        atsim.wait_for_calculations()
+    atsim.up_to_date.Reset()
+    atsim.queue.Signal((mock.Mock(), 'f', 0))
+    atsim.wait_for_calculations()
     callback_func.assert_called_once_with()
 
 
@@ -163,7 +130,7 @@ def test_get_at_element(atsim, at_lattice):
 
 
 def test_get_at_lattice(atsim, at_lattice):
-    for elem1, elem2 in zip(atsim.get_at_lattice(), atsim._at_lattice):
+    for elem1, elem2 in zip(atsim.get_at_lattice(), atsim._at_lat):
         assert elem1 == elem2
 
 
