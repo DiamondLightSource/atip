@@ -96,7 +96,7 @@ class ATSimulator(object):
         """
         while True:
             if len(self.queue) != 0:
-                for i in range(len(self.queue)):  # nuances
+                for i in range(len(self.queue)):
                     data_source, field, value = self.queue.Wait()
                     data_source.make_change(field, value)
                 if bool(self._paused) is False:

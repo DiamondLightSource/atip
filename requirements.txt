@@ -7,7 +7,6 @@ mock
 flake8
 sphinx
 sphinx-rtd-theme
-coveralls
 cothread
 #pytac
 #at-python

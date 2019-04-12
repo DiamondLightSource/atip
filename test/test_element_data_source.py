@@ -26,11 +26,26 @@ def test_elem_field_funcs(at_elem, func_str, field, cell):
         assert ff[field] == eval(func_str)
 
 
+@pytest.mark.parametrize('fields', [['not_a_field'], [1], ['a1', 'invalid'],
+                                    ['X_KICK']])
+def test_elem_raises_ValueError_if_unsupported_field(at_elem, fields):
+    with pytest.raises(ValueError):
+        atip.sim_data_sources.ATElementDataSource(at_elem, 1, mock.Mock(),
+                                                  fields)
+
+
 @pytest.mark.parametrize('fields', [['a1'], ['y_kick', 'x_kick'], []])
 def test_elem_get_fields(at_elem, fields):
     ateds = atip.sim_data_sources.ATElementDataSource(at_elem, 1, mock.Mock(),
                                                       fields)
     assert ateds.get_fields() == fields
+
+
+@pytest.mark.parametrize('fields', [['a1', 'a1'], ['x_kick', 'b0', 'x_kick']])
+def test_elem_removes_duplicated_fields(at_elem, fields):
+    ateds = atip.sim_data_sources.ATElementDataSource(at_elem, 1, mock.Mock(),
+                                                      fields)
+    assert ateds.get_fields() == list(set(fields))
 
 
 @pytest.mark.parametrize('field', ['not_a_field', 1, [], 'a1', 'X_KICK'])
@@ -79,6 +94,14 @@ def test_elem_set_value_raises_FieldException_if_nonexistant_field(at_elem,
         ateds.set_value(field, 0)
 
 
+@pytest.mark.parametrize('field', ['x', 'y'])
+def test_elem_set_orbit_raises_HandleException(at_elem, field):
+    ateds = atip.sim_data_sources.ATElementDataSource(at_elem, 1, mock.Mock(),
+                                                      [field])
+    with pytest.raises(pytac.exceptions.HandleException):
+        ateds.set_value(field, 0)
+
+
 @pytest.mark.parametrize('field', ['x_kick', 'y_kick', 'a1', 'b0', 'b1', 'b2',
                                    'f'])
 def test_elem_set_value_sets_up_to_date_flag(at_elem, field):
@@ -89,7 +112,18 @@ def test_elem_set_value_sets_up_to_date_flag(at_elem, field):
     assert len(atsim.up_to_date.mock_calls) == 1
     assert atsim.up_to_date.mock_calls[0] == mock.call.Reset()
 
-"""
+
+@pytest.mark.parametrize('field', ['x_kick', 'y_kick', 'a1', 'b0', 'b1', 'b2',
+                                   'f'])
+def test_elem_set_value_adds_changes_to_queue(at_elem, field):
+    atsim = mock.Mock()
+    ateds = atip.sim_data_sources.ATElementDataSource(at_elem, 1, atsim,
+                                                      [field])
+    ateds.set_value(field, 1)
+    assert len(atsim.queue.mock_calls) == 1
+    assert atsim.queue.mock_calls[0] == mock.call.Signal((ateds, field, 1))
+
+
 @pytest.mark.parametrize('field,attr_str', [('x_kick', 'at_elem.KickAngle[0]'),
                                             ('y_kick', 'at_elem.KickAngle[1]'),
                                             ('a1', 'at_elem.PolynomA[1]'),
@@ -97,29 +131,27 @@ def test_elem_set_value_sets_up_to_date_flag(at_elem, field):
                                             ('b1', 'at_elem.PolynomB[1]'),
                                             ('b2', 'at_elem.PolynomB[2]'),
                                             ('f', 'at_elem.Frequency')])
-def test_elem_set_value(at_elem, field, attr_str):
+def test_elem_make_change(at_elem, field, attr_str):
     ateds = atip.sim_data_sources.ATElementDataSource(at_elem, 1, mock.Mock(),
                                                       [field])
-    ateds.set_value(field, 1)
+    ateds.make_change(field, 1)
     assert eval(attr_str) == 1
-"""
 
-def test_elem_set_orbit_raises_HandleException(at_elem):
-    ateds = atip.sim_data_sources.ATElementDataSource(at_elem, 1, mock.Mock(),
-                                                      ['x', 'y'])
-    with pytest.raises(pytac.exceptions.HandleException):
-        ateds.set_value('x', 0)
-    with pytest.raises(pytac.exceptions.HandleException):
-        ateds.set_value('y', 0)
 
-"""
-def test_elem_set_value_on_Sextupole():
+def test_elem_make_change_on_Sextupole():
     s = at.elements.Sextupole('S1', 0.1, PolynomA=[0, 0, 0, 0],
                               PolynomB=[0, 0, 0, 0])
     ateds = atip.sim_data_sources.ATElementDataSource(s, 0, mock.Mock(),
                                                       ['x_kick', 'y_kick'])
-    ateds.set_value('x_kick', 1)
-    ateds.set_value('y_kick', 5)
+    ateds.make_change('x_kick', 1)
+    ateds.make_change('y_kick', 5)
     assert s.PolynomA[0] == (5 / 0.1)
     assert s.PolynomB[0] == (- 1 / 0.1)
-"""
+
+
+@pytest.mark.parametrize('field', ['x', 'y'])
+def test_elem_make_change_orbit_raises_HandleException(at_elem, field):
+    ateds = atip.sim_data_sources.ATElementDataSource(at_elem, 1, mock.Mock(),
+                                                      [field])
+    with pytest.raises(pytac.exceptions.HandleException):
+        ateds.make_change(field, 0)

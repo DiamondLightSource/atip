@@ -78,6 +78,7 @@ def get_thread(lattice):
 def toggle_thread(lattice):
     get_atsim(lattice).toggle_calculations()
 
+
 def trigger_calc(lattice):
     for elem in lattice:
         fields = list(set(elem.get_fields()[pytac.SIM]) - set(['x', 'y']))
@@ -85,6 +86,7 @@ def trigger_calc(lattice):
             val = elem.get_value(fields[0], pytac.SP, data_source=pytac.SIM)
             elem.set_value(fields[0], val, data_source=pytac.SIM)
             break
+
 
 """
 def plot_beam_position(elems, ds, x_plot=True, y_plot=True):

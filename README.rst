@@ -42,14 +42,13 @@ The accelerator data for the simulator is held in the centralised
 Each instance of ``ATElementDataSource`` holds the pyAT element equivalent of
 the Pytac element that it is attached to; when a get request is made the
 appropriate data from that AT element is returned, however, when a set request
-is made the class updates its copy of that element with the changes
-incorporated and then alerts the centralised ``ATSimulator`` object that new
-changes have been made. Inside an ``ATSimulator`` instance a background thread
-is constantly running, whenever a change is made the thread recalculates the
-physics data of the lattice to ensure that it is up to date. This means that
-the emittance and linear optics data held by ``ATSimulator``, is updated after
-every batch of changes and that without excessive calculation a very recent
-version of the lattice's physics data is always available.
+is made the class puts those changes onto the queue of the centralised
+``ATSimulator`` object. Inside the ``ATSimulator`` instance a cothread checks
+the length of the queue, whenever a change is queued the thread recalculates
+the physics data of the lattice to ensure that it is up to date. This means
+that the emittance and linear optics data held by ``ATSimulator``, is updated
+after every batch of changes and that without excessive calculation a very
+recent version of the lattice's physics data is always available.
 
 API:
 ----
@@ -60,24 +59,25 @@ load_sim:
       or the path to a .mat file from which a ring can be loaded.
 
 ATElementDataSource:
+    * ``get_fields()`` - return the fields on the element.
     * ``get_value(field)`` - get the value for a given field on the element.
     * ``set_value(field, set_value)`` - set the value for a given field on the
-      element.
-    * ``get_fields()`` - return the fields on the element.
+      element, appends the change to the queue.
+    * ``make_change(field, set_value)`` - change the value of the specifed
+      field on the at element, predominantly used by the queue to make changes,
+      but can also be called directly to avoid putting a change on the queue.
 
 ATLatticeDataSource:
+    * ``get_fields()`` - return the fields on the lattice.
     * ``get_value(field)`` - get the value for a given field on the lattice.
     * ``set_value(field, set_value)`` - set the value for a given field on the
       lattice.
-    * ``get_fields()`` - return the fields on the lattice.
 
 ATSimulator:
-    * ``start_thread()`` - start the background calculation thread.
-    * ``stop_thread()`` - kill the background calculation thread after it has
-      completed it's current round of calculations.
     * ``toggle_calculations()`` - pause or unpause the recalculation thread.
     * ``wait_for_calculations(timeout)`` - wait up to 'timeout' seconds for
-      the current calculations to conclude.
+      the current calculations to conclude, if they do it returns True, if not
+      False is returned; if 'timeout' is not passed it will wait 10 seconds.
     * ``get_at_element(index)`` - return a shallow copy of the specified AT
       element from the central AT ring, N.B. An 'index' of 1 returns ring[0].
     * ``get_at_lattice()`` - return a shallow copy of the entire centralised AT
@@ -123,15 +123,6 @@ Both ``ATElementDataSource`` and ``ATLatticeDataSource`` use a dictionary of
 functions that correspond to fields to interpret which data is to be returned
 or set. In the case where a cell needs to be passed to the data handling
 functions, for further specification, functools' ``partial()`` is used.
-
-In ``ATSimulator``, the calculation thread makes use of threading events, which
-act like flags, to indicate whether it should perform a recalculation or not;
-as well as using them to start and stop the thread.
-
-The ``start_thread()`` and ``stop_thread()`` methods on ``ATSimulator`` are
-there so an ``ATSimulator`` object can exist without having the background
-calculation thread running. This prevents the unnecessary wasting of processing
-power when recalculation is not required.
 
 ``ATSimulator`` has many methods because the physics data from AT must be split
 into a more manageable format before it is returned, so that the user is not

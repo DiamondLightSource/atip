@@ -48,18 +48,30 @@ def _initial_phys_data(atsim, initial_emit, initial_lin):
 def test_ATSimulator_creation(atsim, initial_emit, initial_lin):
     # Check initial state of flags.
     assert bool(atsim._paused) is False
+    assert bool(atsim.up_to_date) is True
+    assert len(atsim.queue) == 0
     # Check emittance and lindata are initially calculated correctly.
     assert _initial_phys_data(atsim, initial_emit, initial_lin) is True
+
+
+def test_recalculate_phys_data_queue(atsim):
+    elem_ds = mock.Mock()
+    atsim.up_to_date.Reset()
+    atsim.queue.Signal((elem_ds, 'a_field', 12))
+    assert len(atsim.queue) == 1
+    atsim.wait_for_calculations()
+    assert len(atsim.queue) == 0
+    elem_ds.make_change.assert_called_once_with('a_field', 12)
 
 
 def test_recalculate_phys_data(atsim, initial_emit, initial_lin):
     assert _initial_phys_data(atsim, initial_emit, initial_lin) is True
     # Check that errors raised inside thread are converted to warnings.
     atsim._at_lat[5].PolynomB[0] = 1.e10
+    atsim.up_to_date.Reset()
+    atsim.queue.Signal((mock.Mock(), 'f', 0))
     with pytest.warns(at.AtWarning):
-        atsim.up_to_date.Reset()
-        atsim.queue.Signal((mock.Mock(), 'f', 0))
-        atsim.wait_for_calculations(5)
+        atsim.wait_for_calculations()
     atsim._at_lat[5].PolynomB[0] = 0.0
     # Set corrector x_kick but on a sextupole as no correctors in test ring
     atsim._at_lat[21].PolynomB[0] = -7.e-5
@@ -74,7 +86,7 @@ def test_recalculate_phys_data(atsim, initial_emit, initial_lin):
     # Clear the flag and then wait for the calculations
     atsim.up_to_date.Reset()
     atsim.queue.Signal((mock.Mock(), 'f', 0))
-    atsim.wait_for_calculations(5)
+    atsim.wait_for_calculations()
     # Get the applicable physics data
     orbit = [atsim.get_orbit(0)[0], atsim.get_orbit(2)[0]]
     chrom = [atsim.get_chrom(0), atsim.get_chrom(1)]
@@ -103,7 +115,7 @@ def test_toggle_calculations_and_wait_for_calculations(atsim, initial_lin,
     atsim._at_lat[5].PolynomB[1] = 2.5
     atsim.up_to_date.Reset()
     atsim.queue.Signal((mock.Mock(), 'f', 0))
-    assert atsim.wait_for_calculations(3) is False
+    assert atsim.wait_for_calculations(2) is False
     assert _initial_phys_data(atsim, initial_emit, initial_lin) is True
     atsim.toggle_calculations()
     atsim.queue.Signal((mock.Mock(), 'f', 0))

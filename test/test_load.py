@@ -27,8 +27,6 @@ def test_load_at_ring_variations(pytac_lattice, mat_filepath, at_ring):
 
 
 def test_load_with_callback(pytac_lattice, at_ring):
-    # Check normal load
-    lat = atip.load_sim.load(pytac_lattice, at_ring)
     # Check load with non-callable raises TypeError
     with pytest.raises(TypeError):
         atip.load_sim.load(pytac_lattice, at_ring, '')

@@ -125,8 +125,8 @@ class ATElementDataSource(pytac.data_source.DataSource):
                                      DataSource base class.
 
         Raises:
-            FieldException: if the specified field cannot be set to or does
-                             not exist.
+            HandleException: if the specified field cannot be set to.
+            FieldException: if the specified field does not exist.
         """
         if field in self._fields:
             if field in ['x', 'y']:

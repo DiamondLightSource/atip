@@ -152,8 +152,6 @@ class ATIPServer(object):
                                                   initial_value=value,
                                                   validate=self._validate)
                         self._out_records[out_record.name] = in_record
-        print("Finished creating {0} element records, now creating lattice "
-              "records.".format(self.total_records))
         # Now for lattice fields
         lat_fields = self.lattice.get_fields()
         for field in set(lat_fields[pytac.LIVE]) & set(lat_fields[pytac.SIM]):
@@ -167,7 +165,6 @@ class ATIPServer(object):
                 in_record = builder.aIn(get_pv[1], initial_value=value)
                 self._in_records[in_record] = (0, field)
                 self._rb_only_records.append(in_record)
-        print("Finished lattice records, now creating feedback records.")
         print("~*~*Woah, we're halfway there, Wo-oah...*~*~")
 
     def _create_feedback_records(self, feedback_csv):
