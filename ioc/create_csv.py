@@ -8,7 +8,7 @@ from cothread.catools import caget, FORMAT_CTRL
 import atip
 
 
-def generate_data():
+def generate_feedback_pvs():
     # Load the lattice and elements.
     lattice = atip.utils.loader()
     all_elements = atip.utils.preload(lattice)
@@ -65,23 +65,21 @@ def generate_data():
 
 
 def generate_pv_limits():
-    fams = ['VTRIM', 'HTRIM', 'VSTR', 'HSTR', 'SEXT', 'QUAD', 'BEND', 'RF']
     data = [("pv", "upper", "lower")]
-    elems = atip.utils.preload(atip.utils.loader())
-    for element in elems.all:
-        if element.type_ in fams:
-            for field in element.get_fields()[pytac.SIM]:
-                pv = element.get_pv_name(field, pytac.RB)
+    lattice = atip.utils.loader()
+    for element in lattice:
+        for field in element.get_fields()[pytac.SIM]:
+            pv = element.get_pv_name(field, pytac.RB)
+            ctrl = caget(pv, format=FORMAT_CTRL)
+            data.append((pv, ctrl.upper_ctrl_limit, ctrl.lower_ctrl_limit))
+            try:
+                pv = element.get_pv_name(field, pytac.SP)
+            except pytac.exceptions.HandleException:
+                pass
+            else:
                 ctrl = caget(pv, format=FORMAT_CTRL)
-                data.append((pv, ctrl.upper_ctrl_limit, ctrl.lower_ctrl_limit))
-                try:
-                    pv = element.get_pv_name(field, pytac.SP)
-                except pytac.exceptions.HandleException:
-                    pass
-                else:
-                    ctrl = caget(pv, format=FORMAT_CTRL)
-                    data.append((pv, ctrl.upper_ctrl_limit,
-                                 ctrl.lower_ctrl_limit))
+                data.append((pv, ctrl.upper_ctrl_limit,
+                             ctrl.lower_ctrl_limit))
     return data
 
 
@@ -99,9 +97,14 @@ def parse_arguments():
                     "virtual accelerator IOC."
     )
     parser.add_argument(
-        "--filename",
-        help="Filename for output CSV file",
+        "--feedback",
+        help="Filename for output feedback pvs CSV file",
         default="feedback.csv",
+    )
+    parser.add_argument(
+        "--limits",
+        help="Filename for output pv limits CSV file",
+        default="pv_limits.csv",
     )
     return parser.parse_args()
 
@@ -109,7 +112,7 @@ def parse_arguments():
 if __name__ == "__main__":
 
     args = parse_arguments()
-    data = generate_data()
-    write_data_to_file(data, args.filename)
+    data = generate_feedback_pvs()
+    write_data_to_file(data, args.feedback)
     data = generate_pv_limits()
-    write_data_to_file(data, "pv_limits.csv")
+    write_data_to_file(data, args.limits)
