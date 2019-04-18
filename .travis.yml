@@ -20,4 +20,5 @@ script:
   - sphinx-build -b html -ETW . _build/html
 
 after_success:
+  - cd ../
   - coveralls
