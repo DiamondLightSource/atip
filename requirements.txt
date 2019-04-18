@@ -2,11 +2,9 @@ numpy>=1.10
 scipy>=0.16
 pytest>=2.9
 pytest-cov
-pytest-lazy-fixture
+coveralls
 mock
 flake8
 sphinx
 sphinx-rtd-theme
 cothread
-#pytac
-#at-python

@@ -3,8 +3,8 @@ import os
 import at
 import mock
 import numpy
-import pytac
 import pytest
+from pytac import load_csv, cs
 
 import atip
 
@@ -39,7 +39,7 @@ def at_lattice():
 
 @pytest.fixture(scope='session')
 def pytac_lattice():
-    return pytac.load_csv.load('DIAD')
+    return load_csv.load('DIAD', cs.ControlSystem())
 
 
 @pytest.fixture(scope='session')

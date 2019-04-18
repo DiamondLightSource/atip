@@ -96,7 +96,7 @@ def test_recalculate_phys_data(atsim, initial_emit, initial_lin):
     numpy.testing.assert_almost_equal(orbit, [5.18918914e-06, -8.92596857e-06],
                                       decimal=10)
     numpy.testing.assert_almost_equal(chrom, [0.11732846, 0.04300947],
-                                      decimal=8)
+                                      decimal=5)
     numpy.testing.assert_almost_equal(tune, [0.37444833, 0.86048592],
                                       decimal=8)
     numpy.testing.assert_almost_equal(emit, [1.34308653e-10, 3.74339964e-13],
@@ -173,9 +173,10 @@ def test_get_tune(mocked_atsim):
 
 
 def test_get_disp(mocked_atsim, at_lattice):
-    numpy.testing.assert_almost_equal(mocked_atsim.get_disp(),
-                                      (numpy.ones((len(at_lattice), 4)) *
-                                       numpy.array([8.8, 1.7, 23, 3.5])))
+    numpy.testing.assert_almost_equal(
+        mocked_atsim.get_disp(),
+        (numpy.ones((len(at_lattice), 4)) * numpy.array([8.8, 1.7, 23, 3.5]))
+    )
 
 
 def test_get_s(mocked_atsim, at_lattice):
@@ -189,24 +190,28 @@ def test_get_energy(mocked_atsim):
 
 
 def test_get_alpha(mocked_atsim, at_lattice):
-    numpy.testing.assert_almost_equal(mocked_atsim.get_alpha(),
-                                      (numpy.ones((len(at_lattice), 2)) *
-                                       numpy.array([-0.03, 0.03])))
+    numpy.testing.assert_almost_equal(
+        mocked_atsim.get_alpha(),
+        (numpy.ones((len(at_lattice), 2)) * numpy.array([-0.03, 0.03]))
+    )
 
 
 def test_get_beta(mocked_atsim, at_lattice):
-    numpy.testing.assert_almost_equal(mocked_atsim.get_beta(),
-                                      (numpy.ones((len(at_lattice), 2)) *
-                                       numpy.array([9.6, 6])))
+    numpy.testing.assert_almost_equal(
+        mocked_atsim.get_beta(),
+        (numpy.ones((len(at_lattice), 2)) * numpy.array([9.6, 6]))
+    )
 
 
 def test_get_m44(mocked_atsim, at_lattice):
-    numpy.testing.assert_almost_equal(mocked_atsim.get_m44(),
-                                      (numpy.ones((len(at_lattice), 4, 4)) *
-                                       numpy.eye(4) * 0.8))
+    numpy.testing.assert_almost_equal(
+        mocked_atsim.get_m44(),
+        (numpy.ones((len(at_lattice), 4, 4)) * numpy.eye(4) * 0.8)
+    )
 
 
 def test_get_mu(mocked_atsim, at_lattice):
-    numpy.testing.assert_almost_equal(mocked_atsim.get_mu(),
-                                      (numpy.ones((len(at_lattice), 2)) *
-                                       numpy.array([176, 82])))
+    numpy.testing.assert_almost_equal(
+        mocked_atsim.get_mu(),
+        (numpy.ones((len(at_lattice), 2)) * numpy.array([176, 82]))
+    )

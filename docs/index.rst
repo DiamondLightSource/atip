@@ -6,6 +6,8 @@ ATIP is intended to integrate a simulator, using the python implementation of
 `Pytac <https://github.com/dls-controls/pytac>`_ so that it can be addressed
 in the same manner as the live machine.
 
+It is hosted on GitHub `here. <https://github.com/T-Nicholls/atip>`_
+
 Contents:
 =========
 

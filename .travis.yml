@@ -1,0 +1,23 @@
+sudo: false
+language: python
+python:
+  - "2.7"
+  - "3.5"
+  - "3.6"
+
+install:
+  - pip install virtualenv
+  - python -m virtualenv venv
+  - source venv/bin/activate
+  - pip install -r requirements.txt
+  - pip install git+https://github.com/dls-controls/pytac.git
+  - pip install -e "git+https://github.com/atcollab/at.git#egg=at-python&subdirectory=pyat"
+
+script:
+  - python -m pytest test --cov-report term-missing --cov=atip
+  - flake8 --ignore=E501,W504
+  - cd docs
+  - sphinx-build -b html -ETW . _build/html
+
+after_success:
+  - coveralls

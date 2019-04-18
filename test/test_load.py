@@ -19,11 +19,11 @@ def test_load_pytac_side(pytac_lattice, at_ring):
 
 def test_load_at_ring_variations(pytac_lattice, mat_filepath, at_ring):
     # Check at lattice loads from lattice object
-    lat = atip.load_sim.load(pytac_lattice, at.lattice.Lattice(at_ring))
+    atip.load_sim.load(pytac_lattice, at.lattice.Lattice(at_ring))
     # Check at lattice loads from filepath
-    lat = atip.load_sim.load(pytac_lattice, mat_filepath)
+    atip.load_sim.load(pytac_lattice, mat_filepath)
     # Check at lattice loads from ring
-    lat = atip.load_sim.load(pytac_lattice, at_ring)
+    atip.load_sim.load(pytac_lattice, at_ring)
 
 
 def test_load_with_callback(pytac_lattice, at_ring):

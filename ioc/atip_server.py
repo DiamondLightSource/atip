@@ -62,7 +62,7 @@ class ATIPServer(object):
         """
         for rb_record in self._rb_only_records:
             index, field = self._in_records[rb_record]
-            if index is 0:
+            if index == 0:
                 rb_record.set(self.lattice.get_value(field, units=pytac.ENG,
                                                      data_source=pytac.SIM))
             else:
@@ -105,7 +105,7 @@ class ATIPServer(object):
                                             LOPR=lower, HOPR=upper,
                                             initial_value=value)
                     set_pv = element.get_pv_name('b0', pytac.SP)
-                    def on_update(value, name=set_pv):
+                    def on_update(value, name=set_pv):  # noqa E306
                         self._on_update(name, value)
                     upper, lower = limits_dict.get(set_pv, (None, None))
                     builder.SetDeviceName(set_pv.split(':', 1)[0])
@@ -182,7 +182,7 @@ class ATIPServer(object):
         N_BPM = len(self.lattice.get_elements('BPM'))
         builder.SetDeviceName("SR-DI-EBPM-01")
         bpm_enabled_record = builder.Waveform("ENABLED", NELM=N_BPM,
-                                              initial_value=[0]*N_BPM)
+                                              initial_value=[0] * N_BPM)
         self._feedback_records[(0, "bpm_enabled")] = bpm_enabled_record
         print("Finished creating all {0} records.".format(self.total_records))
 
@@ -222,7 +222,7 @@ class ATIPServer(object):
         try:
             self._feedback_records[(index, field)].set(value)
         except KeyError:
-            if index is 0:
+            if index == 0:
                 raise FieldException("Lattice {0} does not have field {1}."
                                      .format(self.lattice, field))
             else:

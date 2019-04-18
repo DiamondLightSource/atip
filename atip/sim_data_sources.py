@@ -171,14 +171,14 @@ class ATElementDataSource(pytac.data_source.DataSource):
         if isinstance(self._at_element, at.elements.Sextupole):
             length = self._at_element.Length
             if value is None:
-                if cell is 0:
+                if cell == 0:
                     return -(self._at_element.PolynomB[0] * length)
-                elif cell is 1:
+                elif cell == 1:
                     return (self._at_element.PolynomA[0] * length)
             else:
-                if cell is 0:
+                if cell == 0:
                     self._at_element.PolynomB[0] = -(value / length)
-                elif cell is 1:
+                elif cell == 1:
                     self._at_element.PolynomA[0] = (value / length)
         else:
             if value is None:
@@ -239,7 +239,7 @@ class ATElementDataSource(pytac.data_source.DataSource):
             return float(self._atsim.get_orbit(cell)[self._index - 1])
         else:
             # This shouldn't be possible
-            field = 'x' if cell is 0 else 'y'
+            field = 'x' if cell == 0 else 'y'
             raise HandleException("Field {0} cannot be set on element data "
                                   "source {1}.".format(field, self))
 
@@ -334,7 +334,7 @@ class ATLatticeDataSource(pytac.data_source.DataSource):
         Returns:
             list: A list of all the fields that are present on this element.
         """
-        return self._field_funcs.keys()
+        return list(self._field_funcs.keys())
 
     def get_value(self, field, handle=None, throw=None):
         """Get the value for a field on the Pytac lattice.
@@ -354,7 +354,7 @@ class ATLatticeDataSource(pytac.data_source.DataSource):
         Raises:
             FieldException: if the specified field does not exist.
         """
-        if field in self._field_funcs.keys():
+        if field in list(self._field_funcs.keys()):
             return self._field_funcs[field]()
         else:
             raise FieldException("Lattice data source {0} does not have field "

@@ -1,3 +1,10 @@
+.. image:: https://travis-ci.org/T-Nicholls/atip.svg?branch=master
+    :target: https://travis-ci.org/T-Nicholls/atip
+.. image:: https://coveralls.io/repos/github/T-Nicholls/atip/badge.svg?branch=master
+    :target: https://coveralls.io/github/T-Nicholls/atip?branch=master
+.. image:: https://readthedocs.org/projects/atip/badge/?version=latest
+    :target: https://atip.readthedocs.io/en/latest/?badge=latest
+
 ==============================================
 ATIP - Accelerator Toolbox Interface for Pytac
 ==============================================
@@ -6,6 +13,9 @@ ATIP is intended to integrate a simulator, using the python implementation of
 `AT <https://github.com/atcollab/at>`_ (pyAT), into
 `Pytac <https://github.com/dls-controls/pytac>`_ so that it can be addressed
 in the same manner as the live machine.
+
+For further information on any of ATIP's functions or classes please read the
+documentation `here <https://atip.readthedocs.io/en/latest/>`_.
 
 Installation:
 -------------
@@ -130,6 +140,3 @@ given an excess of superfulous data.
 
 A number of functions that perform tasks that are frequent or long-winded are
 included in ``ease.py`` to make life easier for the user.
-
-For further information on any of ATIP's functions or classes please read the
-documentation `here <https://atip.readthedocs.io/en/latest/>`_.

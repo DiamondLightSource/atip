@@ -15,14 +15,11 @@ import sys
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../pytac'))
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../at/pyat'))
-
 
 # -- Project information -----------------------------------------------------
 
 project = u'ATIP'
-copyright = u'2018, Tobyn Nicholls'
+copyright = u'2019, Tobyn Nicholls'
 author = u'Tobyn Nicholls'
 
 # The short X.Y version

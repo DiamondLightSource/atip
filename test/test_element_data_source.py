@@ -34,11 +34,12 @@ def test_elem_raises_ValueError_if_unsupported_field(at_elem, fields):
                                                   fields)
 
 
-@pytest.mark.parametrize('fields', [['a1'], ['y_kick', 'x_kick'], []])
+@pytest.mark.parametrize('fields', [['a1'], ['x_kick', 'y_kick'], []])
 def test_elem_get_fields(at_elem, fields):
     ateds = atip.sim_data_sources.ATElementDataSource(at_elem, 1, mock.Mock(),
                                                       fields)
-    assert ateds.get_fields() == fields
+    assert len(ateds.get_fields()) == len(fields)
+    assert set(ateds.get_fields()) == set(fields)
 
 
 @pytest.mark.parametrize('fields', [['a1', 'a1'], ['x_kick', 'b0', 'x_kick']])

@@ -45,7 +45,7 @@ class timer(object):
         self.start_time = t.time()
 
     def stop(self):
-        if self.start_time is 0:
+        if self.start_time == 0:
             raise Exception("You need to start the timer first, moron.")
         else:
             final_time = (t.time() - self.start_time)
@@ -53,7 +53,7 @@ class timer(object):
             return final_time
 
     def time(self):
-        if self.start_time is 0:
+        if self.start_time == 0:
             raise Exception("You need to start the timer first, moron.")
         else:
             return (t.time() - self.start_time)
