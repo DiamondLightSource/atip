@@ -4,7 +4,7 @@ import atip
 import pytac
 from pytac.device import BasicDevice
 from pytac.exceptions import HandleException, FieldException
-from softioc import builder
+from softioc import builder, device
 
 
 class ATIPServer(object):
@@ -30,7 +30,8 @@ class ATIPServer(object):
                                        _in_records because they are all
                                        readback only.
     """
-    def __init__(self, ring_mode, limits_csv, feedback_csv):
+    def __init__(self, ring_mode, limits_csv=None, feedback_csv=None,
+                 mirror_csv=None):
         """
         Args:
             ring_mode (string): The ring mode to create the lattice in.
@@ -46,8 +47,14 @@ class ATIPServer(object):
         self._out_records = {}
         self._rb_only_records = []
         self._feedback_records = {}
+        self._mirrored_records = {}
+        print("Starting record creation.")
         self._create_records(limits_csv)
-        self._create_feedback_records(feedback_csv)
+        if feedback_csv is not None:
+            self._create_feedback_records(feedback_csv)
+        if mirror_csv is not None:
+            self._create_mirror_records(mirror_csv)
+        print("Finished creating all {0} records.".format(self.total_records))
 
     @property
     def total_records(self):
@@ -63,12 +70,15 @@ class ATIPServer(object):
         for rb_record in self._rb_only_records:
             index, field = self._in_records[rb_record]
             if index == 0:
-                rb_record.set(self.lattice.get_value(field, units=pytac.ENG,
-                                                     data_source=pytac.SIM))
+                value = self.lattice.get_value(field, units=pytac.ENG,
+                                               data_source=pytac.SIM)
+                rb_record.set(value)
             else:
-                element = self.lattice[index - 1]
-                rb_record.set(element.get_value(field, units=pytac.ENG,
-                                                data_source=pytac.SIM))
+                value = self.lattice[index-1].get_value(field, units=pytac.ENG,
+                                                        data_source=pytac.SIM)
+                rb_record.set(value)
+            if rb_record.name in self._mirrored_records:
+                self._mirrored_records[rb_record.name].set(value)
 
     def _create_records(self, limits_csv):
         """Create all the standard records from both lattice and element Pytac
@@ -86,11 +96,11 @@ class ATIPServer(object):
                                     load the pv limits.
         """
         limits_dict = {}
-        csv_reader = csv.DictReader(open(limits_csv))
-        for line in csv_reader:
-            limits_dict[line['pv']] = (float(line['upper']),
-                                       float(line['lower']))
-        print("Starting record creation.")
+        if limits_csv is not None:
+            csv_reader = csv.DictReader(open(limits_csv))
+            for line in csv_reader:
+                limits_dict[line['pv']] = (float(line['upper']),
+                                           float(line['lower']))
         bend_set = False
         for element in self.lattice:
             if element.type_ == 'BEND':
@@ -162,7 +172,7 @@ class ATIPServer(object):
 
     def _create_feedback_records(self, feedback_csv):
         """Create all the feedback records from the .csv file at the location
-        passed, see create_feedback_csv.py for more information.
+        passed, see create_csv.py for more information.
 
         Args:
             feedback_csv (string): The filepath to the .csv file from which to
@@ -184,7 +194,26 @@ class ATIPServer(object):
         bpm_enabled_record = builder.Waveform("ENABLED", NELM=N_BPM,
                                               initial_value=[0] * N_BPM)
         self._feedback_records[(0, "bpm_enabled")] = bpm_enabled_record
-        print("Finished creating all {0} records.".format(self.total_records))
+
+    def _create_mirror_records(self, mirror_csv):
+        all_in_records = (self._in_records.keys() +
+                          self._feedback_records.values())
+        record_names = {rec.name: rec for rec in all_in_records}
+        csv_reader = csv.DictReader(open(mirror_csv))
+        for line in csv_reader:
+            prefix, pv = line['mirror'].split(':', 1)
+            builder.SetDeviceName(prefix)
+            if isinstance(record_names[line['original']]._RecordWrapper__device,
+                          device.ai):
+                mirror = builder.aIn(pv, initial_value=float(line['value']))
+            elif isinstance(record_names[line['original']]._RecordWrapper__device,
+                            device.longin):
+                mirror = builder.aIn(pv, initial_value=float(line['value']))
+            else:
+                raise TypeError("Type {0} doesn't currently support mirroring,"
+                                " please only mirror aIn and longIn records."
+                                .format(type(line['original']._RecordWrapper__device)))
+            self._mirrored_records[line['original']] = mirror
 
     def _on_update(self, name, value):
         """The callback function passed to out records, it is called after
@@ -198,9 +227,11 @@ class ATIPServer(object):
         """
         in_record = self._out_records[name]
         index, field = self._in_records[in_record]
-        self.lattice[index - 1].set_value(field, value, units=pytac.ENG,
-                                          data_source=pytac.SIM)
+        self.lattice[index-1].set_value(field, value, units=pytac.ENG,
+                                        data_source=pytac.SIM)
         in_record.set(value)
+        if in_record.name in self._mirrored_records:
+            self._mirrored_records[in_record.name].set(value)
 
     def set_feedback_record(self, index, field, value):
         """Set a value to the feedback in records, possible fields are:
