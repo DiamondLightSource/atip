@@ -24,6 +24,7 @@ def fast_background_task(helper):
     while True:
         cothread.Sleep(PERIOD_FAST)
         helper.update_tunes()
+        helper.update_emittance()
 
 class Helper:
 
@@ -48,6 +49,13 @@ class Helper:
                 self.monitors[key].cached_value
             )
 
+    def update_emittance(self):
+
+        self.records["emit"].set(
+            self.monitors["hemit"].cached_value
+            + self.monitors["vemit"].cached_value
+        )
+
 
     def create_records(self):
         logging.info("Create records")
@@ -71,6 +79,16 @@ class Helper:
         self.records["tune_y"] = builder.aIn("SR23C-DI-TMBF-02:TUNE:TUNE",
                                              initial_value=0.0)
 
+        # Combined emittance
+        self.records["emit"] = builder.aIn("SR-DI-EMIT-01:EMITTANCE",
+                                           initial_value=0.0)
+
+        # Spoof emittance averages
+        self.records["hemit_mean"] = builder.aIn("SR-DI-EMIT-01:HEMIT_MEAN",
+                                                 initial_value=0.0)
+        self.records["vemit_mean"] = builder.aIn("SR-DI-EMIT-01:VEMIT_MEAN",
+                                                 initial_value=0.0)
+
     def create_monitors(self):
         logging.info("Create monitors")
         # Set up monitors for BPMs
@@ -93,6 +111,18 @@ class Helper:
         # Set up monitors for tune PVs
         self.monitors["tune_x"] = MoniotredPV("SR23C-DI-TMBF-01:X:TUNE:TUNE")
         self.monitors["tune_y"] = MoniotredPV("SR23C-DI-TMBF-01:Y:TUNE:TUNE")
+
+        self.monitors["hemit"] = MoniotredPV("SR-DI-EMIT-01:HEMIT")
+        self.monitors["vemit"] = MoniotredPV("SR-DI-EMIT-01:VEMIT")
+
+        self.monitors["hemit_mean"] = ForwardedPv(
+            monitored_pv="SR-DI-EMIT-01:HEMIT",
+            published_pv="SR-DI-EMIT-01:HEMIT_MEAN"
+        )
+        self.monitors["Vemit_mean"] = ForwardedPv(
+            monitored_pv="SR-DI-EMIT-01:VEMIT",
+            published_pv="SR-DI-EMIT-01:VEMIT_MEAN"
+        )
 
     def create_quadrupoles(self):
         logging.info("Create quadrupoles")
@@ -157,6 +187,17 @@ class Quadrupole(MoniotredPV):
         new_value = self.original_value + self.offset
         logging.debug("caput %s %d",self.target_pv, new_value)
         cothread.catools.caput(self.target_pv, new_value)
+
+
+class ForwardedPv(MoniotredPV):
+    def __init__(self, published_pv, monitored_pv):
+        MoniotredPV.__init__(self, monitored_pv)
+        self.published_pv = published_pv
+
+    def monitor_callback(self, value):
+        MoniotredPV.monitor_callback(self,value)
+        self.published_pv.set(value)
+
 
 def main():
 
