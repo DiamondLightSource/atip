@@ -14,19 +14,22 @@ PERIOD_SLOW = 1.0 # s
 PERIOD_FAST = 0.1 # s
 
 def slow_background_task(helper):
+    """Stuff that should be done in a slow loop"""
 
     while True:
         cothread.Sleep(PERIOD_SLOW)
         helper.update_waveforms()
 
 def fast_background_task(helper):
+    """Stuff that should be done in a fast loop"""
 
     while True:
         cothread.Sleep(PERIOD_FAST)
-        helper.update_tunes()
         helper.update_emittance()
 
 class Helper:
+    """Own all the created records and monitors, with methods that
+     know how to update things"""
 
     def __init__(self):
         self.records = {}
@@ -36,20 +39,16 @@ class Helper:
         self.lattice = pytac.load_csv.load("DIAD")
 
     def update_waveforms(self):
+        """Update BPM waveforms with cached values from BPMS"""
 
         for key in ["bpm_x", "bpm_y"]:
             self.records[key].set(
                 numpy.array(self.monitors[key].cached_value)
             )
 
-    def update_tunes(self):
-
-        for key in ["tune_x", "tune_y"]:
-            self.records[key].set(
-                self.monitors[key].cached_value
-            )
 
     def update_emittance(self):
+        """Just combine the horizontal and vertical emittances"""
 
         self.records["emit"].set(
             self.monitors["hemit"].cached_value
@@ -108,13 +107,21 @@ class Helper:
         # Initialise the BPM ID waveform for the X-axis of the plot
         self.records["bpm_id"].set(numpy.array(bpm_ids))
 
-        # Set up monitors for tune PVs
-        self.monitors["tune_x"] = MoniotredPV("SR23C-DI-TMBF-01:X:TUNE:TUNE")
-        self.monitors["tune_y"] = MoniotredPV("SR23C-DI-TMBF-01:Y:TUNE:TUNE")
+        # Set up forwarding for tune PVs
+        self.monitors["tune_x"] = ForwardedPv(
+            monitored_pv="SR23C-DI-TMBF-01:X:TUNE:TUNE",
+            published_pv="SR23C-DI-TMBR-01:TUNE:TUNE"
+        )
+        self.monitors["tune_y"] = ForwardedPv(
+            monitored_pv="SR23C-DI-TMBF-01:Y:TUNE:TUNE",
+            published_pv="SR23C-DI-TMBF-02:TUNE:TUNE"
+        )
 
+        # Monitor horizontal and vertical emittance in order to combine them
         self.monitors["hemit"] = MoniotredPV("SR-DI-EMIT-01:HEMIT")
         self.monitors["vemit"] = MoniotredPV("SR-DI-EMIT-01:VEMIT")
 
+        # Spoof rolling-average emittance PVs
         self.monitors["hemit_mean"] = ForwardedPv(
             monitored_pv="SR-DI-EMIT-01:HEMIT",
             published_pv="SR-DI-EMIT-01:HEMIT_MEAN"
@@ -151,6 +158,10 @@ class Helper:
 
 
 class MonitoredPvList:
+    """
+    Monitor a list of PVs and keep a local cache of the last values
+    Update an element in the cache when an update comes in
+    """
 
     def __init__(self, pv_name_list):
         self.cached_value = [0] * len(pv_name_list)
@@ -161,6 +172,10 @@ class MonitoredPvList:
 
 
 class MoniotredPV:
+    """
+    Monitor a single PV. Keep a local cache of the last value and update it
+    when an update comes in
+    """
     def __init__(self, pv_name):
         self.cached_value = 0
         self.monitor = cothread.catools.camonitor(pv_name, self.monitor_callback)
@@ -170,6 +185,19 @@ class MoniotredPV:
 
 
 class Quadrupole(MoniotredPV):
+    """
+    Special case. Monitor a monitor_pv and treat it as an offset to be applied
+    to target_pv.
+
+    On init, store the initial value of the target_pv. When an update comes in
+    from monitor_pv, write
+        (original value of target_pv + new value of monitor_pv)
+    to the target_pv.
+
+    Args:
+        monitor_pv (str): Name of PV to monitor and treat as an offset
+        target_pv (str): Name of target PV to write to
+    """
     def __init__(self, target_pv, monitor_pv):
         self.target_pv = target_pv
         self.monitored_pv = monitor_pv
@@ -190,6 +218,14 @@ class Quadrupole(MoniotredPV):
 
 
 class ForwardedPv(MoniotredPV):
+    """
+    Monitor a monitored_pv. When an update comes in, set the value of a local
+    published_pv to mirror it.
+
+    Args:
+        monitored_pv (str): name of PV to monitoer
+        published_pv (iocbuilder record): record object to update
+    """
     def __init__(self, published_pv, monitored_pv):
         MoniotredPV.__init__(self, monitored_pv)
         self.published_pv = published_pv
