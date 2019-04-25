@@ -26,6 +26,7 @@ def fast_background_task(helper):
     while True:
         cothread.Sleep(PERIOD_FAST)
         helper.update_emittance()
+        helper.touch_tunes()
 
 class Helper:
     """Own all the created records and monitors, with methods that
@@ -55,6 +56,13 @@ class Helper:
             + self.monitors["vemit"].cached_value
         )
 
+    def touch_tunes(self):
+        """
+        Hack to get tunefb to work, as it checks the timestamps from
+        these PVs and will complain if they are not constantly changing.
+        """
+        self.records["tune_x"].set(self.records["tune_x"].get())
+        self.records["tune_y"].set(self.records["tune_y"].get())
 
     def create_records(self):
         logging.info("Create records")
@@ -110,11 +118,11 @@ class Helper:
         # Set up forwarding for tune PVs
         self.monitors["tune_x"] = ForwardedPv(
             monitored_pv="SR23C-DI-TMBF-01:X:TUNE:TUNE",
-            published_pv="SR23C-DI-TMBR-01:TUNE:TUNE"
+            published_pv=self.records["tune_x"]
         )
         self.monitors["tune_y"] = ForwardedPv(
             monitored_pv="SR23C-DI-TMBF-01:Y:TUNE:TUNE",
-            published_pv="SR23C-DI-TMBF-02:TUNE:TUNE"
+            published_pv=self.records["tune_y"]
         )
 
         # Monitor horizontal and vertical emittance in order to combine them
@@ -124,11 +132,11 @@ class Helper:
         # Spoof rolling-average emittance PVs
         self.monitors["hemit_mean"] = ForwardedPv(
             monitored_pv="SR-DI-EMIT-01:HEMIT",
-            published_pv="SR-DI-EMIT-01:HEMIT_MEAN"
+            published_pv=self.records["hemit_mean"]
         )
         self.monitors["Vemit_mean"] = ForwardedPv(
             monitored_pv="SR-DI-EMIT-01:VEMIT",
-            published_pv="SR-DI-EMIT-01:VEMIT_MEAN"
+            published_pv=self.records["vemit_mean"]
         )
 
     def create_quadrupoles(self):
@@ -232,6 +240,7 @@ class ForwardedPv(MoniotredPV):
 
     def monitor_callback(self, value):
         MoniotredPV.monitor_callback(self,value)
+        print("Set {} to {}".format(self.published_pv.name, value))
         self.published_pv.set(value)
 
 
