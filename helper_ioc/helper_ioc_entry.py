@@ -52,8 +52,18 @@ class Helper:
         """Just combine the horizontal and vertical emittances"""
 
         self.records["emit"].set(
-            self.monitors["hemit"].cached_value
-            + self.monitors["vemit"].cached_value
+            (
+                self.monitors["hemit"].cached_value
+                + self.monitors["vemit"].cached_value
+            ) * 1e9
+        )
+
+        # Update the scaled emittance PVs
+        self.records["hemit_scaled"].set(
+            self.monitors["hemit"].cached_value * 1e9
+        )
+        self.records["vemit_scaled"].set(
+            self.monitors["vemit"].cached_value * 1e12
         )
 
     def touch_tunes(self):
@@ -96,6 +106,19 @@ class Helper:
         self.records["vemit_mean"] = builder.aIn("SR-DI-EMIT-01:VEMIT_MEAN",
                                                  initial_value=0.0)
 
+        # Temporary fake scaled emittances
+        self.records["hemit_scaled"] = builder.aIn("SR-DI-EMIT-01:HEMIT_SCALED",
+                                                   initial_value=0.0,
+                                                   EGU="nm rad")
+        self.records["vemit_scaled"] = builder.aIn("SR-DI-EMIT-01:VEMIT_SCALED",
+                                                   initial_value=0.0,
+                                                   EGU="pm rad")
+
+        self.records["emit_status"] = builder.mbbIn("SR-DI-EMIT-01:STATUS",
+                                                    initial_value=0,
+                                                    ZRVL=0, ZRST="Successful",
+                                                    PINI="YES")
+
     def create_monitors(self):
         logging.info("Create monitors")
         # Set up monitors for BPMs
@@ -131,11 +154,11 @@ class Helper:
 
         # Spoof rolling-average emittance PVs
         self.monitors["hemit_mean"] = ForwardedPv(
-            monitored_pv="SR-DI-EMIT-01:HEMIT",
+            monitored_pv="SR-DI-EMIT-01:HEMIT_SCALED",
             published_pv=self.records["hemit_mean"]
         )
         self.monitors["Vemit_mean"] = ForwardedPv(
-            monitored_pv="SR-DI-EMIT-01:VEMIT",
+            monitored_pv="SR-DI-EMIT-01:VEMIT_SCALED",
             published_pv=self.records["vemit_mean"]
         )
 
