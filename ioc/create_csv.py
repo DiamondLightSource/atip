@@ -83,6 +83,20 @@ def generate_pv_limits():
     return data
 
 
+def generate_mirrored_pvs():
+    lattice = atip.utils.loader()
+    data = [("original", "mirror", "value"),
+            ("SR23C-DI-TMBF-01:X:TUNE:TUNE", "SR23C-DI-TMBF-01:TUNE:TUNE",
+             lattice.get_value("tune_x", pytac.RB)),
+            ("SR23C-DI-TMBF-01:Y:TUNE:TUNE", "SR23C-DI-TMBF-02:TUNE:TUNE",
+             lattice.get_value("tune_y", pytac.RB)),
+            ("SR-DI-EMIT-01:HEMIT", "SR-DI-EMIT-01:HEMIT_MEAN",
+             lattice.get_value("emittance_x", pytac.RB)),
+            ("SR-DI-EMIT-01:VEMIT", "SR-DI-EMIT-01:VEMIT_MEAN",
+             lattice.get_value("emittance_y", pytac.RB))]
+    return data
+
+
 def write_data_to_file(data, filename):
     # Write the collected data to the .csv file.
     here = os.path.abspath(os.path.dirname(__file__))
@@ -104,7 +118,12 @@ def parse_arguments():
     parser.add_argument(
         "--limits",
         help="Filename for output pv limits CSV file",
-        default="pv_limits.csv",
+        default="limits.csv",
+    )
+    parser.add_argument(
+        "--mirrored",
+        help="Filename for output pv limits CSV file",
+        default="mirrored.csv",
     )
     return parser.parse_args()
 
@@ -116,3 +135,5 @@ if __name__ == "__main__":
     write_data_to_file(data, args.feedback)
     data = generate_pv_limits()
     write_data_to_file(data, args.limits)
+    data = generate_mirrored_pvs()
+    write_data_to_file(data, args.mirrored)

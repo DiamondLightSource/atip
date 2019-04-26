@@ -85,6 +85,7 @@ def trigger_calc(lattice):
         if len(fields) != 0:
             val = elem.get_value(fields[0], pytac.SP, data_source=pytac.SIM)
             elem.set_value(fields[0], val, data_source=pytac.SIM)
+            print("Recalculation manually triggered.")
             break
 
 
