@@ -65,13 +65,14 @@ def generate_feedback_pvs():
 
 
 def generate_pv_limits():
-    data = [("pv", "upper", "lower")]
+    data = [("pv", "upper", "lower", "precision")]
     lattice = atip.utils.loader()
     for element in lattice:
         for field in element.get_fields()[pytac.SIM]:
             pv = element.get_pv_name(field, pytac.RB)
             ctrl = caget(pv, format=FORMAT_CTRL)
-            data.append((pv, ctrl.upper_ctrl_limit, ctrl.lower_ctrl_limit))
+            data.append((pv, ctrl.upper_ctrl_limit, ctrl.lower_ctrl_limit,
+                         ctrl.precision))
             try:
                 pv = element.get_pv_name(field, pytac.SP)
             except pytac.exceptions.HandleException:
@@ -79,7 +80,7 @@ def generate_pv_limits():
             else:
                 ctrl = caget(pv, format=FORMAT_CTRL)
                 data.append((pv, ctrl.upper_ctrl_limit,
-                             ctrl.lower_ctrl_limit))
+                             ctrl.lower_ctrl_limit, ctrl.precision))
     return data
 
 

@@ -100,7 +100,8 @@ class ATIPServer(object):
             csv_reader = csv.DictReader(open(limits_csv))
             for line in csv_reader:
                 limits_dict[line['pv']] = (float(line['upper']),
-                                           float(line['lower']))
+                                           float(line['lower']),
+                                           int(line['precision']))
         bend_set = False
         for element in self.lattice:
             if element.type_ == 'BEND':
@@ -109,19 +110,25 @@ class ATIPServer(object):
                     value = element.get_value('b0', units=pytac.ENG,
                                               data_source=pytac.SIM)
                     get_pv = element.get_pv_name('b0', pytac.RB)
-                    upper, lower = limits_dict.get(get_pv, (None, None))
+                    upper, lower, precision = limits_dict.get(get_pv, (None,
+                                                                       None,
+                                                                       None))
                     builder.SetDeviceName(get_pv.split(':', 1)[0])
                     in_record = builder.aIn(get_pv.split(':', 1)[1],
                                             LOPR=lower, HOPR=upper,
+                                            PREC=precision,
                                             initial_value=value)
                     set_pv = element.get_pv_name('b0', pytac.SP)
                     def on_update(value, name=set_pv):  # noqa E306
                         self._on_update(name, value)
-                    upper, lower = limits_dict.get(set_pv, (None, None))
+                    upper, lower, precision = limits_dict.get(set_pv, (None,
+                                                                       None,
+                                                                       None))
                     builder.SetDeviceName(set_pv.split(':', 1)[0])
                     out_record = builder.aOut(set_pv.split(':', 1)[1],
                                               LOPR=lower, HOPR=upper,
                                               DRVL=lower, DRVH=upper,
+                                              PREC=precision,
                                               initial_value=value,
                                               on_update=on_update)
                     # how to solve the index problem?
@@ -134,10 +141,13 @@ class ATIPServer(object):
                     value = element.get_value(field, units=pytac.ENG,
                                               data_source=pytac.SIM)
                     get_pv = element.get_pv_name(field, pytac.RB)
-                    upper, lower = limits_dict.get(get_pv, (None, None))
+                    upper, lower, precision = limits_dict.get(get_pv, (None,
+                                                                       None,
+                                                                       None))
                     builder.SetDeviceName(get_pv.split(':', 1)[0])
                     in_record = builder.aIn(get_pv.split(':', 1)[1],
                                             LOPR=lower, HOPR=upper,
+                                            PREC=precision,
                                             initial_value=value)
                     self._in_records[in_record] = (element.index, field)
                     try:
@@ -147,11 +157,14 @@ class ATIPServer(object):
                     else:
                         def on_update(value, name=set_pv):
                             self._on_update(name, value)
-                        upper, lower = limits_dict.get(set_pv, (None, None))
+                        upper, lower, precision = limits_dict.get(set_pv,
+                                                                  (None, None,
+                                                                   None))
                         builder.SetDeviceName(set_pv.split(':', 1)[0])
                         out_record = builder.aOut(set_pv.split(':', 1)[1],
                                                   LOPR=lower, HOPR=upper,
                                                   DRVL=lower, DRVH=upper,
+                                                  PREC=precision,
                                                   initial_value=value,
                                                   on_update=on_update)
                         self._out_records[out_record.name] = in_record
@@ -164,7 +177,7 @@ class ATIPServer(object):
                 value = self.lattice.get_value(field, units=pytac.ENG,
                                                data_source=pytac.SIM)
                 builder.SetDeviceName(get_pv.split(':', 1)[0])
-                in_record = builder.aIn(get_pv.split(':', 1)[1],
+                in_record = builder.aIn(get_pv.split(':', 1)[1], PREC=4,
                                         initial_value=value)
                 self._in_records[in_record] = (0, field)
                 self._rb_only_records.append(in_record)

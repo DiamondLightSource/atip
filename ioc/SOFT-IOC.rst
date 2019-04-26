@@ -11,8 +11,8 @@ port 6064 to avoid conflict with the same PVs on the live machine.
 Initialisation:
 ---------------
 
-Before starting please ensure you have working up to date versions of Pytac,
-AT, and ATIP.
+Before starting please ensure you have working and up to date versions of AT,
+Pytac, and ATIP.
 
 Inside the top-level atip directory::
 
