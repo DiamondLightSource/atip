@@ -1,10 +1,15 @@
 import csv
+from warnings import warn
 
 import atip
+import numpy
 import pytac
+from cothread.catools import camonitor
 from pytac.device import BasicDevice
 from pytac.exceptions import HandleException, FieldException
-from softioc import builder, device
+from softioc import builder
+
+from solution import camonitor_mask, caput_mask, summate, collate, transform
 
 
 class ATIPServer(object):
@@ -48,10 +53,14 @@ class ATIPServer(object):
         self._rb_only_records = []
         self._feedback_records = {}
         self._mirrored_records = {}
+        self._monitored_pvs = {}
         print("Starting record creation.")
         self._create_records(limits_csv)
         if feedback_csv is not None:
             self._create_feedback_records(feedback_csv)
+        self._all_in = {record.name: record for record in
+                        self._in_records.keys() +
+                        self._feedback_records.values()}
         if mirror_csv is not None:
             self._create_mirror_records(mirror_csv)
         print("Finished creating all {0} records.".format(self.total_records))
@@ -77,8 +86,6 @@ class ATIPServer(object):
                 value = self.lattice[index-1].get_value(field, units=pytac.ENG,
                                                         data_source=pytac.SIM)
                 rb_record.set(value)
-            if rb_record.name in self._mirrored_records:
-                self._mirrored_records[rb_record.name].set(value)
 
     def _create_records(self, limits_csv):
         """Create all the standard records from both lattice and element Pytac
@@ -168,7 +175,7 @@ class ATIPServer(object):
                                                   initial_value=value,
                                                   on_update=on_update)
                         self._out_records[out_record.name] = in_record
-        # Now for lattice fields
+        # Now for lattice fields.
         lat_fields = self.lattice.get_fields()
         for field in set(lat_fields[pytac.LIVE]) & set(lat_fields[pytac.SIM]):
             # Ignore basic devices as they do not have PVs.
@@ -182,51 +189,6 @@ class ATIPServer(object):
                 self._in_records[in_record] = (0, field)
                 self._rb_only_records.append(in_record)
         print("~*~*Woah, we're halfway there, Wo-oah...*~*~")
-
-    def _create_feedback_records(self, feedback_csv):
-        """Create all the feedback records from the .csv file at the location
-        passed, see create_csv.py for more information.
-
-        Args:
-            feedback_csv (string): The filepath to the .csv file from which to
-                                    load the records.
-        """
-        csv_reader = csv.DictReader(open(feedback_csv))
-        for line in csv_reader:
-            prefix, pv = line['pv'].split(':', 1)
-            builder.SetDeviceName(prefix)
-            in_record = builder.longIn(pv, initial_value=int(line['value']))
-            self._feedback_records[(int(line['index']),
-                                    line['field'])] = in_record
-
-        # Storage ring electron BPMs enabled
-        # Special case: since cannot currently create waveform records via CSV,
-        # create by hand and add to list of feedback records
-        N_BPM = len(self.lattice.get_elements('BPM'))
-        builder.SetDeviceName("SR-DI-EBPM-01")
-        bpm_enabled_record = builder.Waveform("ENABLED", NELM=N_BPM,
-                                              initial_value=[0] * N_BPM)
-        self._feedback_records[(0, "bpm_enabled")] = bpm_enabled_record
-
-    def _create_mirror_records(self, mirror_csv):
-        all_in_records = (self._in_records.keys() +
-                          self._feedback_records.values())
-        record_names = {rec.name: rec for rec in all_in_records}
-        csv_reader = csv.DictReader(open(mirror_csv))
-        for line in csv_reader:
-            prefix, pv = line['mirror'].split(':', 1)
-            builder.SetDeviceName(prefix)
-            if isinstance(record_names[line['original']]._RecordWrapper__device,
-                          device.ai):
-                mirror = builder.aIn(pv, initial_value=float(line['value']))
-            elif isinstance(record_names[line['original']]._RecordWrapper__device,
-                            device.longin):
-                mirror = builder.aIn(pv, initial_value=float(line['value']))
-            else:
-                raise TypeError("Type {0} doesn't currently support mirroring,"
-                                " please only mirror aIn and longIn records."
-                                .format(type(line['original']._RecordWrapper__device)))
-            self._mirrored_records[line['original']] = mirror
 
     def _on_update(self, name, value):
         """The callback function passed to out records, it is called after
@@ -243,15 +205,127 @@ class ATIPServer(object):
         self.lattice[index-1].set_value(field, value, units=pytac.ENG,
                                         data_source=pytac.SIM)
         in_record.set(value)
-        if in_record.name in self._mirrored_records:
-            self._mirrored_records[in_record.name].set(value)
+
+    def _create_feedback_records(self, feedback_csv):
+        """Create all the feedback records from the .csv file at the location
+        passed, see create_csv.py for more information.
+
+        Args:
+            feedback_csv (string): The filepath to the .csv file from which to
+                                    load the records.
+        """
+        csv_reader = csv.DictReader(open(feedback_csv))
+        for line in csv_reader:
+            prefix, suffix = line['pv'].split(':', 1)
+            builder.SetDeviceName(prefix)
+            in_record = builder.longIn(suffix,
+                                       initial_value=int(line['value']))
+            self._feedback_records[(int(line['index']),
+                                    line['field'])] = in_record
+
+        # Special case: BPM ID for the x axis of beam position plot, since we
+        # cannot currently create Waveform records via CSV.
+        bpm_ids = [int(pv[2:4]) + 0.1 * int(pv[14:16]) for pv in
+                   self.lattice.get_element_pv_names('BPM', 'x', pytac.RB)]
+        builder.SetDeviceName("SR-DI-EBPM-01")
+        bpm_id_record = builder.Waveform("BPMID", NELM=len(bpm_ids),
+                                         initial_value=bpm_ids)
+        self._feedback_records[(0, "bpm_id")] = bpm_id_record
+        # Special case: EMIT STATUS for the vertical emittance feedback, since
+        # we cannot currently create mbbIn records via CSV.
+        builder.SetDeviceName("SR-DI-EMIT-01")
+        emit_status_record = builder.mbbIn("STATUS", initial_value=0, ZRVL=0,
+                                           ZRST="Successful", PINI="YES")
+        self._feedback_records[(0, "emittance_status")] = emit_status_record
+
+    def _create_mirror_records(self, mirror_csv):
+        csv_reader = csv.DictReader(open(mirror_csv))
+        for line in csv_reader:
+            # Parse arguments.
+            input_pvs = line['in'].split(', ')
+            if (len(input_pvs) > 1) and (line['mirror type'] in ['basic',
+                                                                 'inverse']):
+                raise IndexError("Transformation and basic mirror types take "
+                                 "only one input PV.")
+            elif (len(input_pvs) < 2) and (line['mirror type'] in ['collate',
+                                                                   'summate']):
+                raise IndexError("collation and summation mirror types take at"
+                                 " least two input PVs.")
+            if line['monitor'] == '':
+                monitor = input_pvs
+            else:
+                monitor = line['monitor'].split(', ')
+            # Create output record.
+            prefix, suffix = line['out'].split(':', 1)
+            builder.SetDeviceName(prefix)
+            if line['record type'] == '':
+                output_record = self._all_in[line['out']]
+            elif line['record type'] == 'caput':
+                output_record = caput_mask(line['out'])
+            elif line['record type'] == 'aIn':
+                value = float(line['value'])
+                output_record = builder.aIn(suffix, initial_value=value)
+            elif line['record type'] == 'longIn':
+                value = int(line['value'])
+                output_record = builder.longIn(suffix, initial_value=value)
+            elif line['record type'] == 'Waveform':
+                value = numpy.asarray(line['value'][1:-1].split(', '),
+                                      dtype=float)
+                output_record = builder.Waveform(suffix, initial_value=value)
+            else:
+                raise TypeError("Record type {0} doesn't currently support "
+                                "mirroring, please enter 'aIn', 'longIn', or "
+                                "'Waveform'.".format(line['record type']))
+            # Update the mirror dictionary.
+            for pv in monitor:
+                if pv not in self._mirrored_records:
+                    self._mirrored_records[pv] = []
+            if line['mirror type'] == 'basic':
+                self._mirrored_records[monitor[0]].append(output_record)
+            elif line['mirror type'] == 'inverse':
+                # Other transformation types are not yet supported.
+                transformation = transform(numpy.invert, output_record)
+                self._mirrored_records[monitor[0]].append(transformation)
+            elif line['mirror type'] == 'summate':
+                summation_object = summate(input_pvs, output_record)
+                for pv in monitor:
+                    self._mirrored_records[pv].append(summation_object)
+            elif line['mirror type'] == 'collate':
+                collation_object = collate(input_pvs, output_record)
+                for pv in monitor:
+                    self._mirrored_records[pv].append(collation_object)
+            else:
+                raise TypeError("Mirror type {0} is not currently supported, "
+                                "please enter 'basic', 'summate', 'collate' or"
+                                " 'inverse'.".format(line['mirror type']))
+
+    def monitor_mirrored_pvs(self):
+        for pv, output in self._mirrored_records.items():
+            mask = camonitor_mask(output)
+            try:
+                self._monitored_pvs[pv] = camonitor(pv, mask.callback)
+            except ImportError as e:
+                warn(e)
+
+    def refresh_pv(self, pv_name):
+        try:
+            record = self._all_in[pv_name]
+        except KeyError:
+            raise ValueError("{0} is not an in record or was not created by "
+                             "this server.".format(pv_name))
+        else:
+            record.set(record.get())
 
     def set_feedback_record(self, index, field, value):
-        """Set a value to the feedback in records, possible fields are:
+        """Set a value to the feedback in records.
+
+        possible element fields are:
             ['x_fofb_disabled', 'x_sofb_disabled', 'y_fofb_disabled',
              'y_sofb_disabled', 'h_fofb_disabled', 'h_sofb_disabled',
              'v_fofb_disabled', 'v_sofb_disabled', 'error_sum', 'enabled',
-             'state', 'beam_current', feedback_status', 'bpm_enabled']
+             'state', 'offset']
+        possible lattice fields are:
+            ['beam_current', 'feedback_status', 'bpm_id', 'emittance_status']
 
         Args:
             index (int): The index of the element on which to set the value;

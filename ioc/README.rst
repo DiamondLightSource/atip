@@ -52,11 +52,11 @@ from in the same way as any other PV, but for testing and debugging there is a
 special method for setting them. This is done on the ATIP server object, inside
 the server terminal (the one you ran `start-ioc` in initially). As arguments,
 it takes the element's index in the ring (starting from 1, 0 is used to set on
-the lattice), the field (possible fields are: ``'x_fofb_disabled',
+the lattice), the field (possible element fields are: ``'x_fofb_disabled',
 'x_sofb_disabled', 'y_fofb_disabled', 'y_sofb_disabled', 'h_fofb_disabled',
 'h_sofb_disabled', 'v_fofb_disabled', 'v_sofb_disabled', 'error_sum',
-'enabled', 'state', 'beam_current', feedback_status', 'bpm_enabled'``), and the
-value to be set.
+'enabled', 'state', 'offset'``; possible lattice fields are: ``'beam_current',
+feedback_status', 'bpm_id', 'emittance_status'``), and the value to be set.
 
 For example disabling SOFB on the first BPM, or reducing the beam current::
 

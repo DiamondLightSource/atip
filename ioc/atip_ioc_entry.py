@@ -15,8 +15,8 @@ sys.path.append(os.path.split(here)[0])
 import atip_server  # noqa: E402
 from softioc import builder, softioc  # noqa: E402
 from cothread.catools import caget, ca_nothing  # noqa: E402
-"""Error 402 is suppressed as we cannot import these modules at the top of the
-file as they must be below the requires and the path editing.
+"""Error 402 from pycodestyle is suppressed as we cannot import these modules
+at the top of the file as they must be below the requires and the path editing.
 """
 
 # Determine the ring mode
@@ -44,5 +44,6 @@ builder.aOut('FBHEART', initial_value=10)
 # Start the IOC.
 builder.LoadDatabase()
 softioc.iocInit()
+server.monitor_mirrored_pvs()
 
 softioc.interactive_ioc(globals())

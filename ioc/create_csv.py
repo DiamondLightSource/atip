@@ -56,10 +56,8 @@ def generate_feedback_pvs():
                          elem.get_pv_name('enabled', pytac.RB), 1))
         # Add elements for Tune Feedback
         elif elem in tune_quad_elements:
-            # We must build the PV name because there is no field for OFFSET1
-            pv_stem = elem.get_device("b1").name
-            data.append((elem.index, "OFFSET1",
-                        "{}:OFFSET1".format(pv_stem), 0))
+            data.append((elem.index, "offset",
+                         elem.get_device("b1").name + ':OFFSET1', 0))
 
     return data
 
@@ -85,21 +83,79 @@ def generate_pv_limits():
 
 
 def generate_mirrored_pvs():
+    """
+    monitor: pv(s) to be monitored, on change mirror is updated; if '' then
+        the input pv(s) are monitored.
+    in: pv(s) to read from, if multiple then pvs are separated by a comma and
+        one space.
+    out: single pv to output to, if a 'record type' is spcified then a new
+        record will be created and so must not exist already.
+    value: the inital value of the output record.
+    record type: the type of output record to create, only 'aIn', 'longIn',
+        'Waveform' types are currently supported; if '' then output to an
+        existing in record already created in ATIPServer, 'caput' is also a
+        special case it creates a mask for cothread.catools.caput calling
+        set(value) on this mask will call caput with the output pv and the
+        passed value.
+    mirror type: type of mirroring to apply:
+        - basic: set the value of the input record to the output record.
+        - summate: sum the values of the input records and set the result to
+            the output record.
+        - collate: create a Waveform record from the values of the input pvs.
+        - transform: apply the specified transformation function to the value
+            of the input record and set the result to the output record. N.B.
+            the only transformation type currently supported is 'inverse'.
+    """
     lattice = atip.utils.loader()
-    data = [("original", "mirror", "value"),
-            ("SR23C-DI-TMBF-01:X:TUNE:TUNE", "SR23C-DI-TMBF-01:TUNE:TUNE",
-             lattice.get_value("tune_x", pytac.RB)),
-            ("SR23C-DI-TMBF-01:Y:TUNE:TUNE", "SR23C-DI-TMBF-02:TUNE:TUNE",
-             lattice.get_value("tune_y", pytac.RB)),
-            ("SR-DI-EMIT-01:HEMIT", "SR-DI-EMIT-01:HEMIT_MEAN",
-             lattice.get_value("emittance_x", pytac.RB)),
-            ("SR-DI-EMIT-01:VEMIT", "SR-DI-EMIT-01:VEMIT_MEAN",
-             lattice.get_value("emittance_y", pytac.RB))]
+    data = [("monitor", "in", "out", "value", "record type", "mirror type")]
+    # Tune PV aliases.
+    tune = [lattice.get_value('tune_x', pytac.RB, data_source=pytac.SIM),
+            lattice.get_value('tune_y', pytac.RB, data_source=pytac.SIM)]
+    data.append(('', 'SR23C-DI-TMBF-01:X:TUNE:TUNE',
+                 'SR23C-DI-TMBF-01:TUNE:TUNE', tune[0], 'aIn', 'basic'))
+    data.append(('', 'SR23C-DI-TMBF-01:Y:TUNE:TUNE',
+                 'SR23C-DI-TMBF-02:TUNE:TUNE', tune[1], 'aIn', 'basic'))
+    # Combined emittance and average emittance PVs.
+    emit = [lattice.get_value('emittance_x', pytac.RB, data_source=pytac.SIM),
+            lattice.get_value('emittance_y', pytac.RB, data_source=pytac.SIM)]
+    data.append(('', 'SR-DI-EMIT-01:HEMIT', 'SR-DI-EMIT-01:HEMIT_MEAN',
+                 emit[0], 'aIn', 'basic'))
+    data.append(('', 'SR-DI-EMIT-01:VEMIT', 'SR-DI-EMIT-01:VEMIT_MEAN',
+                 emit[1], 'aIn', 'basic'))
+    data.append(('', 'SR-DI-EMIT-01:HEMIT, SR-DI-EMIT-01:VEMIT',
+                 'SR-DI-EMIT-01:EMITTANCE', sum(emit), 'aIn', 'summate'))
+    # Electron BPMs enabled.
+    bpm_enabled_pvs = lattice.get_element_pv_names('BPM', 'enabled', pytac.RB)
+    data.append(('', ', '.join(bpm_enabled_pvs), 'EBPM-ENABLED:INTERIM',
+                 [0] * len(bpm_enabled_pvs), 'Waveform', 'collate'))
+    data.append(('', 'EBPM-ENABLED:INTERIM', 'SR-DI-EBPM-01:ENABLED',
+                 [0] * len(bpm_enabled_pvs), 'Waveform', 'inverse'))
+    # BPM x positions for display on diagnostics screen.
+    bpm_x_pvs = lattice.get_element_pv_names('BPM', 'x', pytac.RB)
+    data.append(('', ', '.join(bpm_x_pvs), 'SR-DI-EBPM-01:SA:X',
+                 [0] * len(bpm_x_pvs), 'Waveform', 'collate'))
+    # BPM y positions for display on diagnostics screen.
+    bpm_y_pvs = lattice.get_element_pv_names('BPM', 'y', pytac.RB)
+    data.append(('', ', '.join(bpm_y_pvs), 'SR-DI-EBPM-01:SA:Y',
+                 [0] * len(bpm_y_pvs), 'Waveform', 'collate'))
+    # Offset PV for quadrupoles in tune feedback.
+    tune_pvs = []
+    offset_pvs = []
+    for family in ['Q1D', 'Q2D', 'Q3D', 'Q3B', 'Q2B', 'Q1B']:
+        tune_pvs.extend(lattice.get_element_pv_names(family, 'b1', pytac.SP))
+    for pv in tune_pvs:
+        offset_pvs.append('SR-CS-TFB-01:{0}{1}{2}:I'.format(pv[2:4], pv[9:12],
+                                                            pv[13:15]))
+    for offset_pv, tune_pv in zip(offset_pvs, tune_pvs):
+        data.append((offset_pv, ', '.join([offset_pv, tune_pv]), tune_pv, 0.0,
+                     'caput', 'summate'))
     return data
 
 
 def write_data_to_file(data, filename):
     # Write the collected data to the .csv file.
+    if not filename.endswith('.csv'):
+        filename += '.csv'
     here = os.path.abspath(os.path.dirname(__file__))
     with open(os.path.join(here, filename), "wb") as file:
         csv_writer = csv.writer(file)
