@@ -9,8 +9,8 @@ from pytac.device import BasicDevice
 from pytac.exceptions import HandleException, FieldException
 from softioc import builder
 
-from solution import callback_set, callback_refresh, caget_mask, caput_mask
-from solution import summate, collate, transform
+from masks import callback_set, callback_refresh, caget_mask, caput_mask
+from mirror_objects import summate, collate, transform
 
 
 class ATIPServer(object):
@@ -75,7 +75,6 @@ class ATIPServer(object):
         return {record.name: record for record in self._in_records.keys() +
                 self._out_records.keys() + self._feedback_records.values()}
 
-
     def update_pvs(self):
         """The callback function passed to ATSimulator during lattice creation,
         it is called each time a calculation of physics data is completed. It
@@ -91,7 +90,7 @@ class ATIPServer(object):
             else:
                 value = self.lattice[index - 1].get_value(
                     field, units=pytac.ENG, data_source=pytac.SIM
-                    )
+                )
                 rb_record.set(value)
 
     def _create_records(self, limits_csv):
@@ -214,9 +213,13 @@ class ATIPServer(object):
         index, field = self._in_records[in_record]
 
         if self.tune_feedback_status is True:
-            offset_pv = self._offset_pvs[name]
-            offset = caget(offset_pv)
-            value = value + offset
+            try:
+                offset_pv = self._offset_pvs[name]
+            except KeyError:
+                pass
+            else:
+                offset = caget(offset_pv)
+                value = value + offset
         self.lattice[index - 1].set_value(field, value, units=pytac.ENG,
                                           data_source=pytac.SIM)
 
@@ -339,13 +342,14 @@ class ATIPServer(object):
     def start_tune_feedback(self, tune_csv=None):
         if tune_csv is not None:
             self._tune_fb_csv_path = tune_csv
-        if self.tune_fb_csv_path is None:
+        if self._tune_fb_csv_path is None:
             raise ValueError("No tune feedback csv file was given at start-up,"
                              " please provide one now; i.e. server.start_tune_"
                              "feedback(path_to_csv)")
-        csv_reader = csv.DictReader(open(tune_csv))
+        csv_reader = csv.DictReader(open(self._tune_fb_csv_path))
         if not self._pv_monitoring:
             self.monitor_mirrored_pvs()
+        self.tune_feedback_status = True
         for line in csv_reader:
             quad_pv = line['quad_set_pv']
             offset_pv = line['offset_pv']
