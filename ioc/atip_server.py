@@ -9,7 +9,7 @@ from pytac.device import BasicDevice
 from pytac.exceptions import HandleException, FieldException
 from softioc import builder
 
-from masks import callback_set, callback_refresh, caget_mask, caput_mask
+from masks import callback_set, camonitor_offset, caget_mask, caput_mask
 from mirror_objects import summate, collate, transform
 
 
@@ -211,15 +211,13 @@ class ATIPServer(object):
         in_record = self._out_records[self.all_record_names[name]]
         in_record.set(value)
         index, field = self._in_records[in_record]
-
         if self.tune_feedback_status is True:
             try:
-                offset_pv = self._offset_pvs[name]
+                offset_record = self._offset_pvs[name]
             except KeyError:
                 pass
             else:
-                offset = caget(offset_pv)
-                value += offset
+                value += offset_record.get()
         self.lattice[index - 1].set_value(field, value, units=pytac.ENG,
                                           data_source=pytac.SIM)
 
@@ -348,13 +346,12 @@ class ATIPServer(object):
             self.monitor_mirrored_pvs()
         self.tune_feedback_status = True
         for line in csv_reader:
-            quad_pv = line['quad set pv']
-            offset_pv = line['offset pv']
-            self._offset_pvs[quad_pv] = offset_pv
-            mask = callback_refresh(self, quad_pv)
+            offset_record = self.all_record_names[line['offset']]
+            self._offset_pvs[line['set pv']] = offset_record
+            mask = camonitor_offset(self, line['set pv'], offset_record)
             try:
-                self._monitored_pvs[offset_pv] = camonitor(offset_pv,
-                                                           mask.callback)
+                self._monitored_pvs[line['delta']] = camonitor(line['delta'],
+                                                               mask.callback)
             except Exception as e:
                 warn(e)
 

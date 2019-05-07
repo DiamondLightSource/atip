@@ -143,17 +143,19 @@ def generate_mirrored_pvs():
 
 def generate_tune_pvs():
     lattice = atip.utils.loader()
-    data = [('quad set pv', 'offset pv')]
+    data = [("set pv", "offset", "delta")]
     # Offset PV for quadrupoles in tune feedback.
     tune_pvs = []
     offset_pvs = []
+    delta_pvs = []
     for family in ['Q1D', 'Q2D', 'Q3D', 'Q3B', 'Q2B', 'Q1B']:
         tune_pvs.extend(lattice.get_element_pv_names(family, 'b1', pytac.SP))
     for pv in tune_pvs:
-        offset_pvs.append('SR-CS-TFB-01:{0}{1}{2}:I'.format(pv[2:4], pv[9:12],
+        offset_pvs.append(':'.join([pv.split(':')[0], 'OFFSET1']))
+        delta_pvs.append('SR-CS-TFB-01:{0}{1}{2}:I'.format(pv[2:4], pv[9:12],
                                                             pv[13:15]))
-    for offset_pv, tune_pv in zip(offset_pvs, tune_pvs):
-        data.append((tune_pv, offset_pv))
+    for tune_pv, offset_pv, delta_pv in zip(tune_pvs, offset_pvs, delta_pvs):
+        data.append((tune_pv, offset_pv, delta_pv))
     return data
 
 
