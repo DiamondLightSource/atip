@@ -67,11 +67,11 @@ class ATIPServer(object):
         if mirror_csv is not None:
             self._create_mirror_records(mirror_csv)
         print("Finished creating all {0} records."
-              .format(len(self._all_record_names) +
+              .format(len(self.all_record_names) +
                       len(self._mirrored_records)))
 
     @property
-    def _all_record_names(self):
+    def all_record_names(self):
         return {record.name: record for record in self._in_records.keys() +
                 self._out_records.keys() + self._feedback_records.values()}
 
@@ -208,7 +208,7 @@ class ATIPServer(object):
             name (str): The name of record object that has just been set to.
             value (number): The value that has just been set to the record.
         """
-        in_record = self._out_records[self._all_record_names[name]]
+        in_record = self._out_records[self.all_record_names[name]]
         in_record.set(value)
         index, field = self._in_records[in_record]
 
@@ -219,7 +219,7 @@ class ATIPServer(object):
                 pass
             else:
                 offset = caget(offset_pv)
-                value = value + offset
+                value += offset
         self.lattice[index - 1].set_value(field, value, units=pytac.ENG,
                                           data_source=pytac.SIM)
 
@@ -268,36 +268,33 @@ class ATIPServer(object):
                                                                    'summate']):
                 raise IndexError("collation and summation mirror types take at"
                                  " least two input PVs.")
-            if line['monitor'] == '':
-                monitor = input_pvs
-            else:
-                monitor = line['monitor'].split(', ')
+            monitor = input_pvs # need to update to support camonitor multiple
             # Convert input pvs to record objects
             input_records = []
             for pv in input_pvs:
                 try:
-                    input_records.append(self._all_record_names[pv])
+                    input_records.append(self.all_record_names[pv])
                 except KeyError:
                     input_records.append(caget_mask(pv))
             # Create output record.
             prefix, suffix = line['out'].split(':', 1)
             builder.SetDeviceName(prefix)
-            if line['record type'] == 'caput':
+            if line['output type'] == 'caput':
                 output_record = caput_mask(line['out'])
-            elif line['record type'] == 'aIn':
+            elif line['output type'] == 'aIn':
                 value = float(line['value'])
                 output_record = builder.aIn(suffix, initial_value=value)
-            elif line['record type'] == 'longIn':
+            elif line['output type'] == 'longIn':
                 value = int(line['value'])
                 output_record = builder.longIn(suffix, initial_value=value)
-            elif line['record type'] == 'Waveform':
+            elif line['output type'] == 'Waveform':
                 value = numpy.asarray(line['value'][1:-1].split(', '),
                                       dtype=float)
                 output_record = builder.Waveform(suffix, initial_value=value)
             else:
                 raise TypeError("{0} isn't a supported mirroring output type;"
                                 "please enter 'caput', 'aIn', 'longIn', or "
-                                "'Waveform'.".format(line['record type']))
+                                "'Waveform'.".format(line['output type']))
             # Update the mirror dictionary.
             for pv in monitor:
                 if pv not in self._mirrored_records:
@@ -332,7 +329,7 @@ class ATIPServer(object):
 
     def refresh_record(self, pv_name):
         try:
-            record = self._all_record_names[pv_name]
+            record = self.all_record_names[pv_name]
         except KeyError:
             raise ValueError("{0} is not the name of a record created by this "
                              "server.".format(pv_name))
@@ -351,8 +348,8 @@ class ATIPServer(object):
             self.monitor_mirrored_pvs()
         self.tune_feedback_status = True
         for line in csv_reader:
-            quad_pv = line['quad_set_pv']
-            offset_pv = line['offset_pv']
+            quad_pv = line['quad set pv']
+            offset_pv = line['offset pv']
             self._offset_pvs[quad_pv] = offset_pv
             mask = callback_refresh(self, quad_pv)
             try:

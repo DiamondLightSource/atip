@@ -107,43 +107,43 @@ def generate_mirrored_pvs():
             the only transformation type currently supported is 'inverse'.
     """
     lattice = atip.utils.loader()
-    data = [("monitor", "in", "out", "value", "record type", "mirror type")]
+    data = [("output type", "mirror type", "in", "out", "value")]
     # Tune PV aliases.
     tune = [lattice.get_value('tune_x', pytac.RB, data_source=pytac.SIM),
             lattice.get_value('tune_y', pytac.RB, data_source=pytac.SIM)]
-    data.append(('', 'SR23C-DI-TMBF-01:X:TUNE:TUNE',
-                 'SR23C-DI-TMBF-01:TUNE:TUNE', tune[0], 'aIn', 'basic'))
-    data.append(('', 'SR23C-DI-TMBF-01:Y:TUNE:TUNE',
-                 'SR23C-DI-TMBF-02:TUNE:TUNE', tune[1], 'aIn', 'basic'))
+    data.append(('aIn', 'basic', 'SR23C-DI-TMBF-01:X:TUNE:TUNE',
+                 'SR23C-DI-TMBF-01:TUNE:TUNE', tune[0]))
+    data.append(('aIn', 'basic', 'SR23C-DI-TMBF-01:Y:TUNE:TUNE',
+                 'SR23C-DI-TMBF-02:TUNE:TUNE', tune[1]))
     # Combined emittance and average emittance PVs.
     emit = [lattice.get_value('emittance_x', pytac.RB, data_source=pytac.SIM),
             lattice.get_value('emittance_y', pytac.RB, data_source=pytac.SIM)]
-    data.append(('', 'SR-DI-EMIT-01:HEMIT', 'SR-DI-EMIT-01:HEMIT_MEAN',
-                 emit[0], 'aIn', 'basic'))
-    data.append(('', 'SR-DI-EMIT-01:VEMIT', 'SR-DI-EMIT-01:VEMIT_MEAN',
-                 emit[1], 'aIn', 'basic'))
-    data.append(('', 'SR-DI-EMIT-01:HEMIT, SR-DI-EMIT-01:VEMIT',
-                 'SR-DI-EMIT-01:EMITTANCE', sum(emit), 'aIn', 'summate'))
+    data.append(('aIn', 'basic', 'SR-DI-EMIT-01:HEMIT',
+                 'SR-DI-EMIT-01:HEMIT_MEAN', emit[0]))
+    data.append(('aIn', 'basic', 'SR-DI-EMIT-01:VEMIT',
+                 'SR-DI-EMIT-01:VEMIT_MEAN', emit[1]))
+    data.append(('aIn', 'summate','SR-DI-EMIT-01:HEMIT, SR-DI-EMIT-01:VEMIT',
+                 'SR-DI-EMIT-01:EMITTANCE', sum(emit)))
     # Electron BPMs enabled.
     bpm_enabled_pvs = lattice.get_element_pv_names('BPM', 'enabled', pytac.RB)
-    data.append(('', ', '.join(bpm_enabled_pvs), 'EBPM-ENABLED:INTERIM',
-                 [0] * len(bpm_enabled_pvs), 'Waveform', 'collate'))
-    data.append(('', 'EBPM-ENABLED:INTERIM', 'SR-DI-EBPM-01:ENABLED',
-                 [0] * len(bpm_enabled_pvs), 'Waveform', 'inverse'))
+    data.append(('Waveform', 'collate', ', '.join(bpm_enabled_pvs),
+                 'EBPM-ENABLED:INTERIM', [0] * len(bpm_enabled_pvs)))
+    data.append(('Waveform', 'inverse', 'EBPM-ENABLED:INTERIM',
+                 'SR-DI-EBPM-01:ENABLED', [0] * len(bpm_enabled_pvs)))
     # BPM x positions for display on diagnostics screen.
     bpm_x_pvs = lattice.get_element_pv_names('BPM', 'x', pytac.RB)
-    data.append(('', ', '.join(bpm_x_pvs), 'SR-DI-EBPM-01:SA:X',
-                 [0] * len(bpm_x_pvs), 'Waveform', 'collate'))
+    data.append(('Waveform', 'collate', ', '.join(bpm_x_pvs),
+                 'SR-DI-EBPM-01:SA:X', [0] * len(bpm_x_pvs)))
     # BPM y positions for display on diagnostics screen.
     bpm_y_pvs = lattice.get_element_pv_names('BPM', 'y', pytac.RB)
-    data.append(('', ', '.join(bpm_y_pvs), 'SR-DI-EBPM-01:SA:Y',
-                 [0] * len(bpm_y_pvs), 'Waveform', 'collate'))
+    data.append(('Waveform', 'collate', ', '.join(bpm_y_pvs),
+                 'SR-DI-EBPM-01:SA:Y', [0] * len(bpm_y_pvs)))
     return data
 
 
 def generate_tune_pvs():
     lattice = atip.utils.loader()
-    data = [('quad_set_pv', 'offset_pv')]
+    data = [('quad set pv', 'offset pv')]
     # Offset PV for quadrupoles in tune feedback.
     tune_pvs = []
     offset_pvs = []
