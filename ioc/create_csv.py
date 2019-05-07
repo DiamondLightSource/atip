@@ -122,7 +122,7 @@ def generate_mirrored_pvs():
                  'SR-DI-EMIT-01:HEMIT_MEAN', emit[0]))
     data.append(('aIn', 'basic', 'SR-DI-EMIT-01:VEMIT',
                  'SR-DI-EMIT-01:VEMIT_MEAN', emit[1]))
-    data.append(('aIn', 'summate','SR-DI-EMIT-01:HEMIT, SR-DI-EMIT-01:VEMIT',
+    data.append(('aIn', 'summate', 'SR-DI-EMIT-01:HEMIT, SR-DI-EMIT-01:VEMIT',
                  'SR-DI-EMIT-01:EMITTANCE', sum(emit)))
     # Electron BPMs enabled.
     bpm_enabled_pvs = lattice.get_element_pv_names('BPM', 'enabled', pytac.RB)
@@ -153,7 +153,7 @@ def generate_tune_pvs():
     for pv in tune_pvs:
         offset_pvs.append(':'.join([pv.split(':')[0], 'OFFSET1']))
         delta_pvs.append('SR-CS-TFB-01:{0}{1}{2}:I'.format(pv[2:4], pv[9:12],
-                                                            pv[13:15]))
+                                                           pv[13:15]))
     for tune_pv, offset_pv, delta_pv in zip(tune_pvs, offset_pvs, delta_pvs):
         data.append((tune_pv, offset_pv, delta_pv))
     return data

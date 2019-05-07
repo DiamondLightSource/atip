@@ -7,7 +7,7 @@ class camonitor_offset(object):
         self.quad_pv = quad_pv
         self.offset_record = offset_record
 
-    def callback(value, index=None):
+    def callback(self, value, index=None):
         self.offset_record.set(value)
         self.server.refresh_record(self.quad_pv)
 

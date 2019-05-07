@@ -4,7 +4,7 @@ from warnings import warn
 import atip
 import numpy
 import pytac
-from cothread.catools import camonitor, caget
+from cothread.catools import camonitor
 from pytac.device import BasicDevice
 from pytac.exceptions import HandleException, FieldException
 from softioc import builder
@@ -266,7 +266,7 @@ class ATIPServer(object):
                                                                    'summate']):
                 raise IndexError("collation and summation mirror types take at"
                                  " least two input PVs.")
-            monitor = input_pvs # need to update to support camonitor multiple
+            monitor = input_pvs  # need to update to support camonitor multiple
             # Convert input pvs to record objects
             input_records = []
             for pv in input_pvs:
