@@ -60,7 +60,7 @@ class ATSimulator(object):
             raise TypeError("If passed, 'callback' should be callable, {0} is "
                             "not.".format(callback))
         self._at_lat = at_lattice
-        self._rp = numpy.ones(len(at_lattice), dtype=bool)  # faster option?
+        self._rp = numpy.ones(len(at_lattice), dtype=bool)
         # Initial phys data calculation.
         self._at_lat.radiation_on()
         self._emittance = self._at_lat.ohmi_envelope(self._rp)
