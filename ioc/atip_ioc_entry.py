@@ -35,7 +35,8 @@ else:
 # Create PVs.
 server = atip_server.ATIPServer(ring_mode, os.path.join(here, 'limits.csv'),
                                 os.path.join(here, 'feedback.csv'),
-                                os.path.join(here, 'mirrored.csv'))
+                                os.path.join(here, 'mirrored.csv'),
+                                os.path.join(here, 'tunefb.csv'))
 
 # Add special case out record for SOFB to write to.
 builder.SetDeviceName('CS-CS-MSTAT-01')

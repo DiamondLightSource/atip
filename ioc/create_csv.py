@@ -138,6 +138,12 @@ def generate_mirrored_pvs():
     bpm_y_pvs = lattice.get_element_pv_names('BPM', 'y', pytac.RB)
     data.append(('', ', '.join(bpm_y_pvs), 'SR-DI-EBPM-01:SA:Y',
                  [0] * len(bpm_y_pvs), 'Waveform', 'collate'))
+    return data
+
+
+def generate_tune_pvs():
+    lattice = atip.utils.loader()
+    data = [('quad_set_pv', 'offset_pv')]
     # Offset PV for quadrupoles in tune feedback.
     tune_pvs = []
     offset_pvs = []
@@ -147,8 +153,7 @@ def generate_mirrored_pvs():
         offset_pvs.append('SR-CS-TFB-01:{0}{1}{2}:I'.format(pv[2:4], pv[9:12],
                                                             pv[13:15]))
     for offset_pv, tune_pv in zip(offset_pvs, tune_pvs):
-        data.append((offset_pv, ', '.join([offset_pv, tune_pv]), tune_pv, 0.0,
-                     'caput', 'summate'))
+        data.append((tune_pv, offset_pv))
     return data
 
 
@@ -182,11 +187,15 @@ def parse_arguments():
         help="Filename for output pv limits CSV file",
         default="mirrored.csv",
     )
+    parser.add_argument(
+        "--tune",
+        help="Filename for output pv limits CSV file",
+        default="tunefb.csv",
+    )
     return parser.parse_args()
 
 
 if __name__ == "__main__":
-
     args = parse_arguments()
     data = generate_feedback_pvs()
     write_data_to_file(data, args.feedback)
@@ -194,3 +203,5 @@ if __name__ == "__main__":
     write_data_to_file(data, args.limits)
     data = generate_mirrored_pvs()
     write_data_to_file(data, args.mirrored)
+    data = generate_tune_pvs()
+    write_data_to_file(data, args.tune)
