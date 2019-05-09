@@ -233,8 +233,7 @@ class ATIPServer(object):
         for line in csv_reader:
             prefix, suffix = line['pv'].split(':', 1)
             builder.SetDeviceName(prefix)
-            in_record = builder.longIn(suffix,
-                                       initial_value=int(line['value']))
+            in_record = builder.aIn(suffix, initial_value=int(line['value']))
             self._feedback_records[(int(line['index']),
                                     line['field'])] = in_record
 

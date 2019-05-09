@@ -68,12 +68,20 @@ class ATSimulator(object):
         self._lindata = self._at_lat.linopt(refpts=self._rp, get_chrom=True,
                                             coupled=False)
         # Threading stuff initialisation.
-        self.queue = cothread.ThreadedEventQueue()
+        self.queue = cothread.EventQueue()
         self.up_to_date = cothread.Event()
         self.up_to_date.Signal()
         self._paused = cothread.Event()
         self._calculation_thread = cothread.Spawn(self._recalculate_phys_data,
                                                   callback)
+
+    def _gather_one_sample(self):
+        """If the queue is empty Wait() yields until an item is added. When the
+        queue is not empty the oldest change will be removed and applied to the
+        AT lattice.
+        """
+        data_source, field, value = self.queue.Wait()
+        data_source.make_change(field, value)
 
     def _recalculate_phys_data(self, callback):
         """Target function for the Cothread thread. Recalculates the physics
@@ -95,24 +103,21 @@ class ATSimulator(object):
                            but as a warning.
         """
         while True:
-            if len(self.queue) != 0:
-                for i in range(len(self.queue)):
-                    data_source, field, value = self.queue.Wait()
-                    data_source.make_change(field, value)
-                if bool(self._paused) is False:
-                    try:
-                        self._at_lat.radiation_on()
-                        self._emittance = self._at_lat.ohmi_envelope(self._rp)
-                        self._at_lat.radiation_off()
-                        self._lindata = self._at_lat.linopt(refpts=self._rp,
-                                                            get_chrom=True,
-                                                            coupled=False)
-                    except Exception as e:
-                        warn(at.AtWarning(e))
-                    if callback is not None:
-                        callback()
-                    self.up_to_date.Signal()
-            cothread.Yield()
+            self._gather_one_sample()
+            for i in range(len(self.queue)):
+                self._gather_one_sample()
+            if bool(self._paused) is False:
+                try:
+                    self._at_lat.radiation_on()
+                    self._emittance = self._at_lat.ohmi_envelope(self._rp)
+                    self._at_lat.radiation_off()
+                    self._lindata = self._at_lat.linopt(0.0, self._rp, True,
+                                                        coupled=False)
+                except Exception as e:
+                    warn(at.AtWarning(e))
+                if callback is not None:
+                    callback()
+                self.up_to_date.Signal()
 
     def toggle_calculations(self):
         """Pause or unpause the physics calculations by setting or clearing the
