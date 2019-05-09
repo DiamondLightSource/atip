@@ -8,6 +8,11 @@ class camonitor_offset(object):
         self.offset_record = offset_record
 
     def callback(self, value, index=None):
+        #print("callback quad {} offset {} new value {}".format(
+        #    self.quad_pv,
+        #    self.offset_record.name,
+        #    value
+        # ))
         self.offset_record.set(value)
         self.server.refresh_record(self.quad_pv)
 

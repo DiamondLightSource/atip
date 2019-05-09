@@ -134,7 +134,10 @@ class ATElementDataSource(pytac.data_source.DataSource):
                                       " source {1}.".format(field, self))
             else:
                 self._atsim.up_to_date.Reset()
+                print("element {}, field {}, value {}".format(self._at_element.Index,
+                                                              field, set_value))
                 self._atsim.queue.Signal((self, field, set_value))
+                print(len(self._atsim.queue))
         else:
             raise FieldException("No field {0} on AT element {1}."
                                  .format(field, self._at_element))

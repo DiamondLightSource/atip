@@ -11,7 +11,7 @@ from softioc import builder
 
 from masks import callback_set, camonitor_offset, caget_mask, caput_mask
 from mirror_objects import summate, collate, transform
-
+import cothread
 
 class ATIPServer(object):
     """A soft-ioc server allowing ATIP to be interfaced using EPICS, in the
@@ -209,6 +209,7 @@ class ATIPServer(object):
             value (number): The value that has just been set to the record.
         """
         in_record = self._out_records[self.all_record_names[name]]
+
         in_record.set(value)
         index, field = self._in_records[in_record]
         if self.tune_feedback_status is True:
@@ -217,9 +218,15 @@ class ATIPServer(object):
             except KeyError:
                 pass
             else:
+                print("atip_server._on_update({}, {})".format(name, value))
                 value += offset_record.get()
+                #print("offset_record = {}, new value: {}".format(
+                    # offset_record.name,
+                    # value))
         self.lattice[index - 1].set_value(field, value, units=pytac.ENG,
                                           data_source=pytac.SIM)
+        # cothread.Yield()
+
 
     def _create_feedback_records(self, feedback_csv):
         """Create all the feedback records from the .csv file at the location
@@ -233,7 +240,7 @@ class ATIPServer(object):
         for line in csv_reader:
             prefix, suffix = line['pv'].split(':', 1)
             builder.SetDeviceName(prefix)
-            in_record = builder.longIn(suffix,
+            in_record = builder.aIn(suffix,
                                        initial_value=int(line['value']))
             self._feedback_records[(int(line['index']),
                                     line['field'])] = in_record
@@ -348,12 +355,17 @@ class ATIPServer(object):
         for line in csv_reader:
             offset_record = self.all_record_names[line['offset']]
             self._offset_pvs[line['set pv']] = offset_record
+            #print(line["set pv"], line["offset"])
             mask = camonitor_offset(self, line['set pv'], offset_record)
             try:
                 self._monitored_pvs[line['delta']] = camonitor(line['delta'],
                                                                mask.callback)
             except Exception as e:
                 warn(e)
+
+    def stop_tune_feedback(self):
+        for subscription in self._monitored_pvs.values():
+            subscription.close()
 
     def set_feedback_record(self, index, field, value):
         """Set a value to the feedback in records.

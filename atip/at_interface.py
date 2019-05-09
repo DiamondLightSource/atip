@@ -68,12 +68,24 @@ class ATSimulator(object):
         self._lindata = self._at_lat.linopt(refpts=self._rp, get_chrom=True,
                                             coupled=False)
         # Threading stuff initialisation.
-        self.queue = cothread.ThreadedEventQueue()
+#        self.queue = cothread.ThreadedEventQueue()
+        self.queue = cothread.EventQueue()
         self.up_to_date = cothread.Event()
         self.up_to_date.Signal()
         self._paused = cothread.Event()
         self._calculation_thread = cothread.Spawn(self._recalculate_phys_data,
                                                   callback)
+
+    def gather_one_sample(self):
+        data_source, field, value = self.queue.Wait()
+        data_source.make_change(field, value)
+
+    def gather_from_queue(self):
+        # Block until queue is not empty
+        self.gather_one_sample()
+        # Now empty the rest of the queue
+        for i in range(len(self.queue)):
+            self.gather_one_sample()
 
     def _recalculate_phys_data(self, callback):
         """Target function for the Cothread thread. Recalculates the physics
@@ -95,12 +107,19 @@ class ATSimulator(object):
                            but as a warning.
         """
         while True:
-            if len(self.queue) != 0:
-                for i in range(len(self.queue)):
-                    data_source, field, value = self.queue.Wait()
-                    data_source.make_change(field, value)
+            # if len(self.queue) != 0:
+            #     for i in range(len(self.queue)):
+            #         print("Before wait - length {}".format(len(self.queue)))
+            #         data_source, field, value = self.queue.Wait()
+            #         print("After wait - length {}".format(len(self.queue)))
+            #
+            #         data_source.make_change(field, value)
+                self.gather_from_queue()
                 if bool(self._paused) is False:
                     try:
+                        print(
+                            "---------------------------------------------------------------")
+
                         self._at_lat.radiation_on()
                         self._emittance = self._at_lat.ohmi_envelope(self._rp)
                         self._at_lat.radiation_off()
@@ -112,7 +131,7 @@ class ATSimulator(object):
                     if callback is not None:
                         callback()
                     self.up_to_date.Signal()
-            cothread.Yield()
+                # cothread.Yield()
 
     def toggle_calculations(self):
         """Pause or unpause the physics calculations by setting or clearing the
