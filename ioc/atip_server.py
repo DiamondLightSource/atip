@@ -115,11 +115,11 @@ class ATIPServer(object):
                 limits_dict[line['pv']] = (float(line['upper']),
                                            float(line['lower']),
                                            int(line['precision']))
-        bend_set = False
+        bend_in_record = None
         for element in self.lattice:
             if element.type_ == 'BEND':
                 # Create bends only once as they all share a single PV.
-                if not bend_set:
+                if bend_in_record is None:
                     value = element.get_value('b0', units=pytac.ENG,
                                               data_source=pytac.SIM)
                     get_pv = element.get_pv_name('b0', pytac.RB)
@@ -146,9 +146,11 @@ class ATIPServer(object):
                                               on_update=on_update,
                                               always_update=True)
                     # how to solve the index problem?
-                    self._in_records[in_record] = (element.index, 'b0')
+                    self._in_records[in_record] = ([element.index], 'b0')
                     self._out_records[out_record] = in_record
-                    bend_set = True
+                    bend_in_record = in_record
+                else:
+                    self._in_records[bend_in_record][0].append(element.index)
             else:
                 # Create records for all other families.
                 for field in element.get_fields()[pytac.SIM]:
@@ -218,8 +220,13 @@ class ATIPServer(object):
                 pass
             else:
                 value += offset_record.get()
-        self.lattice[index - 1].set_value(field, value, units=pytac.ENG,
-                                          data_source=pytac.SIM)
+        if isinstance(index, list):
+            for i in index:
+                self.lattice[i - 1].set_value(field, value, units=pytac.ENG,
+                                              data_source=pytac.SIM)
+        else:
+            self.lattice[index - 1].set_value(field, value, units=pytac.ENG,
+                                              data_source=pytac.SIM)
 
     def _create_feedback_records(self, feedback_csv):
         """Create all the feedback records from the .csv file at the location
