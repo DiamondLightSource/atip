@@ -60,20 +60,22 @@ def atsim(at_lattice):
 
 @pytest.fixture()
 def mocked_atsim(at_lattice):
-    base = numpy.ones((len(at_lattice), 4))
+    length = len(at_lattice)
+    base = numpy.ones((length, 4))
     atsim = atip.at_interface.ATSimulator(at_lattice)
     atsim._at_lat = mock.PropertyMock(energy=5)
+    atsim._at_lat.get_s_pos.return_value = numpy.array([0.1 * (i + 1) for i in
+                                                       range(length + 1)])
     atsim._emittance = ([], [],
                         {'emitXY': (base[:, :2] * numpy.array([1.4, 0.45]))})
     atsim._lindata = ([], [3.14, 0.12], [2, 1],
                       {'closed_orbit': (base * numpy.array([0.6, 57, 0.2, 9])),
                        'dispersion': (base * numpy.array([8.8, 1.7, 23, 3.5])),
                        's_pos': numpy.array([0.1 * (i + 1) for i in
-                                             range(len(at_lattice))]),
+                                             range(length)]),
                        'alpha': (base[:, :2] * numpy.array([-0.03, 0.03])),
                        'beta': (base[:, :2] * numpy.array([9.6, 6])),
-                       'm44': (numpy.ones((len(at_lattice), 4, 4)) *
-                               numpy.eye(4) * 0.8),
+                       'm44': (numpy.ones((length, 4, 4))*(numpy.eye(4)*0.8)),
                        'mu': (base[:, :2] * numpy.array([176, 82]))})
     return atsim
 
