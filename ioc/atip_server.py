@@ -72,8 +72,13 @@ class ATIPServer(object):
 
     @property
     def all_record_names(self):
+        mirrored = []
+        for rec_list in self._mirrored_records.values():
+            for record in rec_list:
+                mirrored.append(record)
         return {record.name: record for record in self._in_records.keys() +
-                self._out_records.keys() + self._feedback_records.values()}
+                self._out_records.keys() + self._feedback_records.values() +
+                mirrored}
 
     def update_pvs(self):
         """The callback function passed to ATSimulator during lattice creation,
@@ -145,7 +150,6 @@ class ATIPServer(object):
                                               initial_value=value,
                                               on_update=on_update,
                                               always_update=True)
-                    # how to solve the index problem?
                     self._in_records[in_record] = ([element.index], 'b0')
                     self._out_records[out_record] = in_record
                     bend_in_record = in_record

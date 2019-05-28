@@ -15,6 +15,7 @@ class summate(object):
         """
         self.input_records = input_records
         self.output_record = output_record
+        self.name = output_record.name
 
     def set(self, value=None):
         """An imitation  of the set method of Soft-IOC records, that sums the
@@ -40,6 +41,7 @@ class collate(object):
         """
         self.input_records = input_records
         self.output_record = output_record
+        self.name = output_record.name
 
     def set(self, value=None):
         """An imitation  of the set method of Soft-IOC records, that combines
@@ -68,6 +70,7 @@ class transform(object):
                             .format(transformation))
         self.output_record = output_record
         self.transformation = transformation
+        self.name = output_record.name
 
     def set(self, value):
         """An imitation  of the set method of Soft-IOC records, that applies a
