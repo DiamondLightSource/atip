@@ -138,6 +138,13 @@ def generate_mirrored_pvs():
     bpm_y_pvs = lattice.get_element_pv_names('BPM', 'y', pytac.RB)
     data.append(('Waveform', 'collate', ', '.join(bpm_y_pvs),
                  'SR-DI-EBPM-01:SA:Y', [0] * len(bpm_y_pvs)))
+    # Tune and vertical emittance refresh PVs.
+    data.append(('aIn', 'refresh', 'SR-CS-TFB-01:TIMER',
+                 'SR23C-DI-TMBF-01:TUNE:TUNE', 0))
+    data.append(('aIn', 'refresh', 'SR-CS-TFB-01:TIMER',
+                 'SR23C-DI-TMBF-02:TUNE:TUNE', 0))
+    data.append(('aIn', 'refresh', 'SR-CS-VEFB-01:TIMER',
+                 'SR-DI-EMIT-01:VEMIT', 0))
     return data
 
 

@@ -9,7 +9,7 @@ from pytac.device import BasicDevice
 from pytac.exceptions import HandleException, FieldException
 from softioc import builder
 
-from masks import callback_set, camonitor_offset, caget_mask, caput_mask
+from masks import callback_set, camonitor_offset, caget_mask, caput_mask, callback_refresh
 from mirror_objects import summate, collate, transform
 
 
@@ -283,7 +283,10 @@ class ATIPServer(object):
             # Create output record.
             prefix, suffix = line['out'].split(':', 1)
             builder.SetDeviceName(prefix)
-            if line['output type'] == 'caput':
+            if line['mirror type'] == 'refresh':
+                # Refresh records come first as do not require an output record
+                pass
+            elif line['output type'] == 'caput':
                 output_record = caput_mask(line['out'])
             elif line['output type'] == 'aIn':
                 value = float(line['value'])
@@ -317,6 +320,9 @@ class ATIPServer(object):
                 collation_object = collate(input_records, output_record)
                 for pv in monitor:
                     self._mirrored_records[pv].append(collation_object)
+            elif line['mirror type'] == 'refresh':
+                refresh_object = callback_refresh(self, line['out'])
+                self._mirrored_records[pv].append(refresh_object)
             else:
                 raise TypeError("Mirror type {0} is not currently supported, "
                                 "please enter 'basic', 'summate', 'collate' or"
