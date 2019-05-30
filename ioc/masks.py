@@ -6,7 +6,7 @@ class camonitor_offset(object):
         self.server = server
         self.quad_pv = quad_pv
         self.offset_record = offset_record
-        self.name = offset_record.name
+        self.name = offset_record.name + ':OFFSET-MONITOR'
 
     def callback(self, value, index=None):
         self.offset_record.set(value)
@@ -18,7 +18,7 @@ class callback_set(object):
         self.output = output
         # If multiple outputs use last one
         for out in output:
-            self.name = out.name
+            self.name = out.name + ':CALLBACK-SET'
 
     def callback(self, value, index=None):
         for record in self.output:
@@ -29,7 +29,7 @@ class callback_refresh(object):
     def __init__(self, server, output_pv):
         self.server = server
         self.output_pv = output_pv
-        self.name = output_pv
+        self.name = output_pv + ':REFRESH'
 
     def callback(self, value, index=None):
         self.server.refresh_record(self.output_pv)
