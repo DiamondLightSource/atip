@@ -79,3 +79,26 @@ class transform(object):
         value = numpy.asarray(value, dtype=bool)
         value = numpy.asarray(self.transformation(value), dtype=int)
         self.output_record.set(value)
+
+
+class refresher(object):
+    """This class is designed to be passed instead of a mirror record, when its
+    set method is then called it refreshes the held PV on the held server.
+    """
+    def __init__(self, server, output_pv):
+        """
+        Args:
+            server (atip_server.ATIPServer): The server object on which to
+                                              refresh the PV.
+            output_pv (str): The name of the record to refresh.
+        """
+        self.server = server
+        self.output_pv = output_pv
+        self.name = output_pv + ':REFRESH'
+
+    def set(self, value=None):
+        """An imitation  of the set method of Soft-IOC records, that refreshes
+        the held output records.
+        N.B. The inital value passed by the call is discarded.
+        """
+        self.server.refresh_record(self.output_pv)

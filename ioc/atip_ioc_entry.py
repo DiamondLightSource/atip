@@ -7,9 +7,7 @@ require('cothread==2.12')
 require('epicsdbbuilder==1.0')
 require('numpy>=1.10')
 require('scipy>=0.16')
-
-
-here = os.path.realpath('.')
+here = os.path.realpath(os.path.dirname(__file__))
 sys.path.append(os.path.split(here)[0])
 
 import atip_server  # noqa: E402
