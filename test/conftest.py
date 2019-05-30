@@ -75,7 +75,8 @@ def mocked_atsim(at_lattice):
                                              range(length)]),
                        'alpha': (base[:, :2] * numpy.array([-0.03, 0.03])),
                        'beta': (base[:, :2] * numpy.array([9.6, 6])),
-                       'm44': (numpy.ones((length, 4, 4))*(numpy.eye(4)*0.8)),
+                       'm44': (numpy.ones((length,
+                                           4, 4)) * (numpy.eye(4) * 0.8)),
                        'mu': (base[:, :2] * numpy.array([176, 82]))})
     return atsim
 

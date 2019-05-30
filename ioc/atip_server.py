@@ -424,6 +424,14 @@ class ATIPServer(object):
             except Exception as e:
                 warn(e)
 
+    def stop_all_monitoring(self):
+        """Stop monitoring mirrored records and tune feedback offsets.
+        """
+        for subscription in self._monitored_pvs.values():
+            subscription.close()
+        self.tune_feedback_status = False
+        self._pv_monitoring = False
+
     def set_feedback_record(self, index, field, value):
         """Set a value to the feedback in records.
 
