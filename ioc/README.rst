@@ -2,11 +2,12 @@
 Running ATIP as a Virtual Accelerator using Python Soft IOC
 ===========================================================
 
-Using Python Soft IOC ATIP can emulate machine PVs so that the ATIP simulator
-can be addressed in the same manner as the live machine. This is useful for
-testing high level applications as it can update PVs in a physically correct
-way in response to changes by the user. The virtual accelerator runs on EPICS
-port 6064 to avoid conflict with the same PVs on the live machine.
+Using `PythonSoftIOC <https://github.com/Araneidae/pythonIoc>`_ ATIP can
+emulate machine PVs so that the ATIP simulator can be addressed in the same
+manner as the live machine. This is useful for testing high level applications
+as it can update PVs in a physically correct way in response to changes by the
+user. The virtual accelerator runs on EPICS port 6064 to avoid conflict with
+the same PVs on the live machine.
 
 Initialisation:
 ---------------
@@ -50,7 +51,7 @@ Feedback Records:
 A number of PVs related to the feedback systems are supported. They can be read
 from in the same way as any other PV, but for testing and debugging there is a
 special method for setting them. This is done on the ATIP server object, inside
-the server terminal (the one you ran `start-ioc` in initially). As arguments,
+the server terminal (the one you ran ``start-ioc`` in initially). As arguments,
 it takes the element's index in the ring (starting from 1, 0 is used to set on
 the lattice), the field (possible element fields are: ``'x_fofb_disabled',
 'x_sofb_disabled', 'y_fofb_disabled', 'y_sofb_disabled', 'h_fofb_disabled',
@@ -68,9 +69,9 @@ Ring Mode:
 
 You can run the virtual accelerator in any ring mode that is supported by
 Pytac; currently 'VMX', 'VMXSP', and 'DIAD'. The ring mode can be passed as an
-command line argument to `start-ioc`, if it is not passed in that manner then
-it can be configured by changing the `RINGMODE` environment variable, if that
-is not set then the ring mode PV `SR-CS-RING-01:MODE` is checked, if that is
+command line argument to ``start-ioc``, if it is not passed in that manner then
+it can be configured by changing the ``RINGMODE`` environment variable, if that
+is not set then the ring mode PV ``SR-CS-RING-01:MODE`` is checked, if that is
 also not set then the virtual accelerator will default to 'DIAD'. For example::
 
     $ ./start-ioc DIAD

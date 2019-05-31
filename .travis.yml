@@ -16,7 +16,10 @@ install:
     fi
   - pip install -r requirements.txt
   - pip install git+https://github.com/dls-controls/pytac.git
-  - pip install -e "git+https://github.com/atcollab/at.git#egg=at-python&subdirectory=pyat"
+  - pip install -e "git+https://github.com/atcollab/at.git#egg=accelerator-toolbox&subdirectory=pyat"
+  - cd venv/src/accelerator-toolbox/pyat
+  - python setup.py develop
+  - cd ../../../../
 
 script:
   - python -m pytest test --cov-report term-missing --cov=atip

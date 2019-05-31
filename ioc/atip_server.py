@@ -4,13 +4,13 @@ from warnings import warn
 import atip
 import numpy
 import pytac
-from cothread.catools import camonitor, caget
+from cothread.catools import camonitor
 from pytac.device import BasicDevice
 from pytac.exceptions import HandleException, FieldException
 from softioc import builder
 
-from masks import callback_set, callback_refresh, caget_mask, caput_mask
-from mirror_objects import summate, collate, transform
+from masks import callback_set, callback_offset, caget_mask, caput_mask
+from mirror_objects import summate, collate, transform, refresher
 
 
 class ATIPServer(object):
@@ -22,7 +22,12 @@ class ATIPServer(object):
     Attributes:
         lattice (pytac.lattice.Lattice): An instance of a Pytac lattice with a
                                           simulator data source.
+        tune_feedback_status (bool): A boolean indicating whether the tune
+                                      feedback records have been created and
+                                      the monitoring systems are running.
     .. Private Attributes:
+           _pv_monitoring (bool): Whether the mirrored PVs are being monitored.
+           _tune_fb_csv_path (str): The path to the tune feedback .csv file.
            _in_records (dict): A dictionary containing all the created in
                                 records and their associated element index and
                                 Pytac field, i.e. {in_record: [index, field]}.
@@ -31,10 +36,21 @@ class ATIPServer(object):
                                  records, i.e. {out_record.name: in_record}.
            _rb_only_records (list): A list of all the in records that do not
                                      have an associated out record.
-           _feedback_records  (dict): A dictionary containing all the feedback
-                                       related records, in the same format as
-                                       _in_records because they are all
-                                       readback only.
+           _feedback_records (dict): A dictionary containing all the feedback
+                                      related records, in the same format as
+                                      _in_records because they are all readback
+                                      only.
+           _mirrored_records (dict): A dictionary containing the PVs that the
+                                      mirrored records monitor for a change
+                                      and the associated mirror, in the form
+                                      {monitored PV: mirror record/object}.
+           _monitored_pvs (dict): A dictionary of all the PVs that are being
+                                   monitored for a change and the associated
+                                   camonitor object, in the form
+                                   {monitored PV: camonitor object}.
+           _offset_pvs (dict): A dictionary of the PVs to apply offset to and
+                                their associated offset records from which to
+                                get the offset from.
     """
     def __init__(self, ring_mode, limits_csv=None, feedback_csv=None,
                  mirror_csv=None, tune_csv=None):
@@ -47,6 +63,12 @@ class ATIPServer(object):
             feedback_csv (string): The filepath to the .csv file from which to
                                     load the feedback records, for more
                                     information see create_csv.py.
+            mirror_csv (string): The filepath to the .csv file from which to
+                                  load the mirror records, for more information
+                                  see create_csv.py.
+            tune_csv (string): The filepath to the .csv file from which to
+                                load the tune feedback records, for more
+                                information see create_csv.py.
         """
         self.lattice = atip.utils.loader(ring_mode, self.update_pvs)
         self.tune_feedback_status = False
@@ -63,17 +85,24 @@ class ATIPServer(object):
         self._create_records(limits_csv)
         if feedback_csv is not None:
             self._create_feedback_records(feedback_csv)
-
         if mirror_csv is not None:
             self._create_mirror_records(mirror_csv)
         print("Finished creating all {0} records."
-              .format(len(self.all_record_names) +
-                      len(self._mirrored_records)))
+              .format(len(self.all_record_names)))
 
     @property
     def all_record_names(self):
+        """A dictionary with all the names of records created by this server
+        as the keys and the corresponding record (and mirror) objects as the
+        values.
+        """
+        mirrored = []
+        for rec_list in self._mirrored_records.values():
+            for record in rec_list:
+                mirrored.append(record)
         return {record.name: record for record in self._in_records.keys() +
-                self._out_records.keys() + self._feedback_records.values()}
+                self._out_records.keys() + self._feedback_records.values() +
+                mirrored}
 
     def update_pvs(self):
         """The callback function passed to ATSimulator during lattice creation,
@@ -98,9 +127,9 @@ class ATIPServer(object):
         fields. Several assumptions have been made for simplicity and
         efficiency, these are:
             - That bend elements all share a single PV, and are the only
-               family to do so.
-            - That every field that has an out record (SP) will also have an in
-               record (RB).
+               element family to do so.
+            - That every field that has an out type record (SP) will also have
+               an in type record (RB).
             - That all lattice fields are never setpoint and so only in records
                need to be created for them.
 
@@ -115,11 +144,11 @@ class ATIPServer(object):
                 limits_dict[line['pv']] = (float(line['upper']),
                                            float(line['lower']),
                                            int(line['precision']))
-        bend_set = False
+        bend_in_record = None
         for element in self.lattice:
             if element.type_ == 'BEND':
                 # Create bends only once as they all share a single PV.
-                if not bend_set:
+                if bend_in_record is None:
                     value = element.get_value('b0', units=pytac.ENG,
                                               data_source=pytac.SIM)
                     get_pv = element.get_pv_name('b0', pytac.RB)
@@ -129,7 +158,7 @@ class ATIPServer(object):
                     builder.SetDeviceName(get_pv.split(':', 1)[0])
                     in_record = builder.aIn(get_pv.split(':', 1)[1],
                                             LOPR=lower, HOPR=upper,
-                                            PREC=precision,
+                                            PREC=precision, MDEL="-1",
                                             initial_value=value)
                     set_pv = element.get_pv_name('b0', pytac.SP)
                     def on_update(value, name=set_pv):  # noqa E306
@@ -145,10 +174,11 @@ class ATIPServer(object):
                                               initial_value=value,
                                               on_update=on_update,
                                               always_update=True)
-                    # how to solve the index problem?
-                    self._in_records[in_record] = (element.index, 'b0')
+                    self._in_records[in_record] = ([element.index], 'b0')
                     self._out_records[out_record] = in_record
-                    bend_set = True
+                    bend_in_record = in_record
+                else:
+                    self._in_records[bend_in_record][0].append(element.index)
             else:
                 # Create records for all other families.
                 for field in element.get_fields()[pytac.SIM]:
@@ -161,7 +191,7 @@ class ATIPServer(object):
                     builder.SetDeviceName(get_pv.split(':', 1)[0])
                     in_record = builder.aIn(get_pv.split(':', 1)[1],
                                             LOPR=lower, HOPR=upper,
-                                            PREC=precision,
+                                            PREC=precision, MDEL="-1",
                                             initial_value=value)
                     self._in_records[in_record] = (element.index, field)
                     try:
@@ -193,7 +223,7 @@ class ATIPServer(object):
                                                data_source=pytac.SIM)
                 builder.SetDeviceName(get_pv.split(':', 1)[0])
                 in_record = builder.aIn(get_pv.split(':', 1)[1], PREC=4,
-                                        initial_value=value)
+                                        initial_value=value, MDEL="-1")
                 self._in_records[in_record] = (0, field)
                 self._rb_only_records.append(in_record)
         print("~*~*Woah, we're halfway there, Wo-oah...*~*~")
@@ -211,35 +241,38 @@ class ATIPServer(object):
         in_record = self._out_records[self.all_record_names[name]]
         in_record.set(value)
         index, field = self._in_records[in_record]
-
         if self.tune_feedback_status is True:
             try:
-                offset_pv = self._offset_pvs[name]
+                offset_record = self._offset_pvs[name]
             except KeyError:
                 pass
             else:
-                offset = caget(offset_pv)
-                value += offset
-        self.lattice[index - 1].set_value(field, value, units=pytac.ENG,
-                                          data_source=pytac.SIM)
+                value += offset_record.get()
+        if isinstance(index, list):
+            for i in index:
+                self.lattice[i - 1].set_value(field, value, units=pytac.ENG,
+                                              data_source=pytac.SIM)
+        else:
+            self.lattice[index - 1].set_value(field, value, units=pytac.ENG,
+                                              data_source=pytac.SIM)
 
     def _create_feedback_records(self, feedback_csv):
         """Create all the feedback records from the .csv file at the location
-        passed, see create_csv.py for more information.
+        passed, see create_csv.py for more information; records for two edge
+        cases are also created.
 
         Args:
-            feedback_csv (string): The filepath to the .csv file from which to
-                                    load the records.
+            feedback_csv (string): The filepath to the .csv file to load the
+                                    records in accordance with.
         """
         csv_reader = csv.DictReader(open(feedback_csv))
         for line in csv_reader:
             prefix, suffix = line['pv'].split(':', 1)
             builder.SetDeviceName(prefix)
-            in_record = builder.longIn(suffix,
-                                       initial_value=int(line['value']))
+            in_record = builder.aIn(suffix, initial_value=int(line['value']),
+                                    MDEL="-1")
             self._feedback_records[(int(line['index']),
                                     line['field'])] = in_record
-
         # Special case: BPM ID for the x axis of beam position plot, since we
         # cannot currently create Waveform records via CSV.
         bpm_ids = [int(pv[2:4]) + 0.1 * int(pv[14:16]) for pv in
@@ -256,19 +289,27 @@ class ATIPServer(object):
         self._feedback_records[(0, "emittance_status")] = emit_status_record
 
     def _create_mirror_records(self, mirror_csv):
+        """Create all the mirror records from the .csv file at the location
+        passed, see create_csv.py for more information.
+
+        Args:
+            mirror_csv (string): The filepath to the .csv file to load the
+                                    records in accordance with.
+        """
         csv_reader = csv.DictReader(open(mirror_csv))
         for line in csv_reader:
             # Parse arguments.
             input_pvs = line['in'].split(', ')
             if (len(input_pvs) > 1) and (line['mirror type'] in ['basic',
-                                                                 'inverse']):
-                raise IndexError("Transformation and basic mirror types take "
-                                 "only one input PV.")
+                                                                 'inverse',
+                                                                 'refresh']):
+                raise IndexError("Transformation, refresher, and basic mirror "
+                                 "types take only one input PV.")
             elif (len(input_pvs) < 2) and (line['mirror type'] in ['collate',
                                                                    'summate']):
                 raise IndexError("collation and summation mirror types take at"
                                  " least two input PVs.")
-            monitor = input_pvs # need to update to support camonitor multiple
+            monitor = input_pvs  # need to update to support camonitor multiple
             # Convert input pvs to record objects
             input_records = []
             for pv in input_pvs:
@@ -279,14 +320,19 @@ class ATIPServer(object):
             # Create output record.
             prefix, suffix = line['out'].split(':', 1)
             builder.SetDeviceName(prefix)
-            if line['output type'] == 'caput':
+            if line['mirror type'] == 'refresh':
+                # Refresh records come first as do not require an output record
+                pass
+            elif line['output type'] == 'caput':
                 output_record = caput_mask(line['out'])
             elif line['output type'] == 'aIn':
                 value = float(line['value'])
-                output_record = builder.aIn(suffix, initial_value=value)
+                output_record = builder.aIn(suffix, initial_value=value,
+                                            MDEL="-1")
             elif line['output type'] == 'longIn':
                 value = int(line['value'])
-                output_record = builder.longIn(suffix, initial_value=value)
+                output_record = builder.longIn(suffix, initial_value=value,
+                                               MDEL="-1")
             elif line['output type'] == 'Waveform':
                 value = numpy.asarray(line['value'][1:-1].split(', '),
                                       dtype=float)
@@ -313,12 +359,19 @@ class ATIPServer(object):
                 collation_object = collate(input_records, output_record)
                 for pv in monitor:
                     self._mirrored_records[pv].append(collation_object)
+            elif line['mirror type'] == 'refresh':
+                refresh_object = refresher(self, line['out'])
+                self._mirrored_records[pv].append(refresh_object)
             else:
-                raise TypeError("Mirror type {0} is not currently supported, "
-                                "please enter 'basic', 'summate', 'collate' or"
-                                " 'inverse'.".format(line['mirror type']))
+                raise TypeError("{0} is not a valid mirror type; please enter "
+                                "a currently supported type from: 'basic', "
+                                "'summate', 'collate', 'inverse', and "
+                                "'refresh'.".format(line['mirror type']))
 
     def monitor_mirrored_pvs(self):
+        """Start monitoring the input PVs for mirrored records, so that they
+        can update their value on change.
+        """
         self._pv_monitoring = True
         for pv, output in self._mirrored_records.items():
             mask = callback_set(output)
@@ -328,6 +381,12 @@ class ATIPServer(object):
                 warn(e)
 
     def refresh_record(self, pv_name):
+        """For a given PV refresh the time-stamp of the associated record,
+        this is done by setting the record to its current value.
+
+        Args:
+            pv_name (str): The name of the record to refresh.
+        """
         try:
             record = self.all_record_names[pv_name]
         except KeyError:
@@ -337,26 +396,41 @@ class ATIPServer(object):
             record.set(record.get())
 
     def start_tune_feedback(self, tune_csv=None):
+        """Read the tune feedback .csv and find the associated offset PVs,
+        before starting monitoring them for a change to mimic the behaviour of
+        the tune feedback system on the live machine.
+
+        Args:
+            tune_csv (str): A path to a tune feedback .csv file to be used
+                             instead of the default filepath passed at startup.
+        """
         if tune_csv is not None:
             self._tune_fb_csv_path = tune_csv
         if self._tune_fb_csv_path is None:
-            raise ValueError("No tune feedback csv file was given at start-up,"
-                             " please provide one now; i.e. server.start_tune_"
-                             "feedback(path_to_csv)")
+            raise ValueError("No tune feedback .csv file was given at "
+                             "start-up, please provide one now; i.e. "
+                             "server.start_tune_feedback('<path_to_csv>')")
         csv_reader = csv.DictReader(open(self._tune_fb_csv_path))
         if not self._pv_monitoring:
             self.monitor_mirrored_pvs()
         self.tune_feedback_status = True
         for line in csv_reader:
-            quad_pv = line['quad set pv']
-            offset_pv = line['offset pv']
-            self._offset_pvs[quad_pv] = offset_pv
-            mask = callback_refresh(self, quad_pv)
+            offset_record = self.all_record_names[line['offset']]
+            self._offset_pvs[line['set pv']] = offset_record
+            mask = callback_offset(self, line['set pv'], offset_record)
             try:
-                self._monitored_pvs[offset_pv] = camonitor(offset_pv,
-                                                           mask.callback)
+                self._monitored_pvs[line['delta']] = camonitor(line['delta'],
+                                                               mask.callback)
             except Exception as e:
                 warn(e)
+
+    def stop_all_monitoring(self):
+        """Stop monitoring mirrored records and tune feedback offsets.
+        """
+        for subscription in self._monitored_pvs.values():
+            subscription.close()
+        self.tune_feedback_status = False
+        self._pv_monitoring = False
 
     def set_feedback_record(self, index, field, value):
         """Set a value to the feedback in records.

@@ -4,6 +4,7 @@ from warnings import warn
 import at
 import numpy
 import cothread
+from scipy.constants import speed_of_light
 
 
 class ATSimulator(object):
@@ -68,12 +69,20 @@ class ATSimulator(object):
         self._lindata = self._at_lat.linopt(refpts=self._rp, get_chrom=True,
                                             coupled=False)
         # Threading stuff initialisation.
-        self.queue = cothread.ThreadedEventQueue()
+        self.queue = cothread.EventQueue()
         self.up_to_date = cothread.Event()
         self.up_to_date.Signal()
         self._paused = cothread.Event()
         self._calculation_thread = cothread.Spawn(self._recalculate_phys_data,
                                                   callback)
+
+    def _gather_one_sample(self):
+        """If the queue is empty Wait() yields until an item is added. When the
+        queue is not empty the oldest change will be removed and applied to the
+        AT lattice.
+        """
+        data_source, field, value = self.queue.Wait()
+        data_source.make_change(field, value)
 
     def _recalculate_phys_data(self, callback):
         """Target function for the Cothread thread. Recalculates the physics
@@ -95,24 +104,21 @@ class ATSimulator(object):
                            but as a warning.
         """
         while True:
-            if len(self.queue) != 0:
-                for i in range(len(self.queue)):
-                    data_source, field, value = self.queue.Wait()
-                    data_source.make_change(field, value)
-                if bool(self._paused) is False:
-                    try:
-                        self._at_lat.radiation_on()
-                        self._emittance = self._at_lat.ohmi_envelope(self._rp)
-                        self._at_lat.radiation_off()
-                        self._lindata = self._at_lat.linopt(refpts=self._rp,
-                                                            get_chrom=True,
-                                                            coupled=False)
-                    except Exception as e:
-                        warn(at.AtWarning(e))
-                    if callback is not None:
-                        callback()
-                    self.up_to_date.Signal()
-            cothread.Yield()
+            self._gather_one_sample()
+            for i in range(len(self.queue)):
+                self._gather_one_sample()
+            if bool(self._paused) is False:
+                try:
+                    self._at_lat.radiation_on()
+                    self._emittance = self._at_lat.ohmi_envelope(self._rp)
+                    self._at_lat.radiation_off()
+                    self._lindata = self._at_lat.linopt(0.0, self._rp, True,
+                                                        coupled=False)
+                except Exception as e:
+                    warn(at.AtWarning(e))
+                if callback is not None:
+                    callback()
+                self.up_to_date.Signal()
 
     def toggle_calculations(self):
         """Pause or unpause the physics calculations by setting or clearing the
@@ -183,7 +189,7 @@ class ATSimulator(object):
         Returns:
             float: The x or y emittance for the AT lattice.
         """
-        return self._emittance[2]['emitXY'][:, cell][0]
+        return self._emittance[2]['emitXY'][0, cell]
 
     def get_orbit(self, cell):
         """Return the specified cell of the closed orbit for the AT lattice.
@@ -266,3 +272,54 @@ class ATSimulator(object):
             numpy.array: The mu array for each element.
         """
         return self._lindata[3]['mu']
+
+    def get_mcf(self):
+        """Return the linear momentum compaction factor for the AT lattice.
+
+        returns:
+            float: The linear momentum compaction factor of the AT lattice.
+        """
+        return self._at_lat.get_mcf()
+
+    def get_energy_loss(self):
+        """Return the energy loss per turn for the AT lattice. Taken from the
+        AT lattice property.
+
+        returns:
+            float: The energy loss of the AT lattice.
+        """
+        return self._at_lat.energy_loss
+
+    def get_damping_times(self):
+        """Return the damping times for the 3 normal modes.
+
+        returns:
+            numpy.array: The damping times of the AT lattice.
+        """
+        T0 = self.get_s()[-1] / speed_of_light
+        return T0 / self._emittance[1][1]
+
+    def get_total_bend_angle(self):
+        """Return the total bending angle of all the dipoles in the AT lattice.
+
+        returns:
+            float: The total bending angle for the AT lattice.
+        """
+        thetas = []
+        for elem in self._at_lat:
+            if isinstance(elem, at.lattice.elements.Dipole):
+                thetas.append(elem.BendingAngle)
+        return numpy.degrees(sum(thetas))
+
+    def get_total_absolute_bend_angle(self):
+        """Return the total absolute bending angle of all the dipoles in the
+        AT lattice.
+
+        returns:
+            float: The total absolute bending angle for the AT lattice.
+        """
+        thetas = []
+        for elem in self._at_lat:
+            if isinstance(elem, at.lattice.elements.Dipole):
+                thetas.append(elem.BendingAngle)
+        return numpy.degrees(sum(numpy.abs(thetas)))
