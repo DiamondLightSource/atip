@@ -3,12 +3,15 @@ import pytac
 import time as t
 # import matplotlib.pyplot as plt
 
-
-ring = atip.utils.load_ring
+load_at_lattice = atip.utils.load_at_lattice
 loader = atip.utils.loader
-elements_by_type = atip.utils.elements_by_type
 preload_at = atip.utils.preload_at
 preload = atip.utils.preload
+get_atsim = atip.utils.get_atsim
+get_sim_lattice = atip.utils.get_sim_lattice
+get_thread = atip.utils.get_thread
+toggle_thread = atip.utils.toggle_thread
+trigger_calc = atip.utils.trigger_calc
 
 
 def get_attributes(obj):
@@ -24,9 +27,6 @@ def get_attributes(obj):
 
 
 def elements_by_field(elems, data_source=pytac.LIVE):
-    """This would be the only other fucntion that I think might be useful in
-        Pytac, but it's not that needed.
-    """
     fields_dict = {}
     for elem in elems:
         fields = elem.get_fields()[data_source]
@@ -57,36 +57,6 @@ class timer(object):
             raise Exception("You need to start the timer first, moron.")
         else:
             return (t.time() - self.start_time)
-
-
-def get_sim_ring(lattice):
-    return get_atsim(lattice).get_at_lattice()[:]
-
-
-def get_sim_elem(elem):
-    return elem._data_source_manager._data_sources[pytac.SIM]._at_element
-
-
-def get_atsim(lattice):
-    return lattice._data_source_manager._data_sources[pytac.SIM]._atsim
-
-
-def get_thread(lattice):
-    return get_atsim(lattice)._calculation_thread
-
-
-def toggle_thread(lattice):
-    get_atsim(lattice).toggle_calculations()
-
-
-def trigger_calc(lattice):
-    for elem in lattice:
-        fields = list(set(elem.get_fields()[pytac.SIM]) - set(['x', 'y']))
-        if len(fields) != 0:
-            val = elem.get_value(fields[0], pytac.SP, data_source=pytac.SIM)
-            elem.set_value(fields[0], val, data_source=pytac.SIM)
-            print("Recalculation manually triggered.")
-            break
 
 
 """

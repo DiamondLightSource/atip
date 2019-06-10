@@ -1,7 +1,7 @@
-.. image:: https://travis-ci.org/T-Nicholls/atip.svg?branch=master
-    :target: https://travis-ci.org/T-Nicholls/atip
-.. image:: https://coveralls.io/repos/github/T-Nicholls/atip/badge.svg?branch=master
-    :target: https://coveralls.io/github/T-Nicholls/atip?branch=master
+.. image:: https://travis-ci.org/dls-controls/atip.svg?branch=master
+    :target: https://travis-ci.org/dls-controls/atip
+.. image:: https://coveralls.io/repos/github/dls-controls/atip/badge.svg?branch=master
+    :target: https://coveralls.io/github/dls-controls/atip?branch=master
 .. image:: https://readthedocs.org/projects/atip/badge/?version=latest
     :target: https://atip.readthedocs.io/en/latest/?badge=latest
 
@@ -41,8 +41,8 @@ element fields that the simulator doesn't.
 Virtual Accelerator:
 --------------------
 
-ATIP can be used as a virtual accelerator, see ``ioc/README.rst`` for further
-information.
+ATIP can also be used as a virtual accelerator, see ``ioc/README.rst`` for
+further information.
 
 Implementation:
 ---------------
@@ -139,4 +139,4 @@ into a more manageable format before it is returned, so that the user is not
 given an excess of superfulous data.
 
 A number of functions that perform tasks that are frequent or long-winded are
-included in ``ease.py`` to make life easier for the user.
+included in ``utils.py`` to make life easier for the user.

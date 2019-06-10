@@ -29,3 +29,11 @@ atip.at_interface module
     :members:
     :undoc-members:
     :show-inheritance:
+
+atip.utils module
+------------------------
+
+.. automodule:: atip.utils
+    :members:
+    :undoc-members:
+    :show-inheritance:

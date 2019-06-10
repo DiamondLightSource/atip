@@ -32,9 +32,7 @@ def atlds():
 
 @pytest.fixture()
 def at_lattice():
-    ring = atip.utils.load_ring('HMBA')
-    lattice = at.lattice_object.Lattice(ring, keep_all=False)
-    return lattice
+    return atip.utils.load_at_lattice('HMBA')
 
 
 @pytest.fixture(scope='session')
@@ -49,7 +47,7 @@ def mat_filepath():
 
 
 @pytest.fixture(scope='session')
-def at_ring(mat_filepath):
+def at_diad_lattice(mat_filepath):
     return at.load.load_mat(mat_filepath)
 
 

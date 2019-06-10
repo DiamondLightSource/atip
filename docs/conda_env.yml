@@ -7,4 +7,4 @@ dependencies:
   - cothread
   - git+https://github.com/dls-controls/pytac.git
   - --extra-index-url=https://test.pypi.org/simple/
-  - at-python
+  - accelerator-toolbox
