@@ -1,5 +1,4 @@
 import mock
-import numpy
 import pytac
 import pytest
 
@@ -44,17 +43,18 @@ def test_lat_get_value_raises_FieldException_if_nonexistent_field(atlds,
 def test_lat_get_value():
     """We don't need to test every value for get_value() as _field_funcs which
     it relys on has alreadly been tested for all fields."""
-    def c(cell):
-        return [2.0, 2.5][cell]
     atsim = mock.Mock()
-    atsim.get_disp.return_value = numpy.array([[8.8, 1.7, 3.5],
-                                               [7.8, 1, -1.4]])
-    atsim.get_chrom.return_value = c(0)
+    atsim.get_disp.return_value = 2.5
     atlds = atip.sim_data_sources.ATLatticeDataSource(atsim)
-    assert atlds.get_value('chromaticity_x') == 2.0
-    assert atsim.get_chrom.called_with(0)
-    numpy.testing.assert_equal(atlds.get_value('dispersion'),
-                               numpy.array([[8.8, 1.7, 3.5], [7.8, 1, -1.4]]))
+    assert atlds.get_value('dispersion') == 2.5
+    atlds.get_value('x')
+    assert atsim.get_orbit.called_with('x')
+    atlds.get_value('phase_x')
+    assert atsim.get_orbit.called_with('px')
+    atlds.get_value('y')
+    assert atsim.get_orbit.called_with('y')
+    atlds.get_value('phase_y')
+    assert atsim.get_orbit.called_with('py')
 
 
 @pytest.mark.parametrize('field', ['not_a_field', 1, [], 'BETA', ['x', 'y'],

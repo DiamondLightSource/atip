@@ -4,7 +4,7 @@ import pytac
 from pytac.exceptions import FieldException
 from pytac.load_csv import DEFAULT_UC
 
-from atip.at_interface import ATSimulator
+from atip.simulator import ATSimulator
 from atip.sim_data_sources import ATElementDataSource, ATLatticeDataSource
 
 

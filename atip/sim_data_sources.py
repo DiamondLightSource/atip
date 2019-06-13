@@ -25,11 +25,17 @@ class ATElementDataSource(pytac.data_source.DataSource):
                                   ATSimulator object.
            _fields (list): A list of all the fields that are present on this
                             element. N.B. not all possible fields i.e. _fields
-                            != _field_funcs.keys()
-           _field_funcs (dict): A dictionary which maps element fields to the
-                                 correct data handling function. Some of these
-                                 functions, via partial(), are passed a cell
-                                 argument so only relevant data is returned.
+                            != _get_field_funcs.keys()
+           _get_field_funcs (dict): A dictionary which maps element fields to
+                                     the correct get function. Some of these
+                                     functions, via partial(), are passed a
+                                     cell argument so only relevant data is
+                                     returned.
+           _set_field_funcs (dict): A dictionary which maps element fields to
+                                     the correct set function. Some of these
+                                     functions, via partial(), are passed a
+                                     cell argument so only relevant data is
+                                     returned.
     """
     def __init__(self, at_element, index, atsim, fields=None):
         """
@@ -55,17 +61,25 @@ class ATElementDataSource(pytac.data_source.DataSource):
         self._at_element = at_element
         self._index = index
         self._atsim = atsim
-        self._field_funcs = {'x_kick': partial(self._KickAngle, 0),
-                             'y_kick': partial(self._KickAngle, 1),
-                             'a1': partial(self._PolynomA, 1),
-                             'b1': partial(self._PolynomB, 1),
-                             'b2': partial(self._PolynomB, 2),
-                             'x': partial(self._Orbit, 0),
-                             'y': partial(self._Orbit, 2),
-                             'b0': self._BendingAngle,
-                             'f': self._Frequency}
+        self._get_field_funcs = {'x_kick': partial(self._get_KickAngle, 0),
+                                 'y_kick': partial(self._get_KickAngle, 1),
+                                 'x': partial(self._get_ClosedOrbit, 0),
+                                 'y': partial(self._get_ClosedOrbit, 2),
+                                 'a1': partial(self._get_PolynomA, 1),
+                                 'b1': partial(self._get_PolynomB, 1),
+                                 'b2': partial(self._get_PolynomB, 2),
+                                 'b0': self._get_BendingAngle,
+                                 'f': self._get_Frequency}
+        self._set_field_funcs = {'x_kick': partial(self._set_KickAngle, 0),
+                                 'y_kick': partial(self._set_KickAngle, 1),
+                                 'a1': partial(self._set_PolynomA, 1),
+                                 'b1': partial(self._set_PolynomB, 1),
+                                 'b2': partial(self._set_PolynomB, 2),
+                                 'b0': self._set_BendingAngle,
+                                 'f': self._set_Frequency}
         fields = set() if fields is None else set(fields)
-        supported_fields = set(self._field_funcs.keys())
+        # We assume that every set field has a corresponding get field.
+        supported_fields = set(self._get_field_funcs.keys())
         if not all(f in supported_fields for f in fields):
             raise FieldException("Unsupported field(s) {0}."
                                  .format(fields - supported_fields))
@@ -97,17 +111,13 @@ class ATElementDataSource(pytac.data_source.DataSource):
         if field in self._fields:
             raise FieldException("Field {0} already present on element data "
                                  "source {1}.".format(field, self))
-        elif field not in self._field_funcs.keys():
+        elif field not in self._get_field_funcs.keys():
             raise FieldException("Unsupported field {0}.".format(field))
         else:
             self._fields.append(field)
 
     def get_value(self, field, handle=None, throw=None):
         """Get the value for a field.
-
-        .. Note:: The 'value' argument passed to the data handling functions is
-           used as a get/set flag. In this case, it is passed as 'None' to
-           signify that data is to be returned not set.
 
         Args:
             field (str): The requested field.
@@ -124,24 +134,21 @@ class ATElementDataSource(pytac.data_source.DataSource):
         Raises:
             FieldException: if the specified field does not exist.
         """
+        # Again we assume that every set field has a corresponding get field.
         if field in self._fields:
-            return self._field_funcs[field](value=None)
+            return self._get_field_funcs[field]()
         else:
             raise FieldException("No field {0} on AT element {1}."
                                  .format(field, self._at_element))
 
-    def set_value(self, field, set_value, throw=None):
+    def set_value(self, field, value, throw=None):
         """Set the value for a field. The field and value go onto the queue of
         changes on the ATSimulator to be passed to make_change when the queue
         is emptied.
 
-        .. Note:: The 'value' argument passed to the data handling functions is
-           used as a get/set flag. In this case, the value to be set is passed
-           this signifies that the given data should be set.
-
         Args:
             field (str): The requested field.
-            set_value (float): The value to be set.
+            value (float): The value to be set.
             throw (bool, optional): Throw is not needed and is only here to
                                      conform with the structure of the
                                      DataSource base class.
@@ -151,153 +158,172 @@ class ATElementDataSource(pytac.data_source.DataSource):
             FieldException: if the specified field does not exist.
         """
         if field in self._fields:
-            if field in ['x', 'y']:
+            if field in self._set_field_funcs.keys():
+                self._atsim.up_to_date.Reset()
+                self._atsim.queue.Signal((self, field, value))
+            else:
                 raise HandleException("Field {0} cannot be set on element data"
                                       " source {1}.".format(field, self))
-            else:
-                self._atsim.up_to_date.Reset()
-                self._atsim.queue.Signal((self, field, set_value))
         else:
             raise FieldException("No field {0} on AT element {1}."
                                  .format(field, self._at_element))
 
-    def make_change(self, field, set_value):
+    def make_change(self, field, value):
         """Calls the appropriate field setting function to actually modify the
         AT element, called in ATSimulator when the queue is being emptied.
 
         Args:
             field (str): The requested field.
-            set_value (float): The value to be set.
+            value (float): The value to be set.
         """
-        self._field_funcs[field](value=set_value)
+        self._set_field_funcs[field](value)
 
-    def _KickAngle(self, cell, value):
-        """A data handling function used to get or set a specific cell of the
-        KickAngle attribute of the AT element.
+    def _get_KickAngle(self, cell):
+        """A data handling function used to get the value of a specific cell
+        of the KickAngle attribute of the AT element.
 
         .. Note:: If the Corrector is attached to a Sextupole then KickAngle
-           needs to be assigned/returned to/from cell 0 of the applicable
-           Polynom(A/B) attribute and so a conversion must take place. For
-           independent Correctors KickAngle can be assigned/returned directly
-           to/from the element's KickAngle attribute without any conversion.
-           This is because independent Correctors have a KickAngle attribute in
-           AT, but those attached to Sextupoles do not.
+           needs to be returned from cell 0 of the applicable Polynom(A/B)
+           attribute and so a conversion must take place. For independent
+           Correctors KickAngle can be returned directly from the element's
+           KickAngle attribute without any conversion. This is because
+           independent Correctors have a KickAngle attribute in our AT lattice,
+           but those attached to Sextupoles do not.
 
         Args:
-            cell (int): Which cell of KickAngle to get/set.
-            value (float): The angle to be set, if it is not None.
+            cell (int): Which cell of KickAngle to get.
 
         Returns:
             float: The kick angle of the specified cell.
         """
         if isinstance(self._at_element, at.elements.Sextupole):
             length = self._at_element.Length
-            if value is None:
-                if cell == 0:
-                    return -(self._at_element.PolynomB[0] * length)
-                elif cell == 1:
-                    return (self._at_element.PolynomA[0] * length)
-            else:
-                if cell == 0:
-                    self._at_element.PolynomB[0] = -(value / length)
-                elif cell == 1:
-                    self._at_element.PolynomA[0] = (value / length)
+            if cell == 0:
+                return -(self._at_element.PolynomB[0] * length)
+            elif cell == 1:
+                return (self._at_element.PolynomA[0] * length)
         else:
-            if value is None:
-                return self._at_element.KickAngle[cell]
-            else:
-                self._at_element.KickAngle[cell] = value
+            return self._at_element.KickAngle[cell]
 
-    def _PolynomA(self, cell, value):
-        """A data handling function used to get or set a specific cell of the
-        PolynomA attribute of the AT element.
+    def _set_KickAngle(self, cell, value):
+        """A data handling function used to set the value of a specific cell
+        of the KickAngle attribute of the AT element.
+
+        .. Note:: If the Corrector is attached to a Sextupole then KickAngle
+           needs to be assigned to cell 0 of the applicable Polynom(A/B)
+           attribute and so a conversion must take place. For independent
+           Correctors KickAngle can be assigned directly to the element's
+           KickAngle attribute without any conversion. This is because
+           independent Correctors have a KickAngle attribute in our AT lattice,
+           but those attached to Sextupoles do not.
 
         Args:
-            cell (int): Which cell of PolynomA to get/set.
-            value (float): The value to be set, if it is not None.
+            cell (int): Which cell of KickAngle to set.
+            value (float): The angle to be set.
+        """
+        if isinstance(self._at_element, at.elements.Sextupole):
+            length = self._at_element.Length
+            if cell == 0:
+                self._at_element.PolynomB[0] = -(value / length)
+            elif cell == 1:
+                self._at_element.PolynomA[0] = (value / length)
+        else:
+            self._at_element.KickAngle[cell] = value
+
+    def _get_PolynomA(self, cell):
+        """A data handling function used to get the value of a specific cell
+        of the PolynomA attribute of the AT element.
+
+        Args:
+            cell (int): Which cell of PolynomA to get.
 
         Returns:
             float: The value of the specified cell of PolynomA.
         """
-        if value is None:
-            return self._at_element.PolynomA[cell]
-        else:
-            self._at_element.PolynomA[cell] = value
+        return self._at_element.PolynomA[cell]
 
-    def _PolynomB(self, cell, value):
-        """A data handling function used to get or set a specific cell of the
-        PolynomB attribute of the AT element.
+    def _set_PolynomA(self, cell, value):
+        """A data handling function used to set the value of a specific cell
+        of the PolynomA attribute of the AT element.
 
         Args:
-            cell (int): Which cell of PolynomB to get/set.
-            value (float): The value to be set, if it is not None.
+            cell (int): Which cell of PolynomA to set.
+            value (float): The value to be set.
+        """
+        self._at_element.PolynomA[cell] = value
+
+    def _get_PolynomB(self, cell):
+        """A data handling function used to get the value of a specific cell
+        of the PolynomB attribute of the AT element.
+
+        Args:
+            cell (int): Which cell of PolynomB to get.
 
         Returns:
             float: The value of the specified cell of PolynomB.
         """
-        if value is None:
-            return self._at_element.PolynomB[cell]
-        else:
-            self._at_element.PolynomB[cell] = value
+        return self._at_element.PolynomB[cell]
 
-    def _Orbit(self, cell, value):
-        """A data handling function used to get or set a specific cell of the
-        orbit data for the AT element. This is the only function on this data
-        source to get data from the central ATSimulator object, it must do this
-        because the orbit is calculated over the whole lattice.
+    def _set_PolynomB(self, cell, value):
+        """A data handling function used to set the value of a specific cell
+        of the PolynomB attribute of the AT element.
 
         Args:
-            cell (int): Which cell of closed_orbit to get/set.
-            value (float): You cannot set to BPMs of if it is not None an error
-                            is raised.
+            cell (int): Which cell of PolynomB to set.
+            value (float): The value to be set.
+        """
+        self._at_element.PolynomB[cell] = value
+
+    def _get_ClosedOrbit(self, cell):
+        """A data handling function used to get the value of a specific cell
+        of the orbit data for the AT element. This is the only function on
+        this data source to get data from the central ATSimulator object, it
+        must do this because in AT the closed orbit is calculated over the
+        whole lattice.
+
+        Args:
+            cell (int): Which cell of closed_orbit to get.
 
         Returns:
             float: The value of the specified cell of closed_orbit.
-
-        Raises:
-            HandleException: if a set operation is attempted (value !=None).
         """
-        if value is None:
-            return float(self._atsim.get_orbit(cell)[self._index - 1])
-        else:
-            # This shouldn't be possible
-            field = 'x' if cell == 0 else 'y'
-            raise HandleException("Field {0} cannot be set on element data "
-                                  "source {1}.".format(field, self))
+        return float(self._atsim.get_orbit(cell)[self._index - 1])
 
-    def _BendingAngle(self, value):
-        """A data handling function used to get or set the BendingAngle
-        attribute of the AT element. Whenever a change is made the 'up_to_date'
-        threading event is cleared on the central ATSimulator object, so as to
-        trigger a recalculation of the physics data ensuring it is up to date.
-
-        Args:
-            value (float): The value to be set, if it is not None.
+    def _get_BendingAngle(self):
+        """A data handling function used to get the value of the BendingAngle
+        attribute of the AT element.
 
         Returns:
             float: The value of the element's BendingAngle attribute.
         """
-        if value is None:
-            return self._at_element.BendingAngle
-        else:
-            self._at_element.BendingAngle = value
+        return self._at_element.BendingAngle
 
-    def _Frequency(self, value):
-        """A data handling function used to get or set the Frequency attribute
-        of the AT element. Whenever a change is made the 'up_to_date'
-        threading event is cleared on the central ATSimulator object, so as to
-        trigger a recalculation of the physics data ensuring it is up to date.
+    def _set_BendingAngle(self, value):
+        """A data handling function used to set the value of the BendingAngle
+        attribute of the AT element.
 
         Args:
-            value (float): The value to be set, if it is not None.
+            value (float): The value to be set.
+        """
+        self._at_element.BendingAngle = value
+
+    def _get_Frequency(self):
+        """A data handling function used to get the value of the Frequency
+        attribute of the AT element.
 
         Returns:
             float: The value of the element's Frequency attribute.
         """
-        if value is None:
-            return self._at_element.Frequency
-        else:
-            self._at_element.Frequency = value
+        return self._at_element.Frequency
+
+    def _set_Frequency(self, value):
+        """A data handling function used to set the value of the Frequency
+        attribute of the AT element.
+
+        Args:
+            value (float): The value to be set.
+        """
+        self._at_element.Frequency = value
 
 
 class ATLatticeDataSource(pytac.data_source.DataSource):

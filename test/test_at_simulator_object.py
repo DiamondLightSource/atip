@@ -127,12 +127,12 @@ def test_toggle_calculations_and_wait_for_calculations(atsim, initial_lin,
 
 def test_recalculate_phys_data_callback(at_lattice):
     # Check ATSimulator is created successfully if no callback.
-    atip.at_interface.ATSimulator(at_lattice)
+    atip.simulator.ATSimulator(at_lattice)
     # Check non-callable callback argument raises TypeError.
     with pytest.raises(TypeError):
-        atip.at_interface.ATSimulator(at_lattice, '')
+        atip.simulator.ATSimulator(at_lattice, '')
     callback_func = mock.Mock()
-    atsim = atip.at_interface.ATSimulator(at_lattice, callback_func)
+    atsim = atip.simulator.ATSimulator(at_lattice, callback_func)
     atsim.up_to_date.Reset()
     atsim.queue.Signal((mock.Mock(), 'f', 0))
     atsim.wait_for_calculations()
