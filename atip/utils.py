@@ -25,6 +25,7 @@ def load_at_lattice(mode='DIAD', **kwargs):
         at_lattice[x].Class = at_lattice[x].__class__.__name__
     return at_lattice
 
+
 def loader(mode='DIAD', callback=None):
     """Load a unified lattice of the specifed mode.
 
@@ -64,11 +65,11 @@ def preload_at(at_lat):
     class elems():
         pass
     setattr(elems, "all", [elem for elem in at_lat])
-    elems_dict = {type_: [] for type_ in ['Octupole', 'Monitor', 'Dipole',
-                                          'Aperture', 'Multipole', 'Marker',
-                                          'LongElement', 'Sextupole', 'M66',
-                                          'Corrector', 'Bend', 'Quadrupole',
-                                          'RFCavity','ThinMultipole', 'Drift']}
+    elems_dict = {type_: [] for type_ in ['ThinMultipole', 'Quadrupole', 'M66',
+                                          'Octupole', 'Sextupole', 'Corrector',
+                                          'LongElement', 'Element', 'RFCavity',
+                                          'Monitor', 'Bend', 'Marker', 'Drift',
+                                          'Multipole', 'Aperture', 'Dipole']}
     for elem in at_lat:
         elems_dict[type(elem).__name__].append(elem)
     for elem_type, elements in elems_dict.items():
@@ -170,4 +171,3 @@ def trigger_calc(pytac_lattice):
             elem.set_value(fields[0], val, data_source=pytac.SIM)
             print("Recalculation manually triggered.")
             break
-

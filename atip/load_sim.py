@@ -30,6 +30,7 @@ def load_from_filepath(pytac_lattice, at_lattice_filepath, callback=None):
                                   energy=pytac_lattice.get_value('energy'))
     return load(pytac_lattice, at_lattice, callback)
 
+
 def load(pytac_lattice, at_lattice, callback=None):
     """Load simulator data sources onto the lattice and its elements.
 

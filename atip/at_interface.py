@@ -273,19 +273,28 @@ class ATSimulator(object):
         """
         return self._lindata[3]['mu']
 
+    def get_energy_spread(self):
+        """Return the energy spread for the AT lattice.
+
+        Returns:
+            float: The energy spread for the AT lattice.
+        """
+        return numpy.sqrt(self._emittance[0]['r66'][4, 4])
+
     def get_mcf(self):
         """Return the linear momentum compaction factor for the AT lattice.
 
-        returns:
+        Returns:
             float: The linear momentum compaction factor of the AT lattice.
         """
+        self._at_lat.radiation_off()
         return self._at_lat.get_mcf()
 
     def get_energy_loss(self):
         """Return the energy loss per turn for the AT lattice. Taken from the
         AT lattice property.
 
-        returns:
+        Returns:
             float: The energy loss of the AT lattice.
         """
         return self._at_lat.energy_loss
@@ -293,16 +302,25 @@ class ATSimulator(object):
     def get_damping_times(self):
         """Return the damping times for the 3 normal modes.
 
-        returns:
+        Returns:
             numpy.array: The damping times of the AT lattice.
         """
         T0 = self.get_s()[-1] / speed_of_light
         return T0 / self._emittance[1][1]
 
+    def get_damping_partition_numbers(self):
+        """Return the damping partition numbers for the 3 normal modes.
+
+        Returns:
+            numpy.array: The damping partition numbers of the AT lattice.
+        """
+        dt = self.get_damping_times()
+        return 4/(dt*sum(1/dt))
+
     def get_total_bend_angle(self):
         """Return the total bending angle of all the dipoles in the AT lattice.
 
-        returns:
+        Returns:
             float: The total bending angle for the AT lattice.
         """
         thetas = []
@@ -315,7 +333,7 @@ class ATSimulator(object):
         """Return the total absolute bending angle of all the dipoles in the
         AT lattice.
 
-        returns:
+        Returns:
             float: The total absolute bending angle for the AT lattice.
         """
         thetas = []

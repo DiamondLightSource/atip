@@ -117,7 +117,7 @@ def class_compare(lattice, ring=None):
                    'RF': 'RFCavity', 'SEXT': 'Sextupole', 'QUAD': 'Quadrupole',
                    'source': 'Marker'}  # V/HTRIM act as drifts at the moment.
     if ring is None:
-        ring = get_sim_ring(lattice)
+        ring = get_sim_lattice(lattice)
     if len(lattice) != len(ring):
         raise IndexError("Lattice and ring must be the same length.")
     results = []
