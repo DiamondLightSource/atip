@@ -65,9 +65,10 @@ class ATElementDataSource(pytac.data_source.DataSource):
                              'b0': self._BendingAngle,
                              'f': self._Frequency}
         fields = set() if fields is None else set(fields)
-        if not all(f in set(self._field_funcs.keys()) for f in fields):
-            raise ValueError("Unsupported field {0}."
-                             .format(fields - set(self._field_funcs.keys())))
+        supported_fields = set(self._field_funcs.keys())
+        if not all(f in supported_fields for f in fields):
+            raise FieldException("Unsupported field(s) {0}."
+                                 .format(fields - supported_fields))
         else:
             self._fields = list(fields)
 
@@ -79,6 +80,27 @@ class ATElementDataSource(pytac.data_source.DataSource):
             list: A list of all the fields that are present on this element.
         """
         return self._fields
+
+    def add_field(self, field):
+        """Add a field to this data source. This is normally done
+        automatically when adding a device, however since the simulated data
+        sources do not use devices this method is needed.
+
+        Args:
+            field (str): The name of a supported field that is not already on
+                          this data_source.
+
+        Raises:
+            FieldException: if the specified field is already present or if it
+                             is not supported.
+        """
+        if field in self._fields:
+            raise FieldException("Field {0} already present on element data "
+                                 "source {1}.".format(field, self))
+        elif field not in self._field_funcs.keys():
+            raise FieldException("Unsupported field {0}.".format(field))
+        else:
+            self._fields.append(field)
 
     def get_value(self, field, handle=None, throw=None):
         """Get the value for a field.
@@ -309,22 +331,22 @@ class ATLatticeDataSource(pytac.data_source.DataSource):
         """
         self.units = pytac.PHYS
         self._atsim = atsim
-        self._field_funcs = {'chromaticity_x': partial(self._atsim.get_chrom, 0),
-                             'chromaticity_y': partial(self._atsim.get_chrom, 1),
-                             'emittance_x': partial(self._atsim.get_emit, 0),
-                             'emittance_y': partial(self._atsim.get_emit, 1),
-                             'phase_x': partial(self._atsim.get_orbit, 1),
-                             'phase_y': partial(self._atsim.get_orbit, 3),
-                             'tune_x': partial(self._atsim.get_tune, 0),
-                             'tune_y': partial(self._atsim.get_tune, 1),
-                             'x': partial(self._atsim.get_orbit, 0),
-                             'y': partial(self._atsim.get_orbit, 2),
+        self._field_funcs = {'chromaticity_x': self._atsim.get_chrom,
+                             'chromaticity_y': self._atsim.get_chrom,
+                             'emittance_x': self._atsim.get_emit,
+                             'emittance_y': self._atsim.get_emit,
                              'dispersion': self._atsim.get_disp,
                              'energy': self._atsim.get_energy,
+                             'phase_x': self._atsim.get_orbit,
+                             'phase_y': self._atsim.get_orbit,
                              's_position': self._atsim.get_s,
+                             'tune_x': self._atsim.get_tune,
+                             'tune_y': self._atsim.get_tune,
                              'alpha': self._atsim.get_alpha,
                              'beta': self._atsim.get_beta,
                              'm44': self._atsim.get_m44,
+                             'x': self._atsim.get_orbit,
+                             'y': self._atsim.get_orbit,
                              'mu': self._atsim.get_mu}
 
     def get_fields(self):
@@ -355,7 +377,14 @@ class ATLatticeDataSource(pytac.data_source.DataSource):
             FieldException: if the specified field does not exist.
         """
         if field in list(self._field_funcs.keys()):
-            return self._field_funcs[field]()
+            if field.startswith('phase'):
+                return self._field_funcs[field]('p' + field[-1])
+            elif field.endswith('x'):
+                return self._field_funcs[field]('x')
+            elif field.endswith('y'):
+                return self._field_funcs[field]('y')
+            else:
+                return self._field_funcs[field]()
         else:
             raise FieldException("Lattice data source {0} does not have field "
                                  "{1}".format(self, field))

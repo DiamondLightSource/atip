@@ -2,6 +2,8 @@ import at
 import mock
 import numpy
 import pytest
+from scipy.constants import speed_of_light
+from pytac.exceptions import FieldException
 
 import atip
 
@@ -9,25 +11,25 @@ import atip
 def _initial_phys_data(atsim, initial_emit, initial_lin):
     try:
         numpy.testing.assert_almost_equal(initial_emit[2]['emitXY'][:, 0][0],
-                                          atsim.get_emit(0), decimal=6)
+                                          atsim.get_emit('x'), decimal=6)
         numpy.testing.assert_almost_equal(initial_emit[2]['emitXY'][:, 1][0],
-                                          atsim.get_emit(1), decimal=14)
-        numpy.testing.assert_almost_equal(initial_lin[1][0], atsim.get_tune(0),
-                                          decimal=6)
-        numpy.testing.assert_almost_equal(initial_lin[1][1], atsim.get_tune(1),
-                                          decimal=8)
+                                          atsim.get_emit('y'), decimal=14)
+        numpy.testing.assert_almost_equal(initial_lin[1][0],
+                                          atsim.get_tune('x'), decimal=6)
+        numpy.testing.assert_almost_equal(initial_lin[1][1],
+                                          atsim.get_tune('y'), decimal=8)
         numpy.testing.assert_almost_equal(initial_lin[2][0],
-                                          atsim.get_chrom(0), decimal=8)
+                                          atsim.get_chrom('x'), decimal=8)
         numpy.testing.assert_almost_equal(initial_lin[2][1],
-                                          atsim.get_chrom(1), decimal=8)
+                                          atsim.get_chrom('y'), decimal=8)
         numpy.testing.assert_almost_equal(initial_lin[3]['closed_orbit'][:, 0],
-                                          atsim.get_orbit(0))
+                                          atsim.get_orbit('x'))
         numpy.testing.assert_almost_equal(initial_lin[3]['closed_orbit'][:, 1],
-                                          atsim.get_orbit(1))
+                                          atsim.get_orbit('px'))
         numpy.testing.assert_almost_equal(initial_lin[3]['closed_orbit'][:, 2],
-                                          atsim.get_orbit(2))
+                                          atsim.get_orbit('y'))
         numpy.testing.assert_almost_equal(initial_lin[3]['closed_orbit'][:, 3],
-                                          atsim.get_orbit(3))
+                                          atsim.get_orbit('py'))
         numpy.testing.assert_almost_equal(initial_lin[3]['dispersion'][-1],
                                           atsim.get_disp()[-1], decimal=6)
         numpy.testing.assert_almost_equal(initial_lin[3]['s_pos'],
@@ -88,10 +90,10 @@ def test_recalculate_phys_data(atsim, initial_emit, initial_lin):
     atsim.queue.Signal((mock.Mock(), 'f', 0))
     atsim.wait_for_calculations()
     # Get the applicable physics data
-    orbit = [atsim.get_orbit(0)[0], atsim.get_orbit(2)[0]]
-    chrom = [atsim.get_chrom(0), atsim.get_chrom(1)]
-    tune = [atsim.get_tune(0), atsim.get_tune(1)]
-    emit = [atsim.get_emit(0), atsim.get_emit(1)]
+    orbit = [atsim.get_orbit('x')[0], atsim.get_orbit('y')[0]]
+    chrom = [atsim.get_chrom('x'), atsim.get_chrom('y')]
+    tune = [atsim.get_tune('x'), atsim.get_tune('y')]
+    emit = [atsim.get_emit('x'), atsim.get_emit('y')]
     # Check the results against known values
     numpy.testing.assert_almost_equal(orbit, [5.18918914e-06, -8.92596857e-06],
                                       decimal=10)
@@ -147,29 +149,37 @@ def test_get_at_lattice(atsim, at_lattice):
 
 
 def test_get_chrom(mocked_atsim):
-    assert mocked_atsim.get_chrom(0) == 2
-    assert mocked_atsim.get_chrom(1) == 1
+    assert mocked_atsim.get_chrom('x') == 2
+    assert mocked_atsim.get_chrom('y') == 1
+    with pytest.raises(FieldException):
+        mocked_atsim.get_chrom('not_a_field')
 
 
 def test_get_emit(mocked_atsim):
-    assert mocked_atsim.get_emit(0) == 1.4
-    assert mocked_atsim.get_emit(1) == 0.45
+    assert mocked_atsim.get_emit('x') == 1.4
+    assert mocked_atsim.get_emit('y') == 0.45
+    with pytest.raises(FieldException):
+        mocked_atsim.get_emit('not_a_field')
 
 
 def test_get_orbit(mocked_atsim, at_lattice):
-    numpy.testing.assert_almost_equal(mocked_atsim.get_orbit(0),
+    numpy.testing.assert_almost_equal(mocked_atsim.get_orbit('x'),
                                       numpy.ones(len(at_lattice)) * 0.6)
-    numpy.testing.assert_almost_equal(mocked_atsim.get_orbit(1),
+    numpy.testing.assert_almost_equal(mocked_atsim.get_orbit('px'),
                                       numpy.ones(len(at_lattice)) * 57)
-    numpy.testing.assert_almost_equal(mocked_atsim.get_orbit(2),
+    numpy.testing.assert_almost_equal(mocked_atsim.get_orbit('y'),
                                       numpy.ones(len(at_lattice)) * 0.2)
-    numpy.testing.assert_almost_equal(mocked_atsim.get_orbit(3),
+    numpy.testing.assert_almost_equal(mocked_atsim.get_orbit('py'),
                                       numpy.ones(len(at_lattice)) * 9)
+    with pytest.raises(FieldException):
+        mocked_atsim.get_orbit('not_a_field')
 
 
-def test_get_tune(mocked_atsim):
-    numpy.testing.assert_almost_equal(mocked_atsim.get_tune(0), 0.14)
-    numpy.testing.assert_almost_equal(mocked_atsim.get_tune(1), 0.12)
+def test_get_tune(mocked_atsim):  # == ?
+    numpy.testing.assert_almost_equal(mocked_atsim.get_tune('x'), 0.14)
+    numpy.testing.assert_almost_equal(mocked_atsim.get_tune('y'), 0.12)
+    with pytest.raises(FieldException):
+        mocked_atsim.get_tune('not_a_field')
 
 
 def test_get_disp(mocked_atsim, at_lattice):
@@ -215,3 +225,38 @@ def test_get_mu(mocked_atsim, at_lattice):
         mocked_atsim.get_mu(),
         (numpy.ones((len(at_lattice), 2)) * numpy.array([176, 82]))
     )
+
+
+def test_get_energy_spread(mocked_atsim, at_lattice):
+    assert mocked_atsim.get_energy_spread() == 4
+
+
+def test_get_mcf(mocked_atsim, at_lattice):
+    assert mocked_atsim.get_mcf() == 42
+    # check method automatically disables radiation.
+    mocked_atsim._at_lat.radiation_off.assert_called_once()
+
+
+def test_get_energy_loss(mocked_atsim, at_lattice):
+    assert mocked_atsim.get_energy_loss() == 73
+
+
+def test_get_damping_times(mocked_atsim, at_lattice):
+    T0 = (len(at_lattice) * 0.1) / speed_of_light
+    numpy.testing.assert_almost_equal(T0/numpy.array([13, 3, 7]),
+                                      mocked_atsim.get_damping_times())
+
+
+def test_get_damping_partition_numbers(mocked_atsim, at_lattice):
+    dt = mocked_atsim.get_damping_times()
+    numpy.testing.assert_almost_equal(
+        4/(dt*sum(1/dt)), mocked_atsim.get_damping_partition_numbers()
+    )
+
+
+def test_get_total_bend_angle(ba_atsim):
+    assert ba_atsim.get_total_bend_angle() == numpy.degrees(0.5)
+
+
+def test_get_total_absolute_bend_angle(ba_atsim):
+    assert ba_atsim.get_total_absolute_bend_angle() == numpy.degrees(2.1)

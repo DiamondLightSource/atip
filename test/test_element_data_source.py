@@ -1,7 +1,7 @@
 import at
 import mock
-import pytac
 import pytest
+from pytac.exceptions import FieldException, HandleException
 
 import atip
 
@@ -28,8 +28,8 @@ def test_elem_field_funcs(at_elem, func_str, field, cell):
 
 @pytest.mark.parametrize('fields', [['not_a_field'], [1], ['a1', 'invalid'],
                                     ['X_KICK']])
-def test_elem_raises_ValueError_if_unsupported_field(at_elem, fields):
-    with pytest.raises(ValueError):
+def test_elem_raises_FieldException_if_unsupported_field(at_elem, fields):
+    with pytest.raises(FieldException):
         atip.sim_data_sources.ATElementDataSource(at_elem, 1, mock.Mock(),
                                                   fields)
 
@@ -54,7 +54,7 @@ def test_elem_get_value_raises_FieldException_if_nonexistent_field(at_elem,
                                                                    field):
     ateds = atip.sim_data_sources.ATElementDataSource(at_elem, 1, mock.Mock(),
                                                       ['x_kick'])
-    with pytest.raises(pytac.exceptions.FieldException):
+    with pytest.raises(FieldException):
         ateds.get_value(field)
 
 
@@ -91,7 +91,7 @@ def test_elem_set_value_raises_FieldException_if_nonexistant_field(at_elem,
                                                                    field):
     ateds = atip.sim_data_sources.ATElementDataSource(at_elem, 1, mock.Mock(),
                                                       ['x_kick'])
-    with pytest.raises(pytac.exceptions.FieldException):
+    with pytest.raises(FieldException):
         ateds.set_value(field, 0)
 
 
@@ -99,7 +99,7 @@ def test_elem_set_value_raises_FieldException_if_nonexistant_field(at_elem,
 def test_elem_set_orbit_raises_HandleException(at_elem, field):
     ateds = atip.sim_data_sources.ATElementDataSource(at_elem, 1, mock.Mock(),
                                                       [field])
-    with pytest.raises(pytac.exceptions.HandleException):
+    with pytest.raises(HandleException):
         ateds.set_value(field, 0)
 
 
@@ -154,5 +154,5 @@ def test_elem_make_change_on_Sextupole():
 def test_elem_make_change_orbit_raises_HandleException(at_elem, field):
     ateds = atip.sim_data_sources.ATElementDataSource(at_elem, 1, mock.Mock(),
                                                       [field])
-    with pytest.raises(pytac.exceptions.HandleException):
+    with pytest.raises(HandleException):
         ateds.make_change(field, 0)
