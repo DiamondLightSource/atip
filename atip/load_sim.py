@@ -63,7 +63,7 @@ def load(pytac_lattice, at_lattice, callback=None):
     # Give any lattice fields not on the live machine a unit conversion object.
     for field in pytac_lattice.get_fields()[pytac.SIM]:
         try:
-            pytac_lattice.get_unit_conversion_object(field)
+            pytac_lattice.get_unitconv(field)
         except FieldException:
-            pytac_lattice.set_unit_conversion_object(field, DEFAULT_UC)
+            pytac_lattice.set_unitconv(field, DEFAULT_UC)
     return pytac_lattice

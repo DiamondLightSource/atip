@@ -243,14 +243,15 @@ def test_get_energy_loss(mocked_atsim, at_lattice):
 
 def test_get_damping_times(mocked_atsim, at_lattice):
     T0 = (len(at_lattice) * 0.1) / speed_of_light
-    numpy.testing.assert_almost_equal(T0/numpy.array([13, 3, 7]),
+    numpy.testing.assert_almost_equal(T0 / numpy.array([13, 3, 7]),
                                       mocked_atsim.get_damping_times())
 
 
 def test_get_damping_partition_numbers(mocked_atsim, at_lattice):
     dt = mocked_atsim.get_damping_times()
     numpy.testing.assert_almost_equal(
-        4/(dt*sum(1/dt)), mocked_atsim.get_damping_partition_numbers()
+        4 / (dt * sum(1 / dt)),
+        mocked_atsim.get_damping_partition_numbers()
     )
 
 
