@@ -59,7 +59,7 @@ def test_ATSimulator_creation(atsim, initial_emit, initial_lin):
 def test_recalculate_phys_data_queue(atsim):
     elem_ds = mock.Mock()
     atsim.up_to_date.Reset()
-    atsim.queue.Signal((elem_ds, 'a_field', 12))
+    atsim.queue.Signal((elem_ds._make_change, 'a_field', 12))
     assert len(atsim.queue) == 1
     atsim.wait_for_calculations()
     assert len(atsim.queue) == 0
@@ -176,8 +176,8 @@ def test_get_orbit(mocked_atsim, at_lattice):
 
 
 def test_get_tune(mocked_atsim):
-    numpy.testing.assert_almost_equal(mocked_atsim.get_tune('x') == 0.14
-    numpy.testing.assert_almost_equal(mocked_atsim.get_tune('y') == 0.12
+    numpy.testing.assert_almost_equal(mocked_atsim.get_tune('x'), 0.14)
+    numpy.testing.assert_almost_equal(mocked_atsim.get_tune('y'), 0.12)
     with pytest.raises(FieldException):
         mocked_atsim.get_tune('not_a_field')
 

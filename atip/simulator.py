@@ -357,7 +357,7 @@ class ATSimulator(object):
             numpy.array: The damping partition numbers of the AT lattice.
         """
         dt = self.get_damping_times()
-        return 4/(dt*sum(1/dt))
+        return 4 / (dt * sum(1 / dt))
 
     def get_total_bend_angle(self):
         """Return the total bending angle of all the dipoles in the AT lattice.
