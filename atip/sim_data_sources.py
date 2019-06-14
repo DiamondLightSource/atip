@@ -63,8 +63,8 @@ class ATElementDataSource(pytac.data_source.DataSource):
         self._atsim = atsim
         self._get_field_funcs = {'x_kick': partial(self._get_KickAngle, 0),
                                  'y_kick': partial(self._get_KickAngle, 1),
-                                 'x': partial(self._get_ClosedOrbit, 0),
-                                 'y': partial(self._get_ClosedOrbit, 2),
+                                 'x': partial(self._get_ClosedOrbit, 'x'),
+                                 'y': partial(self._get_ClosedOrbit, 'y'),
                                  'a1': partial(self._get_PolynomA, 1),
                                  'b1': partial(self._get_PolynomB, 1),
                                  'b2': partial(self._get_PolynomB, 2),
@@ -160,7 +160,7 @@ class ATElementDataSource(pytac.data_source.DataSource):
         if field in self._fields:
             if field in self._set_field_funcs.keys():
                 self._atsim.up_to_date.Reset()
-                self._atsim.queue.Signal((self, field, value))
+                self._atsim.queue.Signal((self._make_change, field, value))
             else:
                 raise HandleException("Field {0} cannot be set on element data"
                                       " source {1}.".format(field, self))
@@ -168,7 +168,7 @@ class ATElementDataSource(pytac.data_source.DataSource):
             raise FieldException("No field {0} on AT element {1}."
                                  .format(field, self._at_element))
 
-    def make_change(self, field, value):
+    def _make_change(self, field, value):
         """Calls the appropriate field setting function to actually modify the
         AT element, called in ATSimulator when the queue is being emptied.
 
@@ -274,7 +274,7 @@ class ATElementDataSource(pytac.data_source.DataSource):
         """
         self._at_element.PolynomB[cell] = value
 
-    def _get_ClosedOrbit(self, cell):
+    def _get_ClosedOrbit(self, field):
         """A data handling function used to get the value of a specific cell
         of the orbit data for the AT element. This is the only function on
         this data source to get data from the central ATSimulator object, it
@@ -282,12 +282,12 @@ class ATElementDataSource(pytac.data_source.DataSource):
         whole lattice.
 
         Args:
-            cell (int): Which cell of closed_orbit to get.
+            field (str): Which cell of closed_orbit to get.
 
         Returns:
             float: The value of the specified cell of closed_orbit.
         """
-        return float(self._atsim.get_orbit(cell)[self._index - 1])
+        return float(self._atsim.get_orbit(field)[self._index - 1])
 
     def _get_BendingAngle(self):
         """A data handling function used to get the value of the BendingAngle

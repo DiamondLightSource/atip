@@ -78,9 +78,6 @@ ATElementDataSource:
     * ``get_value(field)`` - get the value for a given field on the element.
     * ``set_value(field, value)`` - set the value for a given field on the
       element, appends the change to the queue.
-    * ``make_change(field, set_value)`` - change the value of the specifed
-      field on the at element, predominantly used by the queue to make changes,
-      but can also be called directly to avoid putting a change on the queue.
 
 ATLatticeDataSource:
     * ``get_fields()`` - return the fields on the lattice.

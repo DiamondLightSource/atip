@@ -82,8 +82,8 @@ class ATSimulator(object):
         queue is not empty the oldest change will be removed and applied to the
         AT lattice.
         """
-        data_source, field, value = self.queue.Wait()
-        data_source.make_change(field, value)
+        apply_change_method, field, value = self.queue.Wait()
+        apply_change_method(field, value)
 
     def _recalculate_phys_data(self, callback):
         """Target function for the Cothread thread. Recalculates the physics
@@ -333,8 +333,8 @@ class ATSimulator(object):
         return self._at_lat.get_mcf()
 
     def get_energy_loss(self):
-        """Return the energy loss per turn for the AT lattice. Taken from the
-        AT lattice property.
+        """Return the energy loss per turn of the AT lattice. Taken from the AT
+        lattice property.
 
         Returns:
             float: The energy loss of the AT lattice.

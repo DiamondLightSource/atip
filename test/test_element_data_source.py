@@ -10,8 +10,8 @@ import atip
     ('ateds._get_KickAngle', 'x_kick', 0), ('ateds._get_PolynomA', 'a1', 1),
     ('ateds._get_KickAngle', 'y_kick', 1), ('ateds._get_PolynomB', 'b1', 1),
     ('ateds._get_BendingAngle', 'b0', None), ('ateds._get_PolynomB', 'b2', 2),
-    ('ateds._get_ClosedOrbit', 'x', 0), ('ateds._get_Frequency', 'f', None),
-    ('ateds._get_ClosedOrbit', 'y', 2)
+    ('ateds._get_ClosedOrbit', 'x', 'x'), ('ateds._get_Frequency', 'f', None),
+    ('ateds._get_ClosedOrbit', 'y', 'y')
 ])
 def test_get_elem_field_funcs(at_elem, func_str, field, cell):
     ateds = atip.sim_data_sources.ATElementDataSource(at_elem, 1, mock.Mock(),
@@ -155,7 +155,8 @@ def test_elem_set_value_adds_changes_to_queue(at_elem, field):
                                                       [field])
     ateds.set_value(field, 1)
     assert len(atsim.queue.mock_calls) == 1
-    assert atsim.queue.mock_calls[0] == mock.call.Signal((ateds, field, 1))
+    assert atsim.queue.mock_calls[0] == mock.call.Signal((ateds._make_change,
+                                                          field, 1))
 
 
 @pytest.mark.parametrize('field,attr_str', [('x_kick', 'at_elem.KickAngle[0]'),
@@ -168,7 +169,7 @@ def test_elem_set_value_adds_changes_to_queue(at_elem, field):
 def test_elem_make_change(at_elem, field, attr_str):
     ateds = atip.sim_data_sources.ATElementDataSource(at_elem, 1, mock.Mock(),
                                                       [field])
-    ateds.make_change(field, 1)
+    ateds._make_change(field, 1)
     assert eval(attr_str) == 1
 
 
@@ -177,7 +178,7 @@ def test_elem_make_change_on_Sextupole():
                               PolynomB=[0, 0, 0, 0])
     ateds = atip.sim_data_sources.ATElementDataSource(s, 0, mock.Mock(),
                                                       ['x_kick', 'y_kick'])
-    ateds.make_change('x_kick', 1)
-    ateds.make_change('y_kick', 5)
+    ateds._make_change('x_kick', 1)
+    ateds._make_change('y_kick', 5)
     assert s.PolynomA[0] == (5 / 0.1)
     assert s.PolynomB[0] == (- 1 / 0.1)
