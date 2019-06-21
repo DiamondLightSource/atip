@@ -31,3 +31,8 @@ def test_load_with_callback(pytac_lattice, at_diad_lattice):
     atip.utils.trigger_calc(pytac_lattice)
     atsim.wait_for_calculations()
     callback_func.assert_called_once_with()
+
+
+def test_load_raises_ValueError_if_incompatible_lattices():
+    with pytest.raises(ValueError):
+        atip.load_sim.load([1], [1, 2])  # length mismatch

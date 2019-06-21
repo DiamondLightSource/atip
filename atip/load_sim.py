@@ -45,6 +45,10 @@ def load(pytac_lattice, at_lattice, callback=None):
         pytac.lattice.Lattice: The same Pytac lattice object, but now with a
         simulator data source fully loaded onto it.
     """
+    if len(at_lattice) != len(pytac_lattice):
+        raise ValueError("Incompatible AT and Pytac lattices, length mismatch "
+                         "(AT:{0} Pytac:{1}).".format(len(at_lattice),
+                                                      len(pytac_lattice)))
     # Initialise an instance of the ATSimulator Object.
     atsim = ATSimulator(at_lattice, callback)
     # Set the simulator data source on the Pytac lattice.
