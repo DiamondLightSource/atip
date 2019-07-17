@@ -26,7 +26,8 @@ variety of mirror types are available::
 5. ``refresher`` - Whenever the input PV changes value refresh the held output
    record, by calling ``ATIPServer.refresh_record(output_record_pv_name)``.
 
-For more information on mirror records see docstrings of the classes in ``mirror_objects.py``, the relevant methods on ``ATIPServer``, and
+For more information on mirror records see docstrings of the classes in
+``mirror_objects.py``, the relevant methods on ``ATIPServer``, and
 ``generate_mirrored_pvs`` in ``create_csv.py``.
 
 Masks:

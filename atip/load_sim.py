@@ -36,7 +36,7 @@ def load(pytac_lattice, at_lattice, callback=None):
 
     Args:
         pytac_lattice (pytac.lattice.Lattice): An instance of a Pytac lattice.
-        at_ring (at.lattice_object.Lattice): An instance of an Accelerator
+        at_lattice (at.lattice_object.Lattice): An instance of an Accelerator
                                               Toolbox lattice object.
         callback (callable): To be called after completion of each round of
                               physics calculations.

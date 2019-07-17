@@ -7,7 +7,7 @@ import os
 def load_at_lattice(mode='DIAD', **kwargs):
     """Load an AT lattice from a .mat file in the 'rings' directory.
 
-    .. Note:: I add custom attributes 'Index' and 'Class' to the each of the
+    .. Note:: I add custom attributes 'Index' and 'Class' to each of the
        elements in the AT lattice as I find them useful for debugging.
 
     Args:

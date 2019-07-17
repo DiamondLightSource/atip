@@ -68,7 +68,7 @@ Ring Mode:
 ----------
 
 You can run the virtual accelerator in any ring mode that is supported by
-Pytac; currently 'VMX', 'VMXSP', and 'DIAD'. The ring mode can be passed as an
+Pytac; currently 'VMX', 'VMXSP', and 'DIAD'. The ring mode can be passed as a
 command line argument to ``start-virtac``, if it is not passed in that manner
 then it can be configured by changing the ``RINGMODE`` environment variable, if
 that is not set then the ring mode PV ``SR-CS-RING-01:MODE`` is checked, if
