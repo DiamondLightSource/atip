@@ -22,10 +22,18 @@ atip.sim_data_sources module
     :undoc-members:
     :show-inheritance:
 
-atip.at_interface module
+atip.simulator module
 ------------------------
 
-.. automodule:: atip.at_interface
+.. automodule:: atip.simulator
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+atip.utils module
+------------------------
+
+.. automodule:: atip.utils
     :members:
     :undoc-members:
     :show-inheritance:

@@ -184,5 +184,8 @@ epub_exclude_files = ['search.html']
 # -- Options for intersphinx extension ---------------------------------------
 
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'python': ('https://docs.python.org/', None),
-                       'pytac': ('https://pytac.readthedocs.io/en/latest/', None)}
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/', None),
+    'pytac': ('https://pytac.readthedocs.io/en/latest/', None),
+    'cothread': ('https://cothread.readthedocs.io/en/latest/', None)
+}

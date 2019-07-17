@@ -17,10 +17,10 @@ Pytac, and ATIP.
 
 Inside the top-level atip directory::
 
-    $ ./start-ioc
+    $ ./start-virtac
 
 
-After a minute or two, you should be presented with something like this::
+After a minute or so, you should be presented with something like this::
 
     Starting record creation.
     Finished creating all 4124 records.
@@ -69,12 +69,13 @@ Ring Mode:
 
 You can run the virtual accelerator in any ring mode that is supported by
 Pytac; currently 'VMX', 'VMXSP', and 'DIAD'. The ring mode can be passed as an
-command line argument to ``start-ioc``, if it is not passed in that manner then
-it can be configured by changing the ``RINGMODE`` environment variable, if that
-is not set then the ring mode PV ``SR-CS-RING-01:MODE`` is checked, if that is
-also not set then the virtual accelerator will default to 'DIAD'. For example::
+command line argument to ``start-virtac``, if it is not passed in that manner
+then it can be configured by changing the ``RINGMODE`` environment variable, if
+that is not set then the ring mode PV ``SR-CS-RING-01:MODE`` is checked, if
+that is also not set then the virtual accelerator will default to 'DIAD'.
+For example::
 
-    $ ./start-ioc DIAD
+    $ ./start-virtac DIAD
     $ export RINGMODE=DIAD
     $ caput SR-CS-RING-01:MODE 11
     $ # Having none of these set would also start in mode 'DIAD'.

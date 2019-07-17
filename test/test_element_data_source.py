@@ -1,35 +1,57 @@
 import at
 import mock
-import pytac
 import pytest
+from pytac.exceptions import FieldException, HandleException
 
 import atip
 
 
-@pytest.mark.parametrize('func_str,field,cell',
-                         [('ateds._KickAngle', 'x_kick', 0),
-                          ('ateds._KickAngle', 'y_kick', 1),
-                          ('ateds._PolynomA', 'a1', 1),
-                          ('ateds._PolynomB', 'b1', 1),
-                          ('ateds._PolynomB', 'b2', 2),
-                          ('ateds._Orbit', 'x', 0), ('ateds._Orbit', 'y', 2),
-                          ('ateds._BendingAngle', 'b0', None),
-                          ('ateds._Frequency', 'f', None)])
-def test_elem_field_funcs(at_elem, func_str, field, cell):
+@pytest.mark.parametrize('func_str,field,cell', [
+    ('ateds._get_KickAngle', 'x_kick', 0), ('ateds._get_PolynomA', 'a1', 1),
+    ('ateds._get_KickAngle', 'y_kick', 1), ('ateds._get_PolynomB', 'b1', 1),
+    ('ateds._get_BendingAngle', 'b0', None), ('ateds._get_PolynomB', 'b2', 2),
+    ('ateds._get_ClosedOrbit', 'x', 'x'), ('ateds._get_Frequency', 'f', None),
+    ('ateds._get_ClosedOrbit', 'y', 'y')
+])
+def test_get_elem_field_funcs(at_elem, func_str, field, cell):
     ateds = atip.sim_data_sources.ATElementDataSource(at_elem, 1, mock.Mock(),
                                                       [field])
-    ff = ateds._field_funcs
-    if cell is not None:
-        assert ff[field].func == eval(func_str)
-        assert ff[field].args[0] == cell
+    get_ff = ateds._get_field_funcs
+    if cell is not None:  # i.e. functools partial is returned.
+        assert get_ff[field].func == eval(func_str)
+        assert get_ff[field].args[0] == cell
     else:
-        assert ff[field] == eval(func_str)
+        assert get_ff[field] == eval(func_str)
+
+
+@pytest.mark.parametrize('func_str,field,cell', [
+    ('ateds._set_KickAngle', 'x_kick', 0), ('ateds._set_PolynomA', 'a1', 1),
+    ('ateds._set_KickAngle', 'y_kick', 1), ('ateds._set_PolynomB', 'b1', 1),
+    ('ateds._set_BendingAngle', 'b0', None), ('ateds._set_PolynomB', 'b2', 2),
+    ('ateds._set_Frequency', 'f', None)
+])
+def test_set_elem_field_funcs(at_elem, func_str, field, cell):
+    ateds = atip.sim_data_sources.ATElementDataSource(at_elem, 1, mock.Mock(),
+                                                      [field])
+    set_ff = ateds._set_field_funcs
+    if cell is not None:  # i.e. functools partial is returned.
+        assert set_ff[field].func == eval(func_str)
+        assert set_ff[field].args[0] == cell
+    else:
+        assert set_ff[field] == eval(func_str)
+
+
+@pytest.mark.parametrize('fields', [['a1', 'a1'], ['x_kick', 'b0', 'x_kick']])
+def test_elem_removes_duplicated_fields(at_elem, fields):
+    ateds = atip.sim_data_sources.ATElementDataSource(at_elem, 1, mock.Mock(),
+                                                      fields)
+    assert ateds.get_fields() == list(set(fields))
 
 
 @pytest.mark.parametrize('fields', [['not_a_field'], [1], ['a1', 'invalid'],
                                     ['X_KICK']])
-def test_elem_raises_ValueError_if_unsupported_field(at_elem, fields):
-    with pytest.raises(ValueError):
+def test_elem_raises_FieldException_if_unsupported_field(at_elem, fields):
+    with pytest.raises(FieldException):
         atip.sim_data_sources.ATElementDataSource(at_elem, 1, mock.Mock(),
                                                   fields)
 
@@ -42,11 +64,22 @@ def test_elem_get_fields(at_elem, fields):
     assert set(ateds.get_fields()) == set(fields)
 
 
-@pytest.mark.parametrize('fields', [['a1', 'a1'], ['x_kick', 'b0', 'x_kick']])
-def test_elem_removes_duplicated_fields(at_elem, fields):
+@pytest.mark.parametrize('fields', [['f', 'b0'], ['b1', 'b2']])
+def test_elem_add_field(at_elem, fields):
+    ateds = atip.sim_data_sources.ATElementDataSource(at_elem, 1, mock.Mock())
+    assert len(ateds.get_fields()) == 0
+    ateds.add_field(fields[0])
+    assert len(ateds.get_fields()) == 1
+    ateds.add_field(fields[1])
+    assert len(ateds.get_fields()) == 2
+
+
+@pytest.mark.parametrize('field', ['f', 'not_a_field'])
+def test_elem_add_field_raises_FieldExceptions_correctly(at_elem, field):
     ateds = atip.sim_data_sources.ATElementDataSource(at_elem, 1, mock.Mock(),
-                                                      fields)
-    assert ateds.get_fields() == list(set(fields))
+                                                      ['f'])
+    with pytest.raises(FieldException):
+        ateds.add_field(field)
 
 
 @pytest.mark.parametrize('field', ['not_a_field', 1, [], 'a1', 'X_KICK'])
@@ -54,7 +87,7 @@ def test_elem_get_value_raises_FieldException_if_nonexistent_field(at_elem,
                                                                    field):
     ateds = atip.sim_data_sources.ATElementDataSource(at_elem, 1, mock.Mock(),
                                                       ['x_kick'])
-    with pytest.raises(pytac.exceptions.FieldException):
+    with pytest.raises(FieldException):
         ateds.get_value(field)
 
 
@@ -91,7 +124,7 @@ def test_elem_set_value_raises_FieldException_if_nonexistant_field(at_elem,
                                                                    field):
     ateds = atip.sim_data_sources.ATElementDataSource(at_elem, 1, mock.Mock(),
                                                       ['x_kick'])
-    with pytest.raises(pytac.exceptions.FieldException):
+    with pytest.raises(FieldException):
         ateds.set_value(field, 0)
 
 
@@ -99,7 +132,7 @@ def test_elem_set_value_raises_FieldException_if_nonexistant_field(at_elem,
 def test_elem_set_orbit_raises_HandleException(at_elem, field):
     ateds = atip.sim_data_sources.ATElementDataSource(at_elem, 1, mock.Mock(),
                                                       [field])
-    with pytest.raises(pytac.exceptions.HandleException):
+    with pytest.raises(HandleException):
         ateds.set_value(field, 0)
 
 
@@ -122,7 +155,8 @@ def test_elem_set_value_adds_changes_to_queue(at_elem, field):
                                                       [field])
     ateds.set_value(field, 1)
     assert len(atsim.queue.mock_calls) == 1
-    assert atsim.queue.mock_calls[0] == mock.call.Signal((ateds, field, 1))
+    assert atsim.queue.mock_calls[0] == mock.call.Signal((ateds._make_change,
+                                                          field, 1))
 
 
 @pytest.mark.parametrize('field,attr_str', [('x_kick', 'at_elem.KickAngle[0]'),
@@ -135,7 +169,7 @@ def test_elem_set_value_adds_changes_to_queue(at_elem, field):
 def test_elem_make_change(at_elem, field, attr_str):
     ateds = atip.sim_data_sources.ATElementDataSource(at_elem, 1, mock.Mock(),
                                                       [field])
-    ateds.make_change(field, 1)
+    ateds._make_change(field, 1)
     assert eval(attr_str) == 1
 
 
@@ -144,15 +178,7 @@ def test_elem_make_change_on_Sextupole():
                               PolynomB=[0, 0, 0, 0])
     ateds = atip.sim_data_sources.ATElementDataSource(s, 0, mock.Mock(),
                                                       ['x_kick', 'y_kick'])
-    ateds.make_change('x_kick', 1)
-    ateds.make_change('y_kick', 5)
+    ateds._make_change('x_kick', 1)
+    ateds._make_change('y_kick', 5)
     assert s.PolynomA[0] == (5 / 0.1)
     assert s.PolynomB[0] == (- 1 / 0.1)
-
-
-@pytest.mark.parametrize('field', ['x', 'y'])
-def test_elem_make_change_orbit_raises_HandleException(at_elem, field):
-    ateds = atip.sim_data_sources.ATElementDataSource(at_elem, 1, mock.Mock(),
-                                                      [field])
-    with pytest.raises(pytac.exceptions.HandleException):
-        ateds.make_change(field, 0)

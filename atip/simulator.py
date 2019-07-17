@@ -5,6 +5,7 @@ import at
 import numpy
 import cothread
 from scipy.constants import speed_of_light
+from pytac.exceptions import FieldException
 
 
 class ATSimulator(object):
@@ -81,8 +82,8 @@ class ATSimulator(object):
         queue is not empty the oldest change will be removed and applied to the
         AT lattice.
         """
-        data_source, field, value = self.queue.Wait()
-        data_source.make_change(field, value)
+        apply_change_method, field, value = self.queue.Wait()
+        apply_change_method(field, value)
 
     def _recalculate_phys_data(self, callback):
         """Target function for the Cothread thread. Recalculates the physics
@@ -165,57 +166,98 @@ class ATSimulator(object):
         """
         return self._at_lat.copy()
 
-    def get_chrom(self, cell):
-        """Return the specified cell of the chromaticity for the AT lattice.
+    def get_chrom(self, field):
+        """Return the chromaticity for the AT lattice for the specified plane.
 
         Args:
-            cell (int): The desired cell of chromaticity.
+            field (str): The desired field (x or y) of chromaticity.
 
         Returns:
             float: The x or y chromaticity for the AT lattice.
-        """
-        return self._lindata[2][cell]
 
-    def get_emit(self, cell):
-        """Return the specified cell of the emittance for the AT lattice.
+        Raises:
+            FieldException: if the specified field is not valid for
+                             chromaticity.
+        """
+        if field == 'x':
+            return self._lindata[2][0]
+        elif field == 'y':
+            return self._lindata[2][1]
+        else:
+            raise FieldException("Field {0} is not a valid chromaticity "
+                                 "plane.".format(field))
+
+    def get_emit(self, field):
+        """Return the emittance for the AT lattice for the specified plane.
 
         .. Note:: The emittance of the first element is returned as it is
            constant throughout the AT lattice, and so which element's emittance
            is returned is arbitrary.
 
         Args:
-            cell (int): The desired cell of emittance.
+            field (str): The desired field (x or y) of emittance.
 
         Returns:
             float: The x or y emittance for the AT lattice.
-        """
-        return self._emittance[2]['emitXY'][0, cell]
 
-    def get_orbit(self, cell):
-        """Return the specified cell of the closed orbit for the AT lattice.
+        Raises:
+            FieldException: if the specified field is not valid for emittance.
+        """
+        if field == 'x':
+            return self._emittance[2]['emitXY'][0, 0]
+        elif field == 'y':
+            return self._emittance[2]['emitXY'][0, 1]
+        else:
+            raise FieldException("Field {0} is not a valid emittance plane."
+                                 .format(field))
+
+    def get_orbit(self, field):
+        """Return the closed orbit for the AT lattice for the specified plane.
 
         Args:
-            cell (int): The desired cell of closed orbit.
+            field (str): The desired field (x, px, y, or py) of closed orbit.
 
         Returns:
             numpy.array: The x, x phase, y or y phase for the AT lattice as an
             array of floats the length of the AT lattice.
-        """
-        return self._lindata[3]['closed_orbit'][:, cell]
 
-    def get_tune(self, cell):
-        """Return the specified cell of the tune for the AT lattice.
+        Raises:
+            FieldException: if the specified field is not valid for orbit.
+        """
+        if field == 'x':
+            return self._lindata[3]['closed_orbit'][:, 0]
+        elif field == 'px':
+            return self._lindata[3]['closed_orbit'][:, 1]
+        elif field == 'y':
+            return self._lindata[3]['closed_orbit'][:, 2]
+        elif field == 'py':
+            return self._lindata[3]['closed_orbit'][:, 3]
+        else:
+            raise FieldException("Field {0} is not a valid closed orbit plane."
+                                 .format(field))
+
+    def get_tune(self, field):
+        """Return the tune for the AT lattice for the specified plane.
 
         .. Note:: A special consideration is made so only the fractional digits
            of the tune are returned.
 
         Args:
-            cell (int): The desired cell of tune.
+            field (str): The desired field (x or y) of tune.
 
         Returns:
             float: The x or y tune for the AT lattice.
+
+        Raises:
+            FieldException: if the specified field is not valid for tune.
         """
-        return (self._lindata[1][cell] % 1)
+        if field == 'x':
+            return (self._lindata[1][0] % 1)
+        elif field == 'y':
+            return (self._lindata[1][1] % 1)
+        else:
+            raise FieldException("Field {0} is not a valid tune plane."
+                                 .format(field))
 
     def get_disp(self):
         """Return the dispersion at every element in the AT lattice.
@@ -273,19 +315,28 @@ class ATSimulator(object):
         """
         return self._lindata[3]['mu']
 
+    def get_energy_spread(self):
+        """Return the energy spread for the AT lattice.
+
+        Returns:
+            float: The energy spread for the AT lattice.
+        """
+        return numpy.sqrt(self._emittance[0]['r66'][4, 4])
+
     def get_mcf(self):
         """Return the linear momentum compaction factor for the AT lattice.
 
-        returns:
+        Returns:
             float: The linear momentum compaction factor of the AT lattice.
         """
+        self._at_lat.radiation_off()
         return self._at_lat.get_mcf()
 
     def get_energy_loss(self):
-        """Return the energy loss per turn for the AT lattice. Taken from the
-        AT lattice property.
+        """Return the energy loss per turn of the AT lattice. Taken from the AT
+        lattice property.
 
-        returns:
+        Returns:
             float: The energy loss of the AT lattice.
         """
         return self._at_lat.energy_loss
@@ -293,33 +344,42 @@ class ATSimulator(object):
     def get_damping_times(self):
         """Return the damping times for the 3 normal modes.
 
-        returns:
+        Returns:
             numpy.array: The damping times of the AT lattice.
         """
         T0 = self.get_s()[-1] / speed_of_light
         return T0 / self._emittance[1][1]
 
+    def get_damping_partition_numbers(self):
+        """Return the damping partition numbers for the 3 normal modes.
+
+        Returns:
+            numpy.array: The damping partition numbers of the AT lattice.
+        """
+        dt = self.get_damping_times()
+        return 4.0 / (dt * sum(dt**-1))
+
     def get_total_bend_angle(self):
         """Return the total bending angle of all the dipoles in the AT lattice.
 
-        returns:
+        Returns:
             float: The total bending angle for the AT lattice.
         """
-        thetas = []
+        theta_sum = 0.0
         for elem in self._at_lat:
             if isinstance(elem, at.lattice.elements.Dipole):
-                thetas.append(elem.BendingAngle)
-        return numpy.degrees(sum(thetas))
+                theta_sum += elem.BendingAngle
+        return numpy.degrees(theta_sum)
 
     def get_total_absolute_bend_angle(self):
         """Return the total absolute bending angle of all the dipoles in the
         AT lattice.
 
-        returns:
+        Returns:
             float: The total absolute bending angle for the AT lattice.
         """
-        thetas = []
+        theta_sum = 0.0
         for elem in self._at_lat:
             if isinstance(elem, at.lattice.elements.Dipole):
-                thetas.append(elem.BendingAngle)
-        return numpy.degrees(sum(numpy.abs(thetas)))
+                theta_sum += abs(elem.BendingAngle)
+        return numpy.degrees(theta_sum)

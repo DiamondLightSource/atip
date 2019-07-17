@@ -1,35 +1,24 @@
 import mock
-import numpy
 import pytac
 import pytest
 
 import atip
 
 
-@pytest.mark.parametrize('func_str,field,cell',
-                         [('atlds._atsim.get_chrom', 'chromaticity_x', 0),
-                          ('atlds._atsim.get_chrom', 'chromaticity_y', 1),
-                          ('atlds._atsim.get_emit', 'emittance_x', 0),
-                          ('atlds._atsim.get_emit', 'emittance_y', 1),
-                          ('atlds._atsim.get_orbit', 'phase_x', 1),
-                          ('atlds._atsim.get_orbit', 'phase_y', 3),
-                          ('atlds._atsim.get_tune', 'tune_x', 0),
-                          ('atlds._atsim.get_tune', 'tune_y', 1),
-                          ('atlds._atsim.get_orbit', 'x', 0),
-                          ('atlds._atsim.get_orbit', 'y', 2),
-                          ('atlds._atsim.get_disp', 'dispersion', None),
-                          ('atlds._atsim.get_energy', 'energy', None),
-                          ('atlds._atsim.get_s', 's_position', None),
-                          ('atlds._atsim.get_alpha', 'alpha', None),
-                          ('atlds._atsim.get_beta', 'beta', None),
-                          ('atlds._atsim.get_m44', 'm44', None),
-                          ('atlds._atsim.get_mu', 'mu', None)])
-def test_lat_field_funcs(func_str, field, cell, atlds):
-    if cell is not None:
-        assert atlds._field_funcs[field].func == eval(func_str)
-        assert atlds._field_funcs[field].args[0] == cell
-    else:
-        assert atlds._field_funcs[field] == eval(func_str)
+@pytest.mark.parametrize('func_str,field', [
+    ('atlds._atsim.get_orbit', 'phase_y'), ('atlds._atsim.get_alpha', 'alpha'),
+    ('atlds._atsim.get_emit', 'emittance_x'), ('atlds._atsim.get_orbit', 'x'),
+    ('atlds._atsim.get_emit', 'emittance_y'), ('atlds._atsim.get_orbit', 'y'),
+    ('atlds._atsim.get_tune', 'tune_x'), ('atlds._atsim.get_tune', 'tune_y'),
+    ('atlds._atsim.get_orbit', 'phase_x'), ('atlds._atsim.get_beta', 'beta'),
+    ('atlds._atsim.get_disp', 'dispersion'), ('atlds._atsim.get_mu', 'mu'),
+    ('atlds._atsim.get_energy', 'energy'), ('atlds._atsim.get_m44', 'm44'),
+    ('atlds._atsim.get_chrom', 'chromaticity_x'),
+    ('atlds._atsim.get_chrom', 'chromaticity_y'),
+    ('atlds._atsim.get_s', 's_position')
+])
+def test_lat_field_funcs(func_str, field, atlds):
+    assert atlds._field_funcs[field] == eval(func_str)
 
 
 def test_lat_get_fields(atlds):
@@ -54,17 +43,18 @@ def test_lat_get_value_raises_FieldException_if_nonexistent_field(atlds,
 def test_lat_get_value():
     """We don't need to test every value for get_value() as _field_funcs which
     it relys on has alreadly been tested for all fields."""
-    def c(cell):
-        return [2.0, 2.5][cell]
     atsim = mock.Mock()
-    atsim.get_disp.return_value = numpy.array([[8.8, 1.7, 3.5],
-                                               [7.8, 1, -1.4]])
-    atsim.get_chrom.return_value = c(0)
+    atsim.get_disp.return_value = 2.5
     atlds = atip.sim_data_sources.ATLatticeDataSource(atsim)
-    assert atlds.get_value('chromaticity_x') == 2.0
-    assert atsim.get_chrom.called_with(0)
-    numpy.testing.assert_equal(atlds.get_value('dispersion'),
-                               numpy.array([[8.8, 1.7, 3.5], [7.8, 1, -1.4]]))
+    assert atlds.get_value('dispersion') == 2.5
+    atlds.get_value('x')
+    assert atsim.get_orbit.called_with('x')
+    atlds.get_value('phase_x')
+    assert atsim.get_orbit.called_with('px')
+    atlds.get_value('y')
+    assert atsim.get_orbit.called_with('y')
+    atlds.get_value('phase_y')
+    assert atsim.get_orbit.called_with('py')
 
 
 @pytest.mark.parametrize('field', ['not_a_field', 1, [], 'BETA', ['x', 'y'],

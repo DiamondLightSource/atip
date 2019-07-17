@@ -32,9 +32,7 @@ def atlds():
 
 @pytest.fixture()
 def at_lattice():
-    ring = atip.utils.load_ring('HMBA')
-    lattice = at.lattice_object.Lattice(ring, keep_all=False)
-    return lattice
+    return atip.utils.load_at_lattice('HMBA')
 
 
 @pytest.fixture(scope='session')
@@ -49,24 +47,27 @@ def mat_filepath():
 
 
 @pytest.fixture(scope='session')
-def at_ring(mat_filepath):
+def at_diad_lattice(mat_filepath):
     return at.load.load_mat(mat_filepath)
 
 
 @pytest.fixture()
 def atsim(at_lattice):
-    return atip.at_interface.ATSimulator(at_lattice)
+    return atip.simulator.ATSimulator(at_lattice)
 
 
 @pytest.fixture()
 def mocked_atsim(at_lattice):
     length = len(at_lattice)
     base = numpy.ones((length, 4))
-    atsim = atip.at_interface.ATSimulator(at_lattice)
-    atsim._at_lat = mock.PropertyMock(energy=5)
+    r66 = numpy.zeros((6, 6))
+    r66[4, 4] = 16
+    atsim = atip.simulator.ATSimulator(at_lattice)
+    atsim._at_lat = mock.PropertyMock(energy=5, energy_loss=73)
+    atsim._at_lat.get_mcf.return_value = 42
     atsim._at_lat.get_s_pos.return_value = numpy.array([0.1 * (i + 1) for i in
                                                        range(length + 1)])
-    atsim._emittance = ([], [],
+    atsim._emittance = ({'r66': r66}, [0, (13, 3, 7)],
                         {'emitXY': (base[:, :2] * numpy.array([1.4, 0.45]))})
     atsim._lindata = ([], [3.14, 0.12], [2, 1],
                       {'closed_orbit': (base * numpy.array([0.6, 57, 0.2, 9])),
@@ -79,6 +80,16 @@ def mocked_atsim(at_lattice):
                                            4, 4)) * (numpy.eye(4) * 0.8)),
                        'mu': (base[:, :2] * numpy.array([176, 82]))})
     return atsim
+
+
+@pytest.fixture()
+def ba_atsim(at_lattice):
+    dr = at.elements.Drift('d1', 1)
+    dr.BendingAngle = 9001
+    lat = [at.elements.Dipole('b1', 1, 1.3), at.elements.Dipole('b2', 1, -0.8)]
+    at_sim = atip.simulator.ATSimulator(at_lattice)
+    at_sim._at_lat = lat
+    return at_sim
 
 
 @pytest.fixture()
