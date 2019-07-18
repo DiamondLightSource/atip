@@ -6,14 +6,17 @@ Using `PythonSoftIOC <https://github.com/Araneidae/pythonIoc>`_ ATIP can
 emulate machine PVs so that the ATIP simulator can be addressed in the same
 manner as the live machine. This is useful for testing high level applications
 as it can update PVs in a physically correct way in response to changes by the
-user. The virtual accelerator runs on EPICS port 6064 to avoid conflict with
+user.
+
+The virtual accelerator runs on EPICS port 6064 which is the port used by
+convention at Diamond for simulations to avoid conflict with
 the same PVs on the live machine.
 
 Initialisation:
 ---------------
 
 Before starting please ensure you have working and up to date versions of AT,
-Pytac, and ATIP.
+Pytac, and ATIP - see ``../INSTALL.rst``
 
 Inside the top-level atip directory::
 
@@ -48,31 +51,68 @@ the live machine, either through Pytac or by directly accessing the PVs.
 Feedback Records:
 -----------------
 
-A number of PVs related to the feedback systems are supported. They can be read
-from in the same way as any other PV, but for testing and debugging there is a
-special method for setting them. This is done on the ATIP server object, inside
-the server terminal (the one you ran ``start-ioc`` in initially). As arguments,
-it takes the element's index in the ring (starting from 1, 0 is used to set on
-the lattice), the field (possible element fields are: ``'x_fofb_disabled',
-'x_sofb_disabled', 'y_fofb_disabled', 'y_sofb_disabled', 'h_fofb_disabled',
-'h_sofb_disabled', 'v_fofb_disabled', 'v_sofb_disabled', 'error_sum',
-'enabled', 'state', 'offset'``; possible lattice fields are: ``'beam_current',
-feedback_status', 'bpm_id', 'emittance_status'``), and the value to be set.
+A number of PVs related to feedback systems are supported. These have been
+added to aid testing of the high level applications at Diamond that control
+the feedbacks, and so are site specific.
 
-For example disabling SOFB on the first BPM, or reducing the beam current::
+These PVs can be read in the same way as any other PV with caget,
+but for testing and debugging there is a special method on the ATIP
+server object for setting them.
+
+This is done inside the server console, in the terminal where one you ran
+``start-virtac`` initially). As arguments,
+it takes::
+
+1. The index of an element in the ring, starting from 1, or 0 to set fields of
+   the lattice;
+
+2. The field: possible element fields are:
+
+   - ``x_fofb_disabled``
+   - ``x_sofb_disabled``
+   - ``y_fofb_disabled``
+   - ``y_sofb_disabled``
+   - ``h_fofb_disabled``
+   - ``h_sofb_disabled``
+   - ``v_fofb_disabled``
+   - ``v_sofb_disabled``
+   - ``error_sum``
+   - ``enabled``
+   - ``state``
+   - ``offset``
+
+   possible lattice fields are:
+
+   - ``beam_current``
+   - ``feedback_status``
+   - ``bpm_id``
+   - ``emittance_status``
+
+3. The value to be set.
+
+For example disabling SOFB on the first BPM::
 
     >>> server.set_feedback_record(3, 'enabled', 0)
+
+or reducing the beam current::
+
     >>> server.set_feedback_record(0, 'beam_current', 280)
+
+For further information on working with feedback systems, please refer to
+``FEEDBACK_SYSTEMS.rst``.
 
 Ring Mode:
 ----------
 
 You can run the virtual accelerator in any ring mode that is supported by
-Pytac; currently 'VMX', 'VMXSP', and 'DIAD'. The ring mode can be passed as a
-command line argument to ``start-virtac``, if it is not passed in that manner
-then it can be configured by changing the ``RINGMODE`` environment variable, if
-that is not set then the ring mode PV ``SR-CS-RING-01:MODE`` is checked, if
-that is also not set then the virtual accelerator will default to 'DIAD'.
+Pytac; currently 'VMX', 'VMXSP', and 'DIAD'. The ring mode can be set by
+the following methods, which are checked in this order::
+
+- as a command line argument to ``start-virtac``;
+- by changing the ``RINGMODE`` environment variable
+- a PV ``SR-CS-RING-01:MODE`` which has the ring mode as its value
+
+If none of these is set then the virtual accelerator will default to 'DIAD'.
 For example::
 
     $ ./start-virtac DIAD

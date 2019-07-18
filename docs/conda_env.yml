@@ -5,6 +5,6 @@ dependencies:
 - scipy>=0.16
 - pip:
   - cothread
-  - git+https://github.com/dls-controls/pytac.git
+  - pytac
   - --extra-index-url=https://test.pypi.org/simple/
   - accelerator-toolbox
