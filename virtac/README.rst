@@ -8,8 +8,8 @@ manner as the live machine. This is useful for testing high level applications
 as it can update PVs in a physically correct way in response to changes by the
 user.
 
-The virtual accelerator runs on EPICS port 6064 which is the port used by
-convention at Diamond for simulations to avoid conflict with
+The virtual accelerator (virtac for short) runs on EPICS port 6064 which is the
+port used by convention at Diamond for simulations to avoid conflict with
 the same PVs on the live machine.
 
 Initialisation:
@@ -17,6 +17,44 @@ Initialisation:
 
 Before starting please ensure you have working and up to date versions of AT,
 Pytac, and ATIP - see ``../INSTALL.rst``
+
+You must also have pythonIoc installed - https://github.com/Araneidae/pythonIoc
+
+PythonIOC has a python interpreter linked in, and also includes some of its
+dependent modules. For this reason, the pythonIoc binary has to be used
+as the python interpreter for the virtac. This makes the setup a little bit
+complicated.
+
+In the following paragraphs, ``$PYTHONIOC_INSTALL_DIR`` is the path to the
+directory where pythonIoc is installed.
+
+Setup with virtual env
+----------------------
+
+Set up a virtual envirnoment, install our dependencies with ``pip``, and then
+set the PYTHONPATH so that they are accesible from pythonIoc. Note that, at
+present, pythonIoc is only compatible with Python 2.7, so we need to use this
+version when creating the virtual env. ::
+
+    $ virtualenv --python $PYTHONIOC_INSTALL_DIR/pythonIoc /scratch/my_venv
+    $ source /scratch/my_venv/bin/activate
+
+    # This variable is required by pythonIoc
+    $ export HERE=$PYTHONIOC_INSTALL_DIR
+    $ pip install accelerator-toolbox
+    $ pip install pytac
+
+    # Place the site-packages from the virtualenv on the python path
+    # so they can be used in the virtac
+    $ export PYTHONPATH=/scratch/my_venv/lib/python2.7/site-packages
+
+Before running the virtual accelerator you need to edit the path to pythonIoc
+also in the ``start-virtac`` script. You may also edit the EPICS port to be
+used in this script.
+
+
+Start the virtual accelerator
+-----------------------------
 
 Inside the top-level atip directory::
 

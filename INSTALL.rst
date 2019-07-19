@@ -9,11 +9,11 @@ page, `here. <https://github.com/dls-controls/atip>`_
 Initial Setup and Installation
 ------------------------------
 
-**Install ATIP using pip (not yet supported)**::
+**Option 1: Install ATIP using pip**::
 
     $ pip install atip
 
-**Install AT, Pytac and ATIP from GitHub**:
+**Option 2: Install AT, Pytac and ATIP from GitHub**:
 
 1. Download AT, Pytac and ATIP into the same directory [1]_::
 
