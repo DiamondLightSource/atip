@@ -9,7 +9,7 @@ pytest-cov = "*"
 coveralls = "*"
 mock = "*"
 flake8 = "*"
-Sphinx = "*"
+sphinx = "*"
 sphinx_rtd_theme = "*"
 
 [packages]
