@@ -1,7 +1,6 @@
 accelerator-toolbox>=0.0.2
 pytac>=0.3.0
-# Only for Python 3.7, older Cothread releases will work for python<=3.6
-cothread>=2.16
+cothread
 numpy
 scipy
 pytest
