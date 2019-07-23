@@ -1,2 +1,2 @@
 include atip/*.py
-include rings/*.m
+include rings/*.m*
