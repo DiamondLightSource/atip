@@ -1,12 +1,12 @@
-numpy>=1.10
-scipy>=0.16
-pytest>=2.9
+accelerator-toolbox>=0.0.2
+pytac>=0.3.0
 cothread
+numpy
+scipy
+pytest
 pytest-cov
 coveralls
 mock
 flake8
 sphinx
 sphinx-rtd-theme
-accelerator-toolbox
-pytac
