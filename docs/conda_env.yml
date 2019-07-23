@@ -1,9 +1,0 @@
-name: atip
-dependencies:
-- python=3.6
-- numpy>=1.10
-- scipy>=0.16
-- pip:
-  - cothread
-  - pytac
-  - accelerator-toolbox
