@@ -8,3 +8,5 @@ mock
 flake8
 sphinx
 sphinx-rtd-theme
+accelerator-toolbox
+pytac
