@@ -9,11 +9,11 @@ page, `here. <https://github.com/dls-controls/atip>`_
 Initial Setup and Installation
 ------------------------------
 
-**Install ATIP using pip (not yet supported)**::
+**Option 1: Install ATIP using pip**::
 
     $ pip install atip
 
-**Install AT, Pytac and ATIP from GitHub**:
+**Option 2: Install AT, Pytac and ATIP from GitHub**:
 
 1. Download AT, Pytac and ATIP into the same directory [1]_::
 
@@ -41,6 +41,17 @@ Initial Setup and Installation
     $ python -m pytest
     $ cd ../atip
     $ python -m pytest
+
+Troubleshooting
+---------------
+
+If you encounter problems with your pyAT installation, please refer to 
+``pyat/README.rst`` in the ``at`` source directory. Help for installing
+Pytac is available on `Readthedocs
+<https://pytac.readthedocs.io/en/latest/examples.html#installation>`_.
+
+Please note that for ATIP to function with Python 3.7 or later, you must
+use Cothread>=2.16.
 
 Footnotes
 ---------

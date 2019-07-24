@@ -3,8 +3,8 @@ import sys
 
 from pkg_resources import require
 
-require('cothread==2.12')
-require('epicsdbbuilder==1.0')
+require('cothread')
+require('epicsdbbuilder')
 require('numpy>=1.10')
 require('scipy>=0.16')
 here = os.path.realpath(os.path.dirname(__file__))
