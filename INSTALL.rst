@@ -42,6 +42,17 @@ Initial Setup and Installation
     $ cd ../atip
     $ python -m pytest
 
+Troubleshooting
+---------------
+
+If you encounter problems with your pyAT installation, please refer to 
+``pyat/README.rst`` in the ``at`` source directory. Help for installing
+Pytac is available on `Readthedocs
+<https://pytac.readthedocs.io/en/latest/examples.html#installation>`_.
+
+Please note that for ATIP to function with Python 3.7 or later, you must
+use Cothread>=2.16.
+
 Footnotes
 ---------
 
