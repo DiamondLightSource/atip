@@ -17,7 +17,7 @@ def load_at_lattice(mode='DIAD', **kwargs):
     Returns:
         at.lattice.Lattice: An AT lattice object.
     """
-    filepath = os.path.join(os.path.split(os.path.dirname(__file__))[0],
+    filepath = os.path.join(os.path.dirname(__file__),
                             ''.join(['rings/', mode.lower(), '.mat']))
     at_lattice = at.load.load_mat(filepath, **kwargs)
     for x in range(len(at_lattice)):
