@@ -16,6 +16,7 @@ script:
   - python -m pytest test --cov-report term-missing --cov=atip
   - flake8 --ignore=E501,W504
   - sphinx-build -b html -ETW docs docs/_build/html
+  - python setup.py bdist_wheel
 
 after_success:
   - coveralls
