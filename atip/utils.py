@@ -20,9 +20,9 @@ def load_at_lattice(mode='DIAD', **kwargs):
     filepath = os.path.join(os.path.dirname(__file__),
                             ''.join(['rings/', mode.lower(), '.mat']))
     at_lattice = at.load.load_mat(filepath, **kwargs)
-    for x in range(len(at_lattice)):
-        at_lattice[x].Index = x + 1
-        at_lattice[x].Class = at_lattice[x].__class__.__name__
+    for index, elem in enumerate(at_lattice):
+        elem.Index = index + 1
+        elem.Class = elem.__class__.__name__
     return at_lattice
 
 

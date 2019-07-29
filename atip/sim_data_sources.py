@@ -432,4 +432,4 @@ class ATLatticeDataSource(pytac.data_source.DataSource):
                               currently supported.
         """
         raise HandleException("Field {0} cannot be set on lattice data source "
-                              "{0}.".format(field, self))
+                              "{1}.".format(field, self))

@@ -106,7 +106,7 @@ class ATSimulator(object):
         """
         while True:
             self._gather_one_sample()
-            for i in range(len(self.queue)):
+            for _ in range(len(self.queue)):
                 self._gather_one_sample()
             if bool(self._paused) is False:
                 try:
