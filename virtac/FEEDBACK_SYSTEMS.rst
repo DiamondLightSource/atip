@@ -43,9 +43,9 @@ Masks are wrappers for existing functions to enable them to be addressed in a
 different syntax than normal. The types of masks are:
 
 1. ``callback_offset`` - Provides a method to be passed to as a callback. When
-   called, the stored offset record is set to the passed value and the
-   stored quadrupole PV is refreshed. This is the system that enables the
-   tune feedback to operate, see below for more information.
+   called, the stored offset record is set to the passed value and the stored
+   quadrupole PV is refreshed. This is the system that enables the tune
+   feedback to operate, see below for more information.
 2. ``callback_set`` - Provides a method to be passed to as a callback. When
    called, the stored offset records are set to the passed value.
 3. ``caget_mask`` - Used to allow a PV to imitate a record object, ``.get()``
@@ -73,5 +73,5 @@ internal offset record, and the quadrupole record is refreshed. This triggers
 the ``_on_update`` callback of the quadrupole record, causing the new offset to
 be applied to the quadrupole's value.
 
-The tune feedback only interacts with quadrupoles, but this functionality
-could also be used with any "out" record on the virtual accelerator.
+The tune feedback only interacts with quadrupoles, but this functionality could
+also be used with any "out" record on the virtual accelerator.

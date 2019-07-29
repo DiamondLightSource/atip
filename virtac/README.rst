@@ -8,9 +8,9 @@ manner as the live machine. This is useful for testing high level applications,
 as it can update PVs in a physically correct way in response to changes by the
 user.
 
-The virtual accelerator (virtac for short) runs on EPICS port 6064 (the
-port used by convention at Diamond for simulations) to avoid conflict with
-the same PVs on the live machine.
+The virtual accelerator (virtac for short) runs on EPICS port 6064 (the port
+used by convention at Diamond for simulations) to avoid conflict with the same
+PVs on the live machine.
 
 Initialisation
 --------------
@@ -21,15 +21,15 @@ Pytac, and ATIP - see ``../INSTALL.rst``
 You must also have pythonIoc installed - https://github.com/Araneidae/pythonIoc
 
 PythonIOC has a python interpreter linked in, and also includes some of its
-dependent modules. For this reason, the ``pythonIoc`` binary has to be used
-as the python interpreter for the virtac. This makes the setup a little bit
+dependent modules. For this reason, the ``pythonIoc`` binary has to be used as
+the python interpreter for the virtac. This makes the setup a little bit
 complicated.
-
-In the following paragraphs, ``$PYTHONIOC_INSTALL_DIR`` is the path to the
-directory where pythonIoc is installed.
 
 Setup with virtual env
 ----------------------
+
+In the following paragraphs, ``$PYTHONIOC_INSTALL_DIR`` is the path to the
+directory where pythonIoc is installed.
 
 Set up a virtual envirnoment, install our dependencies with ``pip``, and then
 set the ``PYTHONPATH`` so that they are accesible from ``pythonIoc``. Note
@@ -39,18 +39,18 @@ use this version when creating the virtual env. ::
     $ virtualenv --python $PYTHONIOC_INSTALL_DIR/pythonIoc /scratch/my_venv
     $ source /scratch/my_venv/bin/activate
 
-      # This variable is required by pythonIoc
+    $ # This variable ($HERE) is required by pythonIoc.
     $ export HERE=$PYTHONIOC_INSTALL_DIR
     $ pip install accelerator-toolbox
     $ pip install pytac
 
-      # Place the site-packages from the virtualenv on the python path
-      # so they can be used in the virtac
-    $ export PYTHONPATH=/scratch/my_venv/lib/python2.7/site-packages
+    $ # Add the site-packages from the virtualenv to the python path so that
+    $ # they can be used in the virtac.
+    $ export PYTHONPATH="$PYTHONPATH:/scratch/my_venv/lib/python2.7/site-packages"
 
 Before running the virtual accelerator you need to edit the path to
-``pythonIoc`` in the ``start-virtac`` script. You may also edit the EPICS
-port to be used in this script.
+``pythonIoc`` in the ``start-virtac`` script. You may also edit the EPICS port
+to be used in this script.
 
 
 Start the virtual accelerator
@@ -93,18 +93,19 @@ A number of PVs related to feedback systems are supported. These have been
 added to aid testing of the high level applications at Diamond that control
 the feedbacks, and so are site specific.
 
-These PVs can be read in the same way as any other PV with caget,
-but for testing and debugging there is a special method on the ATIP
-server object for setting them.
+These PVs can be read in the same way as any other PV with caget, but for
+testing and debugging there is a special method on the ATIP server object for
+setting them.
 
 This is done inside the server console, in the terminal where one you ran
-``start-virtac`` initially). As arguments,
-it takes::
+``start-virtac`` initially). As arguments, it takes::
 
 1. The index of an element in the ring, starting from 1; or 0 to set fields of
    the lattice;
 
-2. The field: possible element fields are:
+2. The field:
+
+   Possible element fields are:
 
    - ``x_fofb_disabled``
    - ``x_sofb_disabled``
@@ -119,22 +120,22 @@ it takes::
    - ``state``
    - ``offset``
 
-   possible lattice fields are:
+   Possible lattice fields are:
 
    - ``beam_current``
    - ``feedback_status``
    - ``bpm_id``
    - ``emittance_status``
 
-3. The value to be set.
+3. The value to be set:
 
-For example disabling SOFB on the first BPM::
+   For example disabling SOFB on the first BPM::
 
-    >>> server.set_feedback_record(3, 'enabled', 0)
+       >>> server.set_feedback_record(3, 'enabled', 0)
 
-or reducing the beam current::
+   or reducing the beam current::
 
-    >>> server.set_feedback_record(0, 'beam_current', 280)
+       >>> server.set_feedback_record(0, 'beam_current', 280)
 
 For further information on working with feedback systems, please refer to
 ``FEEDBACK_SYSTEMS.rst``.
@@ -143,14 +144,15 @@ Ring Mode:
 ----------
 
 You can run the virtual accelerator in any ring mode that is supported by
-Pytac; currently 'VMX', 'VMXSP', and 'DIAD'. The ring mode can be set by
-the following methods, which are checked in this order:
+Pytac; currently 'VMX', 'VMXSP', and 'DIAD'. The ring mode can be set by the
+following methods, which are checked in this order:
 
 - as a command line argument to ``start-virtac``;
 - by changing the ``RINGMODE`` environment variable
 - a PV ``SR-CS-RING-01:MODE`` which has the ring mode as its value
 
 If none of these is set then the virtual accelerator will default to 'DIAD'.
+
 For example::
 
     $ ./start-virtac DIAD
