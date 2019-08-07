@@ -151,12 +151,14 @@ def test_elem_set_value_sets_up_to_date_flag(at_elem, field):
                                    'f'])
 def test_elem_set_value_adds_changes_to_queue(at_elem, field):
     atsim = mock.Mock()
-    ateds = atip.sim_data_sources.ATElementDataSource(at_elem, 1, atsim,
-                                                      [field])
+    ateds = atip.sim_data_sources.ATElementDataSource(
+        at_elem, 1, atsim, [field]
+    )
     ateds.set_value(field, 1)
-    assert len(atsim.queue.mock_calls) == 1
-    assert atsim.queue.mock_calls[0] == mock.call.Signal((ateds._make_change,
-                                                          field, 1))
+    assert len(atsim.queue_set.mock_calls) == 1
+    assert atsim.queue_set.mock_calls[0] == mock.call(
+        ateds._make_change, field, 1
+    )
 
 
 @pytest.mark.parametrize('field,attr_str', [('x_kick', 'at_elem.KickAngle[0]'),
