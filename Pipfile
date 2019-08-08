@@ -13,5 +13,6 @@ sphinx = "*"
 sphinx_rtd_theme = "*"
 
 [packages]
-numpy = "*"
 cothread = "*"
+accelerator-toolbox = ">=0.0.2"
+pytac = ">=0.3.0"

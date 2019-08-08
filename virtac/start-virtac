@@ -1,0 +1,22 @@
+#!/bin/sh
+
+# The launch method for this is entirely Diamond-specific as it relies on
+# the internal pythonSoftIoc installation.
+
+PYIOC_VERSION=2-15
+EPICS_VERSION=R3.14.12.7
+PYIOC=/dls_sw/prod/$EPICS_VERSION/support/pythonIoc/$PYIOC_VERSION/pythonIoc
+export HERE=$(dirname $PYIOC)
+export PYTHONPATH=$HERE/python
+
+# We need Pipenv only because there is one dependency that is not already
+# installed inside Diamond. The other dependencies are brought in through
+# --site-packages.
+if ! pipenv --venv > /dev/null 2>&1; then
+    pipenv --python=$PYIOC --site-packages install
+fi
+
+export EPICS_CA_SERVER_PORT=6064
+export EPICS_CAS_SERVER_PORT=6064
+
+exec pipenv run python atip_ioc_entry.py "$@"

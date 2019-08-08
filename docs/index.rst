@@ -7,6 +7,8 @@ ATIP adds a simulator to Pytac, which can be used and addressed in the same way
 as a real accelerator. This enables the easy offline testing of high level
 accelerator controls applications.
 
+ATIP is hosted on `Github <https://github.com/dls-controls/atip>`_.
+
 The python implementation of
 `Accelerator Toolbox <https://github.com/atcollab/at>`_ (pyAT) is used
 for the simulation.

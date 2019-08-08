@@ -4,6 +4,7 @@ import sys
 from pkg_resources import require
 
 require('cothread')
+require('pytac')
 require('epicsdbbuilder')
 require('numpy>=1.10')
 require('scipy>=0.16')
