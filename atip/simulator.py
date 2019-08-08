@@ -71,9 +71,10 @@ class ATSimulator(object):
                                             coupled=False)
         # Threading stuff initialisation.
         self._queue = cothread.EventQueue()
-        self.up_to_date = cothread.Event()
+        # Explicitly manage the cothread Events, so turn off auto_reset.
+        self._paused = cothread.Event(auto_reset=False)
+        self.up_to_date = cothread.Event(auto_reset=False)
         self.up_to_date.Signal()
-        self._paused = cothread.Event()
         self._calculation_thread = cothread.Spawn(self._recalculate_phys_data,
                                                   callback)
 

@@ -134,6 +134,9 @@ class ATElementDataSource(pytac.data_source.DataSource):
         Raises:
             FieldException: if the specified field does not exist.
         """
+        # Ensure any outstanding calculations are completed before returning
+        # a value.
+        self._atsim.wait_for_calculations()
         # Again we assume that every set field has a corresponding get field.
         if field in self._fields:
             return self._get_field_funcs[field]()
