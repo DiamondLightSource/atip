@@ -1,7 +1,9 @@
 import at
 import mock
 import pytest
-from pytac.exceptions import FieldException, HandleException
+from pytac.exceptions import (FieldException, HandleException,
+                              ControlSystemException)
+from testfixtures import LogCapture
 
 import atip
 
@@ -80,6 +82,25 @@ def test_elem_add_field_raises_FieldExceptions_correctly(at_elem, field):
                                                       ['f'])
     with pytest.raises(FieldException):
         ateds.add_field(field)
+
+
+def test_elem_get_value_handles_calculation_check_time_out_correctly(at_elem):
+    atsim = mock.Mock()
+    ateds = atip.sim_data_sources.ATElementDataSource(at_elem, 1, atsim, ['f'])
+    atsim.wait_for_calculations.return_value = False
+    # Checks and raises exception on failure.
+    with pytest.raises(ControlSystemException):
+        ateds.get_value('f', throw=True, check=True)
+    # Checks, returns value, and warns on failure.
+    with LogCapture() as log:
+        assert ateds.get_value('f', throw=False, check=True) == 0
+    log.check(('root', 'WARNING', 'Potentially out of date data returned. '
+               'Check for completion of outstanding calculations timed out.'))
+    # Doesn't check so doesn't raise on failure.
+    ateds.get_value('f', throw=True, check=False)
+    atsim.wait_for_calculations.return_value = True
+    # Checks but doesn't fail so doesn't raise or warn and data is returned.
+    assert ateds.get_value('f', throw=True, check=False) == 0
 
 
 @pytest.mark.parametrize('field', ['not_a_field', 1, [], 'a1', 'X_KICK'])

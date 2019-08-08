@@ -6,6 +6,7 @@ numpy
 scipy
 pytest
 pytest-cov
+testfixtures
 coveralls
 mock
 flake8

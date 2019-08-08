@@ -20,7 +20,8 @@ def test_load_from_filepath(pytac_lattice, mat_filepath):
     atip.load_sim.load_from_filepath(pytac_lattice, mat_filepath)
 
 
-def test_load_with_non_callable_callback_raises_TypeError(pytac_lattice, at_diad_lattice):
+def test_load_with_non_callable_callback_raises_TypeError(pytac_lattice,
+                                                          at_diad_lattice):
     with pytest.raises(TypeError):
         atip.load_sim.load(pytac_lattice, at_diad_lattice, '')
 
