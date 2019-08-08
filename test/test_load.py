@@ -20,11 +20,12 @@ def test_load_from_filepath(pytac_lattice, mat_filepath):
     atip.load_sim.load_from_filepath(pytac_lattice, mat_filepath)
 
 
-def test_load_with_callback(pytac_lattice, at_diad_lattice):
-    # Check load with non-callable raises TypeError
+def test_load_with_non_callable_callback_raises_TypeError(pytac_lattice, at_diad_lattice):
     with pytest.raises(TypeError):
         atip.load_sim.load(pytac_lattice, at_diad_lattice, '')
-    # Check load with callable
+
+
+def test_load_with_callback(pytac_lattice, at_diad_lattice):
     callback_func = mock.Mock()
     lat = atip.load_sim.load(pytac_lattice, at_diad_lattice, callback_func)
     atsim = lat._data_source_manager._data_sources[pytac.SIM]._atsim

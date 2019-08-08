@@ -134,6 +134,9 @@ class ATElementDataSource(pytac.data_source.DataSource):
         Raises:
             FieldException: if the specified field does not exist.
         """
+        # Ensure any outstanding calculations are completed before returning
+        # a value.
+        self._atsim.wait_for_calculations()
         # Again we assume that every set field has a corresponding get field.
         if field in self._fields:
             return self._get_field_funcs[field]()
@@ -160,7 +163,7 @@ class ATElementDataSource(pytac.data_source.DataSource):
         if field in self._fields:
             if field in self._set_field_funcs.keys():
                 self._atsim.up_to_date.Reset()
-                self._atsim.queue.Signal((self._make_change, field, value))
+                self._atsim.queue_set(self._make_change, field, value)
             else:
                 raise HandleException("Field {0} cannot be set on element data"
                                       " source {1}.".format(field, self))
