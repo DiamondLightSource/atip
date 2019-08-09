@@ -47,19 +47,18 @@ def test_lat_get_value_handles_calculation_check_time_out_correctly():
     atsim.get_disp.return_value = 2.5
     atlds = atip.sim_data_sources.ATLatticeDataSource(atsim)
     atsim.wait_for_calculations.return_value = False
-    # Checks and raises exception on failure.
+    # Check fails, throw is True, so exception is raised.
     with pytest.raises(ControlSystemException):
-        atlds.get_value('dispersion', throw=True, check=True)
-    # Checks, returns value, and warns on failure.
+        atlds.get_value('dispersion', throw=True)
+    # Check fails, throw is False, so warning is logged and value is returned.
     with LogCapture() as log:
-        assert atlds.get_value('dispersion', throw=False, check=True) == 2.5
+        assert atlds.get_value('dispersion', throw=False) == 2.5
     log.check(('root', 'WARNING', 'Potentially out of date data returned. '
                'Check for completion of outstanding calculations timed out.'))
-    # Doesn't check so doesn't raise on failure.
-    atlds.get_value('dispersion', throw=True, check=False)
     atsim.wait_for_calculations.return_value = True
-    # Checks but doesn't fail so doesn't raise or warn and data is returned.
-    assert atlds.get_value('dispersion', throw=True, check=False) == 2.5
+    # Check doesn't fail, so doesn't raise error or warn and data is returned.
+    assert atlds.get_value('dispersion', throw=True) == 2.5
+    assert atlds.get_value('dispersion', throw=False) == 2.5
 
 
 def test_lat_get_value():
