@@ -348,7 +348,7 @@ class ATSimulator(object):
             numpy.array: The damping times of the AT lattice.
         """
         T0 = self.get_s()[-1] / speed_of_light
-        return T0 / self._emittance[1][1]
+        return T0 / self._emittance[1]['damping_rates']
 
     def get_damping_partition_numbers(self):
         """Return the damping partition numbers for the 3 normal modes.

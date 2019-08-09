@@ -67,7 +67,7 @@ def mocked_atsim(at_lattice):
     atsim._at_lat.get_mcf.return_value = 42
     atsim._at_lat.get_s_pos.return_value = numpy.array([0.1 * (i + 1) for i in
                                                        range(length + 1)])
-    atsim._emittance = ({'r66': r66}, [0, (13, 3, 7)],
+    atsim._emittance = ({'r66': r66}, {'damping_rates': [13, 3, 7]},
                         {'emitXY': (base[:, :2] * numpy.array([1.4, 0.45]))})
     atsim._lindata = ([], [3.14, 0.12], [2, 1],
                       {'closed_orbit': (base * numpy.array([0.6, 57, 0.2, 9])),

@@ -73,7 +73,8 @@ def preload_at(at_lat):
     for elem in at_lat:
         elems_dict[type(elem).__name__].append(elem)
     for elem_type, elements in elems_dict.items():
-        setattr(elems, elem_type.lower() + "s", elements)
+        if len(elements) > 0:
+            setattr(elems, elem_type.lower() + "s", elements)
     return elems
 
 
@@ -98,76 +99,85 @@ def preload(pytac_lat):
     return elems
 
 
-def get_atsim(pytac_lattice):
+def get_atsim(target):
     """Get the ATSimulator object being used by a unified Pytac lattice.
 
     Args:
-        pytac_lattice (pytac.lattice.Lattice): An instance of a unified Pytac
-                                                lattice from which to get the
-                                                ATSimulator object being used.
+        target (pytac.lattice.Lattice or ATSimulator): An ATSimulator object
+                                                        or a Pytac lattice
+                                                        from which an
+                                                        ATSimulator object can
+                                                        be extracted.
 
     Returns:
         ATSimulator: The simulator object performing the physics calculations.
     """
-    return pytac_lattice._data_source_manager._data_sources[pytac.SIM]._atsim
+    if isinstance(target, atip.simulator.ATSimulator):
+        return target
+    else:  # Pytac lattice
+        return target._data_source_manager._data_sources[pytac.SIM]._atsim
 
 
-def get_sim_lattice(pytac_lattice):
+def get_sim_lattice(target):
     """Get the AT lattice that the simulator is using.
 
     Args:
-        pytac_lattice (pytac.lattice.Lattice): An instance of a unified Pytac
-                                                lattice from which to get the
-                                                corresponding AT lattice.
+        target (pytac.lattice.Lattice or ATSimulator): An ATSimulator object
+                                                        or a Pytac lattice
+                                                        from which an
+                                                        ATSimulator object can
+                                                        be extracted.
 
     Returns:
         at.lattice.Lattice: The corresponding AT lattice used by the simulator.
     """
-    return get_atsim(pytac_lattice).get_at_lattice()
+    return get_atsim(target).get_at_lattice()
 
 
-def get_thread(pytac_lattice):
+def get_thread(target):
     """Get the Cothread thread that is used for performing the recalculations.
 
     Args:
-        pytac_lattice (pytac.lattice.Lattice): An instance of a unified Pytac
-                                                lattice from which to get the
-                                                calculation thread off of the
-                                                ATSimulator object.
+        target (pytac.lattice.Lattice or ATSimulator): An ATSimulator object
+                                                        or a Pytac lattice
+                                                        from which an
+                                                        ATSimulator object can
+                                                        be extracted.
 
     Returns:
         cothread.Thread: The calculation thread that the Pytac lattice's
                          ATSimulator object uses to recalculate physics data.
     """
-    return get_atsim(pytac_lattice)._calculation_thread
+    return get_atsim(target)._calculation_thread
 
 
-def toggle_thread(pytac_lattice):
+def toggle_thread(target):
     """Pause or unpause the ATSimulator calculation thread.
 
     Args:
-        pytac_lattice (pytac.lattice.Lattice): An instance of a unified Pytac
-                                                lattice from which to pause or
-                                                unpause the calculation thread
-                                                on its ATSimulator object.
+        target (pytac.lattice.Lattice or ATSimulator): An ATSimulator object
+                                                        or a Pytac lattice
+                                                        from which an
+                                                        ATSimulator object can
+                                                        be extracted.
     """
-    get_atsim(pytac_lattice).toggle_calculations()
+    get_atsim(target).toggle_calculations()
 
 
-def trigger_calc(pytac_lattice):
+def trigger_calc(target):
     """Manually trigger a recalculation of the physics data on the ATSimulator
     object of the given unified Pytac lattice.
 
     Args:
-        pytac_lattice (pytac.lattice.Lattice): An instance of a unified Pytac
-                                                lattice from which to trigger a
-                                                recalculation of the physics
-                                                data on its ATSimulator object.
+        target (pytac.lattice.Lattice or ATSimulator): An ATSimulator object
+                                                        or a Pytac lattice
+                                                        from which an
+                                                        ATSimulator object can
+                                                        be extracted.
     """
-    for elem in pytac_lattice:
-        fields = list(set(elem.get_fields()[pytac.SIM]) - set(['x', 'y']))
-        if len(fields) != 0:
-            val = elem.get_value(fields[0], pytac.SP, data_source=pytac.SIM)
-            elem.set_value(fields[0], val, data_source=pytac.SIM)
-            print("Recalculation manually triggered.")
-            break
+    def do_nothing(*args):
+        pass
+    atsim = get_atsim(target)
+    atsim._paused.Reset()
+    atsim.queue.Signal((do_nothing, None, None))
+    print("Recalculation manually triggered.")
