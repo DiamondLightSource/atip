@@ -19,8 +19,6 @@ class ATSimulator(object):
     **Attributes**
 
     Attributes:
-        queue (cothread.EventQueue): A queue of changes to be made to the
-                                      lattice on the next recalculation cycle.
         up_to_date (cothread.Event): A flag that indicates if the physics data
                                       is up to date with all the changes made
                                       to the AT lattice.
@@ -35,6 +33,9 @@ class ATSimulator(object):
                                 ohmi_envelope (see at.lattice.radiation.py).
            _lindata (tuple): Linear optics data, the output of the AT physics
                               function linopt (see at.lattice.linear.py).
+           _queue (cothread.EventQueue): A queue of changes to be applied to
+                                          the centralised lattice on the next
+                                          recalculation cycle.
            _paused (cothread.Event): A flag used to temporarily pause the
                                       physics calculations.
            _calculation_thread (cothread.Thread): A thread to check the queue
@@ -70,19 +71,30 @@ class ATSimulator(object):
         self._lindata = self._at_lat.linopt(refpts=self._rp, get_chrom=True,
                                             coupled=False)
         # Threading stuff initialisation.
-        self.queue = cothread.EventQueue()
-        self.up_to_date = cothread.Event()
+        self._queue = cothread.EventQueue()
+        # Explicitly manage the cothread Events, so turn off auto_reset.
+        self._paused = cothread.Event(auto_reset=False)
+        self.up_to_date = cothread.Event(auto_reset=False)
         self.up_to_date.Signal()
-        self._paused = cothread.Event()
         self._calculation_thread = cothread.Spawn(self._recalculate_phys_data,
                                                   callback)
+
+    def queue_set(self, func, field, value):
+        """Add a change to the queue, to be applied when the queue is emptied.
+
+        Args:
+            func (callable): The function to be called to apply the change.
+            field (str): The field to be changed.
+            value (float): The value to be set.
+        """
+        self._queue.Signal((func, field, value))
 
     def _gather_one_sample(self):
         """If the queue is empty Wait() yields until an item is added. When the
         queue is not empty the oldest change will be removed and applied to the
         AT lattice.
         """
-        apply_change_method, field, value = self.queue.Wait()
+        apply_change_method, field, value = self._queue.Wait()
         apply_change_method(field, value)
 
     def _recalculate_phys_data(self, callback):
@@ -106,7 +118,7 @@ class ATSimulator(object):
         """
         while True:
             self._gather_one_sample()
-            for i in range(len(self.queue)):
+            while self._queue:
                 self._gather_one_sample()
             if bool(self._paused) is False:
                 try:

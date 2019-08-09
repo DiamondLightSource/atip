@@ -1,9 +1,11 @@
 """Module containing the pytac data sources for the AT simulator."""
+import logging
 from functools import partial
 
 import at
 import pytac
-from pytac.exceptions import FieldException, HandleException
+from pytac.exceptions import (FieldException, HandleException,
+                              ControlSystemException)
 
 
 class ATElementDataSource(pytac.data_source.DataSource):
@@ -116,7 +118,7 @@ class ATElementDataSource(pytac.data_source.DataSource):
         else:
             self._fields.append(field)
 
-    def get_value(self, field, handle=None, throw=None):
+    def get_value(self, field, handle=None, throw=True):
         """Get the value for a field.
 
         Args:
@@ -124,16 +126,31 @@ class ATElementDataSource(pytac.data_source.DataSource):
             handle (str, optional): Handle is not needed and is only here to
                                      conform with the structure of the
                                      DataSource base class.
-            throw (bool, optional): Throw is not needed and is only here to
-                                     conform with the structure of the
-                                     DataSource base class.
+            throw (bool, optional): If the check for completion of outstanding
+                                     calculations times out, then:
+                                     if True, raise a ControlSystemException;
+                                     if False, log a warning and return the
+                                     potentially out of date data anyway.
 
         Returns:
             float: The value of the specified field on this data source.
 
         Raises:
             FieldException: if the specified field does not exist.
+            ControlSystemException: if the calculation completion check fails,
+                                     and throw is True.
         """
+        # Wait for any outstanding calculations to conclude, to ensure they are
+        # complete before a value is returned; if the wait times out then raise
+        # an error message or log a warning according to the value of throw.
+        if not self._atsim.wait_for_calculations():
+            error_msg = ("Check for completion of outstanding "
+                         "calculations timed out.")
+            if throw:
+                raise ControlSystemException(error_msg)
+            else:
+                logging.warning("Potentially out of date data returned. " +
+                                error_msg)
         # Again we assume that every set field has a corresponding get field.
         if field in self._fields:
             return self._get_field_funcs[field]()
@@ -160,7 +177,7 @@ class ATElementDataSource(pytac.data_source.DataSource):
         if field in self._fields:
             if field in self._set_field_funcs.keys():
                 self._atsim.up_to_date.Reset()
-                self._atsim.queue.Signal((self._make_change, field, value))
+                self._atsim.queue_set(self._make_change, field, value)
             else:
                 raise HandleException("Field {0} cannot be set on element data"
                                       " source {1}.".format(field, self))
@@ -384,7 +401,7 @@ class ATLatticeDataSource(pytac.data_source.DataSource):
         """
         return list(self._field_funcs.keys())
 
-    def get_value(self, field, handle=None, throw=None):
+    def get_value(self, field, handle=None, throw=True):
         """Get the value for a field on the Pytac lattice.
 
         Args:
@@ -392,16 +409,31 @@ class ATLatticeDataSource(pytac.data_source.DataSource):
             handle (str, optional): Handle is not needed and is only here to
                                      conform with the structure of the
                                      DataSource base class.
-            throw (bool, optional): Throw is not needed and is only here to
-                                     conform with the structure of the
-                                     DataSource base class.
+            throw (bool, optional): If the check for completion of outstanding
+                                     calculations times out, then:
+                                     if True, raise a ControlSystemException;
+                                     if False, log a warning and return the
+                                     potentially out of date data anyway.
 
         Returns:
             float: The value of the specified field on this data source.
 
         Raises:
             FieldException: if the specified field does not exist.
+            ControlSystemException: if the calculation completion check fails,
+                                     and throw is True.
         """
+        # Wait for any outstanding calculations to conclude, to ensure they are
+        # complete before a value is returned; if the wait times out then raise
+        # an error message or log a warning according to the value of throw.
+        if not self._atsim.wait_for_calculations():
+            error_msg = ("Check for completion of outstanding "
+                         "calculations timed out.")
+            if throw:
+                raise ControlSystemException(error_msg)
+            else:
+                logging.warning("Potentially out of date data returned. " +
+                                error_msg)
         if field in list(self._field_funcs.keys()):
             if field.startswith('phase'):
                 return self._field_funcs[field]('p' + field[-1])
