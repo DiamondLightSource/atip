@@ -178,6 +178,7 @@ def trigger_calc(target):
     def do_nothing(*args):
         pass
     atsim = get_atsim(target)
+    atsim.up_to_date.Reset()
     atsim._paused.Reset()
     atsim.queue.Signal((do_nothing, None, None))
     print("Recalculation manually triggered.")

@@ -31,8 +31,8 @@ class ATSimulator(object):
                                                  physics data is calculated.
            _rp (numpy.array): A boolean array to be used as refpts for the
                                physics calculations.
-           _emittance (tuple): Emittance, the output of the AT physics function
-                                ohmi_envelope (see at.lattice.radiation.py).
+           _emitdata (tuple): Emittance, the output of the AT physics function
+                               ohmi_envelope (see at.lattice.radiation.py).
            _lindata (tuple): Linear optics data, the output of the AT physics
                               function linopt (see at.lattice.linear.py).
            _paused (cothread.Event): A flag used to temporarily pause the
@@ -46,9 +46,9 @@ class ATSimulator(object):
         """
         .. Note:: To avoid errors, the physics data must be initially
            calculated here, during creation, otherwise it could be accidentally
-           referenced before the attributes _emittance and _lindata exist due
-           to delay between class creation and the end of the first calculation
-           in the thread.
+           referenced before the attributes _emitdata and _lindata exist due to
+           delay between class creation and the end of the first calculation in
+           the thread.
 
         Args:
             at_lattice (at.lattice_object.Lattice): An instance of an AT
@@ -62,10 +62,10 @@ class ATSimulator(object):
             raise TypeError("If passed, 'callback' should be callable, {0} is "
                             "not.".format(callback))
         self._at_lat = at_lattice
-        self._rp = numpy.ones(len(at_lattice), dtype=bool)
+        self._rp = numpy.ones(len(at_lattice)+1, dtype=bool)
         # Initial phys data calculation.
         self._at_lat.radiation_on()
-        self._emittance = self._at_lat.ohmi_envelope(self._rp)
+        self._emitdata = self._at_lat.ohmi_envelope(self._rp)
         self._at_lat.radiation_off()
         self._lindata = self._at_lat.linopt(refpts=self._rp, get_chrom=True,
                                             coupled=False)
@@ -111,7 +111,7 @@ class ATSimulator(object):
             if bool(self._paused) is False:
                 try:
                     self._at_lat.radiation_on()
-                    self._emittance = self._at_lat.ohmi_envelope(self._rp)
+                    self._emitdata = self._at_lat.ohmi_envelope(self._rp)
                     self._at_lat.radiation_off()
                     self._lindata = self._at_lat.linopt(0.0, self._rp, True,
                                                         coupled=False)
@@ -204,9 +204,9 @@ class ATSimulator(object):
             FieldException: if the specified field is not valid for emittance.
         """
         if field == 'x':
-            return self._emittance[2]['emitXY'][0, 0]
+            return self._emitdata[0]['emitXY'][0]
         elif field == 'y':
-            return self._emittance[2]['emitXY'][0, 1]
+            return self._emitdata[0]['emitXY'][1]
         else:
             raise FieldException("Field {0} is not a valid emittance plane."
                                  .format(field))
@@ -225,13 +225,13 @@ class ATSimulator(object):
             FieldException: if the specified field is not valid for orbit.
         """
         if field == 'x':
-            return self._lindata[3]['closed_orbit'][:, 0]
+            return self._lindata[3]['closed_orbit'][:-1, 0]
         elif field == 'px':
-            return self._lindata[3]['closed_orbit'][:, 1]
+            return self._lindata[3]['closed_orbit'][:-1, 1]
         elif field == 'y':
-            return self._lindata[3]['closed_orbit'][:, 2]
+            return self._lindata[3]['closed_orbit'][:-1, 2]
         elif field == 'py':
-            return self._lindata[3]['closed_orbit'][:, 3]
+            return self._lindata[3]['closed_orbit'][:-1, 3]
         else:
             raise FieldException("Field {0} is not a valid closed orbit plane."
                                  .format(field))
@@ -265,7 +265,7 @@ class ATSimulator(object):
         Returns:
             numpy.array: The dispersion vector for each element.
         """
-        return self._lindata[3]['dispersion']
+        return self._lindata[3]['dispersion'][:-1]
 
     def get_s(self):
         """Return the s position of every element in the AT lattice
@@ -273,7 +273,7 @@ class ATSimulator(object):
         Returns:
             list: The s position of each element.
         """
-        return list(self._lindata[3]['s_pos'])
+        return list(self._lindata[3]['s_pos'][:-1])
 
     def get_energy(self):
         """Return the energy of the AT lattice. Taken from the AT attribute.
@@ -289,7 +289,7 @@ class ATSimulator(object):
         Returns:
             numpy.array: The alpha vector for each element.
         """
-        return self._lindata[3]['alpha']
+        return self._lindata[3]['alpha'][:-1]
 
     def get_beta(self):
         """Return the beta vector at every element in the AT lattice.
@@ -297,7 +297,7 @@ class ATSimulator(object):
         Returns:
             numpy.array: The beta vector for each element.
         """
-        return self._lindata[3]['beta']
+        return self._lindata[3]['beta'][:-1]
 
     def get_m44(self):
         """Return the 4x4 transfer matrix for every element in the AT lattice.
@@ -305,7 +305,7 @@ class ATSimulator(object):
         Returns:
             numpy.array: The 4x4 transfer matrix for each element.
         """
-        return self._lindata[3]['m44']
+        return self._lindata[3]['m44'][:-1]
 
     def get_mu(self):
         """Return mu at every element in the AT lattice.
@@ -313,7 +313,7 @@ class ATSimulator(object):
         Returns:
             numpy.array: The mu array for each element.
         """
-        return self._lindata[3]['mu']
+        return self._lindata[3]['mu'][:-1]
 
     def get_energy_spread(self):
         """Return the energy spread for the AT lattice.
@@ -321,7 +321,7 @@ class ATSimulator(object):
         Returns:
             float: The energy spread for the AT lattice.
         """
-        return numpy.sqrt(self._emittance[0]['r66'][4, 4])
+        return numpy.sqrt(self._emitdata[0]['r66'][4, 4])
 
     def get_mcf(self):
         """Return the linear momentum compaction factor for the AT lattice.
@@ -348,7 +348,7 @@ class ATSimulator(object):
             numpy.array: The damping times of the AT lattice.
         """
         T0 = self.get_s()[-1] / speed_of_light
-        return T0 / self._emittance[1]['damping_rates']
+        return T0 / self._emitdata[1]['damping_rates']
 
     def get_damping_partition_numbers(self):
         """Return the damping partition numbers for the 3 normal modes.
@@ -383,3 +383,112 @@ class ATSimulator(object):
             if isinstance(elem, at.lattice.elements.Dipole):
                 theta_sum += abs(elem.BendingAngle)
         return numpy.degrees(theta_sum)
+
+    def get_rad_int(self):
+        self._at_lat.radiation_off()
+        return self._at_lat.get_radiation_integrals(twiss=self._lindata[3])
+
+    def get_lda(self):
+        I1, I2, I3, I4, I5 = self.get_rad_int()
+        return I5/I2
+
+    def get_dpn(self):
+        I1, I2, I3, I4, I5 = self.get_rad_int()
+        Jx = 1-(I4/I2)
+        Je = 2+(I4/I2)
+        Jy = 4-(Jx+Je)  # Check they sum to 4, don't just assume Jy is 1.
+        return Jx, Jy, Je
+
+    def get_dt(self):
+        """t = (2*E0*T0)/(U0*J) [1]
+        [1] A.Wolski; CERN  Accelerator School, Advanced Accelerator Physics
+            Course, Low Emittance Machines, Part 1: Beam Dynamics with
+            Synchrotron Radiation; August 2013; eqn. 68
+        """
+        I1, I2, I3, I4, I5 = self.get_rad_int()
+        U0 = (at.physics.Cgamma/2/numpy.pi)*I2*self._at_lat.energy**4
+        T0 = self._at_lat.circumference/speed_of_light
+        return (2*T0*self._at_lat.energy)/(U0*numpy.asarray(self.get_dpn()))
+
+    def get_espread(self):
+        I1, I2, I3, I4, I5 = self.get_rad_int()
+        gamma = self._at_lat.energy/(at.physics.e_mass)
+        return gamma*numpy.sqrt((at.physics.Cq*I3)/(2*I2+I4))
+
+    def get_mntm_comp(self):
+        I1, I2, I3, I4, I5 = self.get_rad_int()
+        return I1/self._at_lat.circumference
+
+    def get_horizontal_emittance(self):
+        I1, I2, I3, I4, I5 = self.get_rad_int()
+        gamma = self._at_lat.energy/(at.physics.e_mass)
+        return (I5*at.physics.Cq*gamma**2)/(I2-I4)
+
+    def get_vertical_emittance(self):
+        """In comparison to ohmi_envelope both are off by a little bit and
+        a factor of 10, in different directions!
+            ey1 = 10*(I6*Cq*gamma^2)/(Jy*I2)
+            where:
+                I6 = integral(curV/|rho^3| ds)
+                Jy == 1
+            ey2 = 0.2*(curVavg*I3*Cq*gamma^2)/(Jy*I2)
+            where:
+                curVavg*I3 = integral(curV/|rho^3| ds)
+                           = <curV>*integral(1/|rho^3| ds)
+        """
+        I6 = 0.0
+        curVavg = 0.0
+        for elem in self._at_lat:
+            if isinstance(elem, at.elements.Bend) and elem.BendingAngle != 0.0:
+                alpha_y = self._lindata[3]['alpha'][elem.Index-1, 1]
+                beta_y = self._lindata[3]['beta'][elem.Index-1, 1]
+                eta_y = self._lindata[3]['dispersion'][elem.Index-1, 2]
+                eta_yp = self._lindata[3]['dispersion'][elem.Index-1, 3]
+                gamma_y = (1 + alpha_y**2)/beta_y
+                curV = (gamma_y*eta_y**2 + 2*alpha_y*eta_y*eta_yp
+                        + beta_y*eta_yp**2)
+                curVavg += curV*elem.Length
+                # curV*len*rho^3 = (curV*theta^3)/len^2
+                I6 += curV*abs(elem.BendingAngle**3)/elem.Length**2
+        _, I2, I3, _, _ = self.get_rad_int()
+        gamma = self._at_lat.energy/(at.physics.e_mass)
+        return [(I6*at.physics.Cq*gamma**2)/I2,
+                (curVavg*I3*at.physics.Cq*gamma**2)/I2]
+
+    def get_dispersion_action(self):
+        curHavg = 0.0
+        curVavg = 0.0
+        I5 = 0.0
+        I6 = 0.0
+        for elem in self._at_lat:
+            if isinstance(elem, at.elements.Dipole) and elem.BendingAngle != 0:
+                idx = elem.Index - 1
+                alpha_x = self._lindata[3]['alpha'][idx, 0]
+                alpha_y = self._lindata[3]['alpha'][idx, 1]
+                beta_x = self._lindata[3]['beta'][idx, 0]
+                beta_y = self._lindata[3]['beta'][idx, 1]
+                eta_x = self._lindata[3]['dispersion'][idx, 0]
+                eta_xp = self._lindata[3]['dispersion'][idx, 1]
+                eta_y = self._lindata[3]['dispersion'][idx, 2]
+                eta_yp = self._lindata[3]['dispersion'][idx, 3]
+                # gamma*eta^2 + 2*alpha*eta*eta_prime + beta*eta_prime^2
+                curH = (eta_x**2 + alpha_x**2*eta_x**2 +
+                        2*beta_x*alpha_x*eta_x*eta_xp + beta_x**2*eta_xp**2)
+                curHavg += curH
+                # (curH*len)/abs(rho^3)
+                I5 += abs(curH*elem.BendingAngle**3)/elem.Length**2
+                curV = (eta_y**2 + alpha_y**2*eta_y**2 +
+                        2*beta_y*alpha_y*eta_y*eta_yp + beta_y**2*eta_yp**2)
+                curVavg += curV
+                I6 += abs(curV*elem.BendingAngle**3)/elem.Length**2
+        return curHavg, curVavg, I5, I6
+
+    def get_emit_from_curly(self):
+        _, I2, I3, I4, _ = self.get_rad_int()
+        curlyH, curlyV, I5, I6 = self.get_dispersion_action()
+        gamma = self._at_lat.energy/(at.physics.e_mass)
+        out = [(curlyH*I3*at.physics.Cq*gamma**2)/(I2-I4),
+               (I5*at.physics.Cq*gamma**2)/(I2-I4),
+               (curlyV*I3*at.physics.Cq*gamma**2)/I2,
+               (I6*at.physics.Cq*gamma**2)/I2]
+        return out

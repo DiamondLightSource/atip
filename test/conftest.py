@@ -58,7 +58,7 @@ def atsim(at_lattice):
 
 @pytest.fixture()
 def mocked_atsim(at_lattice):
-    length = len(at_lattice)
+    length = len(at_lattice)+1
     base = numpy.ones((length, 4))
     r66 = numpy.zeros((6, 6))
     r66[4, 4] = 16
@@ -66,9 +66,10 @@ def mocked_atsim(at_lattice):
     atsim._at_lat = mock.PropertyMock(energy=5, energy_loss=73)
     atsim._at_lat.get_mcf.return_value = 42
     atsim._at_lat.get_s_pos.return_value = numpy.array([0.1 * (i + 1) for i in
-                                                       range(length + 1)])
-    atsim._emittance = ({'r66': r66}, {'damping_rates': [13, 3, 7]},
-                        {'emitXY': (base[:, :2] * numpy.array([1.4, 0.45]))})
+                                                        range(length)])
+    atsim._emitdata = ({'r66': r66,
+                        'emitXY': numpy.array([1.4, 0.45])},
+                       {'damping_rates': [13, 3, 7]})
     atsim._lindata = ([], [3.14, 0.12], [2, 1],
                       {'closed_orbit': (base * numpy.array([0.6, 57, 0.2, 9])),
                        'dispersion': (base * numpy.array([8.8, 1.7, 23, 3.5])),
