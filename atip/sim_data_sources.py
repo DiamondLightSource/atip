@@ -357,11 +357,11 @@ class ATLatticeDataSource(pytac.data_source.DataSource):
         """
         self.units = pytac.PHYS
         self._atsim = atsim
-        self._field_funcs = {'chromaticity_x': self._atsim.get_chrom,
-                             'chromaticity_y': self._atsim.get_chrom,
-                             'emittance_x': self._atsim.get_emit,
-                             'emittance_y': self._atsim.get_emit,
-                             'dispersion': self._atsim.get_disp,
+        self._field_funcs = {'chromaticity_x': self._atsim.get_chromaticity,
+                             'chromaticity_y': self._atsim.get_chromaticity,
+                             'emittance_x': self._atsim.get_emittance,
+                             'emittance_y': self._atsim.get_emittance,
+                             'dispersion': self._atsim.get_dispersion,
                              'energy': self._atsim.get_energy,
                              'phase_x': self._atsim.get_orbit,
                              'phase_y': self._atsim.get_orbit,

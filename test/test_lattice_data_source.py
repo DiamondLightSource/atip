@@ -7,15 +7,16 @@ import atip
 
 @pytest.mark.parametrize('func_str,field', [
     ('atlds._atsim.get_orbit', 'phase_y'), ('atlds._atsim.get_alpha', 'alpha'),
-    ('atlds._atsim.get_emit', 'emittance_x'), ('atlds._atsim.get_orbit', 'x'),
-    ('atlds._atsim.get_emit', 'emittance_y'), ('atlds._atsim.get_orbit', 'y'),
     ('atlds._atsim.get_tune', 'tune_x'), ('atlds._atsim.get_tune', 'tune_y'),
     ('atlds._atsim.get_orbit', 'phase_x'), ('atlds._atsim.get_beta', 'beta'),
-    ('atlds._atsim.get_disp', 'dispersion'), ('atlds._atsim.get_mu', 'mu'),
     ('atlds._atsim.get_energy', 'energy'), ('atlds._atsim.get_m44', 'm44'),
-    ('atlds._atsim.get_chrom', 'chromaticity_x'),
-    ('atlds._atsim.get_chrom', 'chromaticity_y'),
-    ('atlds._atsim.get_s', 's_position')
+    ('atlds._atsim.get_s', 's_position'), ('atlds._atsim.get_mu', 'mu'),
+    ('atlds._atsim.get_orbit', 'y'), ('atlds._atsim.get_orbit', 'x'),
+    ('atlds._atsim.get_chromaticity', 'chromaticity_x'),
+    ('atlds._atsim.get_chromaticity', 'chromaticity_y'),
+    ('atlds._atsim.get_emittance', 'emittance_x'),
+    ('atlds._atsim.get_emittance', 'emittance_y'),
+    ('atlds._atsim.get_dispersion', 'dispersion')
 ])
 def test_lat_field_funcs(func_str, field, atlds):
     assert atlds._field_funcs[field] == eval(func_str)
@@ -44,7 +45,7 @@ def test_lat_get_value():
     """We don't need to test every value for get_value() as _field_funcs which
     it relys on has alreadly been tested for all fields."""
     atsim = mock.Mock()
-    atsim.get_disp.return_value = 2.5
+    atsim.get_dispersion.return_value = 2.5
     atlds = atip.sim_data_sources.ATLatticeDataSource(atsim)
     assert atlds.get_value('dispersion') == 2.5
     atlds.get_value('x')

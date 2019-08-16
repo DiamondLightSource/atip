@@ -35,6 +35,7 @@ class ATSimulator(object):
                                ohmi_envelope (see at.lattice.radiation.py).
            _lindata (tuple): Linear optics data, the output of the AT physics
                               function linopt (see at.lattice.linear.py).
+           _radint (tuple): The 5 Synchrotron Integrals for uncoupled lattices.
            _paused (cothread.Event): A flag used to temporarily pause the
                                       physics calculations.
            _calculation_thread (cothread.Thread): A thread to check the queue
@@ -69,6 +70,8 @@ class ATSimulator(object):
         self._at_lat.radiation_off()
         self._lindata = self._at_lat.linopt(refpts=self._rp, get_chrom=True,
                                             coupled=False)
+        self._radint = self._at_lat.get_radiation_integrals(0.0,
+                                                            self._lindata[3])
         # Threading stuff initialisation.
         self.queue = cothread.EventQueue()
         self.up_to_date = cothread.Event()
@@ -115,6 +118,9 @@ class ATSimulator(object):
                     self._at_lat.radiation_off()
                     self._lindata = self._at_lat.linopt(0.0, self._rp, True,
                                                         coupled=False)
+                    self._radint = self._at_lat.get_radiation_integrals(
+                        twiss=self._lindata[3]
+                    )
                 except Exception as e:
                     warn(at.AtWarning(e))
                 if callback is not None:
@@ -147,6 +153,7 @@ class ATSimulator(object):
         except cothread.Timedout:
             return False
 
+# Get lattice related data:
     def get_at_element(self, index):
         """Return the AT element corresponding to the given index.
 
@@ -166,107 +173,6 @@ class ATSimulator(object):
         """
         return self._at_lat.copy()
 
-    def get_chrom(self, field):
-        """Return the chromaticity for the AT lattice for the specified plane.
-
-        Args:
-            field (str): The desired field (x or y) of chromaticity.
-
-        Returns:
-            float: The x or y chromaticity for the AT lattice.
-
-        Raises:
-            FieldException: if the specified field is not valid for
-                             chromaticity.
-        """
-        if field == 'x':
-            return self._lindata[2][0]
-        elif field == 'y':
-            return self._lindata[2][1]
-        else:
-            raise FieldException("Field {0} is not a valid chromaticity "
-                                 "plane.".format(field))
-
-    def get_emit(self, field):
-        """Return the emittance for the AT lattice for the specified plane.
-
-        .. Note:: The emittance of the first element is returned as it is
-           constant throughout the AT lattice, and so which element's emittance
-           is returned is arbitrary.
-
-        Args:
-            field (str): The desired field (x or y) of emittance.
-
-        Returns:
-            float: The x or y emittance for the AT lattice.
-
-        Raises:
-            FieldException: if the specified field is not valid for emittance.
-        """
-        if field == 'x':
-            return self._emitdata[0]['emitXY'][0]
-        elif field == 'y':
-            return self._emitdata[0]['emitXY'][1]
-        else:
-            raise FieldException("Field {0} is not a valid emittance plane."
-                                 .format(field))
-
-    def get_orbit(self, field):
-        """Return the closed orbit for the AT lattice for the specified plane.
-
-        Args:
-            field (str): The desired field (x, px, y, or py) of closed orbit.
-
-        Returns:
-            numpy.array: The x, x phase, y or y phase for the AT lattice as an
-            array of floats the length of the AT lattice.
-
-        Raises:
-            FieldException: if the specified field is not valid for orbit.
-        """
-        if field == 'x':
-            return self._lindata[3]['closed_orbit'][:-1, 0]
-        elif field == 'px':
-            return self._lindata[3]['closed_orbit'][:-1, 1]
-        elif field == 'y':
-            return self._lindata[3]['closed_orbit'][:-1, 2]
-        elif field == 'py':
-            return self._lindata[3]['closed_orbit'][:-1, 3]
-        else:
-            raise FieldException("Field {0} is not a valid closed orbit plane."
-                                 .format(field))
-
-    def get_tune(self, field):
-        """Return the tune for the AT lattice for the specified plane.
-
-        .. Note:: A special consideration is made so only the fractional digits
-           of the tune are returned.
-
-        Args:
-            field (str): The desired field (x or y) of tune.
-
-        Returns:
-            float: The x or y tune for the AT lattice.
-
-        Raises:
-            FieldException: if the specified field is not valid for tune.
-        """
-        if field == 'x':
-            return (self._lindata[1][0] % 1)
-        elif field == 'y':
-            return (self._lindata[1][1] % 1)
-        else:
-            raise FieldException("Field {0} is not a valid tune plane."
-                                 .format(field))
-
-    def get_disp(self):
-        """Return the dispersion at every element in the AT lattice.
-
-        Returns:
-            numpy.array: The dispersion vector for each element.
-        """
-        return self._lindata[3]['dispersion'][:-1]
-
     def get_s(self):
         """Return the s position of every element in the AT lattice
 
@@ -274,90 +180,6 @@ class ATSimulator(object):
             list: The s position of each element.
         """
         return list(self._lindata[3]['s_pos'][:-1])
-
-    def get_energy(self):
-        """Return the energy of the AT lattice. Taken from the AT attribute.
-
-        Returns:
-            float: The energy of the AT lattice.
-        """
-        return self._at_lat.energy
-
-    def get_alpha(self):
-        """Return the alpha vector at every element in the AT lattice.
-
-        Returns:
-            numpy.array: The alpha vector for each element.
-        """
-        return self._lindata[3]['alpha'][:-1]
-
-    def get_beta(self):
-        """Return the beta vector at every element in the AT lattice.
-
-        Returns:
-            numpy.array: The beta vector for each element.
-        """
-        return self._lindata[3]['beta'][:-1]
-
-    def get_m44(self):
-        """Return the 4x4 transfer matrix for every element in the AT lattice.
-
-        Returns:
-            numpy.array: The 4x4 transfer matrix for each element.
-        """
-        return self._lindata[3]['m44'][:-1]
-
-    def get_mu(self):
-        """Return mu at every element in the AT lattice.
-
-        Returns:
-            numpy.array: The mu array for each element.
-        """
-        return self._lindata[3]['mu'][:-1]
-
-    def get_energy_spread(self):
-        """Return the energy spread for the AT lattice.
-
-        Returns:
-            float: The energy spread for the AT lattice.
-        """
-        return numpy.sqrt(self._emitdata[0]['r66'][4, 4])
-
-    def get_mcf(self):
-        """Return the linear momentum compaction factor for the AT lattice.
-
-        Returns:
-            float: The linear momentum compaction factor of the AT lattice.
-        """
-        self._at_lat.radiation_off()
-        return self._at_lat.get_mcf()
-
-    def get_energy_loss(self):
-        """Return the energy loss per turn of the AT lattice. Taken from the AT
-        lattice property.
-
-        Returns:
-            float: The energy loss of the AT lattice.
-        """
-        return self._at_lat.energy_loss
-
-    def get_damping_times(self):
-        """Return the damping times for the 3 normal modes.
-
-        Returns:
-            numpy.array: The damping times of the AT lattice.
-        """
-        T0 = self.get_s()[-1] / speed_of_light
-        return T0 / self._emitdata[1]['damping_rates']
-
-    def get_damping_partition_numbers(self):
-        """Return the damping partition numbers for the 3 normal modes.
-
-        Returns:
-            numpy.array: The damping partition numbers of the AT lattice.
-        """
-        dt = self.get_damping_times()
-        return 4.0 / (dt * sum(dt**-1))
 
     def get_total_bend_angle(self):
         """Return the total bending angle of all the dipoles in the AT lattice.
@@ -384,111 +206,231 @@ class ATSimulator(object):
                 theta_sum += abs(elem.BendingAngle)
         return numpy.degrees(theta_sum)
 
-    def get_rad_int(self):
-        self._at_lat.radiation_off()
-        return self._at_lat.get_radiation_integrals(twiss=self._lindata[3])
+    def get_energy(self):
+        """Return the energy of the AT lattice. Taken from the AT attribute.
 
-    def get_lda(self):
-        I1, I2, I3, I4, I5 = self.get_rad_int()
-        return I5/I2
-
-    def get_dpn(self):
-        I1, I2, I3, I4, I5 = self.get_rad_int()
-        Jx = 1-(I4/I2)
-        Je = 2+(I4/I2)
-        Jy = 4-(Jx+Je)  # Check they sum to 4, don't just assume Jy is 1.
-        return Jx, Jy, Je
-
-    def get_dt(self):
-        """t = (2*E0*T0)/(U0*J) [1]
-        [1] A.Wolski; CERN  Accelerator School, Advanced Accelerator Physics
-            Course, Low Emittance Machines, Part 1: Beam Dynamics with
-            Synchrotron Radiation; August 2013; eqn. 68
+        Returns:
+            float: The energy of the AT lattice.
         """
-        I1, I2, I3, I4, I5 = self.get_rad_int()
-        U0 = (at.physics.Cgamma/2/numpy.pi)*I2*self._at_lat.energy**4
-        T0 = self._at_lat.circumference/speed_of_light
-        return (2*T0*self._at_lat.energy)/(U0*numpy.asarray(self.get_dpn()))
+        return self._at_lat.energy
 
-    def get_espread(self):
-        I1, I2, I3, I4, I5 = self.get_rad_int()
+# Get global linear optics data:
+    def get_tune(self, field):
+        """Return the tune for the AT lattice for the specified plane.
+
+        .. Note:: A special consideration is made so only the fractional digits
+           of the tune are returned.
+
+        Args:
+            field (str): The desired field (x or y) of tune.
+
+        Returns:
+            float: The x or y tune for the AT lattice.
+
+        Raises:
+            FieldException: if the specified field is not valid for tune.
+        """
+        if field == 'x':
+            return (self._lindata[1][0] % 1)
+        elif field == 'y':
+            return (self._lindata[1][1] % 1)
+        else:
+            raise FieldException("Field {0} is not a valid tune plane."
+                                 .format(field))
+
+    def get_chromaticity(self, field):
+        """Return the chromaticity for the AT lattice for the specified plane.
+
+        Args:
+            field (str): The desired field (x or y) of chromaticity.
+
+        Returns:
+            float: The x or y chromaticity for the AT lattice.
+
+        Raises:
+            FieldException: if the specified field is not valid for
+                             chromaticity.
+        """
+        if field == 'x':
+            return self._lindata[2][0]
+        elif field == 'y':
+            return self._lindata[2][1]
+        else:
+            raise FieldException("Field {0} is not a valid chromaticity "
+                                 "plane.".format(field))
+
+# Get local linear optics data:
+    def get_orbit(self, field):
+        """Return the closed orbit for the AT lattice for the specified plane.
+
+        Args:
+            field (str): The desired field (x, px, y, or py) of closed orbit.
+
+        Returns:
+            numpy.array: The x, x phase, y or y phase for the AT lattice as an
+            array of floats the length of the AT lattice.
+
+        Raises:
+            FieldException: if the specified field is not valid for orbit.
+        """
+        if field == 'x':
+            return self._lindata[3]['closed_orbit'][:-1, 0]
+        elif field == 'px':
+            return self._lindata[3]['closed_orbit'][:-1, 1]
+        elif field == 'y':
+            return self._lindata[3]['closed_orbit'][:-1, 2]
+        elif field == 'py':
+            return self._lindata[3]['closed_orbit'][:-1, 3]
+        else:
+            raise FieldException("Field {0} is not a valid closed orbit plane."
+                                 .format(field))
+
+    def get_dispersion(self):
+        """Return the dispersion at every element in the AT lattice.
+
+        Returns:
+            numpy.array: The dispersion vector for each element.
+        """
+        return self._lindata[3]['dispersion'][:-1]
+
+    def get_alpha(self):
+        """Return the alpha vector at every element in the AT lattice.
+
+        Returns:
+            numpy.array: The alpha vector for each element.
+        """
+        return self._lindata[3]['alpha'][:-1]
+
+    def get_beta(self):
+        """Return the beta vector at every element in the AT lattice.
+
+        Returns:
+            numpy.array: The beta vector for each element.
+        """
+        return self._lindata[3]['beta'][:-1]
+
+    def get_mu(self):
+        """Return mu at every element in the AT lattice.
+
+        Returns:
+            numpy.array: The mu array for each element.
+        """
+        return self._lindata[3]['mu'][:-1]
+
+    def get_m44(self):
+        """Return the 4x4 transfer matrix for every element in the AT lattice.
+
+        Returns:
+            numpy.array: The 4x4 transfer matrix for each element.
+        """
+        return self._lindata[3]['m44'][:-1]
+
+# Get lattice emittance from beam envelope:
+    def get_emittance(self, field):
+        """Return the emittance for the AT lattice for the specified plane.
+
+        .. Note:: The emittance at the entrance of the AT lattice as it is
+           constant throughout the lattice, and so which element's emittance
+           is returned is arbitrary.
+
+        Args:
+            field (str): The desired field (x or y) of emittance.
+
+        Returns:
+            float: The x or y emittance for the AT lattice.
+
+        Raises:
+            FieldException: if the specified field is not valid for emittance.
+        """
+        if field == 'x':
+            return self._emitdata[0]['emitXY'][0]
+        elif field == 'y':
+            return self._emitdata[0]['emitXY'][1]
+        else:
+            raise FieldException("Field {0} is not a valid emittance plane."
+                                 .format(field))
+
+# Get lattice data from radiation integrals:
+    def get_radiation_integrals(self):
+        """Return the 5 Synchrotron Integrals for the AT lattice.
+
+        Returns:
+            numpy.array: The 5 radiation integrals.
+        """
+        return numpy.asarray(self._radint)
+
+    def get_momentum_compaction(self):
+        """Return the linear momentum compaction factor for the AT lattice.
+
+        Returns:
+            float: The linear momentum compaction factor of the AT lattice.
+        """
+        I1, _, _, _, _ = self._radint
+        return I1/self._lindata[3]['s_pos'][-1]
+
+    def get_energy_spread(self):
+        """Return the energy spread for the AT lattice.
+
+        Returns:
+            float: The energy spread for the AT lattice.
+        """
+        _, I2, I3, I4, _ = self._radint
         gamma = self._at_lat.energy/(at.physics.e_mass)
         return gamma*numpy.sqrt((at.physics.Cq*I3)/(2*I2+I4))
 
-    def get_mntm_comp(self):
-        I1, I2, I3, I4, I5 = self.get_rad_int()
-        return I1/self._at_lat.circumference
+    def get_energy_loss(self):
+        """Return the energy loss per turn of the AT lattice.
+
+        Returns:
+            float: The energy loss of the AT lattice.
+        """
+        _, I2, _, _, _ = self._radint
+        return (at.physics.Cgamma*I2*self._at_lat.energy**4)/(2*numpy.pi)
+
+    def get_damping_partition_numbers(self):
+        """Return the damping partition numbers for the 3 normal modes.
+
+        Returns:
+            numpy.array: The damping partition numbers of the AT lattice.
+        """
+        _, I2, _, I4, _ = self._radint
+        Jx = 1-(I4/I2)
+        Je = 2+(I4/I2)
+        Jy = 4-(Jx+Je)  # Check they sum to 4, don't just assume Jy is 1.
+        return numpy.asarray([Jx, Jy, Je])
+
+    def get_damping_times(self):
+        """Return the damping times for the 3 normal modes.
+        [tx, ty, tz] = (2*E0*T0)/(U0*[Jx, Jy, Jz]) [1]
+        [1] A.Wolski; CERN  Accelerator School, Advanced Accelerator Physics
+            Course, Low Emittance Machines, Part 1: Beam Dynamics with
+            Synchrotron Radiation; August 2013; eqn. 68
+
+        Returns:
+            numpy.array: The damping times of the AT lattice.
+        """
+        E0 = self._at_lat.energy
+        U0 = self.get_energy_loss()
+        T0 = self._at_lat.circumference/speed_of_light
+        return (2*T0*E0)/(U0*self.get_damping_partition_numbers())
+
+    def get_linear_dispersion_action(self):
+        """Return the Linear Dispersion Action ("curly H") for the AT lattice.
+
+        Returns:
+            float: Curly H for the AT lattice
+        """
+        _, I2, _, _, I5 = self._radint
+        return I5/I2
 
     def get_horizontal_emittance(self):
-        I1, I2, I3, I4, I5 = self.get_rad_int()
+        """Return the horizontal emittance for the AT lattice calculated from
+        the radiation integrals, as opposed to the beam envelope formalism
+        used by AT's ohmi_envelope function.
+
+        Returns:
+            float: The horizontal ('x') emittance for the AT lattice.
+        """
+        _, I2, _, I4, I5 = self._radint
         gamma = self._at_lat.energy/(at.physics.e_mass)
         return (I5*at.physics.Cq*gamma**2)/(I2-I4)
-
-    def get_vertical_emittance(self):
-        """In comparison to ohmi_envelope both are off by a little bit and
-        a factor of 10, in different directions!
-            ey1 = 10*(I6*Cq*gamma^2)/(Jy*I2)
-            where:
-                I6 = integral(curV/|rho^3| ds)
-                Jy == 1
-            ey2 = 0.2*(curVavg*I3*Cq*gamma^2)/(Jy*I2)
-            where:
-                curVavg*I3 = integral(curV/|rho^3| ds)
-                           = <curV>*integral(1/|rho^3| ds)
-        """
-        I6 = 0.0
-        curVavg = 0.0
-        for elem in self._at_lat:
-            if isinstance(elem, at.elements.Bend) and elem.BendingAngle != 0.0:
-                alpha_y = self._lindata[3]['alpha'][elem.Index-1, 1]
-                beta_y = self._lindata[3]['beta'][elem.Index-1, 1]
-                eta_y = self._lindata[3]['dispersion'][elem.Index-1, 2]
-                eta_yp = self._lindata[3]['dispersion'][elem.Index-1, 3]
-                gamma_y = (1 + alpha_y**2)/beta_y
-                curV = (gamma_y*eta_y**2 + 2*alpha_y*eta_y*eta_yp
-                        + beta_y*eta_yp**2)
-                curVavg += curV*elem.Length
-                # curV*len*rho^3 = (curV*theta^3)/len^2
-                I6 += curV*abs(elem.BendingAngle**3)/elem.Length**2
-        _, I2, I3, _, _ = self.get_rad_int()
-        gamma = self._at_lat.energy/(at.physics.e_mass)
-        return [(I6*at.physics.Cq*gamma**2)/I2,
-                (curVavg*I3*at.physics.Cq*gamma**2)/I2]
-
-    def get_dispersion_action(self):
-        curHavg = 0.0
-        curVavg = 0.0
-        I5 = 0.0
-        I6 = 0.0
-        for elem in self._at_lat:
-            if isinstance(elem, at.elements.Dipole) and elem.BendingAngle != 0:
-                idx = elem.Index - 1
-                alpha_x = self._lindata[3]['alpha'][idx, 0]
-                alpha_y = self._lindata[3]['alpha'][idx, 1]
-                beta_x = self._lindata[3]['beta'][idx, 0]
-                beta_y = self._lindata[3]['beta'][idx, 1]
-                eta_x = self._lindata[3]['dispersion'][idx, 0]
-                eta_xp = self._lindata[3]['dispersion'][idx, 1]
-                eta_y = self._lindata[3]['dispersion'][idx, 2]
-                eta_yp = self._lindata[3]['dispersion'][idx, 3]
-                # gamma*eta^2 + 2*alpha*eta*eta_prime + beta*eta_prime^2
-                curH = (eta_x**2 + alpha_x**2*eta_x**2 +
-                        2*beta_x*alpha_x*eta_x*eta_xp + beta_x**2*eta_xp**2)
-                curHavg += curH
-                # (curH*len)/abs(rho^3)
-                I5 += abs(curH*elem.BendingAngle**3)/elem.Length**2
-                curV = (eta_y**2 + alpha_y**2*eta_y**2 +
-                        2*beta_y*alpha_y*eta_y*eta_yp + beta_y**2*eta_yp**2)
-                curVavg += curV
-                I6 += abs(curV*elem.BendingAngle**3)/elem.Length**2
-        return curHavg, curVavg, I5, I6
-
-    def get_emit_from_curly(self):
-        _, I2, I3, I4, _ = self.get_rad_int()
-        curlyH, curlyV, I5, I6 = self.get_dispersion_action()
-        gamma = self._at_lat.energy/(at.physics.e_mass)
-        out = [(curlyH*I3*at.physics.Cq*gamma**2)/(I2-I4),
-               (I5*at.physics.Cq*gamma**2)/(I2-I4),
-               (curlyV*I3*at.physics.Cq*gamma**2)/I2,
-               (I6*at.physics.Cq*gamma**2)/I2]
-        return out

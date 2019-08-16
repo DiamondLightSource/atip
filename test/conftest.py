@@ -63,10 +63,7 @@ def mocked_atsim(at_lattice):
     r66 = numpy.zeros((6, 6))
     r66[4, 4] = 16
     atsim = atip.simulator.ATSimulator(at_lattice)
-    atsim._at_lat = mock.PropertyMock(energy=5, energy_loss=73)
-    atsim._at_lat.get_mcf.return_value = 42
-    atsim._at_lat.get_s_pos.return_value = numpy.array([0.1 * (i + 1) for i in
-                                                        range(length)])
+    atsim._at_lat = mock.PropertyMock(energy=5, circumference=length*0.1)
     atsim._emitdata = ({'r66': r66,
                         'emitXY': numpy.array([1.4, 0.45])},
                        {'damping_rates': [13, 3, 7]})
@@ -80,6 +77,7 @@ def mocked_atsim(at_lattice):
                        'm44': (numpy.ones((length,
                                            4, 4)) * (numpy.eye(4) * 0.8)),
                        'mu': (base[:, :2] * numpy.array([176, 82]))})
+    atsim._radint = (1, 2, 3, 4, 5)
     return atsim
 
 
