@@ -7,7 +7,7 @@ Pytac, which can be used and addressed in the same way as a real accelerator.
 This enables the easy offline testing of high level accelerator controls
 applications.
 
-ATIP is hosted on `Github <https://github.com/dls-controls/atip>`_.
+ATIP is hosted on Github `here <https://github.com/dls-controls/atip>`_.
 
 The python implementation of
 `Accelerator Toolbox <https://github.com/atcollab/at>`_ (pyAT) is used
@@ -20,11 +20,12 @@ for the simulation.
 
 ATIP allows an AT lattice to be fitted into the simulation data source of a
 Pytac lattice. This integrated lattice acts like a normal Pytac lattice, and
-enables the AT simulator to react and respond to changes as the live machine
-would.
+enables the AT simulator to react and respond to changes as the real
+accelerator would.
 
-ATIP also makes use of `Cothread <https://github.com/dls-controls/cothread>`_
-to recalculate the physics data any time a change is made to the lattice.
+ATIP also makes use of a `Cothread <https://github.com/dls-controls/cothread>`_
+thread to recalculate and update the stored physics data any time a change is
+made to the lattice.
 
 ATIP can also be run in a standalone application as a "virtual accelerator",
 publishing the same control system interface as the live machine. At Diamond

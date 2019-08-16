@@ -120,35 +120,43 @@ ATSimulator:
       element from the central AT ring, N.B. An 'index' of 1 returns ring[0].
     * ``get_at_lattice()`` - return a shallow copy of the entire centralised AT
       lattice object.
-    * ``get_chrom(field)`` - return the specified plane of the lattice's
-      'chromaticity'; 'x' or 'y'.
-    * ``get_emit(field)`` - return the specified plane of the lattice's
-      'emittance'; 'x' or 'y'.
-    * ``get_orbit(field)`` - return the specified plane of the lattice's
-      'closed orbit'; 'x', 'phase_x', 'y', or 'phase_y'.
-    * ``get_tune(field)`` - return the specified plane of the lattice's
-      'tune'; 'x' or 'y'.
-    * ``get_disp()`` - return the 'dispersion' at every element in the lattice.
     * ``get_s()`` - return the 's position' of every element in the lattice.
-    * ``get_energy()`` - return the energy of the lattice.
-    * ``get_alpha()`` - return the 'alpha' vector at every element in the
-      lattice.
-    * ``get_beta()`` - return the 'beta' vector at every element in the
-      lattice.
-    * ``get_m44()`` - return the 4x4 transfer matrix for every element in the
-      lattice.
-    * ``get_mu()`` - return 'mu' at every element in the lattice.
-    * ``get_energy_spread()`` - return the energy spread for the lattice.
-    * ``get_mcf()`` - return the momentum compaction factor for the lattice.
-    * ``get_energy_loss()`` - return the energy loss per turn of the lattice.
-    * ``get_damping_times()`` - return the damping times for the lattice's
-      three normal modes.
-    * ``get_damping_partition_numbers()`` - return the damping partition
-      numbers for the lattice's three normal modes.
     * ``get_total_bend_angle()`` - return the total bending angle of all the
       dipoles in the lattice.
     * ``get_total_absolute_bend_angle()`` - return the total absolute bending
       angle of all the dipoles in the lattice.
+    * ``get_energy()`` - return the energy of the lattice.
+    * ``get_tune(field)`` - return the specified plane of the lattice's
+      'tune'; 'x' or 'y'.
+    * ``get_chromaticity(field)`` - return the specified plane of the lattice's
+      'chromaticity'; 'x' or 'y'.
+    * ``get_orbit(field)`` - return the specified plane of the lattice's
+      'closed orbit'; 'x', 'phase_x', 'y', or 'phase_y'.
+    * ``get_dispersion()`` - return the 'dispersion' vector for every element
+      in the lattice.
+    * ``get_alpha()`` - return the 'alpha' vector at every element in the
+      lattice.
+    * ``get_beta()`` - return the 'beta' vector at every element in the
+      lattice.
+    * ``get_mu()`` - return 'mu' at every element in the lattice.
+    * ``get_m44()`` - return the 4x4 transfer matrix for every element in the
+      lattice.
+    * ``get_emittance(field)`` - return the specified plane of the lattice's
+      'emittance'; 'x' or 'y'.
+    * ``get_radiation_integrals()`` - return the 5 Synchrotron Integrals for
+      the lattice.
+    * ``get_momentum_compaction()`` - return the momentum compaction factor
+      for the lattice.
+    * ``get_energy_spread()`` - return the energy spread for the lattice.
+    * ``get_energy_loss()`` - return the energy loss per turn of the lattice.
+    * ``get_damping_partition_numbers()`` - return the damping partition
+      numbers for the lattice's three normal modes.
+    * ``get_damping_times()`` - return the damping times for the lattice's
+      three normal modes.
+    * ``get_linear_dispersion_action()`` - return the Linear Dispersion Action
+      ("curly H") for the lattice.
+    * ``get_horizontal_emittance()`` - return the horizontal ('x') emittance
+      for the lattice calculated from the radiation integrals.
 
 
 Specific Notes:

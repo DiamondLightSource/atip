@@ -45,7 +45,7 @@ def test_lat_get_value_raises_FieldException_if_nonexistent_field(atlds,
 
 def test_lat_get_value_handles_calculation_check_time_out_correctly():
     atsim = mock.Mock()
-    atsim.get_disp.return_value = 2.5
+    atsim.get_dispersion.return_value = 2.5
     atlds = atip.sim_data_sources.ATLatticeDataSource(atsim)
     atsim.wait_for_calculations.return_value = False
     # Check fails, throw is True, so exception is raised.
