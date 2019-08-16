@@ -21,45 +21,17 @@ Pytac, and ATIP - see ``../INSTALL.rst``
 You must also have pythonIoc installed - https://github.com/Araneidae/pythonIoc
 
 PythonIOC has a python interpreter linked in, and also includes some of its
-dependent modules. For this reason, the ``pythonIoc`` binary has to be used as
-the python interpreter for the virtac. This makes the setup a little bit
-complicated.
-
-Setup with virtual env
-----------------------
-
-In the following paragraphs, ``$PYTHONIOC_INSTALL_DIR`` is the path to the
-directory where pythonIoc is installed.
-
-Set up a virtual envirnoment, install our dependencies with ``pip``, and then
-set the ``PYTHONPATH`` so that they are accesible from ``pythonIoc``. Note
-that, at present, pythonIoc is only compatible with Python 2.7, so we need to
-use this version when creating the virtual env. ::
-
-    $ virtualenv --python $PYTHONIOC_INSTALL_DIR/pythonIoc /scratch/my_venv
-    $ source /scratch/my_venv/bin/activate
-
-    $ # This variable ($HERE) is required by pythonIoc.
-    $ export HERE=$PYTHONIOC_INSTALL_DIR
-    $ pip install accelerator-toolbox
-    $ pip install pytac
-
-    $ # Add the site-packages from the virtualenv to the python path so that
-    $ # they can be used in the virtac.
-    $ export PYTHONPATH="$PYTHONPATH:/scratch/my_venv/lib/python2.7/site-packages"
-
-Before running the virtual accelerator you need to edit the path to
-``pythonIoc`` in the ``start-virtac`` script. You may also edit the EPICS port
-to be used in this script.
+dependent modules. For this reason, the ``pythonIoc`` binary has to be used
+as the python interpreter for the virtac. This makes the setup a little bit
+complicated. The ``start-virtac`` script handles this at Diamond.
 
 
 Start the virtual accelerator
 -----------------------------
 
-Inside the top-level atip directory::
+Inside the virtac directory::
 
     $ ./start-virtac
-
 
 After a minute or so, you should be presented with something like this::
 
@@ -81,7 +53,6 @@ After a minute or so, you should be presented with something like this::
 Leave the server running and in a new terminal update the EPICS port::
 
     $ export EPICS_CA_SERVER_PORT=6064
-
 
 In this new terminal you are then free to address the simulator as you would
 the live machine, either through Pytac or by directly accessing the PVs.

@@ -1,3 +1,4 @@
+# Still required for readthedocs.
 accelerator-toolbox>=0.0.2
 pytac>=0.3.0
 cothread
@@ -5,6 +6,7 @@ numpy
 scipy
 pytest
 pytest-cov
+testfixtures
 coveralls
 mock
 flake8

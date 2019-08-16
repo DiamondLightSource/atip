@@ -1,0 +1,9 @@
+# Pipfile merely to bring in accelerator-toolbox, because it is not installed
+# inside Diamond.
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+accelerator-toolbox = ">=0.0.2"

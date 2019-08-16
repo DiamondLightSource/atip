@@ -1,6 +1,8 @@
 import mock
-import pytac
 import pytest
+from pytac.exceptions import (FieldException, HandleException,
+                              ControlSystemException)
+from testfixtures import LogCapture
 
 import atip
 
@@ -37,8 +39,27 @@ def test_lat_get_fields(atlds):
 @pytest.mark.parametrize('field', ['not_a_field', 1, [], 'BETA', ['x', 'y']])
 def test_lat_get_value_raises_FieldException_if_nonexistent_field(atlds,
                                                                   field):
-    with pytest.raises(pytac.exceptions.FieldException):
+    with pytest.raises(FieldException):
         atlds.get_value(field)
+
+
+def test_lat_get_value_handles_calculation_check_time_out_correctly():
+    atsim = mock.Mock()
+    atsim.get_disp.return_value = 2.5
+    atlds = atip.sim_data_sources.ATLatticeDataSource(atsim)
+    atsim.wait_for_calculations.return_value = False
+    # Check fails, throw is True, so exception is raised.
+    with pytest.raises(ControlSystemException):
+        atlds.get_value('dispersion', throw=True)
+    # Check fails, throw is False, so warning is logged and value is returned.
+    with LogCapture() as log:
+        assert atlds.get_value('dispersion', throw=False) == 2.5
+    log.check(('root', 'WARNING', 'Potentially out of date data returned. '
+               'Check for completion of outstanding calculations timed out.'))
+    atsim.wait_for_calculations.return_value = True
+    # Check doesn't fail, so doesn't raise error or warn and data is returned.
+    assert atlds.get_value('dispersion', throw=True) == 2.5
+    assert atlds.get_value('dispersion', throw=False) == 2.5
 
 
 def test_lat_get_value():
@@ -61,5 +82,5 @@ def test_lat_get_value():
 @pytest.mark.parametrize('field', ['not_a_field', 1, [], 'BETA', ['x', 'y'],
                                    'chromaticity_x', 'dispersion'])
 def test_lat_set_value_always_raises_HandleException(atlds, field):
-    with pytest.raises(pytac.exceptions.HandleException):
+    with pytest.raises(HandleException):
         atlds.set_value(field, 0)
