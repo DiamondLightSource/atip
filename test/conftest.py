@@ -58,12 +58,12 @@ def atsim(at_lattice):
 
 @pytest.fixture()
 def mocked_atsim(at_lattice):
-    length = len(at_lattice)+1
+    length = len(at_lattice) + 1
     base = numpy.ones((length, 4))
     r66 = numpy.zeros((6, 6))
     r66[4, 4] = 16
     atsim = atip.simulator.ATSimulator(at_lattice)
-    atsim._at_lat = mock.PropertyMock(energy=5, circumference=length*0.1)
+    atsim._at_lat = mock.PropertyMock(energy=5, circumference=(length * 0.1))
     atsim._emitdata = ({'r66': r66,
                         'emitXY': numpy.array([1.4, 0.45])},
                        {'damping_rates': [13, 3, 7]})

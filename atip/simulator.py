@@ -63,7 +63,7 @@ class ATSimulator(object):
             raise TypeError("If passed, 'callback' should be callable, {0} is "
                             "not.".format(callback))
         self._at_lat = at_lattice
-        self._rp = numpy.ones(len(at_lattice)+1, dtype=bool)
+        self._rp = numpy.ones(len(at_lattice) + 1, dtype=bool)
         # Initial phys data calculation.
         self._at_lat.radiation_on()
         self._emitdata = self._at_lat.ohmi_envelope(self._rp)
@@ -366,7 +366,7 @@ class ATSimulator(object):
             float: The linear momentum compaction factor of the AT lattice.
         """
         I1, _, _, _, _ = self._radint
-        return I1/self._lindata[3]['s_pos'][-1]
+        return I1 / self._lindata[3]['s_pos'][-1]
 
     def get_energy_spread(self):
         """Return the energy spread for the AT lattice.
@@ -375,8 +375,8 @@ class ATSimulator(object):
             float: The energy spread for the AT lattice.
         """
         _, I2, I3, I4, _ = self._radint
-        gamma = self._at_lat.energy/(at.physics.e_mass)
-        return gamma*numpy.sqrt((at.physics.Cq*I3)/(2*I2+I4))
+        gamma = self.get_energy() / (at.physics.e_mass)
+        return gamma*numpy.sqrt((at.physics.Cq * I3) / ((2 * I2) + I4))
 
     def get_energy_loss(self):
         """Return the energy loss per turn of the AT lattice.
@@ -385,7 +385,7 @@ class ATSimulator(object):
             float: The energy loss of the AT lattice.
         """
         _, I2, _, _, _ = self._radint
-        return (at.physics.Cgamma*I2*self._at_lat.energy**4)/(2*numpy.pi)
+        return (at.physics.Cgamma * I2 * self.get_energy()**4) / (2 * numpy.pi)
 
     def get_damping_partition_numbers(self):
         """Return the damping partition numbers for the 3 normal modes.
@@ -394,25 +394,25 @@ class ATSimulator(object):
             numpy.array: The damping partition numbers of the AT lattice.
         """
         _, I2, _, I4, _ = self._radint
-        Jx = 1-(I4/I2)
-        Je = 2+(I4/I2)
-        Jy = 4-(Jx+Je)  # Check they sum to 4, don't just assume Jy is 1.
+        Jx = 1 - (I4 / I2)
+        Je = 2 + (I4 / I2)
+        Jy = 4 - (Jx + Je)  # Check they sum to 4, don't just assume Jy is 1.
         return numpy.asarray([Jx, Jy, Je])
 
     def get_damping_times(self):
         """Return the damping times for the 3 normal modes.
         [tx, ty, tz] = (2*E0*T0)/(U0*[Jx, Jy, Jz]) [1]
         [1] A.Wolski; CERN  Accelerator School, Advanced Accelerator Physics
-            Course, Low Emittance Machines, Part 1: Beam Dynamics with
-            Synchrotron Radiation; August 2013; eqn. 68
+        Course, Low Emittance Machines, Part 1: Beam Dynamics with Synchrotron
+        Radiation; August 2013; eqn. 68
 
         Returns:
             numpy.array: The damping times of the AT lattice.
         """
-        E0 = self._at_lat.energy
+        E0 = self.get_energy()
         U0 = self.get_energy_loss()
-        T0 = self._at_lat.circumference/speed_of_light
-        return (2*T0*E0)/(U0*self.get_damping_partition_numbers())
+        T0 = self._at_lat.circumference / speed_of_light
+        return (2 * T0 * E0) / (U0 * self.get_damping_partition_numbers())
 
     def get_linear_dispersion_action(self):
         """Return the Linear Dispersion Action ("curly H") for the AT lattice.
@@ -421,7 +421,7 @@ class ATSimulator(object):
             float: Curly H for the AT lattice
         """
         _, I2, _, _, I5 = self._radint
-        return I5/I2
+        return I5 / I2
 
     def get_horizontal_emittance(self):
         """Return the horizontal emittance for the AT lattice calculated from
@@ -432,5 +432,5 @@ class ATSimulator(object):
             float: The horizontal ('x') emittance for the AT lattice.
         """
         _, I2, _, I4, I5 = self._radint
-        gamma = self._at_lat.energy/(at.physics.e_mass)
-        return (I5*at.physics.Cq*gamma**2)/(I2-I4)
+        gamma = self.get_energy() / (at.physics.e_mass)
+        return (I5 * at.physics.Cq * gamma**2) / (I2 - I4)

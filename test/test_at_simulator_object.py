@@ -268,8 +268,9 @@ def test_get_damping_partition_numbers(mocked_atsim, at_lattice):
 def test_get_damping_times(mocked_atsim, at_lattice):
     E0 = 5
     U0 = mocked_atsim.get_energy_loss()
-    T0 = 0.1*(len(at_lattice)+1) / speed_of_light
-    damping_times = (2*T0*E0)/(U0*mocked_atsim.get_damping_partition_numbers())
+    T0 = 0.1 * (len(at_lattice) + 1) / speed_of_light
+    damping_partition_numbers = mocked_atsim.get_damping_partition_numbers()
+    damping_times = (2 * T0 * E0) / (U0 * damping_partition_numbers)
     numpy.testing.assert_almost_equal(damping_times,
                                       mocked_atsim.get_damping_times())
 
@@ -279,5 +280,5 @@ def test_get_linear_dispersion_action(mocked_atsim):
 
 
 def test_get_horizontal_emittance(mocked_atsim):
-    eps_x = -(62.5*at.physics.Cq)/at.physics.e_mass**2
+    eps_x = -(62.5 * at.physics.Cq) / at.physics.e_mass**2
     assert mocked_atsim.get_horizontal_emittance() == eps_x
