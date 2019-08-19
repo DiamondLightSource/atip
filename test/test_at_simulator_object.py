@@ -8,55 +8,58 @@ from pytac.exceptions import FieldException
 import atip
 
 
-def _initial_phys_data(atsim, initial_emit, initial_lin):
+def _check_initial_phys_data(atsim, initial_phys_data):
     try:
-        numpy.testing.assert_almost_equal(initial_emit[2]['emitXY'][:, 0][0],
+        numpy.testing.assert_almost_equal(initial_phys_data['emitXY'][0],
                                           atsim.get_emittance('x'), decimal=6)
-        numpy.testing.assert_almost_equal(initial_emit[2]['emitXY'][:, 1][0],
+        numpy.testing.assert_almost_equal(initial_phys_data['emitXY'][1],
                                           atsim.get_emittance('y'), decimal=14)
-        numpy.testing.assert_almost_equal(initial_lin[1][0],
+        numpy.testing.assert_almost_equal(initial_phys_data['tune'][0],
                                           atsim.get_tune('x'), decimal=6)
-        numpy.testing.assert_almost_equal(initial_lin[1][1],
+        numpy.testing.assert_almost_equal(initial_phys_data['tune'][1],
                                           atsim.get_tune('y'), decimal=8)
-        numpy.testing.assert_almost_equal(initial_lin[2][0],
+        numpy.testing.assert_almost_equal(initial_phys_data['chromaticity'][0],
                                           atsim.get_chromaticity('x'),
                                           decimal=8)
-        numpy.testing.assert_almost_equal(initial_lin[2][1],
+        numpy.testing.assert_almost_equal(initial_phys_data['chromaticity'][1],
                                           atsim.get_chromaticity('y'),
                                           decimal=8)
-        numpy.testing.assert_almost_equal(initial_lin[3]['closed_orbit'][:, 0],
+        numpy.testing.assert_almost_equal(initial_phys_data['closed_orbit'][0],
                                           atsim.get_orbit('x'))
-        numpy.testing.assert_almost_equal(initial_lin[3]['closed_orbit'][:, 1],
+        numpy.testing.assert_almost_equal(initial_phys_data['closed_orbit'][1],
                                           atsim.get_orbit('px'))
-        numpy.testing.assert_almost_equal(initial_lin[3]['closed_orbit'][:, 2],
+        numpy.testing.assert_almost_equal(initial_phys_data['closed_orbit'][2],
                                           atsim.get_orbit('y'))
-        numpy.testing.assert_almost_equal(initial_lin[3]['closed_orbit'][:, 3],
+        numpy.testing.assert_almost_equal(initial_phys_data['closed_orbit'][3],
                                           atsim.get_orbit('py'))
-        numpy.testing.assert_almost_equal(initial_lin[3]['dispersion'][-1],
+        numpy.testing.assert_almost_equal(initial_phys_data['dispersion'],
                                           atsim.get_dispersion()[-1],
                                           decimal=6)
-        numpy.testing.assert_almost_equal(initial_lin[3]['s_pos'],
+        numpy.testing.assert_almost_equal(initial_phys_data['s_pos'],
                                           atsim.get_s(), decimal=8)
-        numpy.testing.assert_almost_equal(initial_lin[3]['alpha'][-1],
+        numpy.testing.assert_almost_equal(initial_phys_data['alpha'],
                                           atsim.get_alpha()[-1], decimal=8)
-        numpy.testing.assert_almost_equal(initial_lin[3]['beta'][-1],
+        numpy.testing.assert_almost_equal(initial_phys_data['beta'],
                                           atsim.get_beta()[-1], decimal=8)
-        numpy.testing.assert_almost_equal(initial_lin[3]['m44'][-1],
+        numpy.testing.assert_almost_equal(initial_phys_data['m44'],
                                           atsim.get_m44()[-1], decimal=8)
-        numpy.testing.assert_almost_equal(initial_lin[3]['mu'][-1],
+        numpy.testing.assert_almost_equal(initial_phys_data['mu'],
                                           atsim.get_mu()[-1], decimal=8)
+        numpy.testing.assert_almost_equal(initial_phys_data['rad_int'],
+                                          atsim.get_radiation_integrals(),
+                                          decimal=14)
         return True
     except Exception:
         return False
 
 
-def test_ATSimulator_creation(atsim, initial_emit, initial_lin):
+def test_ATSimulator_creation(atsim, initial_phys_data):
     # Check initial state of flags.
     assert bool(atsim._paused) is False
     assert bool(atsim.up_to_date) is True
     assert len(atsim._queue) == 0
-    # Check emittance and lindata are initially calculated correctly.
-    assert _initial_phys_data(atsim, initial_emit, initial_lin) is True
+    # Check physics data is initially calculated correctly.
+    assert _check_initial_phys_data(atsim, initial_phys_data) is True
 
 
 def test_recalculate_phys_data_queue(atsim):
@@ -69,8 +72,8 @@ def test_recalculate_phys_data_queue(atsim):
     elem_ds._make_change.assert_called_once_with('a_field', 12)
 
 
-def test_recalculate_phys_data(atsim, initial_emit, initial_lin):
-    assert _initial_phys_data(atsim, initial_emit, initial_lin) is True
+def test_recalculate_phys_data(atsim, initial_phys_data):
+    assert _check_initial_phys_data(atsim, initial_phys_data) is True
     # Check that errors raised inside thread are converted to warnings.
     atsim._at_lat[5].PolynomB[0] = 1.e10
     atsim.up_to_date.Reset()
@@ -108,8 +111,8 @@ def test_recalculate_phys_data(atsim, initial_emit, initial_lin):
                                       decimal=15)
 
 
-def test_toggle_calculations_and_wait_for_calculations(atsim, initial_lin,
-                                                       initial_emit):
+def test_toggle_calculations_and_wait_for_calculations(atsim,
+                                                       initial_phys_data):
     assert bool(atsim._paused) is False
     atsim.toggle_calculations()
     assert bool(atsim._paused) is True
@@ -121,11 +124,11 @@ def test_toggle_calculations_and_wait_for_calculations(atsim, initial_lin,
     atsim.up_to_date.Reset()
     atsim.queue_set(mock.Mock(), 'f', 0)
     assert atsim.wait_for_calculations(2) is False
-    assert _initial_phys_data(atsim, initial_emit, initial_lin) is True
+    assert _check_initial_phys_data(atsim, initial_phys_data) is True
     atsim.toggle_calculations()
     atsim.queue_set(mock.Mock(), 'f', 0)
     assert atsim.wait_for_calculations() is True
-    assert _initial_phys_data(atsim, initial_emit, initial_lin) is False
+    assert _check_initial_phys_data(atsim, initial_phys_data) is False
 
 
 def test_recalculate_phys_data_callback(at_lattice):
