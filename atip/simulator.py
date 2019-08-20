@@ -227,14 +227,15 @@ class ATSimulator(object):
         return self._at_lat.energy
 
 # Get global linear optics data:
-    def get_tune(self, field):
+    def get_tune(self, field=None):
         """Return the tune for the AT lattice for the specified plane.
 
         .. Note:: A special consideration is made so only the fractional digits
            of the tune are returned.
 
         Args:
-            field (str): The desired field (x or y) of tune.
+            field (str): The desired field (x or y) of tune, if None return
+                          both tune dimensions.
 
         Returns:
             float: The x or y tune for the AT lattice.
@@ -242,7 +243,9 @@ class ATSimulator(object):
         Raises:
             FieldException: if the specified field is not valid for tune.
         """
-        if field == 'x':
+        if field is None:
+            return (numpy.array(self._lindata[1]) % 1)
+        elif field == 'x':
             return (self._lindata[1][0] % 1)
         elif field == 'y':
             return (self._lindata[1][1] % 1)
@@ -250,11 +253,12 @@ class ATSimulator(object):
             raise FieldException("Field {0} is not a valid tune plane."
                                  .format(field))
 
-    def get_chromaticity(self, field):
+    def get_chromaticity(self, field=None):
         """Return the chromaticity for the AT lattice for the specified plane.
 
         Args:
-            field (str): The desired field (x or y) of chromaticity.
+            field (str): The desired field (x or y) of chromaticity, if None
+                          return both chromaticity dimensions.
 
         Returns:
             float: The x or y chromaticity for the AT lattice.
@@ -263,7 +267,9 @@ class ATSimulator(object):
             FieldException: if the specified field is not valid for
                              chromaticity.
         """
-        if field == 'x':
+        if field is None:
+            return self._lindata[2]
+        elif field == 'x':
             return self._lindata[2][0]
         elif field == 'y':
             return self._lindata[2][1]
@@ -272,11 +278,13 @@ class ATSimulator(object):
                                  "plane.".format(field))
 
 # Get local linear optics data:
-    def get_orbit(self, field):
-        """Return the closed orbit for the AT lattice for the specified plane.
+    def get_orbit(self, field=None):
+        """Return the closed orbit at each element in the AT lattice for the
+        specified plane.
 
         Args:
-            field (str): The desired field (x, px, y, or py) of closed orbit.
+            field (str): The desired field (x, px, y, or py) of closed orbit,
+                          if None return whole orbit vector.
 
         Returns:
             numpy.array: The x, x phase, y or y phase for the AT lattice as an
@@ -285,7 +293,9 @@ class ATSimulator(object):
         Raises:
             FieldException: if the specified field is not valid for orbit.
         """
-        if field == 'x':
+        if field is None:
+            return self._lindata[3]['closed_orbit'][:-1]
+        elif field == 'x':
             return self._lindata[3]['closed_orbit'][:-1, 0]
         elif field == 'px':
             return self._lindata[3]['closed_orbit'][:-1, 1]
@@ -297,13 +307,34 @@ class ATSimulator(object):
             raise FieldException("Field {0} is not a valid closed orbit plane."
                                  .format(field))
 
-    def get_dispersion(self):
-        """Return the dispersion at every element in the AT lattice.
+    def get_dispersion(self, field=None):
+        """Return the dispersion at every element in the AT lattice for the
+        specified plane.
+
+        Args:
+            field (str): The desired field (x, px, y, or py) of dispersion, if
+                          None return whole dispersion vector.
 
         Returns:
-            numpy.array: The dispersion vector for each element.
+            numpy.array: The eta x, eta prime x, eta y or eta prime y for the
+            AT lattice as an array of floats the length of the AT lattice.
+
+        Raises:
+            FieldException: if the specified field is not valid for dispersion.
         """
-        return self._lindata[3]['dispersion'][:-1]
+        if field is None:
+            return self._lindata[3]['dispersion'][:-1]
+        elif field == 'x':
+            return self._lindata[3]['dispersion'][:-1, 0]
+        elif field == 'px':
+            return self._lindata[3]['dispersion'][:-1, 1]
+        elif field == 'y':
+            return self._lindata[3]['dispersion'][:-1, 2]
+        elif field == 'py':
+            return self._lindata[3]['dispersion'][:-1, 3]
+        else:
+            raise FieldException("Field {0} is not a valid dispersion plane."
+                                 .format(field))
 
     def get_alpha(self):
         """Return the alpha vector at every element in the AT lattice.
@@ -338,7 +369,7 @@ class ATSimulator(object):
         return self._lindata[3]['m44'][:-1]
 
 # Get lattice emittance from beam envelope:
-    def get_emittance(self, field):
+    def get_emittance(self, field=None):
         """Return the emittance for the AT lattice for the specified plane.
 
         .. Note:: The emittance at the entrance of the AT lattice as it is
@@ -346,7 +377,8 @@ class ATSimulator(object):
            is returned is arbitrary.
 
         Args:
-            field (str): The desired field (x or y) of emittance.
+            field (str): The desired field (x or y) of emittance, if None
+                          return both emittance dimensions.
 
         Returns:
             float: The x or y emittance for the AT lattice.
@@ -354,7 +386,9 @@ class ATSimulator(object):
         Raises:
             FieldException: if the specified field is not valid for emittance.
         """
-        if field == 'x':
+        if field is None:
+            return self._emitdata[0]['emitXY']
+        elif field == 'x':
             return self._emitdata[0]['emitXY'][0]
         elif field == 'y':
             return self._emitdata[0]['emitXY'][1]

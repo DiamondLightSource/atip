@@ -52,7 +52,7 @@ def loader(mode='DIAD', callback=None):
 def preload_at(at_lat):
     """Load the elements onto an 'elems' object's attributes by type so that
     groups of elements of the same type (class) can be more easily accessed,
-    e.g. 'elems.dipoles' will return a list of all the dipoles in the lattice.
+    e.g. 'elems.dipole' will return a list of all the dipoles in the lattice.
     As a special case 'elems.all' will return all the elements in the lattice.
 
     Args:
@@ -74,14 +74,14 @@ def preload_at(at_lat):
         elems_dict[type(elem).__name__].append(elem)
     for elem_type, elements in elems_dict.items():
         if len(elements) > 0:
-            setattr(elems, elem_type.lower() + "s", elements)
+            setattr(elems, elem_type.lower(), elements)
     return elems
 
 
 def preload(pytac_lat):
     """Load the elements onto an 'elems' object's attributes by family so that
     groups of elements of the same family can be more easily accessed, e.g.
-    'elems.bpms' will return a list of all the BPMs in the lattice. As a
+    'elems.bpm' will return a list of all the BPMs in the lattice. As a
     special case 'elems.all' will return all the elements in the lattice.
 
     Args:
@@ -95,7 +95,7 @@ def preload(pytac_lat):
         pass
     setattr(elems, "all", pytac_lat.get_elements())
     for family in pytac_lat.get_all_families():
-        setattr(elems, family.lower() + "s", pytac_lat.get_elements(family))
+        setattr(elems, family.lower(), pytac_lat.get_elements(family))
     return elems
 
 

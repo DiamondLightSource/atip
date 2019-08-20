@@ -173,6 +173,7 @@ def test_get_energy(mocked_atsim):
 
 
 def test_get_tune(mocked_atsim):
+    numpy.testing.assert_almost_equal(mocked_atsim.get_tune(), [0.14, 0.12])
     numpy.testing.assert_almost_equal(mocked_atsim.get_tune('x'), 0.14)
     numpy.testing.assert_almost_equal(mocked_atsim.get_tune('y'), 0.12)
     with pytest.raises(FieldException):
@@ -180,6 +181,7 @@ def test_get_tune(mocked_atsim):
 
 
 def test_get_chromaticity(mocked_atsim):
+    numpy.testing.assert_equal(mocked_atsim.get_chromaticity(), [2, 1])
     assert mocked_atsim.get_chromaticity('x') == 2
     assert mocked_atsim.get_chromaticity('y') == 1
     with pytest.raises(FieldException):
@@ -187,23 +189,35 @@ def test_get_chromaticity(mocked_atsim):
 
 
 def test_get_orbit(mocked_atsim, at_lattice):
+    all_orbit = numpy.ones((len(at_lattice), 4)) * numpy.array([[0.6, 57,
+                                                                 0.2, 9]])
+    numpy.testing.assert_almost_equal(mocked_atsim.get_orbit(), all_orbit)
     numpy.testing.assert_almost_equal(mocked_atsim.get_orbit('x'),
-                                      numpy.ones(len(at_lattice)) * 0.6)
+                                      all_orbit[:, 0])
     numpy.testing.assert_almost_equal(mocked_atsim.get_orbit('px'),
-                                      numpy.ones(len(at_lattice)) * 57)
+                                      all_orbit[:, 1])
     numpy.testing.assert_almost_equal(mocked_atsim.get_orbit('y'),
-                                      numpy.ones(len(at_lattice)) * 0.2)
+                                      all_orbit[:, 2])
     numpy.testing.assert_almost_equal(mocked_atsim.get_orbit('py'),
-                                      numpy.ones(len(at_lattice)) * 9)
+                                      all_orbit[:, 3])
     with pytest.raises(FieldException):
         mocked_atsim.get_orbit('not_a_field')
 
 
 def test_get_dispersion(mocked_atsim, at_lattice):
-    numpy.testing.assert_almost_equal(
-        mocked_atsim.get_dispersion(),
-        (numpy.ones((len(at_lattice), 4)) * numpy.array([8.8, 1.7, 23, 3.5]))
-    )
+    all_eta = numpy.ones((len(at_lattice), 4)) * numpy.array([[8.8, 1.7,
+                                                               23, 3.5]])
+    numpy.testing.assert_almost_equal(mocked_atsim.get_dispersion(), all_eta)
+    numpy.testing.assert_almost_equal(mocked_atsim.get_dispersion('x'),
+                                      all_eta[:, 0])
+    numpy.testing.assert_almost_equal(mocked_atsim.get_dispersion('px'),
+                                      all_eta[:, 1])
+    numpy.testing.assert_almost_equal(mocked_atsim.get_dispersion('y'),
+                                      all_eta[:, 2])
+    numpy.testing.assert_almost_equal(mocked_atsim.get_dispersion('py'),
+                                      all_eta[:, 3])
+    with pytest.raises(FieldException):
+        mocked_atsim.get_dispersion('not_a_field')
 
 
 def test_get_alpha(mocked_atsim, at_lattice):
@@ -235,6 +249,7 @@ def test_get_m44(mocked_atsim, at_lattice):
 
 
 def test_get_emittance(mocked_atsim):
+    numpy.testing.assert_equal(mocked_atsim.get_emittance(), [1.4, 0.45])
     assert mocked_atsim.get_emittance('x') == 1.4
     assert mocked_atsim.get_emittance('y') == 0.45
     with pytest.raises(FieldException):

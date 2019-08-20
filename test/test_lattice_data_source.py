@@ -8,27 +8,43 @@ import atip
 
 
 @pytest.mark.parametrize('func_str,field', [
-    ('atlds._atsim.get_orbit', 'phase_y'), ('atlds._atsim.get_alpha', 'alpha'),
-    ('atlds._atsim.get_tune', 'tune_x'), ('atlds._atsim.get_tune', 'tune_y'),
-    ('atlds._atsim.get_orbit', 'phase_x'), ('atlds._atsim.get_beta', 'beta'),
-    ('atlds._atsim.get_energy', 'energy'), ('atlds._atsim.get_m44', 'm44'),
-    ('atlds._atsim.get_s', 's_position'), ('atlds._atsim.get_mu', 'mu'),
-    ('atlds._atsim.get_orbit', 'y'), ('atlds._atsim.get_orbit', 'x'),
     ('atlds._atsim.get_chromaticity', 'chromaticity_x'),
     ('atlds._atsim.get_chromaticity', 'chromaticity_y'),
+    ('atlds._atsim.get_chromaticity', 'chromaticity'),
+    ('atlds._atsim.get_dispersion', 'eta_prime_x'),
+    ('atlds._atsim.get_dispersion', 'eta_prime_y'),
+    ('atlds._atsim.get_dispersion', 'dispersion'),
     ('atlds._atsim.get_emittance', 'emittance_x'),
     ('atlds._atsim.get_emittance', 'emittance_y'),
-    ('atlds._atsim.get_dispersion', 'dispersion')
+    ('atlds._atsim.get_emittance', 'emittance'),
+    ('atlds._atsim.get_orbit', 'closed_orbit'),
+    ('atlds._atsim.get_dispersion', 'eta_x'),
+    ('atlds._atsim.get_dispersion', 'eta_y'),
+    ('atlds._atsim.get_energy', 'energy'),
+    ('atlds._atsim.get_orbit', 'phase_x'),
+    ('atlds._atsim.get_orbit', 'phase_y'),
+    ('atlds._atsim.get_s', 's_position'),
+    ('atlds._atsim.get_tune', 'tune_x'),
+    ('atlds._atsim.get_tune', 'tune_y'),
+    ('atlds._atsim.get_alpha', 'alpha'),
+    ('atlds._atsim.get_beta', 'beta'),
+    ('atlds._atsim.get_tune', 'tune'),
+    ('atlds._atsim.get_m44', 'm44'),
+    ('atlds._atsim.get_orbit', 'x'),
+    ('atlds._atsim.get_orbit', 'y'),
+    ('atlds._atsim.get_mu', 'mu'),
 ])
 def test_lat_field_funcs(func_str, field, atlds):
     assert atlds._field_funcs[field] == eval(func_str)
 
 
 def test_lat_get_fields(atlds):
-    correct_fields = ['chromaticity_x', 'chromaticity_y', 'emittance_x',
-                      'emittance_y', 'phase_x', 'phase_y', 'tune_x', 'tune_y',
-                      'x', 'y', 'dispersion', 'energy', 's_position', 'alpha',
-                      'beta', 'm44', 'mu']
+    correct_fields = ['chromaticity_x', 'chromaticity_y', 'chromaticity',
+                      'eta_prime_x', 'eta_prime_y', 'dispersion',
+                      'emittance_x', 'emittance_y', 'emittance',
+                      'closed_orbit', 'eta_x', 'eta_y', 'energy', 'phase_x',
+                      'phase_y', 's_position', 'tune_x', 'tune_y', 'alpha',
+                      'beta', 'tune', 'm44', 'x', 'y', 'mu']
     fields = atlds.get_fields()
     assert isinstance(fields, list)
     assert len(fields) == len(correct_fields)

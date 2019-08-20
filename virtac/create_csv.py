@@ -17,18 +17,18 @@ def generate_feedback_pvs():
     all_elements = atip.utils.preload(lattice)
     # Only keep the elements from the families that we are concerned with.
     elements = list(set(
-        all_elements.hstrs +
-        all_elements.vstrs +
-        all_elements.bpms
+        all_elements.hstr +
+        all_elements.vstr +
+        all_elements.bpm
     ))
     # Also get families for tune feedback
     tune_quad_elements = set(
-        all_elements.q1ds +
-        all_elements.q2ds +
-        all_elements.q3ds +
-        all_elements.q3bs +
-        all_elements.q2bs +
-        all_elements.q1bs
+        all_elements.q1d +
+        all_elements.q2d +
+        all_elements.q3d +
+        all_elements.q3b +
+        all_elements.q2b +
+        all_elements.q1b
     )
     elements.extend(tune_quad_elements)
     # Sort the elements by index, in ascending order.
