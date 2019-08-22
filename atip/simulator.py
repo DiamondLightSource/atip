@@ -29,6 +29,8 @@ class ATSimulator(object):
                                                  physics data is calculated.
            _rp (numpy.array): A boolean array to be used as refpts for the
                                physics calculations.
+            _emit_calc (bool): Whether or not to perform the beam envelope
+                                based emittance calculations.
            _emitdata (tuple): Emittance, the output of the AT physics function
                                ohmi_envelope (see at.lattice.radiation.py).
            _lindata (tuple): Linear optics data, the output of the AT physics
@@ -44,7 +46,7 @@ class ATSimulator(object):
                                                     lattice and recalculate the
                                                     physics data upon a change.
     """
-    def __init__(self, at_lattice, callback=None):
+    def __init__(self, at_lattice, callback=None, emit_calc=True):
         """
         .. Note:: To avoid errors, the physics data must be initially
            calculated here, during creation, otherwise it could be accidentally
@@ -57,6 +59,8 @@ class ATSimulator(object):
                                                      lattice object.
             callback (callable): Optional, if passed it is called on completion
                                   of each round of physics calculations.
+            emit_calc (bool): Whether or not to perform the beam envelope based
+                               emittance calculations.
 
         **Methods:**
         """
@@ -65,9 +69,11 @@ class ATSimulator(object):
                             "not.".format(callback))
         self._at_lat = at_lattice
         self._rp = numpy.ones(len(at_lattice) + 1, dtype=bool)
+        self._emit_calc = emit_calc
         # Initial phys data calculation.
-        self._at_lat.radiation_on()
-        self._emitdata = self._at_lat.ohmi_envelope(self._rp)
+        if self._emit_calc:
+            self._at_lat.radiation_on()
+            self._emitdata = self._at_lat.ohmi_envelope(self._rp)
         self._at_lat.radiation_off()
         self._lindata = self._at_lat.linopt(refpts=self._rp, get_chrom=True,
                                             coupled=False)
@@ -125,8 +131,9 @@ class ATSimulator(object):
                 self._gather_one_sample()
             if bool(self._paused) is False:
                 try:
-                    self._at_lat.radiation_on()
-                    self._emitdata = self._at_lat.ohmi_envelope(self._rp)
+                    if self._emit_calc:
+                        self._at_lat.radiation_on()
+                        self._emitdata = self._at_lat.ohmi_envelope(self._rp)
                     self._at_lat.radiation_off()
                     self._lindata = self._at_lat.linopt(0.0, self._rp, True,
                                                         coupled=False)
