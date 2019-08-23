@@ -134,23 +134,6 @@ def get_sim_lattice(target):
     return get_atsim(target).get_at_lattice()
 
 
-def get_thread(target):
-    """Get the Cothread thread that is used for performing the recalculations.
-
-    Args:
-        target (pytac.lattice.Lattice or ATSimulator): An ATSimulator object
-                                                        or a Pytac lattice
-                                                        from which an
-                                                        ATSimulator object can
-                                                        be extracted.
-
-    Returns:
-        cothread.Thread: The calculation thread that the Pytac lattice's
-                         ATSimulator object uses to recalculate physics data.
-    """
-    return get_atsim(target)._calculation_thread
-
-
 def toggle_thread(target):
     """Pause or unpause the ATSimulator calculation thread.
 

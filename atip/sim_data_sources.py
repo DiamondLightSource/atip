@@ -443,6 +443,9 @@ class ATLatticeDataSource(pytac.data_source.DataSource):
                 logging.warning("Potentially out of date data returned. " +
                                 error_msg)
         if field in list(self._field_funcs.keys()):
+            # The orbit x_phase and y_phase, and the eta prime_x and prime_y
+            # fields are represented by 'px' or 'py' in the ATSimulator data
+            # handling functions.
             if (field.startswith('phase')) or (field.find('prime') != -1):
                 return self._field_funcs[field]('p' + field[-1])
             elif field.endswith('x'):

@@ -20,14 +20,13 @@ Initial Setup and Installation
     $ cd <source-directory>
     $ git clone https://github.com/atcollab/at.git
     $ git clone https://github.com/dls-controls/pytac.git
-    $ git clone https://github.com/T-Nicholls/atip.git
+    $ git clone https://github.com/dls-controls/atip.git
 
-2. Create a virtual enviroment and install the dependencies::
+2. Create a pipenv and install the dependencies::
 
     $ cd atip
-    $ virtualenv --no-site-packages venv
-    $ source venv/bin/activate
-    $ pip install -r requirements
+    $ pipenv install --dev
+    $ pipenv shell
 
 3. Build AT's .so files::
 
