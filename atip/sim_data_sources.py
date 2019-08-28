@@ -374,11 +374,18 @@ class ATLatticeDataSource(pytac.data_source.DataSource):
         """
         self.units = pytac.PHYS
         self._atsim = atsim
-        self._field_funcs = {'chromaticity_x': self._atsim.get_chrom,
-                             'chromaticity_y': self._atsim.get_chrom,
-                             'emittance_x': self._atsim.get_emit,
-                             'emittance_y': self._atsim.get_emit,
-                             'dispersion': self._atsim.get_disp,
+        self._field_funcs = {'chromaticity_x': self._atsim.get_chromaticity,
+                             'chromaticity_y': self._atsim.get_chromaticity,
+                             'chromaticity': self._atsim.get_chromaticity,
+                             'eta_prime_x': self._atsim.get_dispersion,
+                             'eta_prime_y': self._atsim.get_dispersion,
+                             'dispersion': self._atsim.get_dispersion,
+                             'emittance_x': self._atsim.get_emittance,
+                             'emittance_y': self._atsim.get_emittance,
+                             'emittance': self._atsim.get_emittance,
+                             'closed_orbit': self._atsim.get_orbit,
+                             'eta_x': self._atsim.get_dispersion,
+                             'eta_y': self._atsim.get_dispersion,
                              'energy': self._atsim.get_energy,
                              'phase_x': self._atsim.get_orbit,
                              'phase_y': self._atsim.get_orbit,
@@ -387,6 +394,7 @@ class ATLatticeDataSource(pytac.data_source.DataSource):
                              'tune_y': self._atsim.get_tune,
                              'alpha': self._atsim.get_alpha,
                              'beta': self._atsim.get_beta,
+                             'tune': self._atsim.get_tune,
                              'm44': self._atsim.get_m44,
                              'x': self._atsim.get_orbit,
                              'y': self._atsim.get_orbit,
@@ -435,7 +443,10 @@ class ATLatticeDataSource(pytac.data_source.DataSource):
                 logging.warning("Potentially out of date data returned. " +
                                 error_msg)
         if field in list(self._field_funcs.keys()):
-            if field.startswith('phase'):
+            # The orbit x_phase and y_phase, and the eta prime_x and prime_y
+            # fields are represented by 'px' or 'py' in the ATSimulator data
+            # handling functions.
+            if (field.startswith('phase')) or (field.find('prime') != -1):
                 return self._field_funcs[field]('p' + field[-1])
             elif field.endswith('x'):
                 return self._field_funcs[field]('x')
@@ -464,4 +475,4 @@ class ATLatticeDataSource(pytac.data_source.DataSource):
                               currently supported.
         """
         raise HandleException("Field {0} cannot be set on lattice data source "
-                              "{0}.".format(field, self))
+                              "{1}.".format(field, self))

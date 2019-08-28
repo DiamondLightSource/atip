@@ -58,17 +58,11 @@ def atsim(at_lattice):
 
 @pytest.fixture()
 def mocked_atsim(at_lattice):
-    length = len(at_lattice)
+    length = len(at_lattice) + 1
     base = numpy.ones((length, 4))
-    r66 = numpy.zeros((6, 6))
-    r66[4, 4] = 16
     atsim = atip.simulator.ATSimulator(at_lattice)
-    atsim._at_lat = mock.PropertyMock(energy=5, energy_loss=73)
-    atsim._at_lat.get_mcf.return_value = 42
-    atsim._at_lat.get_s_pos.return_value = numpy.array([0.1 * (i + 1) for i in
-                                                       range(length + 1)])
-    atsim._emittance = ({'r66': r66}, [0, (13, 3, 7)],
-                        {'emitXY': (base[:, :2] * numpy.array([1.4, 0.45]))})
+    atsim._at_lat = mock.PropertyMock(energy=5, circumference=(length * 0.1))
+    atsim._emitdata = [{'emitXY': numpy.array([1.4, 0.45])}]
     atsim._lindata = ([], [3.14, 0.12], [2, 1],
                       {'closed_orbit': (base * numpy.array([0.6, 57, 0.2, 9])),
                        'dispersion': (base * numpy.array([8.8, 1.7, 23, 3.5])),
@@ -79,6 +73,7 @@ def mocked_atsim(at_lattice):
                        'm44': (numpy.ones((length,
                                            4, 4)) * (numpy.eye(4) * 0.8)),
                        'mu': (base[:, :2] * numpy.array([176, 82]))})
+    atsim._radint = (1.0, 2.0, 3.0, 4.0, 5.0)
     return atsim
 
 
@@ -93,23 +88,24 @@ def ba_atsim(at_lattice):
 
 
 @pytest.fixture()
-def initial_emit(at_lattice):
-    return ([], [], {'emitXY':
-                     numpy.ones((len(at_lattice), 2)) * [1.32528e-10, 0.]})
-
-
-@pytest.fixture()
-def initial_lin(at_lattice):
-    return ([], [0.38156245, 0.85437543], [0.17919002, 0.12242263],
-            {'closed_orbit': numpy.zeros((len(at_lattice), 6)),
-             'dispersion': numpy.array([[1.72682010e-3, 4.04368254e-9,
-                                         5.88659608e-28, -8.95277691e-29]]),
-             's_pos': numpy.cumsum([0.0] + [getattr(elem, 'Length', 0) for elem
-                                            in at_lattice[:-1]]),
-             'alpha': numpy.array([[0.384261343, 1.00253822]]),
-             'beta': numpy.array([[7.91882634, 5.30280084]]),
-             'm44': numpy.array([[[-0.47537132, 6.62427828, 0., 0.],
-                                  [-0.09816788, -0.73565385, 0., 0.],
-                                  [0., 0., -0.18476435, -3.7128728],
-                                  [0., 0., 0.29967874, 0.60979916]]]),
-             'mu': numpy.array([[14.59693301, 4.58153046]])})
+def initial_phys_data(at_lattice):
+    return {'tune': numpy.array([0.38156245, 0.85437543]),
+            'chromaticity': numpy.array([0.17919002, 0.12242263]),
+            'closed_orbit': numpy.zeros((6, len(at_lattice))),
+            'dispersion': numpy.array([1.72682010e-3, 4.04368254e-9,
+                                       5.88659608e-28, -8.95277691e-29]),
+            's_pos': numpy.cumsum([0.0] + [getattr(elem, 'Length', 0) for elem
+                                           in at_lattice[:-1]]),
+            'alpha': numpy.array([0.384261343, 1.00253822]),
+            'beta': numpy.array([7.91882634, 5.30280084]),
+            'm44': numpy.array([[-0.47537132, 6.62427828, 0., 0.],
+                                [-0.09816788, -0.73565385, 0., 0.],
+                                [0., 0., -0.18476435, -3.7128728],
+                                [0., 0., 0.29967874, 0.60979916]]),
+            'mu': numpy.array([14.59693301, 4.58153046]),
+            'emitXY': numpy.array([1.32528e-10, 0.]),
+            'rad_int': numpy.array([2.2435734416179783e-3,
+                                    4.3264360771244244e-3,
+                                    1.049245018317141e-4,
+                                    -2.3049140720439194e-3,
+                                    1.6505019559193616e-8])}

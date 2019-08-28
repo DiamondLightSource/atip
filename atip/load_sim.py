@@ -9,7 +9,7 @@ from atip.sim_data_sources import ATElementDataSource, ATLatticeDataSource
 
 
 # List of all the element fields that can be currently simulated.
-SIMULATED_FIELDS = ['a1', 'b0', 'b1', 'b2', 'x', 'y', 'f', 'x_kick', 'y_kick']
+SIMULATED_FIELDS = {'a1', 'b0', 'b1', 'b2', 'x', 'y', 'f', 'x_kick', 'y_kick'}
 
 
 def load_from_filepath(pytac_lattice, at_lattice_filepath, callback=None):
@@ -56,11 +56,7 @@ def load(pytac_lattice, at_lattice, callback=None):
     # Load the sim onto each element.
     for e in pytac_lattice:
         # Determine which fields each simulated element should have.
-        sim_fields = []
-        live_fields = list(e.get_fields()[pytac.LIVE])
-        for x in range(len(live_fields)):
-            if live_fields[x] in SIMULATED_FIELDS:
-                sim_fields.append(live_fields[x])
+        sim_fields = list(set(e.get_fields()[pytac.LIVE]) & SIMULATED_FIELDS)
         # Set the simulator data source on each element.
         e.set_data_source(ATElementDataSource(at_lattice[e.index - 1], e.index,
                                               atsim, sim_fields), pytac.SIM)

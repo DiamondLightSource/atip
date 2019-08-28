@@ -20,9 +20,9 @@ def load_at_lattice(mode='DIAD', **kwargs):
     filepath = os.path.join(os.path.dirname(__file__),
                             ''.join(['rings/', mode.lower(), '.mat']))
     at_lattice = at.load.load_mat(filepath, **kwargs)
-    for x in range(len(at_lattice)):
-        at_lattice[x].Index = x + 1
-        at_lattice[x].Class = at_lattice[x].__class__.__name__
+    for index, elem in enumerate(at_lattice):
+        elem.Index = index + 1
+        elem.Class = elem.__class__.__name__
     return at_lattice
 
 
@@ -52,7 +52,7 @@ def loader(mode='DIAD', callback=None):
 def preload_at(at_lat):
     """Load the elements onto an 'elems' object's attributes by type so that
     groups of elements of the same type (class) can be more easily accessed,
-    e.g. 'elems.dipoles' will return a list of all the dipoles in the lattice.
+    e.g. 'elems.dipole' will return a list of all the dipoles in the lattice.
     As a special case 'elems.all' will return all the elements in the lattice.
 
     Args:
@@ -73,14 +73,15 @@ def preload_at(at_lat):
     for elem in at_lat:
         elems_dict[type(elem).__name__].append(elem)
     for elem_type, elements in elems_dict.items():
-        setattr(elems, elem_type.lower() + "s", elements)
+        if len(elements) > 0:
+            setattr(elems, elem_type.lower(), elements)
     return elems
 
 
 def preload(pytac_lat):
     """Load the elements onto an 'elems' object's attributes by family so that
     groups of elements of the same family can be more easily accessed, e.g.
-    'elems.bpms' will return a list of all the BPMs in the lattice. As a
+    'elems.bpm' will return a list of all the BPMs in the lattice. As a
     special case 'elems.all' will return all the elements in the lattice.
 
     Args:
@@ -94,80 +95,73 @@ def preload(pytac_lat):
         pass
     setattr(elems, "all", pytac_lat.get_elements())
     for family in pytac_lat.get_all_families():
-        setattr(elems, family.lower() + "s", pytac_lat.get_elements(family))
+        setattr(elems, family.lower(), pytac_lat.get_elements(family))
     return elems
 
 
-def get_atsim(pytac_lattice):
+def get_atsim(target):
     """Get the ATSimulator object being used by a unified Pytac lattice.
 
     Args:
-        pytac_lattice (pytac.lattice.Lattice): An instance of a unified Pytac
-                                                lattice from which to get the
-                                                ATSimulator object being used.
+        target (pytac.lattice.Lattice or ATSimulator): An ATSimulator object
+                                                        or a Pytac lattice
+                                                        from which an
+                                                        ATSimulator object can
+                                                        be extracted.
 
     Returns:
         ATSimulator: The simulator object performing the physics calculations.
     """
-    return pytac_lattice._data_source_manager._data_sources[pytac.SIM]._atsim
+    if isinstance(target, atip.simulator.ATSimulator):
+        return target
+    else:  # Pytac lattice
+        return target._data_source_manager._data_sources[pytac.SIM]._atsim
 
 
-def get_sim_lattice(pytac_lattice):
+def get_sim_lattice(target):
     """Get the AT lattice that the simulator is using.
 
     Args:
-        pytac_lattice (pytac.lattice.Lattice): An instance of a unified Pytac
-                                                lattice from which to get the
-                                                corresponding AT lattice.
+        target (pytac.lattice.Lattice or ATSimulator): An ATSimulator object
+                                                        or a Pytac lattice
+                                                        from which an
+                                                        ATSimulator object can
+                                                        be extracted.
 
     Returns:
         at.lattice.Lattice: The corresponding AT lattice used by the simulator.
     """
-    return get_atsim(pytac_lattice).get_at_lattice()
+    return get_atsim(target).get_at_lattice()
 
 
-def get_thread(pytac_lattice):
-    """Get the Cothread thread that is used for performing the recalculations.
-
-    Args:
-        pytac_lattice (pytac.lattice.Lattice): An instance of a unified Pytac
-                                                lattice from which to get the
-                                                calculation thread off of the
-                                                ATSimulator object.
-
-    Returns:
-        cothread.Thread: The calculation thread that the Pytac lattice's
-                         ATSimulator object uses to recalculate physics data.
-    """
-    return get_atsim(pytac_lattice)._calculation_thread
-
-
-def toggle_thread(pytac_lattice):
+def toggle_thread(target):
     """Pause or unpause the ATSimulator calculation thread.
 
     Args:
-        pytac_lattice (pytac.lattice.Lattice): An instance of a unified Pytac
-                                                lattice from which to pause or
-                                                unpause the calculation thread
-                                                on its ATSimulator object.
+        target (pytac.lattice.Lattice or ATSimulator): An ATSimulator object
+                                                        or a Pytac lattice
+                                                        from which an
+                                                        ATSimulator object can
+                                                        be extracted.
     """
-    get_atsim(pytac_lattice).toggle_calculations()
+    get_atsim(target).toggle_calculations()
 
 
-def trigger_calc(pytac_lattice):
+def trigger_calc(target):
     """Manually trigger a recalculation of the physics data on the ATSimulator
     object of the given unified Pytac lattice.
 
     Args:
-        pytac_lattice (pytac.lattice.Lattice): An instance of a unified Pytac
-                                                lattice from which to trigger a
-                                                recalculation of the physics
-                                                data on its ATSimulator object.
+        target (pytac.lattice.Lattice or ATSimulator): An ATSimulator object
+                                                        or a Pytac lattice
+                                                        from which an
+                                                        ATSimulator object can
+                                                        be extracted.
     """
-    for elem in pytac_lattice:
-        fields = list(set(elem.get_fields()[pytac.SIM]) - set(['x', 'y']))
-        if len(fields) != 0:
-            val = elem.get_value(fields[0], pytac.SP, data_source=pytac.SIM)
-            elem.set_value(fields[0], val, data_source=pytac.SIM)
-            print("Recalculation manually triggered.")
-            break
+    def do_nothing(*args):
+        pass
+    atsim = get_atsim(target)
+    atsim.up_to_date.Reset()
+    atsim._paused.Reset()
+    atsim._queue.Signal((do_nothing, None, None))
+    print("Recalculation manually triggered.")
