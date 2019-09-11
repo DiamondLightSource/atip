@@ -1,4 +1,5 @@
 """Module containing an interface with the AT simulator."""
+import logging
 from warnings import warn
 
 import at
@@ -126,24 +127,32 @@ class ATSimulator(object):
                            but as a warning.
         """
         while True:
+            logging.debug('Starting recalculation loop')
             self._gather_one_sample()
             while self._queue:
                 self._gather_one_sample()
             if bool(self._paused) is False:
                 try:
                     if self._emit_calc:
+                        logging.debug('Starting emittance calculation.')
                         self._at_lat.radiation_on()
                         self._emitdata = self._at_lat.ohmi_envelope(self._rp)
+                        logging.debug('Completed emittance calculation')
+                    logging.debug('Starting linear optics calculation.')
                     self._at_lat.radiation_off()
                     self._lindata = self._at_lat.linopt(0.0, self._rp, True,
                                                         coupled=False)
+                    logging.debug('Completed linear optics calculation.')
                     self._radint = self._at_lat.get_radiation_integrals(
                         twiss=self._lindata[3]
                     )
+                    logging.debug('All calculation complete.')
                 except Exception as e:
                     warn(at.AtWarning(e))
                 if callback is not None:
+                    logging.debug('Executing callback function.')
                     callback()
+                    logging.debug('Callback completed.')
                 self.up_to_date.Signal()
 
     def toggle_calculations(self):
