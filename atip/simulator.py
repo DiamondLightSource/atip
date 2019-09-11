@@ -149,11 +149,14 @@ class ATSimulator(object):
                     logging.debug('All calculation complete.')
                 except Exception as e:
                     warn(at.AtWarning(e))
+                # Signal up to date before the callback is executed in case
+                # the callback requires data that requires the calculation
+                # to be up to date.
+                self.up_to_date.Signal()
                 if callback is not None:
                     logging.debug('Executing callback function.')
                     callback()
                     logging.debug('Callback completed.')
-                self.up_to_date.Signal()
 
     def toggle_calculations(self):
         """Pause or unpause the physics calculations by setting or clearing the
