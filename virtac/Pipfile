@@ -6,4 +6,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+# pyAT 0.0.2 requires numpy 1.16 due to a bug, despite claiming support
+# for 1.10 and up.
+numpy = ">=1.16.0,<1.17"
 accelerator-toolbox = ">=0.0.2"
