@@ -3,7 +3,7 @@
 # The launch method for this is entirely Diamond-specific as it relies on
 # the internal pythonSoftIoc installation.
 
-PYIOC_VERSION=2-15
+PYIOC_VERSION=2-16
 EPICS_VERSION=R3.14.12.7
 PYIOC=/dls_sw/prod/$EPICS_VERSION/support/pythonIoc/$PYIOC_VERSION/pythonIoc
 export HERE=$(dirname $PYIOC)

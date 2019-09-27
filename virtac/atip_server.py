@@ -161,8 +161,6 @@ class ATIPServer(object):
                                             PREC=precision, MDEL="-1",
                                             initial_value=value)
                     set_pv = element.get_pv_name('b0', pytac.SP)
-                    def on_update(value, name=set_pv):  # noqa E306
-                        self._on_update(name, value)
                     upper, lower, precision = limits_dict.get(set_pv, (None,
                                                                        None,
                                                                        None))
@@ -172,7 +170,7 @@ class ATIPServer(object):
                                               DRVL=lower, DRVH=upper,
                                               PREC=precision,
                                               initial_value=value,
-                                              on_update=on_update,
+                                              on_update_name=self._on_update,
                                               always_update=True)
                     self._in_records[in_record] = ([element.index], 'b0')
                     self._out_records[out_record] = in_record
@@ -199,8 +197,6 @@ class ATIPServer(object):
                     except HandleException:
                         self._rb_only_records.append(in_record)
                     else:
-                        def on_update(value, name=set_pv):
-                            self._on_update(name, value)
                         upper, lower, precision = limits_dict.get(set_pv,
                                                                   (None, None,
                                                                    None))
@@ -210,7 +206,7 @@ class ATIPServer(object):
                                                   DRVL=lower, DRVH=upper,
                                                   PREC=precision,
                                                   initial_value=value,
-                                                  on_update=on_update,
+                                                  on_update_name=self._on_update,
                                                   always_update=True)
                         self._out_records[out_record] = in_record
         # Now for lattice fields.
