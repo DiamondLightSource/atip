@@ -167,7 +167,6 @@ class ATIPServer(object):
                     builder.SetDeviceName(set_pv.split(':', 1)[0])
                     out_record = builder.aOut(set_pv.split(':', 1)[1],
                                               LOPR=lower, HOPR=upper,
-                                              DRVL=lower, DRVH=upper,
                                               PREC=precision,
                                               initial_value=value,
                                               on_update_name=self._on_update,
@@ -203,7 +202,6 @@ class ATIPServer(object):
                         builder.SetDeviceName(set_pv.split(':', 1)[0])
                         out_record = builder.aOut(set_pv.split(':', 1)[1],
                                                   LOPR=lower, HOPR=upper,
-                                                  DRVL=lower, DRVH=upper,
                                                   PREC=precision,
                                                   initial_value=value,
                                                   on_update_name=self._on_update,
