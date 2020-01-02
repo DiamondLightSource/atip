@@ -222,15 +222,15 @@ class ATIPServer(object):
                 self._rb_only_records.append(in_record)
         print("~*~*Woah, we're halfway there, Wo-oah...*~*~")
 
-    def _on_update(self, name, value):
+    def _on_update(self, value, name):
         """The callback function passed to out records, it is called after
         successful record processing has been completed. It updates the out
         record's corresponding in record with the value that has been set and
         then sets the value to the centralised Pytac lattice.
 
         Args:
-            name (str): The name of record object that has just been set to.
             value (number): The value that has just been set to the record.
+            name (str): The name of record object that has just been set to.
         """
         in_record = self._out_records[self.all_record_names[name]]
         in_record.set(value)
@@ -238,10 +238,9 @@ class ATIPServer(object):
         if self.tune_feedback_status is True:
             try:
                 offset_record = self._offset_pvs[name]
-            except KeyError:
-                pass
-            else:
                 value += offset_record.get()
+            except KeyError as e:
+                pass
         if isinstance(index, list):
             for i in index:
                 self.lattice[i - 1].set_value(field, value, units=pytac.ENG,
