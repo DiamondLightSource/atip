@@ -1,3 +1,4 @@
+import logging
 import os
 import sys
 
@@ -18,6 +19,15 @@ from cothread.catools import caget, ca_nothing  # noqa: E402
 """Error 402 from pycodestyle is suppressed as we cannot import these modules
 at the top of the file as they must be below the requires and the path editing.
 """
+
+LOG_FORMAT = '%(asctime)s %(message)s'
+
+if '-v' in sys.argv:
+    logging.basicConfig(level=logging.DEBUG, format=LOG_FORMAT)
+    sys.argv.remove('-v')
+else:
+    logging.basicConfig(level=logging.INFO, format=LOG_FORMAT)
+
 
 # Determine the ring mode
 if sys.argv[1:]:

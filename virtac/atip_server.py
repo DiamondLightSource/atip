@@ -161,18 +161,15 @@ class ATIPServer(object):
                                             PREC=precision, MDEL="-1",
                                             initial_value=value)
                     set_pv = element.get_pv_name('b0', pytac.SP)
-                    def on_update(value, name=set_pv):  # noqa E306
-                        self._on_update(name, value)
                     upper, lower, precision = limits_dict.get(set_pv, (None,
                                                                        None,
                                                                        None))
                     builder.SetDeviceName(set_pv.split(':', 1)[0])
                     out_record = builder.aOut(set_pv.split(':', 1)[1],
                                               LOPR=lower, HOPR=upper,
-                                              DRVL=lower, DRVH=upper,
                                               PREC=precision,
                                               initial_value=value,
-                                              on_update=on_update,
+                                              on_update_name=self._on_update,
                                               always_update=True)
                     self._in_records[in_record] = ([element.index], 'b0')
                     self._out_records[out_record] = in_record
@@ -199,18 +196,15 @@ class ATIPServer(object):
                     except HandleException:
                         self._rb_only_records.append(in_record)
                     else:
-                        def on_update(value, name=set_pv):
-                            self._on_update(name, value)
                         upper, lower, precision = limits_dict.get(set_pv,
                                                                   (None, None,
                                                                    None))
                         builder.SetDeviceName(set_pv.split(':', 1)[0])
                         out_record = builder.aOut(set_pv.split(':', 1)[1],
                                                   LOPR=lower, HOPR=upper,
-                                                  DRVL=lower, DRVH=upper,
                                                   PREC=precision,
                                                   initial_value=value,
-                                                  on_update=on_update,
+                                                  on_update_name=self._on_update,
                                                   always_update=True)
                         self._out_records[out_record] = in_record
         # Now for lattice fields.
@@ -228,15 +222,15 @@ class ATIPServer(object):
                 self._rb_only_records.append(in_record)
         print("~*~*Woah, we're halfway there, Wo-oah...*~*~")
 
-    def _on_update(self, name, value):
+    def _on_update(self, value, name):
         """The callback function passed to out records, it is called after
         successful record processing has been completed. It updates the out
         record's corresponding in record with the value that has been set and
         then sets the value to the centralised Pytac lattice.
 
         Args:
-            name (str): The name of record object that has just been set to.
             value (number): The value that has just been set to the record.
+            name (str): The name of record object that has just been set to.
         """
         in_record = self._out_records[self.all_record_names[name]]
         in_record.set(value)
@@ -244,10 +238,9 @@ class ATIPServer(object):
         if self.tune_feedback_status is True:
             try:
                 offset_record = self._offset_pvs[name]
+                value += offset_record.get()
             except KeyError:
                 pass
-            else:
-                value += offset_record.get()
         if isinstance(index, list):
             for i in index:
                 self.lattice[i - 1].set_value(field, value, units=pytac.ENG,
