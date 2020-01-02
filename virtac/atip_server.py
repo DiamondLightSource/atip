@@ -239,7 +239,7 @@ class ATIPServer(object):
             try:
                 offset_record = self._offset_pvs[name]
                 value += offset_record.get()
-            except KeyError as e:
+            except KeyError:
                 pass
         if isinstance(index, list):
             for i in index:
