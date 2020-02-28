@@ -9,6 +9,8 @@ PYIOC=/dls_sw/prod/$EPICS_VERSION/support/pythonIoc/$PYIOC_VERSION/pythonIoc
 export HERE=$(dirname $PYIOC)
 export PYTHONPATH=$PYTHONPATH:$HERE/python
 
+unset PIPENV_PYPI_MIRROR
+
 # We need Pipenv only because there is one dependency that is not already
 # installed inside Diamond. The other dependencies are brought in through
 # --site-packages.
