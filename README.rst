@@ -68,7 +68,7 @@ Note that you need an AT lattice that is compatible with Pytac. Some are provide
 in ``atip/rings/``, otherwise try running the Matlab function
 ``atip/rings/create_lattice_matfile.m`` with an AT lattice loaded.
 
-.. code-block::
+.. code-block:: python
 
     >>> import pytac
     >>> import atip
