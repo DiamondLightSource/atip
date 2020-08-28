@@ -86,6 +86,7 @@ class ATSimulator(object):
         # Threading stuff initialisation.
         self._queue = cothread.EventQueue()
         # Explicitly manage the cothread Events, so turn off auto_reset.
+        # These are False when reset, True when signalled.
         self._paused = cothread.Event(auto_reset=False)
         self.up_to_date = cothread.Event(auto_reset=False)
         self.up_to_date.Signal()
@@ -165,10 +166,23 @@ class ATSimulator(object):
         """Pause or unpause the physics calculations by setting or clearing the
         _paused flag. N.B. this does not pause the emptying of the queue.
         """
-        if bool(self._paused) is False:
-            self._paused.Signal()
-        else:
+        if self._paused:
             self._paused.Reset()
+        else:
+            self._paused.Signal()
+
+    def pause_calculations(self):
+        self._paused.Signal()
+
+    def unpause_calculations(self):
+        self._paused.Reset()
+
+    def trigger_calculation(self):
+        self.up_to_date.Reset()
+        self.unpause_calculations()
+        # Add a null item to the queue. A recalculation will happen
+        # when it has been applied.
+        self.queue_set(lambda *x: None, None, None)
 
     def wait_for_calculations(self, timeout=10):
         """Wait until the physics calculations have taken account of all
