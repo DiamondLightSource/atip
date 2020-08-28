@@ -4,8 +4,7 @@ from functools import partial
 
 import at
 import pytac
-from pytac.exceptions import (FieldException, HandleException,
-                              ControlSystemException)
+from pytac.exceptions import FieldException, HandleException, ControlSystemException
 
 
 class ATElementDataSource(pytac.data_source.DataSource):
@@ -39,6 +38,7 @@ class ATElementDataSource(pytac.data_source.DataSource):
                                      cell argument so only relevant data is
                                      returned.
     """
+
     def __init__(self, at_element, index, atsim, fields=None):
         """
         .. Note:: This data source, currently, cannot understand the simulated
@@ -63,28 +63,33 @@ class ATElementDataSource(pytac.data_source.DataSource):
         self._at_element = at_element
         self._index = index
         self._atsim = atsim
-        self._get_field_funcs = {'x_kick': partial(self._get_KickAngle, 0),
-                                 'y_kick': partial(self._get_KickAngle, 1),
-                                 'x': partial(self._get_ClosedOrbit, 'x'),
-                                 'y': partial(self._get_ClosedOrbit, 'y'),
-                                 'a1': partial(self._get_PolynomA, 1),
-                                 'b1': partial(self._get_PolynomB, 1),
-                                 'b2': partial(self._get_PolynomB, 2),
-                                 'b0': self._get_BendingAngle,
-                                 'f': self._get_Frequency}
-        self._set_field_funcs = {'x_kick': partial(self._set_KickAngle, 0),
-                                 'y_kick': partial(self._set_KickAngle, 1),
-                                 'a1': partial(self._set_PolynomA, 1),
-                                 'b1': partial(self._set_PolynomB, 1),
-                                 'b2': partial(self._set_PolynomB, 2),
-                                 'b0': self._set_BendingAngle,
-                                 'f': self._set_Frequency}
+        self._get_field_funcs = {
+            "x_kick": partial(self._get_KickAngle, 0),
+            "y_kick": partial(self._get_KickAngle, 1),
+            "x": partial(self._get_ClosedOrbit, "x"),
+            "y": partial(self._get_ClosedOrbit, "y"),
+            "a1": partial(self._get_PolynomA, 1),
+            "b1": partial(self._get_PolynomB, 1),
+            "b2": partial(self._get_PolynomB, 2),
+            "b0": self._get_BendingAngle,
+            "f": self._get_Frequency,
+        }
+        self._set_field_funcs = {
+            "x_kick": partial(self._set_KickAngle, 0),
+            "y_kick": partial(self._set_KickAngle, 1),
+            "a1": partial(self._set_PolynomA, 1),
+            "b1": partial(self._set_PolynomB, 1),
+            "b2": partial(self._set_PolynomB, 2),
+            "b0": self._set_BendingAngle,
+            "f": self._set_Frequency,
+        }
         fields = set() if fields is None else set(fields)
         # We assume that every set field has a corresponding get field.
         supported_fields = set(self._get_field_funcs.keys())
         if not all(f in supported_fields for f in fields):
-            raise FieldException("Unsupported field(s) {0}."
-                                 .format(fields - supported_fields))
+            raise FieldException(
+                "Unsupported field(s) {0}.".format(fields - supported_fields)
+            )
         else:
             self._fields = list(fields)
 
@@ -111,8 +116,10 @@ class ATElementDataSource(pytac.data_source.DataSource):
                              is not supported.
         """
         if field in self._fields:
-            raise FieldException("Field {0} already present on element data "
-                                 "source {1}.".format(field, self))
+            raise FieldException(
+                "Field {0} already present on element data "
+                "source {1}.".format(field, self)
+            )
         elif field not in self._get_field_funcs.keys():
             raise FieldException("Unsupported field {0}.".format(field))
         else:
@@ -144,19 +151,18 @@ class ATElementDataSource(pytac.data_source.DataSource):
         # complete before a value is returned; if the wait times out then raise
         # an error message or log a warning according to the value of throw.
         if not self._atsim.wait_for_calculations():
-            error_msg = ("Check for completion of outstanding "
-                         "calculations timed out.")
+            error_msg = "Check for completion of outstanding " "calculations timed out."
             if throw:
                 raise ControlSystemException(error_msg)
             else:
-                logging.warning("Potentially out of date data returned. " +
-                                error_msg)
+                logging.warning("Potentially out of date data returned. " + error_msg)
         # Again we assume that every set field has a corresponding get field.
         if field in self._fields:
             return self._get_field_funcs[field]()
         else:
-            raise FieldException("No field {0} on AT element {1}."
-                                 .format(field, self._at_element))
+            raise FieldException(
+                "No field {0} on AT element {1}.".format(field, self._at_element)
+            )
 
     def set_value(self, field, value, throw=None):
         """Set the value for a field. The field and value go onto the queue of
@@ -179,11 +185,14 @@ class ATElementDataSource(pytac.data_source.DataSource):
                 self._atsim.up_to_date.Reset()
                 self._atsim.queue_set(self._make_change, field, value)
             else:
-                raise HandleException("Field {0} cannot be set on element data"
-                                      " source {1}.".format(field, self))
+                raise HandleException(
+                    "Field {0} cannot be set on element data"
+                    " source {1}.".format(field, self)
+                )
         else:
-            raise FieldException("No field {0} on AT element {1}."
-                                 .format(field, self._at_element))
+            raise FieldException(
+                "No field {0} on AT element {1}.".format(field, self._at_element)
+            )
 
     def _make_change(self, field, value):
         """Calls the appropriate field setting function to actually modify the
@@ -218,7 +227,7 @@ class ATElementDataSource(pytac.data_source.DataSource):
             if cell == 0:
                 return -(self._at_element.PolynomB[0] * length)
             elif cell == 1:
-                return (self._at_element.PolynomA[0] * length)
+                return self._at_element.PolynomA[0] * length
         else:
             return self._at_element.KickAngle[cell]
 
@@ -243,7 +252,7 @@ class ATElementDataSource(pytac.data_source.DataSource):
             if cell == 0:
                 self._at_element.PolynomB[0] = -(value / length)
             elif cell == 1:
-                self._at_element.PolynomA[0] = (value / length)
+                self._at_element.PolynomA[0] = value / length
         else:
             self._at_element.KickAngle[cell] = value
 
@@ -361,6 +370,7 @@ class ATLatticeDataSource(pytac.data_source.DataSource):
                                  via partial(), are passed a cell argument so
                                  only relevant data is returned.
     """
+
     def __init__(self, atsim):
         """
         .. Note:: Though not currently supported, there are plans to add
@@ -374,31 +384,33 @@ class ATLatticeDataSource(pytac.data_source.DataSource):
         """
         self.units = pytac.PHYS
         self._atsim = atsim
-        self._field_funcs = {'chromaticity_x': self._atsim.get_chromaticity,
-                             'chromaticity_y': self._atsim.get_chromaticity,
-                             'chromaticity': self._atsim.get_chromaticity,
-                             'eta_prime_x': self._atsim.get_dispersion,
-                             'eta_prime_y': self._atsim.get_dispersion,
-                             'dispersion': self._atsim.get_dispersion,
-                             'emittance_x': self._atsim.get_emittance,
-                             'emittance_y': self._atsim.get_emittance,
-                             'emittance': self._atsim.get_emittance,
-                             'closed_orbit': self._atsim.get_orbit,
-                             'eta_x': self._atsim.get_dispersion,
-                             'eta_y': self._atsim.get_dispersion,
-                             'energy': self._atsim.get_energy,
-                             'phase_x': self._atsim.get_orbit,
-                             'phase_y': self._atsim.get_orbit,
-                             's_position': self._atsim.get_s,
-                             'tune_x': self._atsim.get_tune,
-                             'tune_y': self._atsim.get_tune,
-                             'alpha': self._atsim.get_alpha,
-                             'beta': self._atsim.get_beta,
-                             'tune': self._atsim.get_tune,
-                             'm44': self._atsim.get_m44,
-                             'x': self._atsim.get_orbit,
-                             'y': self._atsim.get_orbit,
-                             'mu': self._atsim.get_mu}
+        self._field_funcs = {
+            "chromaticity_x": self._atsim.get_chromaticity,
+            "chromaticity_y": self._atsim.get_chromaticity,
+            "chromaticity": self._atsim.get_chromaticity,
+            "eta_prime_x": self._atsim.get_dispersion,
+            "eta_prime_y": self._atsim.get_dispersion,
+            "dispersion": self._atsim.get_dispersion,
+            "emittance_x": self._atsim.get_emittance,
+            "emittance_y": self._atsim.get_emittance,
+            "emittance": self._atsim.get_emittance,
+            "closed_orbit": self._atsim.get_orbit,
+            "eta_x": self._atsim.get_dispersion,
+            "eta_y": self._atsim.get_dispersion,
+            "energy": self._atsim.get_energy,
+            "phase_x": self._atsim.get_orbit,
+            "phase_y": self._atsim.get_orbit,
+            "s_position": self._atsim.get_s,
+            "tune_x": self._atsim.get_tune,
+            "tune_y": self._atsim.get_tune,
+            "alpha": self._atsim.get_alpha,
+            "beta": self._atsim.get_beta,
+            "tune": self._atsim.get_tune,
+            "m44": self._atsim.get_m44,
+            "x": self._atsim.get_orbit,
+            "y": self._atsim.get_orbit,
+            "mu": self._atsim.get_mu,
+        }
 
     def get_fields(self):
         """Get all the fields that are defined for this data source on the
@@ -435,28 +447,27 @@ class ATLatticeDataSource(pytac.data_source.DataSource):
         # complete before a value is returned; if the wait times out then raise
         # an error message or log a warning according to the value of throw.
         if not self._atsim.wait_for_calculations():
-            error_msg = ("Check for completion of outstanding "
-                         "calculations timed out.")
+            error_msg = "Check for completion of outstanding " "calculations timed out."
             if throw:
                 raise ControlSystemException(error_msg)
             else:
-                logging.warning("Potentially out of date data returned. " +
-                                error_msg)
+                logging.warning("Potentially out of date data returned. " + error_msg)
         if field in list(self._field_funcs.keys()):
             # The orbit x_phase and y_phase, and the eta prime_x and prime_y
             # fields are represented by 'px' or 'py' in the ATSimulator data
             # handling functions.
-            if (field.startswith('phase')) or (field.find('prime') != -1):
-                return self._field_funcs[field]('p' + field[-1])
-            elif field.endswith('x'):
-                return self._field_funcs[field]('x')
-            elif field.endswith('y'):
-                return self._field_funcs[field]('y')
+            if (field.startswith("phase")) or (field.find("prime") != -1):
+                return self._field_funcs[field]("p" + field[-1])
+            elif field.endswith("x"):
+                return self._field_funcs[field]("x")
+            elif field.endswith("y"):
+                return self._field_funcs[field]("y")
             else:
                 return self._field_funcs[field]()
         else:
-            raise FieldException("Lattice data source {0} does not have field "
-                                 "{1}".format(self, field))
+            raise FieldException(
+                "Lattice data source {0} does not have field " "{1}".format(self, field)
+            )
 
     def set_value(self, field, value, throw=None):
         """Set the value for a field.
@@ -474,5 +485,6 @@ class ATLatticeDataSource(pytac.data_source.DataSource):
             HandleException: as setting values to Pytac lattice fields is not
                               currently supported.
         """
-        raise HandleException("Field {0} cannot be set on lattice data source "
-                              "{1}.".format(field, self))
+        raise HandleException(
+            "Field {0} cannot be set on lattice data source " "{1}.".format(field, self)
+        )

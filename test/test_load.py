@@ -12,18 +12,19 @@ def test_load_pytac_side(pytac_lattice, at_diad_lattice):
     for elem in lat:
         assert pytac.SIM in elem._data_source_manager._data_sources
     # Check new lattice fields have a unit conversion
-    assert 'mu' in lat._data_source_manager._uc
-    assert lat._data_source_manager._uc['mu'] is pytac.load_csv.DEFAULT_UC
+    assert "mu" in lat._data_source_manager._uc
+    assert lat._data_source_manager._uc["mu"] is pytac.load_csv.DEFAULT_UC
 
 
 def test_load_from_filepath(pytac_lattice, mat_filepath):
     atip.load_sim.load_from_filepath(pytac_lattice, mat_filepath)
 
 
-def test_load_with_non_callable_callback_raises_TypeError(pytac_lattice,
-                                                          at_diad_lattice):
+def test_load_with_non_callable_callback_raises_TypeError(
+    pytac_lattice, at_diad_lattice
+):
     with pytest.raises(TypeError):
-        atip.load_sim.load(pytac_lattice, at_diad_lattice, '')
+        atip.load_sim.load(pytac_lattice, at_diad_lattice, "")
 
 
 def test_load_with_callback(pytac_lattice, at_diad_lattice):

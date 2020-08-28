@@ -4,7 +4,7 @@ import pytac
 import os
 
 
-def load_at_lattice(mode='DIAD', **kwargs):
+def load_at_lattice(mode="DIAD", **kwargs):
     """Load an AT lattice from a .mat file in the 'rings' directory.
 
     .. Note:: I add custom attributes 'Index' and 'Class' to each of the
@@ -17,8 +17,9 @@ def load_at_lattice(mode='DIAD', **kwargs):
     Returns:
         at.lattice.Lattice: An AT lattice object.
     """
-    filepath = os.path.join(os.path.dirname(__file__),
-                            ''.join(['rings/', mode.lower(), '.mat']))
+    filepath = os.path.join(
+        os.path.dirname(__file__), "".join(["rings/", mode.lower(), ".mat"])
+    )
     at_lattice = at.load.load_mat(filepath, **kwargs)
     for index, elem in enumerate(at_lattice):
         elem.Index = index + 1
@@ -26,7 +27,7 @@ def load_at_lattice(mode='DIAD', **kwargs):
     return at_lattice
 
 
-def loader(mode='DIAD', callback=None):
+def loader(mode="DIAD", callback=None):
     """Load a unified lattice of the specifed mode.
 
     .. Note:: A unified lattice is a Pytac lattice where the corresponding AT
@@ -43,8 +44,12 @@ def loader(mode='DIAD', callback=None):
                                 source loaded.
     """
     pytac_lattice = pytac.load_csv.load(mode, symmetry=24)
-    at_lattice = load_at_lattice(mode, name=pytac_lattice.name, periodicity=1,
-                                 energy=pytac_lattice.get_value('energy'))
+    at_lattice = load_at_lattice(
+        mode,
+        name=pytac_lattice.name,
+        periodicity=1,
+        energy=pytac_lattice.get_value("energy"),
+    )
     lattice = atip.load_sim.load(pytac_lattice, at_lattice, callback)
     return lattice
 
@@ -62,14 +67,32 @@ def preload_at(at_lat):
     returns:
         obj: The elems object with the elements loaded onto it by type.
     """
-    class elems():
+
+    class elems:
         pass
+
     setattr(elems, "all", [elem for elem in at_lat])
-    elems_dict = {type_: [] for type_ in ['ThinMultipole', 'Quadrupole', 'M66',
-                                          'Octupole', 'Sextupole', 'Corrector',
-                                          'LongElement', 'Element', 'RFCavity',
-                                          'Monitor', 'Bend', 'Marker', 'Drift',
-                                          'Multipole', 'Aperture', 'Dipole']}
+    elems_dict = {
+        type_: []
+        for type_ in [
+            "ThinMultipole",
+            "Quadrupole",
+            "M66",
+            "Octupole",
+            "Sextupole",
+            "Corrector",
+            "LongElement",
+            "Element",
+            "RFCavity",
+            "Monitor",
+            "Bend",
+            "Marker",
+            "Drift",
+            "Multipole",
+            "Aperture",
+            "Dipole",
+        ]
+    }
     for elem in at_lat:
         elems_dict[type(elem).__name__].append(elem)
     for elem_type, elements in elems_dict.items():
@@ -91,8 +114,10 @@ def preload(pytac_lat):
     returns:
         obj: The elems object with the elements loaded onto it by family.
     """
-    class elems():
+
+    class elems:
         pass
+
     setattr(elems, "all", pytac_lat.get_elements())
     for family in pytac_lat.get_all_families():
         setattr(elems, family.lower(), pytac_lat.get_elements(family))
@@ -158,8 +183,10 @@ def trigger_calc(target):
                                                         ATSimulator object can
                                                         be extracted.
     """
+
     def do_nothing(*args):
         pass
+
     atsim = get_atsim(target)
     atsim.up_to_date.Reset()
     atsim._paused.Reset()

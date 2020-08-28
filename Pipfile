@@ -12,6 +12,7 @@ mock = "*"
 flake8 = "*"
 sphinx = "*"
 sphinx_rtd_theme = "*"
+black = {version = "==20.8b1", markers = "python_version>='3.6'" }
 
 [packages]
 cothread = "*"
