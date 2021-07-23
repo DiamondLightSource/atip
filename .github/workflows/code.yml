@@ -28,3 +28,6 @@ jobs:
 
       - name: Run Tests
         run: pipenv run python -m pytest test
+
+      - name: Check Formatting
+        run: pipenv run black --check atip test

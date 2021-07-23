@@ -12,6 +12,7 @@ mock = "*"
 flake8 = "*"
 sphinx = "*"
 sphinx_rtd_theme = "*"
+black = "==21.5b2"
 
 [packages]
 cothread = "*"
