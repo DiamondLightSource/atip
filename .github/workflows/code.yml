@@ -30,4 +30,6 @@ jobs:
         run: pipenv run python -m pytest test
 
       - name: Check Formatting
-        run: pipenv run black --check atip test
+        run: |
+          pipenv run black --check atip test
+          pipenv run flake8 atip test
