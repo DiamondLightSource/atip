@@ -15,6 +15,5 @@ sphinx_rtd_theme = "*"
 black = "==21.5b2"
 
 [packages]
-cothread = "*"
-accelerator-toolbox = ">=0.0.2"
-pytac = ">=0.3.0"
+# All production requirements from setup.cfg.
+atip = {editable = true, path = "."}
