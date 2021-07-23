@@ -9,8 +9,8 @@ from pytac.device import BasicDevice
 from pytac.exceptions import HandleException, FieldException
 from softioc import builder
 
-from masks import callback_set, callback_offset, caget_mask, caput_mask
-from mirror_objects import summate, collate, transform, refresher
+from .masks import callback_set, callback_offset, caget_mask, caput_mask
+from .mirror_objects import summate, collate, transform, refresher
 
 
 class ATIPServer(object):
@@ -100,9 +100,13 @@ class ATIPServer(object):
         for rec_list in self._mirrored_records.values():
             for record in rec_list:
                 mirrored.append(record)
-        return {record.name: record for record in self._in_records.keys() +
-                self._out_records.keys() + self._feedback_records.values() +
-                mirrored}
+        all_records = (
+            list(self._in_records.keys()) +
+            list(self._out_records.keys()) +
+            list(self._feedback_records.values()) +
+            mirrored
+        )
+        return {record.name: record for record in all_records}
 
     def update_pvs(self):
         """The callback function passed to ATSimulator during lattice creation,
