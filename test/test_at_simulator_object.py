@@ -9,57 +9,53 @@ import atip
 
 
 def _check_initial_phys_data(atsim, initial_phys_data):
-    try:
-        numpy.testing.assert_almost_equal(initial_phys_data['emitXY'][0],
-                                          atsim.get_emittance('x'), decimal=6)
-        numpy.testing.assert_almost_equal(initial_phys_data['emitXY'][1],
-                                          atsim.get_emittance('y'), decimal=14)
-        numpy.testing.assert_almost_equal(initial_phys_data['tune'][0],
-                                          atsim.get_tune('x'), decimal=6)
-        numpy.testing.assert_almost_equal(initial_phys_data['tune'][1],
-                                          atsim.get_tune('y'), decimal=8)
-        numpy.testing.assert_almost_equal(initial_phys_data['chromaticity'][0],
-                                          atsim.get_chromaticity('x'),
-                                          decimal=8)
-        numpy.testing.assert_almost_equal(initial_phys_data['chromaticity'][1],
-                                          atsim.get_chromaticity('y'),
-                                          decimal=8)
-        numpy.testing.assert_almost_equal(initial_phys_data['closed_orbit'][0],
-                                          atsim.get_orbit('x'))
-        numpy.testing.assert_almost_equal(initial_phys_data['closed_orbit'][1],
-                                          atsim.get_orbit('px'))
-        numpy.testing.assert_almost_equal(initial_phys_data['closed_orbit'][2],
-                                          atsim.get_orbit('y'))
-        numpy.testing.assert_almost_equal(initial_phys_data['closed_orbit'][3],
-                                          atsim.get_orbit('py'))
-        numpy.testing.assert_almost_equal(initial_phys_data['dispersion'],
-                                          atsim.get_dispersion()[-1],
-                                          decimal=6)
-        numpy.testing.assert_almost_equal(initial_phys_data['s_pos'],
-                                          atsim.get_s(), decimal=8)
-        numpy.testing.assert_almost_equal(initial_phys_data['alpha'],
-                                          atsim.get_alpha()[-1], decimal=8)
-        numpy.testing.assert_almost_equal(initial_phys_data['beta'],
-                                          atsim.get_beta()[-1], decimal=8)
-        numpy.testing.assert_almost_equal(initial_phys_data['m44'],
-                                          atsim.get_m44()[-1], decimal=8)
-        numpy.testing.assert_almost_equal(initial_phys_data['mu'],
-                                          atsim.get_mu()[-1], decimal=8)
-        numpy.testing.assert_almost_equal(initial_phys_data['rad_int'],
-                                          atsim.get_radiation_integrals(),
-                                          decimal=14)
-        return True
-    except Exception:
-        return False
+    numpy.testing.assert_almost_equal(initial_phys_data['emitXY'][0],
+                                        atsim.get_emittance('x'), decimal=6)
+    numpy.testing.assert_almost_equal(initial_phys_data['emitXY'][1],
+                                        atsim.get_emittance('y'), decimal=14)
+    numpy.testing.assert_almost_equal(initial_phys_data['tune'][0],
+                                        atsim.get_tune('x'), decimal=6)
+    numpy.testing.assert_almost_equal(initial_phys_data['tune'][1],
+                                        atsim.get_tune('y'), decimal=7)
+    numpy.testing.assert_almost_equal(initial_phys_data['chromaticity'][0],
+                                        atsim.get_chromaticity('x'),
+                                        decimal=6)
+    numpy.testing.assert_almost_equal(initial_phys_data['chromaticity'][1],
+                                        atsim.get_chromaticity('y'),
+                                        decimal=5)
+    numpy.testing.assert_almost_equal(initial_phys_data['closed_orbit'][0],
+                                        atsim.get_orbit('x'))
+    numpy.testing.assert_almost_equal(initial_phys_data['closed_orbit'][1],
+                                        atsim.get_orbit('px'))
+    numpy.testing.assert_almost_equal(initial_phys_data['closed_orbit'][2],
+                                        atsim.get_orbit('y'))
+    numpy.testing.assert_almost_equal(initial_phys_data['closed_orbit'][3],
+                                        atsim.get_orbit('py'))
+    numpy.testing.assert_almost_equal(initial_phys_data['dispersion'],
+                                        atsim.get_dispersion()[-1],
+                                        decimal=6)
+    numpy.testing.assert_almost_equal(initial_phys_data['s_pos'],
+                                        atsim.get_s(), decimal=8)
+    numpy.testing.assert_almost_equal(initial_phys_data['alpha'],
+                                        atsim.get_alpha()[-1], decimal=6)
+    numpy.testing.assert_almost_equal(initial_phys_data['beta'],
+                                        atsim.get_beta()[-1], decimal=6)
+    numpy.testing.assert_almost_equal(initial_phys_data['m44'],
+                                        atsim.get_m44()[-1], decimal=6)
+    numpy.testing.assert_almost_equal(initial_phys_data['mu'],
+                                        atsim.get_mu()[-1], decimal=6)
+    numpy.testing.assert_almost_equal(initial_phys_data['rad_int'],
+                                        atsim.get_radiation_integrals(),
+                                        decimal=12)
 
 
 def test_ATSimulator_creation(atsim, initial_phys_data):
     # Check initial state of flags.
-    assert bool(atsim._paused) is False
-    assert bool(atsim.up_to_date) is True
+    assert not atsim._paused
+    assert atsim.up_to_date
     assert len(atsim._queue) == 0
     # Check physics data is initially calculated correctly.
-    assert _check_initial_phys_data(atsim, initial_phys_data) is True
+    _check_initial_phys_data(atsim, initial_phys_data)
 
 
 def test_recalculate_phys_data_queue(atsim):
@@ -73,7 +69,7 @@ def test_recalculate_phys_data_queue(atsim):
 
 
 def test_recalculate_phys_data(atsim, initial_phys_data):
-    assert _check_initial_phys_data(atsim, initial_phys_data) is True
+    _check_initial_phys_data(atsim, initial_phys_data)
     # Check that errors raised inside thread are converted to warnings.
     atsim._at_lat[5].PolynomB[0] = 1.e10
     atsim.up_to_date.Reset()
@@ -106,29 +102,31 @@ def test_recalculate_phys_data(atsim, initial_phys_data):
     numpy.testing.assert_almost_equal(chrom, [0.11732846, 0.04300947],
                                       decimal=5)
     numpy.testing.assert_almost_equal(tune, [0.37444833, 0.86048592],
-                                      decimal=8)
+                                      decimal=7)
     numpy.testing.assert_almost_equal(emit, [1.34308653e-10, 3.74339964e-13],
-                                      decimal=15)
+                                      decimal=12)
 
 
 def test_toggle_calculations_and_wait_for_calculations(atsim,
                                                        initial_phys_data):
-    assert bool(atsim._paused) is False
+    assert not atsim._paused
     atsim.toggle_calculations()
-    assert bool(atsim._paused) is True
+    assert atsim._paused
     atsim.toggle_calculations()
-    assert bool(atsim._paused) is False
+    assert not atsim._paused
     # pause > make a change > check no calc > unpause > check calc
     atsim.toggle_calculations()
     atsim._at_lat[5].PolynomB[1] = 2.5
     atsim.up_to_date.Reset()
     atsim.queue_set(mock.Mock(), 'f', 0)
     assert atsim.wait_for_calculations(2) is False
-    assert _check_initial_phys_data(atsim, initial_phys_data) is True
+    _check_initial_phys_data(atsim, initial_phys_data) is True
     atsim.toggle_calculations()
     atsim.queue_set(mock.Mock(), 'f', 0)
     assert atsim.wait_for_calculations() is True
-    assert _check_initial_phys_data(atsim, initial_phys_data) is False
+    # Physics data has changed.
+    with pytest.raises(AssertionError):
+        _check_initial_phys_data(atsim, initial_phys_data)
 
 
 def test_recalculate_phys_data_callback(at_lattice):
