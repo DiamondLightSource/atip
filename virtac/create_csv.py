@@ -16,19 +16,15 @@ def generate_feedback_pvs():
     lattice = atip.utils.loader()
     all_elements = atip.utils.preload(lattice)
     # Only keep the elements from the families that we are concerned with.
-    elements = list(set(
-        all_elements.hstr +
-        all_elements.vstr +
-        all_elements.bpm
-    ))
+    elements = list(set(all_elements.hstr + all_elements.vstr + all_elements.bpm))
     # Also get families for tune feedback
     tune_quad_elements = set(
-        all_elements.q1d +
-        all_elements.q2d +
-        all_elements.q3d +
-        all_elements.q3b +
-        all_elements.q2b +
-        all_elements.q1b
+        all_elements.q1d
+        + all_elements.q2d
+        + all_elements.q3d
+        + all_elements.q3b
+        + all_elements.q2b
+        + all_elements.q1b
     )
     elements.extend(tune_quad_elements)
     # Sort the elements by index, in ascending order.
@@ -36,28 +32,36 @@ def generate_feedback_pvs():
     # Data to be written is stored as a list of tuples each with structure:
     #     element index (int), field (str), pv (str), value (int).
     # We have special cases for two lattice fields that RFFB reads from.
-    data = [("index", "field", "pv", "value"),
-            (0, 'beam_current', 'SR-DI-DCCT-01:SIGNAL', 300),
-            (0, 'feedback_status', 'CS-CS-MSTAT-01:FBSTAT', 2)]
+    data = [
+        ("index", "field", "pv", "value"),
+        (0, "beam_current", "SR-DI-DCCT-01:SIGNAL", 300),
+        (0, "feedback_status", "CS-CS-MSTAT-01:FBSTAT", 2),
+    ]
     # Iterate over our elements to get the PV names.
     for elem in elements:
-        if 'HSTR' in elem.families:
-            data.append((elem.index, 'error_sum',
-                         elem.get_device('x_kick').name + ':ERCSUM', 0))
-            data.append((elem.index, 'state',
-                         elem.get_device('x_kick').name + ':STATE', 2))
-        if 'VSTR' in elem.families:
-            data.append((elem.index, 'error_sum',
-                         elem.get_device('y_kick').name + ':ERCSUM', 0))
-            data.append((elem.index, 'state',
-                         elem.get_device('y_kick').name + ':STATE', 2))
-        elif 'BPM' in elem.families:
-            data.append((elem.index, 'enabled',
-                         elem.get_pv_name('enabled', pytac.RB), 1))
+        if "HSTR" in elem.families:
+            data.append(
+                (elem.index, "error_sum", elem.get_device("x_kick").name + ":ERCSUM", 0)
+            )
+            data.append(
+                (elem.index, "state", elem.get_device("x_kick").name + ":STATE", 2)
+            )
+        if "VSTR" in elem.families:
+            data.append(
+                (elem.index, "error_sum", elem.get_device("y_kick").name + ":ERCSUM", 0)
+            )
+            data.append(
+                (elem.index, "state", elem.get_device("y_kick").name + ":STATE", 2)
+            )
+        elif "BPM" in elem.families:
+            data.append(
+                (elem.index, "enabled", elem.get_pv_name("enabled", pytac.RB), 1)
+            )
         # Add elements for Tune Feedback
         elif elem in tune_quad_elements:
-            data.append((elem.index, "offset",
-                         elem.get_device("b1").name + ':OFFSET1', 0))
+            data.append(
+                (elem.index, "offset", elem.get_device("b1").name + ":OFFSET1", 0)
+            )
     return data
 
 
@@ -71,16 +75,18 @@ def generate_pv_limits():
         for field in element.get_fields()[pytac.SIM]:
             pv = element.get_pv_name(field, pytac.RB)
             ctrl = caget(pv, format=FORMAT_CTRL)
-            data.append((pv, ctrl.upper_ctrl_limit, ctrl.lower_ctrl_limit,
-                         ctrl.precision))
+            data.append(
+                (pv, ctrl.upper_ctrl_limit, ctrl.lower_ctrl_limit, ctrl.precision)
+            )
             try:
                 pv = element.get_pv_name(field, pytac.SP)
             except pytac.exceptions.HandleException:
                 pass
             else:
                 ctrl = caget(pv, format=FORMAT_CTRL)
-                data.append((pv, ctrl.upper_ctrl_limit,
-                             ctrl.lower_ctrl_limit, ctrl.precision))
+                data.append(
+                    (pv, ctrl.upper_ctrl_limit, ctrl.lower_ctrl_limit, ctrl.precision)
+                )
     return data
 
 
@@ -111,42 +117,98 @@ def generate_mirrored_pvs():
     lattice = atip.utils.loader()
     data = [("output type", "mirror type", "in", "out", "value")]
     # Tune PV aliases.
-    tune = [lattice.get_value('tune_x', pytac.RB, data_source=pytac.SIM),
-            lattice.get_value('tune_y', pytac.RB, data_source=pytac.SIM)]
-    data.append(('aIn', 'basic', 'SR23C-DI-TMBF-01:X:TUNE:TUNE',
-                 'SR23C-DI-TMBF-01:TUNE:TUNE', tune[0]))
-    data.append(('aIn', 'basic', 'SR23C-DI-TMBF-01:Y:TUNE:TUNE',
-                 'SR23C-DI-TMBF-02:TUNE:TUNE', tune[1]))
+    tune = [
+        lattice.get_value("tune_x", pytac.RB, data_source=pytac.SIM),
+        lattice.get_value("tune_y", pytac.RB, data_source=pytac.SIM),
+    ]
+    data.append(
+        (
+            "aIn",
+            "basic",
+            "SR23C-DI-TMBF-01:X:TUNE:TUNE",
+            "SR23C-DI-TMBF-01:TUNE:TUNE",
+            tune[0],
+        )
+    )
+    data.append(
+        (
+            "aIn",
+            "basic",
+            "SR23C-DI-TMBF-01:Y:TUNE:TUNE",
+            "SR23C-DI-TMBF-02:TUNE:TUNE",
+            tune[1],
+        )
+    )
     # Combined emittance and average emittance PVs.
-    emit = [lattice.get_value('emittance_x', pytac.RB, data_source=pytac.SIM),
-            lattice.get_value('emittance_y', pytac.RB, data_source=pytac.SIM)]
-    data.append(('aIn', 'basic', 'SR-DI-EMIT-01:HEMIT',
-                 'SR-DI-EMIT-01:HEMIT_MEAN', emit[0]))
-    data.append(('aIn', 'basic', 'SR-DI-EMIT-01:VEMIT',
-                 'SR-DI-EMIT-01:VEMIT_MEAN', emit[1]))
-    data.append(('aIn', 'summate', 'SR-DI-EMIT-01:HEMIT, SR-DI-EMIT-01:VEMIT',
-                 'SR-DI-EMIT-01:EMITTANCE', sum(emit)))
+    emit = [
+        lattice.get_value("emittance_x", pytac.RB, data_source=pytac.SIM),
+        lattice.get_value("emittance_y", pytac.RB, data_source=pytac.SIM),
+    ]
+    data.append(
+        ("aIn", "basic", "SR-DI-EMIT-01:HEMIT", "SR-DI-EMIT-01:HEMIT_MEAN", emit[0])
+    )
+    data.append(
+        ("aIn", "basic", "SR-DI-EMIT-01:VEMIT", "SR-DI-EMIT-01:VEMIT_MEAN", emit[1])
+    )
+    data.append(
+        (
+            "aIn",
+            "summate",
+            "SR-DI-EMIT-01:HEMIT, SR-DI-EMIT-01:VEMIT",
+            "SR-DI-EMIT-01:EMITTANCE",
+            sum(emit),
+        )
+    )
     # Electron BPMs enabled.
-    bpm_enabled_pvs = lattice.get_element_pv_names('BPM', 'enabled', pytac.RB)
-    data.append(('Waveform', 'collate', ', '.join(bpm_enabled_pvs),
-                 'EBPM-ENABLED:INTERIM', [0] * len(bpm_enabled_pvs)))
-    data.append(('Waveform', 'inverse', 'EBPM-ENABLED:INTERIM',
-                 'SR-DI-EBPM-01:ENABLED', [0] * len(bpm_enabled_pvs)))
+    bpm_enabled_pvs = lattice.get_element_pv_names("BPM", "enabled", pytac.RB)
+    data.append(
+        (
+            "Waveform",
+            "collate",
+            ", ".join(bpm_enabled_pvs),
+            "EBPM-ENABLED:INTERIM",
+            [0] * len(bpm_enabled_pvs),
+        )
+    )
+    data.append(
+        (
+            "Waveform",
+            "inverse",
+            "EBPM-ENABLED:INTERIM",
+            "SR-DI-EBPM-01:ENABLED",
+            [0] * len(bpm_enabled_pvs),
+        )
+    )
     # BPM x positions for display on diagnostics screen.
-    bpm_x_pvs = lattice.get_element_pv_names('BPM', 'x', pytac.RB)
-    data.append(('Waveform', 'collate', ', '.join(bpm_x_pvs),
-                 'SR-DI-EBPM-01:SA:X', [0] * len(bpm_x_pvs)))
+    bpm_x_pvs = lattice.get_element_pv_names("BPM", "x", pytac.RB)
+    data.append(
+        (
+            "Waveform",
+            "collate",
+            ", ".join(bpm_x_pvs),
+            "SR-DI-EBPM-01:SA:X",
+            [0] * len(bpm_x_pvs),
+        )
+    )
     # BPM y positions for display on diagnostics screen.
-    bpm_y_pvs = lattice.get_element_pv_names('BPM', 'y', pytac.RB)
-    data.append(('Waveform', 'collate', ', '.join(bpm_y_pvs),
-                 'SR-DI-EBPM-01:SA:Y', [0] * len(bpm_y_pvs)))
+    bpm_y_pvs = lattice.get_element_pv_names("BPM", "y", pytac.RB)
+    data.append(
+        (
+            "Waveform",
+            "collate",
+            ", ".join(bpm_y_pvs),
+            "SR-DI-EBPM-01:SA:Y",
+            [0] * len(bpm_y_pvs),
+        )
+    )
     # Tune and vertical emittance refresh PVs.
-    data.append(('aIn', 'refresh', 'SR-CS-TFB-01:TIMER',
-                 'SR23C-DI-TMBF-01:TUNE:TUNE', 0))
-    data.append(('aIn', 'refresh', 'SR-CS-TFB-01:TIMER',
-                 'SR23C-DI-TMBF-02:TUNE:TUNE', 0))
-    data.append(('aIn', 'refresh', 'SR-CS-VEFB-01:TIMER',
-                 'SR-DI-EMIT-01:VEMIT', 0))
+    data.append(
+        ("aIn", "refresh", "SR-CS-TFB-01:TIMER", "SR23C-DI-TMBF-01:TUNE:TUNE", 0)
+    )
+    data.append(
+        ("aIn", "refresh", "SR-CS-TFB-01:TIMER", "SR23C-DI-TMBF-02:TUNE:TUNE", 0)
+    )
+    data.append(("aIn", "refresh", "SR-CS-VEFB-01:TIMER", "SR-DI-EMIT-01:VEMIT", 0))
     return data
 
 
@@ -163,12 +225,13 @@ def generate_tune_pvs():
     tune_pvs = []
     offset_pvs = []
     delta_pvs = []
-    for family in ['Q1D', 'Q2D', 'Q3D', 'Q3B', 'Q2B', 'Q1B']:
-        tune_pvs.extend(lattice.get_element_pv_names(family, 'b1', pytac.SP))
+    for family in ["Q1D", "Q2D", "Q3D", "Q3B", "Q2B", "Q1B"]:
+        tune_pvs.extend(lattice.get_element_pv_names(family, "b1", pytac.SP))
     for pv in tune_pvs:
-        offset_pvs.append(':'.join([pv.split(':')[0], 'OFFSET1']))
-        delta_pvs.append('SR-CS-TFB-01:{0}{1}{2}:I'.format(pv[2:4], pv[9:12],
-                                                           pv[13:15]))
+        offset_pvs.append(":".join([pv.split(":")[0], "OFFSET1"]))
+        delta_pvs.append(
+            "SR-CS-TFB-01:{0}{1}{2}:I".format(pv[2:4], pv[9:12], pv[13:15])
+        )
     for tune_pv, offset_pv, delta_pv in zip(tune_pvs, offset_pvs, delta_pvs):
         data.append((tune_pv, offset_pv, delta_pv))
     return data
@@ -182,8 +245,8 @@ def write_data_to_file(data, filename):
         data (list): a list of tuples, the data to write to the .csv file.
         filename (str): the name of the .csv file to write the data to.
     """
-    if not filename.endswith('.csv'):
-        filename += '.csv'
+    if not filename.endswith(".csv"):
+        filename += ".csv"
     here = os.path.abspath(os.path.dirname(__file__))
     with open(os.path.join(here, filename), "wb") as file:
         csv_writer = csv.writer(file)
@@ -193,7 +256,7 @@ def write_data_to_file(data, filename):
 def parse_arguments():
     parser = argparse.ArgumentParser(
         description="Generate CSV file to define the PVs served by the "
-                    "virtual accelerator IOC."
+        "virtual accelerator IOC."
     )
     parser.add_argument(
         "--feedback",

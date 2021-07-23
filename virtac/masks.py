@@ -2,8 +2,8 @@ from cothread.catools import caget, caput
 
 
 class callback_offset(object):
-    """A class to hold a method to be passed as a callback to camonitor.
-    """
+    """A class to hold a method to be passed as a callback to camonitor."""
+
     def __init__(self, server, quad_pv, offset_record):
         """
         Args:
@@ -32,8 +32,8 @@ class callback_offset(object):
 
 
 class callback_set(object):
-    """A class to hold a method to be passed as a callback to camonitor.
-    """
+    """A class to hold a method to be passed as a callback to camonitor."""
+
     def __init__(self, output):
         """
         Args:
@@ -53,8 +53,8 @@ class callback_set(object):
 
 
 class caget_mask(object):
-    """A mask for caget so it can comply with the record.get() syntax.
-    """
+    """A mask for caget so it can comply with the record.get() syntax."""
+
     def __init__(self, pv):
         """
         Args:
@@ -68,8 +68,8 @@ class caget_mask(object):
 
 
 class caput_mask(object):
-    """A mask for caput so it can comply with the record.set(value) syntax.
-    """
+    """A mask for caput so it can comply with the record.set(value) syntax."""
+
     def __init__(self, pv):
         """
         Args:
