@@ -1,8 +1,10 @@
 """Module containing an interface with the AT simulator."""
 import logging
+import time
 from warnings import warn
 
 import at
+from at.physics.orbit import find_orbit6
 import numpy
 import cothread
 from scipy.constants import speed_of_light
@@ -71,15 +73,21 @@ class ATSimulator(object):
         self._at_lat = at_lattice
         self._rp = numpy.ones(len(at_lattice) + 1, dtype=bool)
         self._emit_calc = emit_calc
+        self._at_lat.radiation_on()
+        self._orbit6, self._orbit6all = find_orbit6(self._at_lat, range(len(self._at_lat) + 1))
+        print(self._orbit6)
+        print(self._orbit6.shape)
         # Initial phys data calculation.
         if self._emit_calc:
-            self._at_lat.radiation_on()
-            self._emitdata = self._at_lat.ohmi_envelope(self._rp)
+            self._emitdata = self._at_lat.ohmi_envelope(
+                self._rp, orbit=self._orbit6
+            )
         self._at_lat.radiation_off()
         self._lindata = self._at_lat.linopt(refpts=self._rp, get_chrom=True,
                                             coupled=False)
         self._radint = self._at_lat.get_radiation_integrals(0.0,
                                                             self._lindata[3])
+        self._at_lat.radiation_on()
         # Threading stuff initialisation.
         self._queue = cothread.EventQueue()
         # Explicitly manage the cothread Events, so turn off auto_reset.
@@ -97,6 +105,7 @@ class ATSimulator(object):
             field (str): The field to be changed.
             value (float): The value to be set.
         """
+        #logging.debug('adding {}:{} to the queue'.format(field, value))
         self._queue.Signal((func, field, value))
 
     def _gather_one_sample(self):
@@ -109,7 +118,7 @@ class ATSimulator(object):
 
     def _recalculate_phys_data(self, callback):
         """Target function for the Cothread thread. Recalculates the physics
-        data dependant on the status of the '_paused' flag and the length of
+        data dependent on the status of the '_paused' flag and the length of
         the queue. The calculations only take place if '_paused' is False and
         there is one or more changes on the queue.
 
@@ -128,24 +137,39 @@ class ATSimulator(object):
         """
         while True:
             logging.debug('Starting recalculation loop')
+            t = time.time()
+            # If there's no change on the queue wait for one to appear.
             self._gather_one_sample()
+            logging.debug('Gathered one sample after {:.3f} s'.format(time.time() - t))
+            logging.debug('queue length {}'.format(len(self._queue)))
             while self._queue:
                 self._gather_one_sample()
+            logging.debug('Gathered all samples after {:.3f} s'.format(time.time() - t))
             if bool(self._paused) is False:
                 try:
+                    t = time.time()
+                    logging.debug('Starting orbit calculation')
+                    self._orbit6, self._orbit6all = find_orbit6(self._at_lat, range(len(self._at_lat) + 1))
+                    t = time.time() - t
+                    logging.debug('Completed orbit calculation in {:.3f} seconds'.format(t))
+
                     if self._emit_calc:
+                        t = time.time()
                         logging.debug('Starting emittance calculation.')
-                        self._at_lat.radiation_on()
-                        self._emitdata = self._at_lat.ohmi_envelope(self._rp)
-                        logging.debug('Completed emittance calculation')
+                        self._emitdata = self._at_lat.ohmi_envelope(self._rp, orbit=self._orbit6)
+                        t = time.time() - t
+                        logging.debug('Completed emittance calculation in {:.3f} seconds'.format(t))
                     logging.debug('Starting linear optics calculation.')
+                    t = time.time()
                     self._at_lat.radiation_off()
                     self._lindata = self._at_lat.linopt(0.0, self._rp, True,
                                                         coupled=False)
-                    logging.debug('Completed linear optics calculation.')
+                    t = time.time() - t
+                    logging.debug('Completed linear optics calculation in {:.3f} seconds'.format(t))
                     self._radint = self._at_lat.get_radiation_integrals(
                         twiss=self._lindata[3]
                     )
+                    self._at_lat.radiation_on()
                     logging.debug('All calculation complete.')
                 except Exception as e:
                     warn(at.AtWarning(e))
@@ -313,15 +337,15 @@ class ATSimulator(object):
             FieldException: if the specified field is not valid for orbit.
         """
         if field is None:
-            return self._lindata[3]['closed_orbit'][:-1]
+            return self._orbit6all[:-1]
         elif field == 'x':
-            return self._lindata[3]['closed_orbit'][:-1, 0]
+            return self._orbit6all[:-1, 0]
         elif field == 'px':
-            return self._lindata[3]['closed_orbit'][:-1, 1]
+            return self._orbit6all[:-1, 1]
         elif field == 'y':
-            return self._lindata[3]['closed_orbit'][:-1, 2]
+            return self._orbit6all[:-1, 2]
         elif field == 'py':
-            return self._lindata[3]['closed_orbit'][:-1, 3]
+            return self._orbit6all[:-1, 3]
         else:
             raise FieldException("Field {0} is not a valid closed orbit plane."
                                  .format(field))

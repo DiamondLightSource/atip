@@ -1,7 +1,10 @@
 import csv
+import logging
+import time
 from warnings import warn
 
 import atip
+import cothread
 import numpy
 import pytac
 from cothread.catools import camonitor
@@ -89,6 +92,10 @@ class ATIPServer(object):
             self._create_mirror_records(mirror_csv)
         print("Finished creating all {0} records."
               .format(len(self.all_record_names)))
+        self._last_update = time.time()
+        self._gaps = []
+        self._durations = []
+        self._last_end = None
 
     @property
     def all_record_names(self):
@@ -232,6 +239,9 @@ class ATIPServer(object):
             value (number): The value that has just been set to the record.
             name (str): The name of record object that has just been set to.
         """
+        start = time.time()
+        if self._last_end is not None:
+            self._gaps.append(start - self._last_end)
         in_record = self._out_records[self.all_record_names[name]]
         in_record.set(value)
         index, field = self._in_records[in_record]
@@ -242,12 +252,33 @@ class ATIPServer(object):
             except KeyError:
                 pass
         if isinstance(index, list):
+            print('on update list name {} index {}'.format(name, index))
             for i in index:
                 self.lattice[i - 1].set_value(field, value, units=pytac.ENG,
                                               data_source=pytac.SIM)
         else:
             self.lattice[index - 1].set_value(field, value, units=pytac.ENG,
                                               data_source=pytac.SIM)
+
+        self._last_end = time.time()
+        self._durations.append(self._last_end - start)
+        if time.time() - self._last_update > 1:
+            logging.debug('Yielding.')
+            logging.debug('{} gaps {} durations'.format(
+                len(self._gaps), len(self._durations))
+            )
+            if self._gaps:
+                logging.debug(
+                    'av gap {}'.format(sum(self._gaps) / len(self._gaps))
+                )
+                self._gaps = []
+            if self._durations:
+                logging.debug('av duration {}'.format(
+                    sum(self._durations) / len(self._durations))
+                )
+                self._durations = []
+            cothread.Yield()
+            self._last_update = time.time()
 
     def _create_feedback_records(self, feedback_csv):
         """Create all the feedback records from the .csv file at the location

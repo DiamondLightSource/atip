@@ -110,6 +110,11 @@ def generate_mirrored_pvs():
     """
     lattice = atip.utils.loader()
     data = [("output type", "mirror type", "in", "out", "value")]
+    current = lattice.get_value('beam_current', pytac.RB, data_source=pytac.SIM)
+    data.append(
+        'aIn', 'basic', 'SR-DI-DCCT-01:SIGNAL', 'SR23C-DI-DCCT-01:SIGNAL', current
+    )
+
     # Tune PV aliases.
     tune = [lattice.get_value('tune_x', pytac.RB, data_source=pytac.SIM),
             lattice.get_value('tune_y', pytac.RB, data_source=pytac.SIM)]
@@ -185,7 +190,7 @@ def write_data_to_file(data, filename):
     if not filename.endswith('.csv'):
         filename += '.csv'
     here = os.path.abspath(os.path.dirname(__file__))
-    with open(os.path.join(here, filename), "wb") as file:
+    with open(os.path.join(here, filename), "w") as file:
         csv_writer = csv.writer(file)
         csv_writer.writerows(data)
 
