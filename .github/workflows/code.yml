@@ -27,9 +27,9 @@ jobs:
           pipenv install --dev --deploy --python $(which python) && pipenv graph
 
       - name: Run Tests
-        run: pipenv run python -m pytest test
+        run: pipenv run python -m pytest tests
 
       - name: Check Formatting
         run: |
-          pipenv run black --check atip test
-          pipenv run flake8 atip test
+          pipenv run black --check atip tests
+          pipenv run flake8 atip tests
