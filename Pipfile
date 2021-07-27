@@ -6,7 +6,8 @@ name = "pypi"
 [dev-packages]
 pytest = "*"
 pytest-cov = "*"
-coveralls = "*"
+pytest-black = "*"
+pytest-flake8 = "*"
 testfixtures = "*"
 mock = "*"
 flake8 = "*"
@@ -17,3 +18,6 @@ black = "==21.5b2"
 [packages]
 # All production requirements from setup.cfg.
 atip = {editable = true, path = "."}
+
+[scripts]
+tests = "python -m pytest atip tests --flake8 --black --cov=atip --cov-fail-under=70 --cov-report=term"

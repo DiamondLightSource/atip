@@ -26,10 +26,6 @@ jobs:
           pip install pipenv twine
           pipenv install --dev --deploy --python $(which python) && pipenv graph
 
-      - name: Run Tests
-        run: pipenv run python -m pytest tests
+      - name: Run tests and check formatting
+        run: pipenv run tests
 
-      - name: Check Formatting
-        run: |
-          pipenv run black --check atip tests
-          pipenv run flake8 atip tests
