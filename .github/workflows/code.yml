@@ -28,4 +28,3 @@ jobs:
 
       - name: Run tests and check formatting
         run: pipenv run tests
-

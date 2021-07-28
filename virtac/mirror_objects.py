@@ -6,6 +6,7 @@ class summate(object):
     set method is then called it takes the sum of all the input records and
     sets it to the output record.
     """
+
     def __init__(self, input_records, output_record):
         """
         Args:
@@ -32,6 +33,7 @@ class collate(object):
     combines them in order before setting the combined array to the output
     waveform record.
     """
+
     def __init__(self, input_records, output_record):
         """
         Args:
@@ -58,6 +60,7 @@ class transform(object):
     set method is then called it applies the held transformation and then sets
     the new value to the held output record.
     """
+
     def __init__(self, transformation, output_record):
         """
         Args:
@@ -66,8 +69,11 @@ class transform(object):
                                                           transformed value to.
         """
         if not callable(transformation):
-            raise TypeError("Transformation should be a callable, {0} is not."
-                            .format(transformation))
+            raise TypeError(
+                "Transformation should be a callable, {0} is not.".format(
+                    transformation
+                )
+            )
         self.output_record = output_record
         self.transformation = transformation
         self.name = output_record.name
@@ -85,6 +91,7 @@ class refresher(object):
     """This class is designed to be passed instead of a mirror record, when its
     set method is then called it refreshes the held PV on the held server.
     """
+
     def __init__(self, server, output_pv):
         """
         Args:
@@ -94,7 +101,7 @@ class refresher(object):
         """
         self.server = server
         self.output_pv = output_pv
-        self.name = output_pv + ':REFRESH'
+        self.name = output_pv + ":REFRESH"
 
     def set(self, value=None):
         """An imitation  of the set method of Soft-IOC records, that refreshes

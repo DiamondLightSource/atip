@@ -1,4 +1,5 @@
 import at
+import cothread
 import mock
 import numpy
 import pytest
@@ -79,6 +80,27 @@ def test_recalculate_phys_data_queue(atsim):
     atsim.wait_for_calculations()
     assert len(atsim._queue) == 0
     elem_ds._make_change.assert_called_once_with("a_field", 12)
+
+
+def test_pause_calculations(atsim):
+    elem_ds = mock.Mock()
+    atsim.up_to_date.Reset()
+    atsim.pause_calculations()
+    atsim.queue_set(elem_ds._make_change, "a_field", 12)
+    assert len(atsim._queue) == 1
+    cothread.Sleep(0.1)
+    # Queue emptied even though paused.
+    assert len(atsim._queue) == 0
+    elem_ds._make_change.assert_called_once_with("a_field", 12)
+    # Calculation not updated because paused.
+    assert not atsim.up_to_date
+    # We have to add another item to the queue to prompt
+    # a recalculation. Is this a bug?
+    atsim.queue_set(elem_ds._make_change, "a_field", 12)
+    atsim.unpause_calculations()
+    cothread.Sleep(0.1)
+    # Calculation now updated.
+    assert atsim.up_to_date
 
 
 def test_recalculate_phys_data(atsim, initial_phys_data):

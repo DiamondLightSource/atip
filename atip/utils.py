@@ -183,12 +183,6 @@ def trigger_calc(target):
                                                         ATSimulator object can
                                                         be extracted.
     """
-
-    def do_nothing(*args):
-        pass
-
     atsim = get_atsim(target)
-    atsim.up_to_date.Reset()
-    atsim._paused.Reset()
-    atsim._queue.Signal((do_nothing, None, None))
+    atsim.trigger_calculation()
     print("Recalculation manually triggered.")

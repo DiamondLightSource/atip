@@ -12,43 +12,31 @@ The virtual accelerator (virtac for short) runs on EPICS port 6064 (the port
 used by convention at Diamond for simulations) to avoid conflict with the same
 PVs on the live machine.
 
-Initialisation
---------------
-
-Before starting please ensure you have working and up to date versions of AT,
-Pytac, and ATIP - see ``../INSTALL.rst``
-
-You must also have pythonIoc installed - https://github.com/Araneidae/pythonIoc
-
-PythonIOC has a python interpreter linked in, and also includes some of its
-dependent modules. For this reason, the ``pythonIoc`` binary has to be used
-as the python interpreter for the virtac. This makes the setup a little bit
-complicated. The ``start-virtac`` script handles this at Diamond.
-
 
 Start the virtual accelerator
 -----------------------------
 
-Inside the virtac directory::
+Run the virtac under the development EPICS port::
 
-    $ ./start-virtac
+    $ export EPICS_CA_SERVER_PORT=6064
+    $ pipenv run virtac
 
-After a minute or so, you should be presented with something like this::
+It takes 10 seconds or so to load the interactive console::
 
     Starting record creation.
-    Finished creating all 4124 records.
+    ~*~*Woah, we're halfway there, Wo-oah...*~*~
+    Finished creating all 2981 records.
     Starting iocInit
-    ###########################################################################
-    ## EPICS R3.14.12.3 $Date: Mon 2012-12-17 14:11:47 -0600$
-    ## EPICS Base built Nov  8 2018
-    ###########################################################################
+    ############################################################################
+    ## EPICS 7.0.6.0
+    ## Rev. 7.0.6.99.1.0
+    ############################################################################
     iocRun: All initialization complete
-    Python 2.7.3 (default, Nov  9 2013, 21:59:00) 
-    [GCC 4.4.7 20120313 (Red Hat 4.4.7-3)] on linux2
+    Python 3.7.2 (default, Jan 20 2020, 11:03:41)
+    [GCC 4.8.5 20150623 (Red Hat 4.8.5-39)] on linux
     Type "help", "copyright", "credits" or "license" for more information.
     (InteractiveConsole)
-    >>> 
-
+    >>>
 
 Leave the server running and in a new terminal update the EPICS port::
 
@@ -118,7 +106,7 @@ You can run the virtual accelerator in any ring mode that is supported by
 Pytac; currently 'VMX', 'VMXSP', and 'DIAD'. The ring mode can be set by the
 following methods, which are checked in this order:
 
-- as a command line argument to ``start-virtac``;
+- as a command line argument to ``virtac``;
 - by changing the ``RINGMODE`` environment variable
 - a PV ``SR-CS-RING-01:MODE`` which has the ring mode as its value
 
@@ -126,7 +114,7 @@ If none of these is set then the virtual accelerator will default to 'DIAD'.
 
 For example::
 
-    $ ./start-virtac DIAD
+    $ pipenv run virtac DIAD
     $ export RINGMODE=DIAD
     $ caput SR-CS-RING-01:MODE 11
     $ # Having none of these set would also start in mode 'DIAD'.
