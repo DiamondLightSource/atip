@@ -1,2 +1,2 @@
-include atip/*.py
 include atip/rings/*.m*
+include virtac/data/*.csv

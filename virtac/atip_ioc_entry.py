@@ -10,7 +10,7 @@ from cothread.catools import caget, ca_nothing
 LOG_FORMAT = "%(asctime)s %(message)s"
 
 
-here = Path(__file__).absolute().parent
+DATADIR = Path(__file__).absolute().parent / "data"
 
 
 def main():
@@ -36,10 +36,10 @@ def main():
     # Create PVs.
     server = atip_server.ATIPServer(
         ring_mode,
-        here / "limits.csv",
-        here / "feedback.csv",
-        here / "mirrored.csv",
-        here / "tunefb.csv",
+        DATADIR / "limits.csv",
+        DATADIR / "feedback.csv",
+        DATADIR / "mirrored.csv",
+        DATADIR / "tunefb.csv",
     )
 
     # Add special case out record for SOFB to write to.
