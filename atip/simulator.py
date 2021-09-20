@@ -80,9 +80,7 @@ class ATSimulator(object):
             refpts=self._rp, get_chrom=True
         )
         if self._emit_calc:
-            self._emitdata = self._at_lat.ohmi_envelope(
-                self._rp, twiss0["closed_orbit"]
-            )
+            self._emitdata = self._at_lat.ohmi_envelope(orbit=twiss0["closed_orbit"])
         self._radint = self._at_lat.get_radiation_integrals(twiss=self._twiss)
         # Threading stuff initialisation.
         self._queue = cothread.EventQueue()
@@ -145,7 +143,7 @@ class ATSimulator(object):
                     if self._emit_calc:
                         logging.debug("Starting emittance calculation.")
                         self._emitdata = self._at_lat.ohmi_envelope(
-                            self._rp, twiss0["closed_orbit"]
+                            orbit=twiss0["closed_orbit"]
                         )
                         logging.debug("Completed emittance calculation")
                     self._radint = self._at_lat.get_radiation_integrals(
