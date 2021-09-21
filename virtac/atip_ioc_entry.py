@@ -50,6 +50,6 @@ def main():
     builder.LoadDatabase()
     softioc.iocInit()
     server.monitor_mirrored_pvs()
-    server.start_tune_feedback()
+    server.setup_tune_feedback()
 
     softioc.interactive_ioc(globals())
