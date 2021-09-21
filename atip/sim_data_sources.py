@@ -406,7 +406,7 @@ class ATLatticeDataSource(pytac.data_source.DataSource):
             "alpha": self._atsim.get_alpha,
             "beta": self._atsim.get_beta,
             "tune": self._atsim.get_tune,
-            "m44": self._atsim.get_m44,
+            "m66": self._atsim.get_m66,
             "x": self._atsim.get_orbit,
             "y": self._atsim.get_orbit,
             "mu": self._atsim.get_mu,

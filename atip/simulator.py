@@ -431,13 +431,13 @@ class ATSimulator(object):
         """
         return self._lattice_data.twiss["mu"][:-1]
 
-    def get_m44(self):
-        """Return the 4x4 transfer matrix for every element in the AT lattice.
+    def get_m66(self):
+        """Return the 6x6 transfer matrix for every element in the AT lattice.
 
         Returns:
-            numpy.array: The 4x4 transfer matrix for each element.
+            numpy.array: The 6x6 transfer matrix for each element.
         """
-        return self._lattice_data.twiss["m44"][:-1]
+        return self._lattice_data.twiss["M"][:-1]
 
     # Get lattice emittance from beam envelope:
     def get_emittance(self, field=None):
