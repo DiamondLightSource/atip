@@ -26,12 +26,6 @@ def calculate_optics(
 ) -> LatticeData:
     """Perform physics calculations on lattice.
 
-    It would be possible for this to be faster using linopt2 or linopt4.
-    If the orbit is calculated using find_orbit6 then the feedback
-    systems behave approximately correctly, but the calculated values
-    will be less correct and it will be difficult to assess if this
-    causes a problem.
-
     Args:
         at_lattice: AT lattice definition
         refpts: points at which to calculate physics data
@@ -45,6 +39,11 @@ def calculate_optics(
     orbit0, _ = at_lattice.find_orbit6()
     logging.debug("Completed orbit calculation.")
 
+    # Here one could use the faster linopt2 or linopt4 functions,
+    # but linopt6 appears to be more correct.
+    # If you try linopt2 or linopt4 be aware that the calculated
+    # data from this call may not be physically accurate.
+    # See the docstrings for those functions in pyat.
     _, beamdata, twiss = at_lattice.linopt6(refpts=refpts, get_chrom=True, orbit=orbit0)
     logging.debug("Completed linear optics calculation.")
 
