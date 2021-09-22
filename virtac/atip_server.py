@@ -431,10 +431,10 @@ class ATIPServer(object):
         else:
             record.set(record.get())
 
-    def start_tune_feedback(self, tune_csv=None):
+    def setup_tune_feedback(self, tune_csv=None):
         """Read the tune feedback .csv and find the associated offset PVs,
         before starting monitoring them for a change to mimic the behaviour of
-        the tune feedback system on the live machine.
+        the quadrupoles used by the tune feedback system on the live machine.
 
         Args:
             tune_csv (str): A path to a tune feedback .csv file to be used

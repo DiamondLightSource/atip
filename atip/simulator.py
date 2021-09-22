@@ -1,12 +1,59 @@
 """Module containing an interface with the AT simulator."""
 import logging
+from dataclasses import dataclass
 from warnings import warn
 
 import at
 import numpy
+from numpy.typing import ArrayLike
 import cothread
 from scipy.constants import speed_of_light
 from pytac.exceptions import FieldException
+
+
+@dataclass
+class LatticeData:
+
+    twiss: ArrayLike
+    tunes: ArrayLike
+    chrom: ArrayLike
+    emittance: ArrayLike
+    radint: ArrayLike
+
+
+def calculate_optics(
+    at_lattice: at.Lattice, refpts: ArrayLike, calc_emittance: bool = True
+) -> LatticeData:
+    """Perform physics calculations on lattice.
+
+    Args:
+        at_lattice: AT lattice definition
+        refpts: points at which to calculate physics data
+        calc_emittance: whether to calculate emittances
+
+    Returns:
+        calculated lattice data
+    """
+    logging.debug("Starting optics calculations.")
+
+    orbit0, _ = at_lattice.find_orbit6()
+    logging.debug("Completed orbit calculation.")
+
+    # Here one could use the faster linopt2 or linopt4 functions,
+    # but linopt6 appears to be more correct.
+    # If you try linopt2 or linopt4 be aware that the calculated
+    # data from this call may not be physically accurate.
+    # See the docstrings for those functions in pyat.
+    _, beamdata, twiss = at_lattice.linopt6(refpts=refpts, get_chrom=True, orbit=orbit0)
+    logging.debug("Completed linear optics calculation.")
+
+    if calc_emittance:
+        emitdata = at_lattice.ohmi_envelope(orbit=orbit0)
+        logging.debug("Completed emittance calculation")
+
+    radint = at_lattice.get_radiation_integrals(twiss=twiss)
+    logging.debug("All calculation complete.")
+    return LatticeData(twiss, beamdata.tune, beamdata.chromaticity, emitdata, radint)
 
 
 class ATSimulator(object):
@@ -32,11 +79,8 @@ class ATSimulator(object):
                                physics calculations.
             _emit_calc (bool): Whether or not to perform the beam envelope
                                 based emittance calculations.
-           _emitdata (tuple): Emittance, the output of the AT physics function
-                               ohmi_envelope (see at.lattice.radiation.py).
-           _lindata (tuple): Linear optics data, the output of the AT physics
+           _lattice_data (LatticeData): calculated physics data
                               function linopt (see at.lattice.linear.py).
-           _radint (tuple): The 5 Synchrotron Integrals for uncoupled lattices.
            _queue (cothread.EventQueue): A queue of changes to be applied to
                                           the centralised lattice on the next
                                           recalculation cycle.
@@ -52,7 +96,7 @@ class ATSimulator(object):
         """
         .. Note:: To avoid errors, the physics data must be initially
            calculated here, during creation, otherwise it could be accidentally
-           referenced before the attributes _emitdata and _lindata exist due to
+           referenced before the _lattice_data attribute exists due to
            delay between class creation and the end of the first calculation in
            the thread.
 
@@ -74,15 +118,11 @@ class ATSimulator(object):
         self._at_lat = at_lattice
         self._rp = numpy.ones(len(at_lattice) + 1, dtype=bool)
         self._emit_calc = emit_calc
+        self._at_lat.radiation_on()
+
         # Initial phys data calculation.
-        if self._emit_calc:
-            self._at_lat.radiation_on()
-            self._emitdata = self._at_lat.ohmi_envelope(self._rp)
-        self._at_lat.radiation_off()
-        self._lindata = self._at_lat.linopt(
-            refpts=self._rp, get_chrom=True, coupled=False
-        )
-        self._radint = self._at_lat.get_radiation_integrals(0.0, self._lindata[3])
+        self._lattice_data = calculate_optics(self._at_lat, self._rp, self._emit_calc)
+
         # Threading stuff initialisation.
         self._queue = cothread.EventQueue()
         # Explicitly manage the cothread Events, so turn off auto_reset.
@@ -112,7 +152,7 @@ class ATSimulator(object):
 
     def _recalculate_phys_data(self, callback):
         """Target function for the Cothread thread. Recalculates the physics
-        data dependant on the status of the '_paused' flag and the length of
+        data dependent on the status of the '_paused' flag and the length of
         the queue. The calculations only take place if '_paused' is False and
         there is one or more changes on the queue.
 
@@ -136,21 +176,9 @@ class ATSimulator(object):
                 self._gather_one_sample()
             if bool(self._paused) is False:
                 try:
-                    if self._emit_calc:
-                        logging.debug("Starting emittance calculation.")
-                        self._at_lat.radiation_on()
-                        self._emitdata = self._at_lat.ohmi_envelope(self._rp)
-                        logging.debug("Completed emittance calculation")
-                    logging.debug("Starting linear optics calculation.")
-                    self._at_lat.radiation_off()
-                    self._lindata = self._at_lat.linopt(
-                        0.0, self._rp, True, coupled=False
+                    self._lattice_data = calculate_optics(
+                        self._at_lat, self._rp, self._emit_calc
                     )
-                    logging.debug("Completed linear optics calculation.")
-                    self._radint = self._at_lat.get_radiation_integrals(
-                        twiss=self._lindata[3]
-                    )
-                    logging.debug("All calculation complete.")
                 except Exception as e:
                     warn(at.AtWarning(e))
                 # Signal up to date before the callback is executed in case
@@ -227,7 +255,7 @@ class ATSimulator(object):
         Returns:
             list: The s position of each element.
         """
-        return list(self._lindata[3]["s_pos"][:-1])
+        return list(self._lattice_data.twiss["s_pos"][:-1])
 
     def get_total_bend_angle(self):
         """Return the total bending angle of all the dipoles in the AT lattice.
@@ -279,12 +307,13 @@ class ATSimulator(object):
         Raises:
             FieldException: if the specified field is not valid for tune.
         """
+        tunes = self._lattice_data.tunes
         if field is None:
-            return numpy.array(self._lindata[1]) % 1
+            return numpy.array(tunes) % 1
         elif field == "x":
-            return self._lindata[1][0] % 1
+            return tunes[0] % 1
         elif field == "y":
-            return self._lindata[1][1] % 1
+            return tunes[1] % 1
         else:
             raise FieldException("Field {0} is not a valid tune plane.".format(field))
 
@@ -302,15 +331,16 @@ class ATSimulator(object):
             FieldException: if the specified field is not valid for
                              chromaticity.
         """
+        chrom = self._lattice_data.chrom
         if field is None:
-            return self._lindata[2]
+            return chrom
         elif field == "x":
-            return self._lindata[2][0]
+            return chrom[0]
         elif field == "y":
-            return self._lindata[2][1]
+            return chrom[1]
         else:
             raise FieldException(
-                "Field {0} is not a valid chromaticity " "plane.".format(field)
+                "Field {0} is not a valid chromaticity plane.".format(field)
             )
 
     # Get local linear optics data:
@@ -329,16 +359,17 @@ class ATSimulator(object):
         Raises:
             FieldException: if the specified field is not valid for orbit.
         """
+        closed_orbit = self._lattice_data.twiss["closed_orbit"]
         if field is None:
-            return self._lindata[3]["closed_orbit"][:-1]
+            return closed_orbit[:-1]
         elif field == "x":
-            return self._lindata[3]["closed_orbit"][:-1, 0]
+            return closed_orbit[:-1, 0]
         elif field == "px":
-            return self._lindata[3]["closed_orbit"][:-1, 1]
+            return closed_orbit[:-1, 1]
         elif field == "y":
-            return self._lindata[3]["closed_orbit"][:-1, 2]
+            return closed_orbit[:-1, 2]
         elif field == "py":
-            return self._lindata[3]["closed_orbit"][:-1, 3]
+            return closed_orbit[:-1, 3]
         else:
             raise FieldException(
                 "Field {0} is not a valid closed orbit plane.".format(field)
@@ -359,16 +390,17 @@ class ATSimulator(object):
         Raises:
             FieldException: if the specified field is not valid for dispersion.
         """
+        dispersion = self._lattice_data.twiss["dispersion"]
         if field is None:
-            return self._lindata[3]["dispersion"][:-1]
+            return dispersion[:-1]
         elif field == "x":
-            return self._lindata[3]["dispersion"][:-1, 0]
+            return dispersion[:-1, 0]
         elif field == "px":
-            return self._lindata[3]["dispersion"][:-1, 1]
+            return dispersion[:-1, 1]
         elif field == "y":
-            return self._lindata[3]["dispersion"][:-1, 2]
+            return dispersion[:-1, 2]
         elif field == "py":
-            return self._lindata[3]["dispersion"][:-1, 3]
+            return dispersion[:-1, 3]
         else:
             raise FieldException(
                 "Field {0} is not a valid dispersion plane.".format(field)
@@ -380,7 +412,7 @@ class ATSimulator(object):
         Returns:
             numpy.array: The alpha vector for each element.
         """
-        return self._lindata[3]["alpha"][:-1]
+        return self._lattice_data.twiss["alpha"][:-1]
 
     def get_beta(self):
         """Return the beta vector at every element in the AT lattice.
@@ -388,7 +420,7 @@ class ATSimulator(object):
         Returns:
             numpy.array: The beta vector for each element.
         """
-        return self._lindata[3]["beta"][:-1]
+        return self._lattice_data.twiss["beta"][:-1]
 
     def get_mu(self):
         """Return mu at every element in the AT lattice.
@@ -396,15 +428,15 @@ class ATSimulator(object):
         Returns:
             numpy.array: The mu array for each element.
         """
-        return self._lindata[3]["mu"][:-1]
+        return self._lattice_data.twiss["mu"][:-1]
 
-    def get_m44(self):
-        """Return the 4x4 transfer matrix for every element in the AT lattice.
+    def get_m66(self):
+        """Return the 6x6 transfer matrix for every element in the AT lattice.
 
         Returns:
-            numpy.array: The 4x4 transfer matrix for each element.
+            numpy.array: The 6x6 transfer matrix for each element.
         """
-        return self._lindata[3]["m44"][:-1]
+        return self._lattice_data.twiss["M"][:-1]
 
     # Get lattice emittance from beam envelope:
     def get_emittance(self, field=None):
@@ -425,11 +457,11 @@ class ATSimulator(object):
             FieldException: if the specified field is not valid for emittance.
         """
         if field is None:
-            return self._emitdata[0]["emitXY"]
+            return self._lattice_data.emittance[0]["emitXY"]
         elif field == "x":
-            return self._emitdata[0]["emitXY"][0]
+            return self._lattice_data.emittance[0]["emitXY"][0]
         elif field == "y":
-            return self._emitdata[0]["emitXY"][1]
+            return self._lattice_data.emittance[0]["emitXY"][1]
         else:
             raise FieldException(
                 "Field {0} is not a valid emittance plane.".format(field)
@@ -442,7 +474,7 @@ class ATSimulator(object):
         Returns:
             numpy.array: The 5 radiation integrals.
         """
-        return numpy.asarray(self._radint)
+        return numpy.asarray(self._lattice_data.radint)
 
     def get_momentum_compaction(self):
         """Return the linear momentum compaction factor for the AT lattice.
@@ -450,8 +482,8 @@ class ATSimulator(object):
         Returns:
             float: The linear momentum compaction factor of the AT lattice.
         """
-        I1, _, _, _, _ = self._radint
-        return I1 / self._lindata[3]["s_pos"][-1]
+        I1, _, _, _, _ = self._lattice_data.radint
+        return I1 / self._lattice_data.twiss["s_pos"][-1]
 
     def get_energy_spread(self):
         """Return the energy spread for the AT lattice.
@@ -459,7 +491,7 @@ class ATSimulator(object):
         Returns:
             float: The energy spread for the AT lattice.
         """
-        _, I2, I3, I4, _ = self._radint
+        _, I2, I3, I4, _ = self._lattice_data.radint
         gamma = self.get_energy() / (at.physics.e_mass)
         return gamma * numpy.sqrt((at.physics.Cq * I3) / ((2 * I2) + I4))
 
@@ -469,7 +501,7 @@ class ATSimulator(object):
         Returns:
             float: The energy loss of the AT lattice.
         """
-        _, I2, _, _, _ = self._radint
+        _, I2, _, _, _ = self._lattice_data.radint
         return (at.physics.Cgamma * I2 * self.get_energy() ** 4) / (2 * numpy.pi)
 
     def get_damping_partition_numbers(self):
@@ -478,7 +510,7 @@ class ATSimulator(object):
         Returns:
             numpy.array: The damping partition numbers of the AT lattice.
         """
-        _, I2, _, I4, _ = self._radint
+        _, I2, _, I4, _ = self._lattice_data.radint
         Jx = 1 - (I4 / I2)
         Je = 2 + (I4 / I2)
         Jy = 4 - (Jx + Je)  # Check they sum to 4, don't just assume Jy is 1.
@@ -505,7 +537,7 @@ class ATSimulator(object):
         Returns:
             float: Curly H for the AT lattice
         """
-        _, I2, _, _, I5 = self._radint
+        _, I2, _, _, I5 = self._lattice_data.radint
         return I5 / I2
 
     def get_horizontal_emittance(self):
@@ -516,6 +548,6 @@ class ATSimulator(object):
         Returns:
             float: The horizontal ('x') emittance for the AT lattice.
         """
-        _, I2, _, I4, I5 = self._radint
+        _, I2, _, I4, I5 = self._lattice_data.radint
         gamma = self.get_energy() / (at.physics.e_mass)
         return (I5 * at.physics.Cq * gamma ** 2) / (I2 - I4)

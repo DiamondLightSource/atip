@@ -11,55 +11,55 @@ import atip
 
 def _check_initial_phys_data(atsim, initial_phys_data):
     numpy.testing.assert_almost_equal(
-        initial_phys_data["emitXY"][0], atsim.get_emittance("x"), decimal=6
+        initial_phys_data["emitXY"][0], atsim.get_emittance("x"), decimal=3
     )
     numpy.testing.assert_almost_equal(
-        initial_phys_data["emitXY"][1], atsim.get_emittance("y"), decimal=14
+        initial_phys_data["emitXY"][1], atsim.get_emittance("y"), decimal=3
     )
     numpy.testing.assert_almost_equal(
-        initial_phys_data["tune"][0], atsim.get_tune("x"), decimal=6
+        initial_phys_data["tune"][0], atsim.get_tune("x"), decimal=3
     )
     numpy.testing.assert_almost_equal(
-        initial_phys_data["tune"][1], atsim.get_tune("y"), decimal=7
+        initial_phys_data["tune"][1], atsim.get_tune("y"), decimal=3
     )
     numpy.testing.assert_almost_equal(
-        initial_phys_data["chromaticity"][0], atsim.get_chromaticity("x"), decimal=6
+        initial_phys_data["chromaticity"][0], atsim.get_chromaticity("x"), decimal=3
     )
     numpy.testing.assert_almost_equal(
-        initial_phys_data["chromaticity"][1], atsim.get_chromaticity("y"), decimal=5
+        initial_phys_data["chromaticity"][1], atsim.get_chromaticity("y"), decimal=3
     )
     numpy.testing.assert_almost_equal(
-        initial_phys_data["closed_orbit"][0], atsim.get_orbit("x")
+        initial_phys_data["closed_orbit"][0], atsim.get_orbit("x"), decimal=3
     )
     numpy.testing.assert_almost_equal(
-        initial_phys_data["closed_orbit"][1], atsim.get_orbit("px")
+        initial_phys_data["closed_orbit"][1], atsim.get_orbit("px"), decimal=3
     )
     numpy.testing.assert_almost_equal(
-        initial_phys_data["closed_orbit"][2], atsim.get_orbit("y")
+        initial_phys_data["closed_orbit"][2], atsim.get_orbit("y"), decimal=3
     )
     numpy.testing.assert_almost_equal(
-        initial_phys_data["closed_orbit"][3], atsim.get_orbit("py")
+        initial_phys_data["closed_orbit"][3], atsim.get_orbit("py"), decimal=3
     )
     numpy.testing.assert_almost_equal(
-        initial_phys_data["dispersion"], atsim.get_dispersion()[-1], decimal=6
+        initial_phys_data["dispersion"], atsim.get_dispersion()[-1], decimal=3
     )
     numpy.testing.assert_almost_equal(
-        initial_phys_data["s_pos"], atsim.get_s(), decimal=8
+        initial_phys_data["s_pos"], atsim.get_s(), decimal=3
     )
     numpy.testing.assert_almost_equal(
-        initial_phys_data["alpha"], atsim.get_alpha()[-1], decimal=6
+        initial_phys_data["alpha"], atsim.get_alpha()[-1], decimal=3
     )
     numpy.testing.assert_almost_equal(
-        initial_phys_data["beta"], atsim.get_beta()[-1], decimal=6
+        initial_phys_data["beta"], atsim.get_beta()[-1], decimal=3
     )
     numpy.testing.assert_almost_equal(
-        initial_phys_data["m44"], atsim.get_m44()[-1], decimal=6
+        initial_phys_data["m66"], atsim.get_m66()[-1], decimal=3
     )
     numpy.testing.assert_almost_equal(
-        initial_phys_data["mu"], atsim.get_mu()[-1], decimal=6
+        initial_phys_data["mu"], atsim.get_mu()[-1], decimal=3
     )
     numpy.testing.assert_almost_equal(
-        initial_phys_data["rad_int"], atsim.get_radiation_integrals(), decimal=12
+        initial_phys_data["rad_int"], atsim.get_radiation_integrals(), decimal=3
     )
 
 
@@ -133,13 +133,11 @@ def test_recalculate_phys_data(atsim, initial_phys_data):
     emit = [atsim.get_emittance("x"), atsim.get_emittance("y")]
     # Check the results against known values
     numpy.testing.assert_almost_equal(
-        orbit, [5.18918914e-06, -8.92596857e-06], decimal=10
+        orbit, [5.18918914e-06, -8.92596857e-06], decimal=3
     )
-    numpy.testing.assert_almost_equal(chrom, [0.11732846, 0.04300947], decimal=5)
-    numpy.testing.assert_almost_equal(tune, [0.37444833, 0.86048592], decimal=7)
-    numpy.testing.assert_almost_equal(
-        emit, [1.34308653e-10, 3.74339964e-13], decimal=12
-    )
+    numpy.testing.assert_almost_equal(chrom, [0.11732846, 0.04300947], decimal=2)
+    numpy.testing.assert_almost_equal(tune, [0.37444833, 0.86048592], decimal=3)
+    numpy.testing.assert_almost_equal(emit, [1.34308653e-10, 3.74339964e-13], decimal=3)
 
 
 def test_toggle_calculations_and_wait_for_calculations(atsim, initial_phys_data):
@@ -264,10 +262,10 @@ def test_get_mu(mocked_atsim, at_lattice):
     )
 
 
-def test_get_m44(mocked_atsim, at_lattice):
+def test_get_m66(mocked_atsim, at_lattice):
     numpy.testing.assert_almost_equal(
-        mocked_atsim.get_m44(),
-        (numpy.ones((len(at_lattice), 4, 4)) * numpy.eye(4) * 0.8),
+        mocked_atsim.get_m66(),
+        (numpy.ones((len(at_lattice), 6, 6)) * numpy.eye(6) * 0.8),
     )
 
 

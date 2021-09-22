@@ -76,22 +76,21 @@ def mocked_atsim(at_lattice):
     base = numpy.ones((length, 4))
     atsim = atip.simulator.ATSimulator(at_lattice)
     atsim._at_lat = mock.PropertyMock(energy=5, circumference=(length * 0.1))
-    atsim._emitdata = [{"emitXY": numpy.array([1.4, 0.45])}]
-    atsim._lindata = (
-        [],
-        [3.14, 0.12],
-        [2, 1],
-        {
-            "closed_orbit": (base * numpy.array([0.6, 57, 0.2, 9])),
-            "dispersion": (base * numpy.array([8.8, 1.7, 23, 3.5])),
-            "s_pos": numpy.array([0.1 * (i + 1) for i in range(length)]),
-            "alpha": (base[:, :2] * numpy.array([-0.03, 0.03])),
-            "beta": (base[:, :2] * numpy.array([9.6, 6])),
-            "m44": (numpy.ones((length, 4, 4)) * (numpy.eye(4) * 0.8)),
-            "mu": (base[:, :2] * numpy.array([176, 82])),
-        },
+    emitdata = [{"emitXY": numpy.array([1.4, 0.45])}]
+    twiss = {
+        "closed_orbit": (base * numpy.array([0.6, 57, 0.2, 9])),
+        "dispersion": (base * numpy.array([8.8, 1.7, 23, 3.5])),
+        "s_pos": numpy.array([0.1 * (i + 1) for i in range(length)]),
+        "alpha": (base[:, :2] * numpy.array([-0.03, 0.03])),
+        "beta": (base[:, :2] * numpy.array([9.6, 6])),
+        "M": (numpy.ones((length, 6, 6)) * (numpy.eye(6) * 0.8)),
+        "mu": (base[:, :2] * numpy.array([176, 82])),
+    }
+    radint = (1.0, 2.0, 3.0, 4.0, 5.0)
+    lattice_data = atip.simulator.LatticeData(
+        twiss, [3.14, 0.12], [2, 1], emitdata, radint
     )
-    atsim._radint = (1.0, 2.0, 3.0, 4.0, 5.0)
+    atsim._lattice_data = lattice_data
     return atsim
 
 
@@ -119,15 +118,31 @@ def initial_phys_data(at_lattice):
         ),
         "alpha": numpy.array([0.384261343, 1.00253822]),
         "beta": numpy.array([7.91882634, 5.30280084]),
-        "m44": numpy.array(
+        "m66": numpy.array(
             [
-                [-0.47537132, 6.62427828, 0.0, 0.0],
-                [-0.09816788, -0.73565385, 0.0, 0.0],
-                [0.0, 0.0, -0.18476435, -3.7128728],
-                [0.0, 0.0, 0.29967874, 0.60979916],
+                [-0.47537132, 6.62427828, 0.0, 0.0, 2.55038448e-03, -5.33885495e-07],
+                [-0.09816788, -0.73565385, 0.0, 0.0, 1.69015229e-04, -3.53808533e-08],
+                [0.0, 0.0, -0.18476435, -3.7128728, 0.0, 0.0],
+                [0.0, 0.0, 0.29967874, 0.60979916, 0.0, 0.0],
+                [
+                    1.24684834e-06,
+                    2.15443495e-05,
+                    0.0,
+                    0.0,
+                    9.99980691e-01,
+                    2.09331256e-04,
+                ],
+                [
+                    1.70098195e-04,
+                    2.99580152e-03,
+                    0.0,
+                    0.0,
+                    2.24325864e-03,
+                    9.99999530e-01,
+                ],
             ]
         ),
-        "mu": numpy.array([14.59693301, 4.58153046]),
+        "mu": numpy.array([14.59693301, 4.58153046, 6.85248778e-04]),
         "emitXY": numpy.array([1.32528e-10, 0.0]),
         "rad_int": numpy.array(
             [
