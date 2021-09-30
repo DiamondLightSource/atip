@@ -44,11 +44,13 @@ def calculate_optics(
     # If you try linopt2 or linopt4 be aware that the calculated
     # data from this call may not be physically accurate.
     # See the docstrings for those functions in pyat.
-    _, beamdata, twiss = at_lattice.linopt6(refpts=refpts, get_chrom=True, orbit=orbit0)
+    _, beamdata, twiss = at_lattice.linopt6(
+        refpts=refpts, get_chrom=True, orbit=orbit0, keep_lattice=True
+    )
     logging.debug("Completed linear optics calculation.")
 
     if calc_emittance:
-        emitdata = at_lattice.ohmi_envelope(orbit=orbit0)
+        emitdata = at_lattice.ohmi_envelope(orbit=orbit0, keep_lattice=True)
         logging.debug("Completed emittance calculation")
 
     radint = at_lattice.get_radiation_integrals(twiss=twiss)
