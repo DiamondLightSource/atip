@@ -13,13 +13,11 @@ Initial Setup and Installation
 
     $ pip install atip
 
-**Option 2: Install AT, Pytac and ATIP from GitHub**:
+**Option 2: Install ATIP from GitHub**:
 
-1. Download AT, Pytac and ATIP into the same directory [1]_::
+1. Clone ATIP::
 
     $ cd <source-directory>
-    $ git clone https://github.com/atcollab/at.git
-    $ git clone https://github.com/dls-controls/pytac.git
     $ git clone https://github.com/dls-controls/atip.git
 
 2. Create a pipenv and install the dependencies::
@@ -28,37 +26,12 @@ Initial Setup and Installation
     $ pipenv install --dev
     $ pipenv shell
 
-3. Build AT's .so files::
+3. Run the tests to ensure everything is working correctly::
 
-    $ cd ../at/pyat
-    $ python setup.py develop
-
-4. Run the tests to ensure all modules are working correctly::
-
-    $ python -m pytest test
-    $ cd ../../pytac
-    $ python -m pytest
-    $ cd ../atip
     $ python -m pytest
 
 Troubleshooting
 ---------------
 
-If you encounter problems with your pyAT installation, please refer to 
-``pyat/README.rst`` in the ``at`` source directory. Help for installing
-Pytac is available on `Readthedocs
-<https://pytac.readthedocs.io/en/latest/examples.html#installation>`_.
-
 Please note that for ATIP to function with Python 3.7 or later, you must
 use Cothread>=2.16.
-
-Footnotes
----------
-
-.. [1] Your directory structure should look like::
-
- .<source-directory>
- .    |____atip
- .    |____pytac
- .    |____at
- .         |____pyat
