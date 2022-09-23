@@ -159,7 +159,7 @@ class ATIPServer(object):
                 )
         bend_in_record = None
         for element in self.lattice:
-            if element.type_ == "BEND":
+            if element.type_.upper() == "BEND":
                 # Create bends only once as they all share a single PV.
                 if bend_in_record is None:
                     value = element.get_value(
