@@ -5,7 +5,7 @@ import atip
 import numpy
 import pytac
 from cothread.catools import camonitor
-from pytac.device import BasicDevice
+from pytac.device import SimpleDevice
 from pytac.exceptions import HandleException, FieldException
 from softioc import builder
 
@@ -159,7 +159,7 @@ class ATIPServer(object):
                 )
         bend_in_record = None
         for element in self.lattice:
-            if element.type_ == "BEND":
+            if element.type_.upper() == "BEND":
                 # Create bends only once as they all share a single PV.
                 if bend_in_record is None:
                     value = element.get_value(
@@ -240,7 +240,7 @@ class ATIPServer(object):
         lat_fields = self.lattice.get_fields()
         for field in set(lat_fields[pytac.LIVE]) & set(lat_fields[pytac.SIM]):
             # Ignore basic devices as they do not have PVs.
-            if not isinstance(self.lattice.get_device(field), BasicDevice):
+            if not isinstance(self.lattice.get_device(field), SimpleDevice):
                 get_pv = self.lattice.get_pv_name(field, pytac.RB)
                 value = self.lattice.get_value(
                     field, units=pytac.ENG, data_source=pytac.SIM

@@ -321,5 +321,5 @@ def test_get_linear_dispersion_action(mocked_atsim):
 
 
 def test_get_horizontal_emittance(mocked_atsim):
-    eps_x = -(62.5 * at.physics.Cq) / at.physics.e_mass ** 2
+    eps_x = -(62.5 * at.constants.Cq) / at.constants.e_mass ** 2
     assert mocked_atsim.get_horizontal_emittance() == eps_x

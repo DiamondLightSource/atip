@@ -494,8 +494,8 @@ class ATSimulator(object):
             float: The energy spread for the AT lattice.
         """
         _, I2, I3, I4, _ = self._lattice_data.radint
-        gamma = self.get_energy() / (at.physics.e_mass)
-        return gamma * numpy.sqrt((at.physics.Cq * I3) / ((2 * I2) + I4))
+        gamma = self.get_energy() / (at.constants.e_mass)
+        return gamma * numpy.sqrt((at.constants.Cq * I3) / ((2 * I2) + I4))
 
     def get_energy_loss(self):
         """Return the energy loss per turn of the AT lattice.
@@ -504,7 +504,7 @@ class ATSimulator(object):
             float: The energy loss of the AT lattice.
         """
         _, I2, _, _, _ = self._lattice_data.radint
-        return (at.physics.Cgamma * I2 * self.get_energy() ** 4) / (2 * numpy.pi)
+        return (at.constants.Cgamma * I2 * self.get_energy() ** 4) / (2 * numpy.pi)
 
     def get_damping_partition_numbers(self):
         """Return the damping partition numbers for the 3 normal modes.
@@ -551,5 +551,5 @@ class ATSimulator(object):
             float: The horizontal ('x') emittance for the AT lattice.
         """
         _, I2, _, I4, I5 = self._lattice_data.radint
-        gamma = self.get_energy() / (at.physics.e_mass)
-        return (I5 * at.physics.Cq * gamma ** 2) / (I2 - I4)
+        gamma = self.get_energy() / (at.constants.e_mass)
+        return (I5 * at.constants.Cq * gamma ** 2) / (I2 - I4)

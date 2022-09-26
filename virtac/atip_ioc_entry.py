@@ -3,6 +3,7 @@ import os
 import sys
 from pathlib import Path
 
+import epicscorelibs.path.cothread
 from . import atip_server
 from softioc import builder, softioc
 from cothread.catools import caget, ca_nothing
