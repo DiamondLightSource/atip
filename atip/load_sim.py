@@ -34,7 +34,7 @@ def load_from_filepath(pytac_lattice, at_lattice_filepath, callback=None):
     return load(pytac_lattice, at_lattice, callback)
 
 
-def load(pytac_lattice, at_lattice, callback=None):
+def load(pytac_lattice, at_lattice, callback=None, emit_calc=True):
     """Load simulator data sources onto the lattice and its elements.
 
     Args:
@@ -54,7 +54,7 @@ def load(pytac_lattice, at_lattice, callback=None):
             "(AT:{0} Pytac:{1}).".format(len(at_lattice), len(pytac_lattice))
         )
     # Initialise an instance of the ATSimulator Object.
-    atsim = ATSimulator(at_lattice, callback)
+    atsim = ATSimulator(at_lattice, callback, emit_calc)
     # Set the simulator data source on the Pytac lattice.
     pytac_lattice.set_data_source(ATLatticeDataSource(atsim), pytac.SIM)
     # Load the sim onto each element.

@@ -55,7 +55,10 @@ def calculate_optics(
 
     radint = at_lattice.get_radiation_integrals(twiss=twiss)
     logging.debug("All calculation complete.")
-    return LatticeData(twiss, beamdata.tune, beamdata.chromaticity, emitdata, radint)
+    if calc_emittance:
+        return LatticeData(twiss, beamdata.tune, beamdata.chromaticity, emitdata, radint)
+    else:
+        return LatticeData(twiss, beamdata.tune, beamdata.chromaticity, (), radint)
 
 
 class ATSimulator(object):

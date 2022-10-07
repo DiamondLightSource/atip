@@ -60,6 +60,7 @@ class ATIPServer(object):
         feedback_csv=None,
         mirror_csv=None,
         tune_csv=None,
+        emit_calc=True
     ):
         """
         Args:
@@ -77,7 +78,7 @@ class ATIPServer(object):
                                 load the tune feedback records, for more
                                 information see create_csv.py.
         """
-        self.lattice = atip.utils.loader(ring_mode, self.update_pvs)
+        self.lattice = atip.utils.loader(ring_mode, self.update_pvs, emit_calc)
         self.tune_feedback_status = False
         self._pv_monitoring = False
         self._tune_fb_csv_path = tune_csv

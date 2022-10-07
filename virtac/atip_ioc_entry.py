@@ -32,15 +32,25 @@ def main():
                 value = caget("SR-CS-RING-01:MODE", format=2)
                 ring_mode = value.enums[int(value)]
             except ca_nothing:
-                ring_mode = "DIAD"
+                ring_mode = "I04"
 
     # Create PVs.
-    server = atip_server.ATIPServer(
+    if sys.argv[2:]:
+        server = atip_server.ATIPServer(
+            ring_mode,
+            DATADIR / "limits.csv",
+            DATADIR / "feedback.csv",
+            DATADIR / "mirrored.csv",
+            DATADIR / "tunefb.csv",
+            sys.argv[2]
+        )
+    else:
+        server = atip_server.ATIPServer(
         ring_mode,
         DATADIR / "limits.csv",
         DATADIR / "feedback.csv",
         DATADIR / "mirrored.csv",
-        DATADIR / "tunefb.csv",
+        DATADIR / "tunefb.csv"
     )
 
     # Add special case out record for SOFB to write to.
