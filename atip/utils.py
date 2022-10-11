@@ -38,6 +38,7 @@ def loader(mode="DIAD", callback=None, emit_calc=True):
         mode (str): The lattice operation mode.
         callback (callable): Callable to be called after completion of each
                               round of physics calculations in ATSimulator.
+        emit_calc (bool): Whether the emittance should be calculated.
 
     Returns:
         pytac.lattice.Lattice: A Pytac lattice object with the simulator data

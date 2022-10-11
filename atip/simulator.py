@@ -8,7 +8,7 @@ import numpy
 from numpy.typing import ArrayLike
 import cothread
 from scipy.constants import speed_of_light
-from pytac.exceptions import FieldException
+from pytac.exceptions import DataSourceException, FieldException
 
 
 @dataclass
@@ -52,15 +52,11 @@ def calculate_optics(
     if calc_emittance:
         emitdata = at_lattice.ohmi_envelope(orbit=orbit0, keep_lattice=True)
         logging.debug("Completed emittance calculation")
-
+    else:
+        emitdata = ()
     radint = at_lattice.get_radiation_integrals(twiss=twiss)
     logging.debug("All calculation complete.")
-    if calc_emittance:
-        return LatticeData(
-            twiss, beamdata.tune, beamdata.chromaticity, emitdata, radint
-        )
-    else:
-        return LatticeData(twiss, beamdata.tune, beamdata.chromaticity, (), radint)
+    return LatticeData(twiss, beamdata.tune, beamdata.chromaticity, emitdata, radint)
 
 
 class ATSimulator(object):
@@ -463,15 +459,20 @@ class ATSimulator(object):
         Raises:
             FieldException: if the specified field is not valid for emittance.
         """
-        if field is None:
-            return self._lattice_data.emittance[0]["emitXY"]
-        elif field == "x":
-            return self._lattice_data.emittance[0]["emitXY"][0]
-        elif field == "y":
-            return self._lattice_data.emittance[0]["emitXY"][1]
+        if self._emit_calc:
+            if field is None:
+                return self._lattice_data.emittance[0]["emitXY"]
+            elif field == "x":
+                return self._lattice_data.emittance[0]["emitXY"][0]
+            elif field == "y":
+                return self._lattice_data.emittance[0]["emitXY"][1]
+            else:
+                raise FieldException(
+                    "Field {0} is not a valid emittance plane.".format(field)
+                )
         else:
-            raise FieldException(
-                "Field {0} is not a valid emittance plane.".format(field)
+            raise DataSourceException(
+                "Emittance calculations not enabled on this simulator object."
             )
 
     # Get lattice data from radiation integrals:

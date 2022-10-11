@@ -43,6 +43,7 @@ def load(pytac_lattice, at_lattice, callback=None, emit_calc=True):
                                               Toolbox lattice object.
         callback (callable): To be called after completion of each round of
                               physics calculations.
+        emit_calc (bool): Whether the emittance should be calculated.
 
     Returns:
         pytac.lattice.Lattice: The same Pytac lattice object, but now with a
