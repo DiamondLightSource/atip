@@ -1,6 +1,6 @@
+import argparse
 import logging
 import os
-import sys
 from pathlib import Path
 
 import epicscorelibs.path.cothread  # noqa
@@ -15,16 +15,27 @@ LOG_FORMAT = "%(asctime)s %(message)s"
 DATADIR = Path(__file__).absolute().parent / "data"
 
 
+def parse_arguments():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("ring_mode", nargs="?", type=str, help="Ring mode name")
+    parser.add_argument(
+        "--disable-emittance", "-d", help="disable emittance calc", action="store_true"
+    )
+    parser.add_argument(
+        "--verbose", "-v", help="increase output verbosity", action="store_true"
+    )
+    return parser.parse_args()
+
+
 def main():
-    if "-v" in sys.argv:
-        logging.basicConfig(level=logging.DEBUG, format=LOG_FORMAT)
-        sys.argv.remove("-v")
-    else:
-        logging.basicConfig(level=logging.INFO, format=LOG_FORMAT)
+
+    args = parse_arguments()
+    log_level = logging.DEBUG if args.verbose else logging.INFO
+    logging.basicConfig(level=log_level, format=LOG_FORMAT)
 
     # Determine the ring mode
-    if sys.argv[1:]:
-        ring_mode = sys.argv[1]
+    if args.ring_mode is not None:
+        ring_mode = args.ring_mode
     else:
         try:
             ring_mode = str(os.environ["RINGMODE"])
@@ -36,22 +47,13 @@ def main():
                 ring_mode = "I04"
 
     # Create PVs.
-    if sys.argv[2:]:
-        server = atip_server.ATIPServer(
-            ring_mode,
-            DATADIR / "limits.csv",
-            DATADIR / "feedback.csv",
-            DATADIR / "mirrored.csv",
-            DATADIR / "tunefb.csv",
-            sys.argv[2]
-        )
-    else:
-        server = atip_server.ATIPServer(
+    server = atip_server.ATIPServer(
         ring_mode,
         DATADIR / "limits.csv",
         DATADIR / "feedback.csv",
         DATADIR / "mirrored.csv",
-        DATADIR / "tunefb.csv"
+        DATADIR / "tunefb.csv",
+        not args.disable_emittance,
     )
 
     # Add special case out record for SOFB to write to.
