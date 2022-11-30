@@ -61,7 +61,7 @@ class ATIPServer(object):
         feedback_csv=None,
         mirror_csv=None,
         tune_csv=None,
-        emit_calc=True,
+        enable_emittance=True,
     ):
         """
         Args:
@@ -78,9 +78,9 @@ class ATIPServer(object):
             tune_csv (string): The filepath to the .csv file from which to
                                 load the tune feedback records, for more
                                 information see create_csv.py.
-            emit_calc (bool): Whether the emittance should be calculated.
+            enable_emittance (bool): Whether the emittance should be disabled.
         """
-        self.lattice = atip.utils.loader(ring_mode, self.update_pvs, emit_calc)
+        self.lattice = atip.utils.loader(ring_mode, self.update_pvs, enable_emittance)
         self.tune_feedback_status = False
         self._pv_monitoring = False
         self._tune_fb_csv_path = tune_csv
@@ -92,9 +92,9 @@ class ATIPServer(object):
         self._monitored_pvs = {}
         self._offset_pvs = {}
         print("Starting record creation.")
-        self._create_records(limits_csv, emit_calc)
+        self._create_records(limits_csv, enable_emittance)
         if feedback_csv is not None:
-            self._create_feedback_records(feedback_csv, emit_calc)
+            self._create_feedback_records(feedback_csv, enable_emittance)
         if mirror_csv is not None:
             self._create_mirror_records(mirror_csv)
         print("Finished creating all {0} records.".format(len(self.all_record_names)))
@@ -136,7 +136,7 @@ class ATIPServer(object):
                 )
                 rb_record.set(value)
 
-    def _create_records(self, limits_csv, emit_calc):
+    def _create_records(self, limits_csv, enable_emittance):
         """Create all the standard records from both lattice and element Pytac
         fields. Several assumptions have been made for simplicity and
         efficiency, these are:
@@ -150,7 +150,7 @@ class ATIPServer(object):
         Args:
             limits_csv (string): The filepath to the .csv file from which to
                                     load the pv limits.
-            emit_calc (bool): Whether the emittance related PVs should be created.
+            enable_emittance (bool): Whether the emittance related PVs should be created.
         """
         limits_dict = {}
         if limits_csv is not None:
@@ -243,7 +243,7 @@ class ATIPServer(object):
         # Now for lattice fields.
         lat_fields = self.lattice.get_fields()
         lat_fields = set(lat_fields[pytac.LIVE]) & set(lat_fields[pytac.SIM])
-        if not emit_calc:
+        if not enable_emittance:
             lat_fields -= {"emittance_x", "emittance_y"}
         for field in lat_fields:
             # Ignore basic devices as they do not have PVs.
@@ -289,7 +289,7 @@ class ATIPServer(object):
                 field, value, units=pytac.ENG, data_source=pytac.SIM
             )
 
-    def _create_feedback_records(self, feedback_csv, emit_calc):
+    def _create_feedback_records(self, feedback_csv, enable_emittance):
         """Create all the feedback records from the .csv file at the location
         passed, see create_csv.py for more information; records for two edge
         cases are also created.
@@ -297,7 +297,7 @@ class ATIPServer(object):
         Args:
             feedback_csv (string): The filepath to the .csv file to load the
                                     records in accordance with.
-            emit_calc (bool): Whether the emittance related PVs should be created.
+            enable_emittance (bool): Whether the emittance related PVs should be created.
         """
         csv_reader = csv.DictReader(open(feedback_csv))
         for line in csv_reader:
@@ -316,7 +316,9 @@ class ATIPServer(object):
             "BPMID", NELM=len(bpm_ids), initial_value=bpm_ids
         )
         self._feedback_records[(0, "bpm_id")] = bpm_id_record
-        if emit_calc:
+        # We can choose to not calculate emittance as it is not always required,
+        # which decreases computation time.
+        if enable_emittance:
             # Special case: EMIT STATUS for the vertical emittance feedback, since
             # we cannot currently create mbbIn records via CSV.
             builder.SetDeviceName("SR-DI-EMIT-01")
