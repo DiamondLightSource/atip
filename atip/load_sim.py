@@ -34,7 +34,7 @@ def load_from_filepath(pytac_lattice, at_lattice_filepath, callback=None):
     return load(pytac_lattice, at_lattice, callback)
 
 
-def load(pytac_lattice, at_lattice, callback=None, emit_calc=True):
+def load(pytac_lattice, at_lattice, callback=None, disable_emittance=False):
     """Load simulator data sources onto the lattice and its elements.
 
     Args:
@@ -43,7 +43,7 @@ def load(pytac_lattice, at_lattice, callback=None, emit_calc=True):
                                               Toolbox lattice object.
         callback (callable): To be called after completion of each round of
                               physics calculations.
-        emit_calc (bool): Whether the emittance should be calculated.
+        disable_emittance (bool): Whether the emittance should be calculated.
 
     Returns:
         pytac.lattice.Lattice: The same Pytac lattice object, but now with a
@@ -55,7 +55,7 @@ def load(pytac_lattice, at_lattice, callback=None, emit_calc=True):
             "(AT:{0} Pytac:{1}).".format(len(at_lattice), len(pytac_lattice))
         )
     # Initialise an instance of the ATSimulator Object.
-    atsim = ATSimulator(at_lattice, callback, emit_calc)
+    atsim = ATSimulator(at_lattice, callback, disable_emittance)
     # Set the simulator data source on the Pytac lattice.
     pytac_lattice.set_data_source(ATLatticeDataSource(atsim), pytac.SIM)
     # Load the sim onto each element.
