@@ -124,7 +124,9 @@ class ATSimulator(object):
         self._at_lat.radiation_on()
 
         # Initial phys data calculation.
-        self._lattice_data = calculate_optics(self._at_lat, self._rp, self._disable_emittance)
+        self._lattice_data = calculate_optics(
+            self._at_lat, self._rp, self._disable_emittance
+        )
 
         # Threading stuff initialisation.
         self._queue = cothread.EventQueue()
