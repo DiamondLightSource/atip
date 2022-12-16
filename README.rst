@@ -75,7 +75,7 @@ in ``atip/rings/``, otherwise try running the Matlab function
     >>> # Load the DIAD lattice from Pytac.
     >>> lat = pytac.load_csv.load('DIAD')
     >>> # Load the AT sim into the Pytac lattice.
-    >>> atip.load_sim.load_from_filepath(lat, 'atip/rings/diad.mat')
+    >>> atip.load_sim.load_from_filepath(lat, 'atip/rings/DIAD.mat')
     >>> # Use the sim by default.
     >>> lat.set_default_data_source(pytac.SIM)
     >>> # The initial beam position is zero.

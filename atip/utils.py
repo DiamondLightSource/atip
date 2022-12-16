@@ -18,7 +18,7 @@ def load_at_lattice(mode="DIAD", **kwargs):
         at.lattice.Lattice: An AT lattice object.
     """
     filepath = os.path.join(
-        os.path.dirname(__file__), "".join(["rings/", mode.lower(), ".mat"])
+        os.path.dirname(__file__), "".join(["rings/", mode, ".mat"])
     )
     at_lattice = at.load.load_mat(filepath, **kwargs)
     for index, elem in enumerate(at_lattice):
@@ -27,7 +27,7 @@ def load_at_lattice(mode="DIAD", **kwargs):
     return at_lattice
 
 
-def loader(mode="DIAD", callback=None):
+def loader(mode="DIAD", callback=None, disable_emittance=False):
     """Load a unified lattice of the specifed mode.
 
     .. Note:: A unified lattice is a Pytac lattice where the corresponding AT
@@ -38,6 +38,7 @@ def loader(mode="DIAD", callback=None):
         mode (str): The lattice operation mode.
         callback (callable): Callable to be called after completion of each
                               round of physics calculations in ATSimulator.
+        disable_emittance (bool): Whether the emittance should be calculated.
 
     Returns:
         pytac.lattice.Lattice: A Pytac lattice object with the simulator data
@@ -50,7 +51,7 @@ def loader(mode="DIAD", callback=None):
         periodicity=1,
         energy=pytac_lattice.get_value("energy"),
     )
-    lattice = atip.load_sim.load(pytac_lattice, at_lattice, callback)
+    lattice = atip.load_sim.load(pytac_lattice, at_lattice, callback, disable_emittance)
     return lattice
 
 
@@ -97,7 +98,7 @@ def preload_at(at_lat):
         elems_dict[type(elem).__name__].append(elem)
     for elem_type, elements in elems_dict.items():
         if len(elements) > 0:
-            setattr(elems, elem_type.lower(), elements)
+            setattr(elems, elem_type, elements)
     return elems
 
 
@@ -120,7 +121,7 @@ def preload(pytac_lat):
 
     setattr(elems, "all", pytac_lat.get_elements())
     for family in pytac_lat.get_all_families():
-        setattr(elems, family.lower(), pytac_lat.get_elements(family))
+        setattr(elems, family, pytac_lat.get_elements(family))
     return elems
 
 

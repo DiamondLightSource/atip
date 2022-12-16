@@ -8,7 +8,7 @@ import numpy
 from numpy.typing import ArrayLike
 import cothread
 from scipy.constants import speed_of_light
-from pytac.exceptions import FieldException
+from pytac.exceptions import DataSourceException, FieldException
 
 
 @dataclass
@@ -22,14 +22,14 @@ class LatticeData:
 
 
 def calculate_optics(
-    at_lattice: at.Lattice, refpts: ArrayLike, calc_emittance: bool = True
+    at_lattice: at.Lattice, refpts: ArrayLike, disable_emittance: bool = True
 ) -> LatticeData:
     """Perform physics calculations on lattice.
 
     Args:
         at_lattice: AT lattice definition
         refpts: points at which to calculate physics data
-        calc_emittance: whether to calculate emittances
+        disable_emittance: whether to calculate emittances
 
     Returns:
         calculated lattice data
@@ -49,10 +49,11 @@ def calculate_optics(
     )
     logging.debug("Completed linear optics calculation.")
 
-    if calc_emittance:
+    if not disable_emittance:
         emitdata = at_lattice.ohmi_envelope(orbit=orbit0, keep_lattice=True)
         logging.debug("Completed emittance calculation")
-
+    else:
+        emitdata = ()
     radint = at_lattice.get_radiation_integrals(twiss=twiss)
     logging.debug("All calculation complete.")
     return LatticeData(twiss, beamdata.tune, beamdata.chromaticity, emitdata, radint)
@@ -79,7 +80,7 @@ class ATSimulator(object):
                                                  physics data is calculated.
            _rp (numpy.array): A boolean array to be used as refpts for the
                                physics calculations.
-            _emit_calc (bool): Whether or not to perform the beam envelope
+            _disable_emittance (bool): Whether or not to perform the beam envelope
                                 based emittance calculations.
            _lattice_data (LatticeData): calculated physics data
                               function linopt (see at.lattice.linear.py).
@@ -94,7 +95,7 @@ class ATSimulator(object):
                                                     physics data upon a change.
     """
 
-    def __init__(self, at_lattice, callback=None, emit_calc=True):
+    def __init__(self, at_lattice, callback=None, disable_emittance=False):
         """
         .. Note:: To avoid errors, the physics data must be initially
            calculated here, during creation, otherwise it could be accidentally
@@ -107,7 +108,7 @@ class ATSimulator(object):
                                                      lattice object.
             callback (callable): Optional, if passed it is called on completion
                                   of each round of physics calculations.
-            emit_calc (bool): Whether or not to perform the beam envelope based
+            disable_emittance (bool): Whether or not to perform the beam envelope based
                                emittance calculations.
 
         **Methods:**
@@ -119,11 +120,13 @@ class ATSimulator(object):
             )
         self._at_lat = at_lattice
         self._rp = numpy.ones(len(at_lattice) + 1, dtype=bool)
-        self._emit_calc = emit_calc
+        self._disable_emittance = disable_emittance
         self._at_lat.radiation_on()
 
         # Initial phys data calculation.
-        self._lattice_data = calculate_optics(self._at_lat, self._rp, self._emit_calc)
+        self._lattice_data = calculate_optics(
+            self._at_lat, self._rp, self._disable_emittance
+        )
 
         # Threading stuff initialisation.
         self._queue = cothread.EventQueue()
@@ -179,7 +182,7 @@ class ATSimulator(object):
             if bool(self._paused) is False:
                 try:
                     self._lattice_data = calculate_optics(
-                        self._at_lat, self._rp, self._emit_calc
+                        self._at_lat, self._rp, self._disable_emittance
                     )
                 except Exception as e:
                     warn(at.AtWarning(e))
@@ -458,15 +461,20 @@ class ATSimulator(object):
         Raises:
             FieldException: if the specified field is not valid for emittance.
         """
-        if field is None:
-            return self._lattice_data.emittance[0]["emitXY"]
-        elif field == "x":
-            return self._lattice_data.emittance[0]["emitXY"][0]
-        elif field == "y":
-            return self._lattice_data.emittance[0]["emitXY"][1]
+        if not self._disable_emittance:
+            if field is None:
+                return self._lattice_data.emittance[0]["emitXY"]
+            elif field == "x":
+                return self._lattice_data.emittance[0]["emitXY"][0]
+            elif field == "y":
+                return self._lattice_data.emittance[0]["emitXY"][1]
+            else:
+                raise FieldException(
+                    "Field {0} is not a valid emittance plane.".format(field)
+                )
         else:
-            raise FieldException(
-                "Field {0} is not a valid emittance plane.".format(field)
+            raise DataSourceException(
+                "Emittance calculations not enabled on this simulator object."
             )
 
     # Get lattice data from radiation integrals:

@@ -12,7 +12,9 @@ from atip.sim_data_sources import ATElementDataSource, ATLatticeDataSource
 SIMULATED_FIELDS = {"a1", "b0", "b1", "b2", "x", "y", "f", "x_kick", "y_kick"}
 
 
-def load_from_filepath(pytac_lattice, at_lattice_filepath, callback=None):
+def load_from_filepath(
+    pytac_lattice, at_lattice_filepath, callback=None, disable_emittance=False
+):
     """Load simulator data sources onto the lattice and its elements.
 
     Args:
@@ -21,6 +23,7 @@ def load_from_filepath(pytac_lattice, at_lattice_filepath, callback=None):
                                     Accelerator Toolbox lattice can be loaded.
         callback (callable): To be called after completion of each round of
                               physics calculations.
+        disable_emittance (bool): Whether the emittance should be calculated.
 
     Returns:
         pytac.lattice.Lattice: The same Pytac lattice object, but now with a
@@ -31,10 +34,10 @@ def load_from_filepath(pytac_lattice, at_lattice_filepath, callback=None):
         name=pytac_lattice.name,
         energy=pytac_lattice.get_value("energy"),
     )
-    return load(pytac_lattice, at_lattice, callback)
+    return load(pytac_lattice, at_lattice, callback, disable_emittance)
 
 
-def load(pytac_lattice, at_lattice, callback=None):
+def load(pytac_lattice, at_lattice, callback=None, disable_emittance=False):
     """Load simulator data sources onto the lattice and its elements.
 
     Args:
@@ -43,6 +46,7 @@ def load(pytac_lattice, at_lattice, callback=None):
                                               Toolbox lattice object.
         callback (callable): To be called after completion of each round of
                               physics calculations.
+        disable_emittance (bool): Whether the emittance should be calculated.
 
     Returns:
         pytac.lattice.Lattice: The same Pytac lattice object, but now with a
@@ -54,7 +58,7 @@ def load(pytac_lattice, at_lattice, callback=None):
             "(AT:{0} Pytac:{1}).".format(len(at_lattice), len(pytac_lattice))
         )
     # Initialise an instance of the ATSimulator Object.
-    atsim = ATSimulator(at_lattice, callback)
+    atsim = ATSimulator(at_lattice, callback, disable_emittance)
     # Set the simulator data source on the Pytac lattice.
     pytac_lattice.set_data_source(ATLatticeDataSource(atsim), pytac.SIM)
     # Load the sim onto each element.

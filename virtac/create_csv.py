@@ -6,7 +6,7 @@ import csv
 import os
 
 import pytac
-from cothread.catools import caget, FORMAT_CTRL
+from cothread.catools import FORMAT_CTRL, caget
 
 import atip
 

@@ -57,7 +57,7 @@ def pytac_lattice():
 @pytest.fixture(scope="session")
 def mat_filepath():
     here = os.path.dirname(__file__)
-    return os.path.realpath(os.path.join(here, "../atip/rings/diad.mat"))
+    return os.path.realpath(os.path.join(here, "../atip/rings/DIAD.mat"))
 
 
 @pytest.fixture(scope="session")

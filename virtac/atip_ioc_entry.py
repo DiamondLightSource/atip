@@ -1,12 +1,13 @@
+import argparse
 import logging
 import os
-import sys
 from pathlib import Path
 
-import epicscorelibs.path.cothread
-from . import atip_server
+import epicscorelibs.path.cothread  # noqa
+from cothread.catools import ca_nothing, caget
 from softioc import builder, softioc
-from cothread.catools import caget, ca_nothing
+
+from . import atip_server
 
 LOG_FORMAT = "%(asctime)s %(message)s"
 
@@ -14,16 +15,27 @@ LOG_FORMAT = "%(asctime)s %(message)s"
 DATADIR = Path(__file__).absolute().parent / "data"
 
 
+def parse_arguments():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("ring_mode", nargs="?", type=str, help="Ring mode name")
+    parser.add_argument(
+        "--disable-emittance", "-d", help="disable emittance calc", action="store_true"
+    )
+    parser.add_argument(
+        "--verbose", "-v", help="increase output verbosity", action="store_true"
+    )
+    return parser.parse_args()
+
+
 def main():
-    if "-v" in sys.argv:
-        logging.basicConfig(level=logging.DEBUG, format=LOG_FORMAT)
-        sys.argv.remove("-v")
-    else:
-        logging.basicConfig(level=logging.INFO, format=LOG_FORMAT)
+
+    args = parse_arguments()
+    log_level = logging.DEBUG if args.verbose else logging.INFO
+    logging.basicConfig(level=log_level, format=LOG_FORMAT)
 
     # Determine the ring mode
-    if sys.argv[1:]:
-        ring_mode = sys.argv[1]
+    if args.ring_mode is not None:
+        ring_mode = args.ring_mode
     else:
         try:
             ring_mode = str(os.environ["RINGMODE"])
@@ -32,7 +44,7 @@ def main():
                 value = caget("SR-CS-RING-01:MODE", format=2)
                 ring_mode = value.enums[int(value)]
             except ca_nothing:
-                ring_mode = "DIAD"
+                ring_mode = "I04"
 
     # Create PVs.
     server = atip_server.ATIPServer(
@@ -41,6 +53,7 @@ def main():
         DATADIR / "feedback.csv",
         DATADIR / "mirrored.csv",
         DATADIR / "tunefb.csv",
+        not args.disable_emittance,
     )
 
     # Add special case out record for SOFB to write to.
