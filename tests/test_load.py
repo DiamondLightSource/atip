@@ -13,7 +13,7 @@ def test_load_pytac_side(pytac_lattice, at_diad_lattice):
         assert pytac.SIM in elem._data_source_manager._data_sources
     # Check new lattice fields have a unit conversion
     assert "mu" in lat._data_source_manager._uc
-    assert lat._data_source_manager._uc["mu"] is pytac.load_csv.DEFAULT_UC
+    assert isinstance(lat._data_source_manager._uc["mu"], pytac.units.NullUnitConv)
 
 
 def test_load_from_filepath(pytac_lattice, mat_filepath):

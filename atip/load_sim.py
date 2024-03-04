@@ -2,7 +2,7 @@
 import at
 import pytac
 from pytac.exceptions import FieldException
-from pytac.load_csv import DEFAULT_UC
+from pytac.units import NullUnitConv
 
 from atip.simulator import ATSimulator
 from atip.sim_data_sources import ATElementDataSource, ATLatticeDataSource
@@ -75,5 +75,5 @@ def load(pytac_lattice, at_lattice, callback=None, disable_emittance=False):
         try:
             pytac_lattice.get_unitconv(field)
         except FieldException:
-            pytac_lattice.set_unitconv(field, DEFAULT_UC)
+            pytac_lattice.set_unitconv(field, NullUnitConv())
     return pytac_lattice
