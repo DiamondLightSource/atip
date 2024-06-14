@@ -33,34 +33,184 @@ def generate_feedback_pvs():
     #     element index (int), field (str), pv (str), value (int).
     # We have special cases for two lattice fields that RFFB reads from.
     data = [
-        ("index", "field", "pv", "value"),
-        (0, "beam_current", "SR-DI-DCCT-01:SIGNAL", 300),
-        (0, "feedback_status", "CS-CS-MSTAT-01:FBSTAT", 2),
+        ("index", "field", "pv", "value", "read-only"),
+        (0, "beam_current", "SR-DI-DCCT-01:SIGNAL", 300, True),
+        (0, "feedback_status", "CS-CS-MSTAT-01:FBSTAT", 2, True),
     ]
     # Iterate over our elements to get the PV names.
     for elem in elements:
-        if "HSTR" in elem.families:
+        if elem.is_in_family("HSTR"):
             data.append(
-                (elem.index, "error_sum", elem.get_device("x_kick").name + ":ERCSUM", 0)
+                (
+                    elem.index,
+                    "error_sum",
+                    elem.get_device("x_kick").name + ":ERCSUM",
+                    0,
+                    True,
+                )
             )
             data.append(
-                (elem.index, "state", elem.get_device("x_kick").name + ":STATE", 2)
+                (
+                    elem.index,
+                    "state",
+                    elem.get_device("x_kick").name + ":STATE",
+                    2,
+                    True,
+                )
             )
-        if "VSTR" in elem.families:
             data.append(
-                (elem.index, "error_sum", elem.get_device("y_kick").name + ":ERCSUM", 0)
+                (
+                    elem.index,
+                    "h_fofb_disabled",
+                    elem.get_pv_name("h_fofb_disabled", pytac.RB),
+                    0,
+                    False,
+                )
             )
             data.append(
-                (elem.index, "state", elem.get_device("y_kick").name + ":STATE", 2)
+                (
+                    elem.index,
+                    "h_sofb_disabled",
+                    elem.get_pv_name("h_sofb_disabled", pytac.RB),
+                    0,
+                    False,
+                )
             )
-        elif "BPM" in elem.families:
+        if elem.is_in_family("VSTR"):
             data.append(
-                (elem.index, "enabled", elem.get_pv_name("enabled", pytac.RB), 1)
+                (
+                    elem.index,
+                    "error_sum",
+                    elem.get_device("y_kick").name + ":ERCSUM",
+                    0,
+                    True,
+                )
+            )
+            data.append(
+                (
+                    elem.index,
+                    "state",
+                    elem.get_device("y_kick").name + ":STATE",
+                    2,
+                    True,
+                )
+            )
+            data.append(
+                (
+                    elem.index,
+                    "v_fofb_disabled",
+                    elem.get_pv_name("v_fofb_disabled", pytac.RB),
+                    0,
+                    False,
+                )
+            )
+            data.append(
+                (
+                    elem.index,
+                    "v_sofb_disabled",
+                    elem.get_pv_name("v_sofb_disabled", pytac.RB),
+                    0,
+                    False,
+                )
+            )
+        elif elem.is_in_family("BPM"):
+            data.append(
+                (elem.index, "enabled", elem.get_pv_name("enabled", pytac.RB), 1, True)
+            )
+            data.append(
+                (
+                    elem.index,
+                    "x_fofb_disabled",
+                    elem.get_pv_name("x_fofb_disabled", pytac.RB),
+                    0,
+                    False,
+                )
+            )
+            data.append(
+                (
+                    elem.index,
+                    "x_sofb_disabled",
+                    elem.get_pv_name("x_sofb_disabled", pytac.RB),
+                    0,
+                    False,
+                )
+            )
+            data.append(
+                (
+                    elem.index,
+                    "y_fofb_disabled",
+                    elem.get_pv_name("y_fofb_disabled", pytac.RB),
+                    0,
+                    False,
+                )
+            )
+            data.append(
+                (
+                    elem.index,
+                    "y_sofb_disabled",
+                    elem.get_pv_name("y_sofb_disabled", pytac.RB),
+                    0,
+                    False,
+                )
+            )
+            data.append(
+                (
+                    elem.index,
+                    "golden_offset",
+                    elem.get_device("enabled").name + ":CF:GOLDEN_X_S",
+                    0,
+                    False,
+                )
+            )
+            data.append(
+                (
+                    elem.index,
+                    "golden_offset",
+                    elem.get_device("enabled").name + ":CF:GOLDEN_Y_S",
+                    0,
+                    False,
+                )
+            )
+            data.append(
+                (
+                    elem.index,
+                    "bcd_offset",
+                    elem.get_device("enabled").name + ":CF:BCD_X_S",
+                    0,
+                    False,
+                )
+            )
+            data.append(
+                (
+                    elem.index,
+                    "bcd_offset",
+                    elem.get_device("enabled").name + ":CF:BCD_Y_S",
+                    0,
+                    False,
+                )
+            )
+            data.append(
+                (
+                    elem.index,
+                    "bba_offset",
+                    elem.get_device("enabled").name + ":CF:BBA_X_S",
+                    0,
+                    False,
+                )
+            )
+            data.append(
+                (
+                    elem.index,
+                    "bba_offset",
+                    elem.get_device("enabled").name + ":CF:BBA_Y_S",
+                    0,
+                    False,
+                )
             )
         # Add elements for Tune Feedback
         elif elem in tune_quad_elements:
             data.append(
-                (elem.index, "offset", elem.get_device("b1").name + ":OFFSET1", 0)
+                (elem.index, "offset", elem.get_device("b1").name + ":OFFSET1", 0, True)
             )
     return data
 
@@ -248,7 +398,7 @@ def write_data_to_file(data, filename):
     if not filename.endswith(".csv"):
         filename += ".csv"
     here = os.path.abspath(os.path.dirname(__file__))
-    with open(os.path.join(here, filename), "wb") as file:
+    with open(os.path.join(here, filename), "w", newline="") as file:
         csv_writer = csv.writer(file)
         csv_writer.writerows(data)
 

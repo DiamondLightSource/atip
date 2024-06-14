@@ -1,3 +1,4 @@
+import ast
 import csv
 from warnings import warn
 
@@ -301,12 +302,29 @@ class ATIPServer(object):
             disable_emittance (bool): Whether the emittance related PVs should be
                                         created or not.
         """
+        # We don't set limits or precision but this shouldn't be an issue as these
+        # records aren't really intended to be set to by a user.
         csv_reader = csv.DictReader(open(feedback_csv))
         for line in csv_reader:
+            try:
+                readonly = ast.literal_eval(line["read-only"])
+                assert isinstance(readonly, bool)
+            except (ValueError, AssertionError):
+                raise ValueError(
+                    f"Unable to evaluate {line['read-only']} as a boolean."
+                )
             prefix, suffix = line["pv"].split(":", 1)
             builder.SetDeviceName(prefix)
-            in_record = builder.aIn(suffix, initial_value=int(line["value"]), MDEL="-1")
-            self._feedback_records[(int(line["index"]), line["field"])] = in_record
+            if readonly:
+                in_record = builder.aIn(
+                    suffix, initial_value=int(line["value"]), MDEL="-1"
+                )
+                self._feedback_records[(int(line["index"]), line["field"])] = in_record
+            else:
+                out_record = builder.aOut(
+                    suffix, initial_value=int(line["value"]), always_update=True
+                )
+                self._feedback_records[(int(line["index"]), line["field"])] = out_record
         # Special case: BPM ID for the x axis of beam position plot, since we
         # cannot currently create Waveform records via CSV.
         bpm_ids = [
@@ -509,11 +527,9 @@ class ATIPServer(object):
         except KeyError:
             if index == 0:
                 raise FieldException(
-                    "Lattice {0} does not have field {1}.".format(self.lattice, field)
+                    f"Simulated lattice {self.lattice} does not have field {field}."
                 )
             else:
                 raise FieldException(
-                    "Element {0} does not have field {1}.".format(
-                        self.lattice[index], field
-                    )
+                    f"Simulated element {self.lattice[index]} does not have field {field}."
                 )
