@@ -54,7 +54,7 @@ def load(pytac_lattice, at_lattice, callback=None, disable_emittance=False):
     if len(at_lattice) != len(pytac_lattice):
         raise ValueError(
             "Incompatible AT and Pytac lattices, length mismatch "
-            "(AT:{0} Pytac:{1}).".format(len(at_lattice), len(pytac_lattice))
+            f"(AT:{len(at_lattice)} Pytac:{len(pytac_lattice)})."
         )
     # Initialise an instance of the ATSimulator Object.
     atsim = ATSimulator(at_lattice, callback, disable_emittance)

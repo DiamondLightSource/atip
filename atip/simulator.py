@@ -116,8 +116,7 @@ class ATSimulator(object):
         """
         if (not callable(callback)) and (callback is not None):
             raise TypeError(
-                "If passed, 'callback' should be callable, {0} is "
-                "not.".format(callback)
+                f"If passed, 'callback' should be callable, {callback} is not."
             )
         self._at_lat = at_lattice
         self._rp = numpy.ones(len(at_lattice) + 1, dtype=bool)
@@ -326,7 +325,7 @@ class ATSimulator(object):
         elif field == "y":
             return tunes[1] % 1
         else:
-            raise FieldException("Field {0} is not a valid tune plane.".format(field))
+            raise FieldException(f"Field {field} is not a valid tune plane.")
 
     def get_chromaticity(self, field=None):
         """Return the chromaticity for the AT lattice for the specified plane.
@@ -350,9 +349,7 @@ class ATSimulator(object):
         elif field == "y":
             return chrom[1]
         else:
-            raise FieldException(
-                "Field {0} is not a valid chromaticity plane.".format(field)
-            )
+            raise FieldException(f"Field {field} is not a valid chromaticity plane.")
 
     # Get local linear optics data:
     def get_orbit(self, field=None):
@@ -382,9 +379,7 @@ class ATSimulator(object):
         elif field == "py":
             return closed_orbit[:-1, 3]
         else:
-            raise FieldException(
-                "Field {0} is not a valid closed orbit plane.".format(field)
-            )
+            raise FieldException(f"Field {field} is not a valid closed orbit plane.")
 
     def get_dispersion(self, field=None):
         """Return the dispersion at every element in the AT lattice for the
@@ -413,9 +408,7 @@ class ATSimulator(object):
         elif field == "py":
             return dispersion[:-1, 3]
         else:
-            raise FieldException(
-                "Field {0} is not a valid dispersion plane.".format(field)
-            )
+            raise FieldException(f"Field {field} is not a valid dispersion plane.")
 
     def get_alpha(self):
         """Return the alpha vector at every element in the AT lattice.
@@ -475,9 +468,7 @@ class ATSimulator(object):
             elif field == "y":
                 return self._lattice_data.emittance[0]["emitXY"][1]
             else:
-                raise FieldException(
-                    "Field {0} is not a valid emittance plane.".format(field)
-                )
+                raise FieldException(f"Field {field} is not a valid emittance plane.")
         else:
             raise DataSourceException(
                 "Emittance calculations not enabled on this simulator object."

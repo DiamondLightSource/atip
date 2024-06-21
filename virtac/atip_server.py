@@ -98,7 +98,7 @@ class ATIPServer(object):
             self._create_feedback_records(feedback_csv, disable_emittance)
         if mirror_csv is not None:
             self._create_mirror_records(mirror_csv)
-        print("Finished creating all {0} records.".format(len(self.all_record_names)))
+        print(f"Finished creating all {len(self.all_record_names)} records.")
 
     @property
     def all_record_names(self):
@@ -400,9 +400,8 @@ class ATIPServer(object):
                 output_record = builder.Waveform(suffix, initial_value=value)
             else:
                 raise TypeError(
-                    "{0} isn't a supported mirroring output type;"
-                    "please enter 'caput', 'aIn', 'longIn', or "
-                    "'Waveform'.".format(line["output type"])
+                    f"{line['output type']} isn't a supported mirroring output type;"
+                    "please enter 'caput', 'aIn', 'longIn', or 'Waveform'."
                 )
             # Update the mirror dictionary.
             for pv in monitor:
@@ -427,10 +426,9 @@ class ATIPServer(object):
                 self._mirrored_records[pv].append(refresh_object)
             else:
                 raise TypeError(
-                    "{0} is not a valid mirror type; please enter "
-                    "a currently supported type from: 'basic', "
-                    "'summate', 'collate', 'inverse', and "
-                    "'refresh'.".format(line["mirror type"])
+                    f"{line['mirror type']} is not a valid mirror type; please enter a "
+                    "a currently supported type from: 'basic', 'summate', 'collate', "
+                    "'inverse', and 'refresh'."
                 )
 
     def monitor_mirrored_pvs(self):
@@ -456,8 +454,7 @@ class ATIPServer(object):
             record = self.all_record_names[pv_name]
         except KeyError:
             raise ValueError(
-                "{0} is not the name of a record created by this "
-                "server.".format(pv_name)
+                f"{pv_name} is not the name of a record created by this server."
             )
         else:
             record.set(record.get())
