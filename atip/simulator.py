@@ -145,7 +145,7 @@ class ATSimulator(object):
             field (str): The field to be changed.
             value (float): The value to be set.
         """
-        self._queue.Signal((func, field, value))
+        cothread.Callback(self._queue.Signal, (func, field, value))
 
     def _gather_one_sample(self):
         """If the queue is empty Wait() yields until an item is added. When the
@@ -194,24 +194,30 @@ class ATSimulator(object):
                     logging.debug("Executing callback function.")
                     callback()
                     logging.debug("Callback completed.")
+            # We might need to be careful that this doesn't cause us to become
+            # threadlocked in a different thread but it is required for
+            # cothread.CallbackResult to play nicely with Bluesky.
+            cothread.Yield()
 
     def toggle_calculations(self):
         """Pause or unpause the physics calculations by setting or clearing the
         _paused flag. N.B. this does not pause the emptying of the queue.
         """
         if self._paused:
-            self._paused.Reset()
+            cothread.CallbackResult(self._paused.Reset)
         else:
-            self._paused.Signal()
+            cothread.CallbackResult(self._paused.Signal)
 
     def pause_calculations(self):
-        self._paused.Signal()
+        if not self._paused:
+            cothread.CallbackResult(self._paused.Signal)
 
     def unpause_calculations(self):
-        self._paused.Reset()
+        if self._paused:
+            cothread.CallbackResult(self._paused.Reset)
 
     def trigger_calculation(self):
-        self.up_to_date.Reset()
+        cothread.CallbackResult(self.up_to_date.Reset)
         self.unpause_calculations()
         # Add a null item to the queue. A recalculation will happen
         # when it has been applied.
@@ -229,7 +235,7 @@ class ATSimulator(object):
             concluded, else True.
         """
         try:
-            self.up_to_date.Wait(timeout)
+            cothread.CallbackResult(self.up_to_date.Wait, timeout)
             return True
         except cothread.Timedout:
             return False
