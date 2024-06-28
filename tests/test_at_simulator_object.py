@@ -91,8 +91,7 @@ def test_pause_calculations(atsim):
     elem_ds._make_change.assert_called_once_with("a_field", 12)
     # Calculation not updated because paused.
     assert not atsim.up_to_date
-    # We have to add another item to the queue to prompt
-    # a recalculation. Is this a bug?
+    # We have to add another item to the queue to prompt a recalculation.
     atsim.unpause_calculations()
     atsim.queue_set(elem_ds._make_change, "a_field", 12)
     cothread.Sleep(0.1)

@@ -151,7 +151,7 @@ class ATElementDataSource(pytac.data_source.DataSource):
         # complete before a value is returned; if the wait times out then raise
         # an error message or log a warning according to the value of throw.
         if not self._atsim.wait_for_calculations():
-            error_msg = "Check for completion of outstanding " "calculations timed out."
+            error_msg = "Check for completion of outstanding calculations timed out."
             if throw:
                 raise ControlSystemException(error_msg)
             else:
