@@ -150,7 +150,8 @@ class ATIPServer(object):
         Args:
             limits_csv (string): The filepath to the .csv file from which to
                                     load the pv limits.
-            disable_emittance (bool): Whether the emittance related PVs should be created.
+            disable_emittance (bool): Whether the emittance related PVs should be
+                                        created or not.
         """
         limits_dict = {}
         if limits_csv is not None:
@@ -297,7 +298,8 @@ class ATIPServer(object):
         Args:
             feedback_csv (string): The filepath to the .csv file to load the
                                     records in accordance with.
-            disable_emittance (bool): Whether the emittance related PVs should be created.
+            disable_emittance (bool): Whether the emittance related PVs should be
+                                        created or not.
         """
         csv_reader = csv.DictReader(open(feedback_csv))
         for line in csv_reader:

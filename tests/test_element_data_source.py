@@ -1,7 +1,7 @@
 import at
 import mock
 import pytest
-from pytac.exceptions import FieldException, HandleException, ControlSystemException
+from pytac.exceptions import ControlSystemException, FieldException, HandleException
 from testfixtures import LogCapture
 
 import atip

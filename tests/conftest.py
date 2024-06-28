@@ -4,7 +4,7 @@ import at
 import mock
 import numpy
 import pytest
-from pytac import load_csv, cs
+from pytac import cs, load_csv
 
 import atip
 

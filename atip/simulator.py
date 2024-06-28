@@ -4,11 +4,11 @@ from dataclasses import dataclass
 from warnings import warn
 
 import at
+import cothread
 import numpy
 from numpy.typing import ArrayLike
-import cothread
-from scipy.constants import speed_of_light
 from pytac.exceptions import DataSourceException, FieldException
+from scipy.constants import speed_of_light
 
 
 @dataclass
@@ -566,4 +566,4 @@ class ATSimulator(object):
         """
         _, I2, _, I4, I5 = self._lattice_data.radint
         gamma = self.get_energy() / (at.constants.e_mass)
-        return (I5 * at.constants.Cq * gamma ** 2) / (I2 - I4)
+        return (I5 * at.constants.Cq * gamma**2) / (I2 - I4)

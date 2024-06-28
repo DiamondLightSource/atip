@@ -13,7 +13,7 @@ mock = "*"
 flake8 = "<4.0"
 sphinx = "*"
 sphinx_rtd_theme = "*"
-black = "==21.5b2"
+black = "==22.3.0"
 
 [packages]
 # All production requirements from setup.cfg.

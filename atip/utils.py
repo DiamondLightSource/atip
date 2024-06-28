@@ -1,7 +1,9 @@
-import atip
+import os
+
 import at
 import pytac
-import os
+
+import atip
 
 
 def load_at_lattice(mode="DIAD", **kwargs):

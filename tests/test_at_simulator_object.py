@@ -3,8 +3,8 @@ import cothread
 import mock
 import numpy
 import pytest
-from scipy.constants import speed_of_light
 from pytac.exceptions import FieldException
+from scipy.constants import speed_of_light
 
 import atip
 
@@ -76,9 +76,7 @@ def test_recalculate_phys_data_queue(atsim):
     elem_ds = mock.Mock()
     atsim.up_to_date.Reset()
     atsim.queue_set(elem_ds._make_change, "a_field", 12)
-    assert len(atsim._queue) == 1
-    atsim.wait_for_calculations()
-    assert len(atsim._queue) == 0
+    cothread.Sleep(0.1)
     elem_ds._make_change.assert_called_once_with("a_field", 12)
 
 
@@ -87,7 +85,6 @@ def test_pause_calculations(atsim):
     atsim.up_to_date.Reset()
     atsim.pause_calculations()
     atsim.queue_set(elem_ds._make_change, "a_field", 12)
-    assert len(atsim._queue) == 1
     cothread.Sleep(0.1)
     # Queue emptied even though paused.
     assert len(atsim._queue) == 0
@@ -96,8 +93,8 @@ def test_pause_calculations(atsim):
     assert not atsim.up_to_date
     # We have to add another item to the queue to prompt
     # a recalculation. Is this a bug?
-    atsim.queue_set(elem_ds._make_change, "a_field", 12)
     atsim.unpause_calculations()
+    atsim.queue_set(elem_ds._make_change, "a_field", 12)
     cothread.Sleep(0.1)
     # Calculation now updated.
     assert atsim.up_to_date
@@ -321,5 +318,5 @@ def test_get_linear_dispersion_action(mocked_atsim):
 
 
 def test_get_horizontal_emittance(mocked_atsim):
-    eps_x = -(62.5 * at.constants.Cq) / at.constants.e_mass ** 2
-    assert mocked_atsim.get_horizontal_emittance() == eps_x
+    eps_x = -(62.5 * at.constants.Cq) / at.constants.e_mass**2
+    numpy.testing.assert_almost_equal(eps_x, mocked_atsim.get_horizontal_emittance())

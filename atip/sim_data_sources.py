@@ -4,7 +4,7 @@ from functools import partial
 
 import at
 import pytac
-from pytac.exceptions import FieldException, HandleException, ControlSystemException
+from pytac.exceptions import ControlSystemException, FieldException, HandleException
 
 
 class ATElementDataSource(pytac.data_source.DataSource):
