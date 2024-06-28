@@ -22,7 +22,7 @@ class LatticeData:
 
 
 def calculate_optics(
-    at_lattice: at.Lattice, refpts: ArrayLike, disable_emittance: bool = True
+    at_lattice: at.Lattice, refpts: ArrayLike, disable_emittance: bool = False
 ) -> LatticeData:
     """Perform physics calculations on lattice.
 
