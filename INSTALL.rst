@@ -4,7 +4,7 @@ ATIP Installation
 
 This guide is for Linux and is based on the current structures of AT and Pytac,
 if you find a mistake anywhere in ATIP please raise an issue on ATIP's GitHub
-page, `here. <https://github.com/dls-controls/atip>`_
+page, `here. <https://github.com/DiamondLightSource/atip>`_
 
 Initial Setup and Installation
 ------------------------------
@@ -18,7 +18,7 @@ Initial Setup and Installation
 1. Clone ATIP::
 
     $ cd <source-directory>
-    $ git clone https://github.com/dls-controls/atip.git
+    $ git clone https://github.com/DiamondLightSource/atip.git
 
 2. Create a pipenv and install the dependencies::
 
