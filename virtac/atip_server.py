@@ -502,10 +502,8 @@ class ATIPServer(object):
         """Set a value to the feedback in records.
 
         possible element fields are:
-            ['x_fofb_disabled', 'x_sofb_disabled', 'y_fofb_disabled',
-             'y_sofb_disabled', 'h_fofb_disabled', 'h_sofb_disabled',
-             'v_fofb_disabled', 'v_sofb_disabled', 'error_sum', 'enabled',
-             'state', 'offset']
+            ['error_sum', 'enabled', 'state', 'offset', 'golden_offset', 'bcd_offset',
+             'bba_offset']
         possible lattice fields are:
             ['beam_current', 'feedback_status', 'bpm_id', 'emittance_status']
 

@@ -58,24 +58,6 @@ def generate_feedback_pvs():
                     True,
                 )
             )
-            data.append(
-                (
-                    elem.index,
-                    "h_fofb_disabled",
-                    elem.get_pv_name("h_fofb_disabled", pytac.RB),
-                    0,
-                    False,
-                )
-            )
-            data.append(
-                (
-                    elem.index,
-                    "h_sofb_disabled",
-                    elem.get_pv_name("h_sofb_disabled", pytac.RB),
-                    0,
-                    False,
-                )
-            )
         if elem.is_in_family("VSTR"):
             data.append(
                 (
@@ -95,63 +77,9 @@ def generate_feedback_pvs():
                     True,
                 )
             )
-            data.append(
-                (
-                    elem.index,
-                    "v_fofb_disabled",
-                    elem.get_pv_name("v_fofb_disabled", pytac.RB),
-                    0,
-                    False,
-                )
-            )
-            data.append(
-                (
-                    elem.index,
-                    "v_sofb_disabled",
-                    elem.get_pv_name("v_sofb_disabled", pytac.RB),
-                    0,
-                    False,
-                )
-            )
         elif elem.is_in_family("BPM"):
             data.append(
                 (elem.index, "enabled", elem.get_pv_name("enabled", pytac.RB), 1, True)
-            )
-            data.append(
-                (
-                    elem.index,
-                    "x_fofb_disabled",
-                    elem.get_pv_name("x_fofb_disabled", pytac.RB),
-                    0,
-                    False,
-                )
-            )
-            data.append(
-                (
-                    elem.index,
-                    "x_sofb_disabled",
-                    elem.get_pv_name("x_sofb_disabled", pytac.RB),
-                    0,
-                    False,
-                )
-            )
-            data.append(
-                (
-                    elem.index,
-                    "y_fofb_disabled",
-                    elem.get_pv_name("y_fofb_disabled", pytac.RB),
-                    0,
-                    False,
-                )
-            )
-            data.append(
-                (
-                    elem.index,
-                    "y_sofb_disabled",
-                    elem.get_pv_name("y_sofb_disabled", pytac.RB),
-                    0,
-                    False,
-                )
             )
             data.append(
                 (
