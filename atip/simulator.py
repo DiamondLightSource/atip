@@ -133,6 +133,7 @@ class ATSimulator(object):
         # Explicitly manage the cothread Events, so turn off auto_reset.
         # These are False when reset, True when signalled.
         self._paused = cothread.Event(auto_reset=False)
+        self._quit_thread = cothread.Event(auto_reset=False)
         self.up_to_date = cothread.Event(auto_reset=False)
         self.up_to_date.Signal()
         self._calculation_thread = cothread.Spawn(self._recalculate_phys_data, callback)
@@ -145,6 +146,7 @@ class ATSimulator(object):
             field (str): The field to be changed.
             value (float): The value to be set.
         """
+        cothread.CallbackResult(self.up_to_date.Reset)
         cothread.Callback(self._queue.Signal, (func, field, value))
 
     def _gather_one_sample(self):
@@ -155,11 +157,20 @@ class ATSimulator(object):
         apply_change_method, field, value = self._queue.Wait()
         apply_change_method(field, value)
 
+    def quit_calculation_thread(self, timeout=10):
+        """Quit the calculation thread after the current loop is complete."""
+        cothread.CallbackResult(self._quit_thread.Signal)
+        self.trigger_calculation()
+        cothread.CallbackResult(self._calculation_thread.Wait, timeout)
+        # For some reason we have to wait a bit before we can clear the queue.
+        cothread.Sleep(0.1)
+        cothread.CallbackResult(self._queue.Reset)
+
     def _recalculate_phys_data(self, callback):
         """Target function for the Cothread thread. Recalculates the physics
         data dependent on the status of the '_paused' flag and the length of
         the queue. The calculations only take place if '_paused' is False and
-        there is one or more changes on the queue.
+        there are one or more changes on the queue.
 
         .. Note:: If an error or exception is raised in the running thread then
            it does not continue running so subsequent calculations are not
@@ -174,7 +185,8 @@ class ATSimulator(object):
             at.AtWarning: any error or exception that was raised in the thread,
                            but as a warning.
         """
-        while True:
+        # Using Cothread Event is only ~4% slower than a normal Boolean but much safer.
+        while not self._quit_thread:
             logging.debug("Starting recalculation loop")
             self._gather_one_sample()
             while self._queue:
@@ -200,7 +212,9 @@ class ATSimulator(object):
 
     def toggle_calculations(self):
         """Pause or unpause the physics calculations by setting or clearing the
-        _paused flag. N.B. this does not pause the emptying of the queue.
+        _paused flag.
+
+        .. Note:: This does not pause the emptying of the queue.
         """
         if self._paused:
             cothread.CallbackResult(self._paused.Reset)
@@ -208,18 +222,26 @@ class ATSimulator(object):
             cothread.CallbackResult(self._paused.Signal)
 
     def pause_calculations(self):
+        """Pause the physics calculations by setting the _paused flag.
+
+        .. Note:: This does not pause the emptying of the queue.
+        """
         if not self._paused:
             cothread.CallbackResult(self._paused.Signal)
 
     def unpause_calculations(self):
+        """Unpause the physics calculations by clearing the _paused flag."""
         if self._paused:
             cothread.CallbackResult(self._paused.Reset)
 
     def trigger_calculation(self):
-        cothread.CallbackResult(self.up_to_date.Reset)
+        """Unpause the physics calculations and add a null item to the queue to
+        trigger a recalculation.
+
+        .. Note:: This method does not wait for the recalculation to complete,
+           that is up to the user.
+        """
         self.unpause_calculations()
-        # Add a null item to the queue, a recalculation will happen once it
-        # has been applied.
         self.queue_set(lambda *x: None, None, None)
 
     def wait_for_calculations(self, timeout=10):

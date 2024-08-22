@@ -177,7 +177,6 @@ class ATElementDataSource(pytac.data_source.DataSource):
         """
         if field in self._fields:
             if field in self._set_field_funcs.keys():
-                self._atsim.up_to_date.Reset()
                 self._atsim.queue_set(self._make_change, field, value)
             else:
                 raise HandleException(

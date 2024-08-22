@@ -182,15 +182,6 @@ def test_elem_set_orbit_raises_HandleException(at_elem, field):
 
 
 @pytest.mark.parametrize("field", ["x_kick", "y_kick", "a1", "b0", "b1", "b2", "f"])
-def test_elem_set_value_sets_up_to_date_flag(at_elem, field):
-    atsim = mock.Mock()
-    ateds = atip.sim_data_sources.ATElementDataSource(at_elem, 1, atsim, [field])
-    ateds.set_value(field, 1)
-    assert len(atsim.up_to_date.mock_calls) == 1
-    assert atsim.up_to_date.mock_calls[0] == mock.call.Reset()
-
-
-@pytest.mark.parametrize("field", ["x_kick", "y_kick", "a1", "b0", "b1", "b2", "f"])
 def test_elem_set_value_adds_changes_to_queue(at_elem, field):
     atsim = mock.Mock()
     ateds = atip.sim_data_sources.ATElementDataSource(at_elem, 1, atsim, [field])
