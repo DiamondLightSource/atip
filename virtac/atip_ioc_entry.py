@@ -24,6 +24,9 @@ def parse_arguments():
         "--disable-emittance", "-d", help="disable emittance calc", action="store_true"
     )
     parser.add_argument(
+        "--enable-tfb", "-t", help="enable Tune Feedback mimicry", action="store_true"
+    )
+    parser.add_argument(
         "--verbose", "-v", help="increase output verbosity", action="store_true"
     )
     return parser.parse_args()
@@ -105,6 +108,7 @@ def main():
     builder.LoadDatabase()
     softioc.iocInit()
     server.monitor_mirrored_pvs()
-    server.setup_tune_feedback()
+    if args.enable_tfb:
+        server.setup_tune_feedback()
 
     softioc.interactive_ioc(globals())
