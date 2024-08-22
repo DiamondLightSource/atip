@@ -336,6 +336,27 @@ class ATIPServer(object):
             "BPMID", NELM=len(bpm_ids), initial_value=bpm_ids
         )
         self._feedback_records[(0, "bpm_id")] = bpm_id_record
+        # Special case: Fast BBA oscillation PVs - should also be moved to CSV in future
+        for cell in range(1, self.lattice.symmetry + 1):
+            builder.SetDeviceName(f"SR{str(cell).zfill(2)}A-CS-FOFB-01")
+            start_times = builder.WaveformOut(
+                "EXCITE:START_TIMES", initial_value=numpy.zeros(18)
+            )
+            self._feedback_records[(0, f"cell_{cell}_excite_start_times")] = start_times
+            excite_amps = builder.WaveformOut(
+                "EXCITE:AMPS", initial_value=numpy.zeros(18)
+            )
+            self._feedback_records[(0, f"cell_{cell}_excite_amps")] = excite_amps
+            excite_deltas = builder.WaveformOut(
+                "EXCITE:DELTAS", initial_value=numpy.zeros(18)
+            )
+            self._feedback_records[(0, f"cell_{cell}_excite_deltas")] = excite_deltas
+            excite_ticks = builder.WaveformOut(
+                "EXCITE:TICKS", initial_value=numpy.zeros(18)
+            )
+            self._feedback_records[(0, f"cell_{cell}_excite_ticks")] = excite_ticks
+            excite_prime = builder.aOut("EXCITE:PRIME", initial_value=1)
+            self._feedback_records[(0, f"cell_{cell}_excite_prime")] = excite_prime
         # We can choose to not calculate emittance as it is not always required,
         # which decreases computation time.
         if not disable_emittance:
@@ -505,7 +526,10 @@ class ATIPServer(object):
             ['error_sum', 'enabled', 'state', 'offset', 'golden_offset', 'bcd_offset',
              'bba_offset']
         possible lattice fields are:
-            ['beam_current', 'feedback_status', 'bpm_id', 'emittance_status']
+            ['beam_current', 'feedback_status', 'bpm_id', 'emittance_status',
+             'fofb_status', 'cell_<cell_number>_excite_start_times',
+             'cell_<cell_number>_excite_amps', 'cell_<cell_number>_excite_deltas',
+             'cell_<cell_number>_excite_ticks', 'cell_<cell_number>_excite_prime']
 
         Args:
             index (int): The index of the element on which to set the value;

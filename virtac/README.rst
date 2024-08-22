@@ -84,6 +84,12 @@ This is done inside the server console, in the terminal where one you ran
    - ``feedback_status``
    - ``bpm_id``
    - ``emittance_status``
+   - ``fofb_status``
+   - ``cell_<cell_number>_excite_start_times``
+   - ``cell_<cell_number>_excite_amps``
+   - ``cell_<cell_number>_excite_deltas``
+   - ``cell_<cell_number>_excite_ticks``
+   - ``cell_<cell_number>_excite_prime``
 
 3. The value to be set:
 

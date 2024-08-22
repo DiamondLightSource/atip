@@ -36,6 +36,7 @@ def generate_feedback_pvs():
         ("index", "field", "pv", "value", "read-only"),
         (0, "beam_current", "SR-DI-DCCT-01:SIGNAL", 300, True),
         (0, "feedback_status", "CS-CS-MSTAT-01:FBSTAT", 2, True),
+        (0, "fofb_status", "SR01A-CS-FOFB-01:RUN", 0, False),
     ]
     # Iterate over our elements to get the PV names.
     for elem in elements:
