@@ -198,16 +198,19 @@ class ATSimulator(object):
                     )
                 except Exception as e:
                     warn(at.AtWarning(e))
-                # Signal up to date before the callback is executed in case
-                # the callback checks the flag.
+                # Signal the up to date flag since the physics data is now up to date.
+                # We do this before the callback is executed in case the callback
+                # checks the flag.
                 self.up_to_date.Signal()
                 if callback is not None:
                     logging.debug("Executing callback function.")
                     callback()
                     logging.debug("Callback completed.")
-            # We might need to be careful that this doesn't cause us to become
-            # thread-locked in a different thread but it is required for
-            # cothread.CallbackResult to play nicely with Bluesky.
+            # This could cause thread-locking issues if another application using
+            # cothreads is poorly written and running on the same machine, but this
+            # isn't the case with any of the software that currently runs against
+            # ATIP/virtac and it's required for cothread.CallbackResult to play nicely
+            # with Bluesky. So it's a calculated risk until we move away from Cothread.
             cothread.Yield()
 
     def toggle_calculations(self):
