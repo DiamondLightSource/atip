@@ -11,12 +11,7 @@ from cothread.catools import FORMAT_CTRL, caget
 import atip
 
 
-def generate_feedback_pvs():
-    # Load the lattice and elements.
-    lattice = atip.utils.loader()
-    all_elements = atip.utils.preload(lattice)
-    # Only keep the elements from the families that we are concerned with.
-    elements = list(set(all_elements.hstr + all_elements.vstr + all_elements.bpm))
+def generate_feedback_pvs(all_elements):
     # Also get families for tune feedback
     tune_quad_elements = set(
         all_elements.q1d
@@ -26,12 +21,9 @@ def generate_feedback_pvs():
         + all_elements.q2b
         + all_elements.q1b
     )
-    elements.extend(tune_quad_elements)
-    # Sort the elements by index, in ascending order.
-    elements.sort(key=lambda x: x.index)
     # Data to be written is stored as a list of tuples each with structure:
     #     element index (int), field (str), pv (str), value (int).
-    # We have special cases for two lattice fields that RFFB reads from.
+    # We have special cases for four lattice fields that feedback systems read from.
     data = [
         ("index", "field", "pv", "value", "read-only"),
         (0, "beam_current", "SR-DI-DCCT-01:SIGNAL", 300, True),
@@ -40,117 +32,51 @@ def generate_feedback_pvs():
         (0, "feedback_heart", "CS-CS-MSTAT-01:FBHEART", 10, False),
     ]
     # Iterate over our elements to get the PV names.
-    for elem in elements:
-        if elem.is_in_family("HSTR"):
-            data.append(
-                (
-                    elem.index,
-                    "error_sum",
-                    elem.get_device("x_kick").name + ":ERCSUM",
-                    0,
-                    True,
-                )
-            )
-            data.append(
-                (
-                    elem.index,
-                    "state",
-                    elem.get_device("x_kick").name + ":STATE",
-                    2,
-                    True,
-                )
-            )
-        if elem.is_in_family("VSTR"):
-            data.append(
-                (
-                    elem.index,
-                    "error_sum",
-                    elem.get_device("y_kick").name + ":ERCSUM",
-                    0,
-                    True,
-                )
-            )
-            data.append(
-                (
-                    elem.index,
-                    "state",
-                    elem.get_device("y_kick").name + ":STATE",
-                    2,
-                    True,
-                )
-            )
-        elif elem.is_in_family("BPM"):
-            data.append(
-                (elem.index, "enabled", elem.get_pv_name("enabled", pytac.RB), 1, True)
-            )
-            data.append(
-                (
-                    elem.index,
-                    "golden_offset",
-                    elem.get_device("enabled").name + ":CF:GOLDEN_X_S",
-                    0,
-                    False,
-                )
-            )
-            data.append(
-                (
-                    elem.index,
-                    "golden_offset",
-                    elem.get_device("enabled").name + ":CF:GOLDEN_Y_S",
-                    0,
-                    False,
-                )
-            )
-            data.append(
-                (
-                    elem.index,
-                    "bcd_offset",
-                    elem.get_device("enabled").name + ":CF:BCD_X_S",
-                    0,
-                    False,
-                )
-            )
-            data.append(
-                (
-                    elem.index,
-                    "bcd_offset",
-                    elem.get_device("enabled").name + ":CF:BCD_Y_S",
-                    0,
-                    False,
-                )
-            )
-            data.append(
-                (
-                    elem.index,
-                    "bba_offset",
-                    elem.get_device("enabled").name + ":CF:BBA_X_S",
-                    0,
-                    False,
-                )
-            )
-            data.append(
-                (
-                    elem.index,
-                    "bba_offset",
-                    elem.get_device("enabled").name + ":CF:BBA_Y_S",
-                    0,
-                    False,
-                )
-            )
-        # Add elements for Tune Feedback
-        elif elem in tune_quad_elements:
-            data.append(
-                (elem.index, "offset", elem.get_device("b1").name + ":OFFSET1", 0, True)
-            )
+    for elem in all_elements.hstr:
+        pv_stem = elem.get_device("x_kick").name
+        data.append((elem.index, "error_sum", pv_stem + ":ERCSUM", 0, True))
+        data.append((elem.index, "state", pv_stem + ":STATE", 2, True))
+    for elem in all_elements.vstr:
+        pv_stem = elem.get_device("y_kick").name
+        data.append((elem.index, "error_sum", pv_stem + ":ERCSUM", 0, True))
+        data.append((elem.index, "state", pv_stem + ":STATE", 2, True))
+    for elem in all_elements.bpm:
+        data.append(
+            (elem.index, "enabled", elem.get_pv_name("enabled", pytac.RB), 1, True)
+        )
+    # Add elements for Tune Feedback
+    for elem in tune_quad_elements:
+        data.append(
+            (elem.index, "offset", elem.get_device("b1").name + ":OFFSET1", 0, True)
+        )
     return data
 
 
-def generate_pv_limits():
+def generate_bba_pvs(all_elements):
+    # Data to be written is stored as a list of tuples each with structure:
+    #     element index (int), field (str), pv (str), value (int).
+    data = [("index", "field", "pv", "value", "read-only")]
+    # Iterate over the BPMs to construct the PV names.
+    for elem in all_elements.bpm:
+        pv_stem = elem.get_device("enabled").name
+        data.append(
+            (elem.index, "golden_offset_x", pv_stem + ":CF:GOLDEN_X_S", 0, False)
+        )
+        data.append(
+            (elem.index, "golden_offset_y", pv_stem + ":CF:GOLDEN_Y_S", 0, False)
+        )
+        data.append((elem.index, "bcd_offset_x", pv_stem + ":CF:BCD_X_S", 0, False))
+        data.append((elem.index, "bcd_offset_y", pv_stem + ":CF:BCD_Y_S", 0, False))
+        data.append((elem.index, "bba_offset_x", pv_stem + ":CF:BBA_X_S", 0, False))
+        data.append((elem.index, "bba_offset_y", pv_stem + ":CF:BBA_Y_S", 0, False))
+    return data
+
+
+def generate_pv_limits(lattice):
     """Get the control limits and precision values from the live machine for
     all normal PVS.
     """
     data = [("pv", "upper", "lower", "precision")]
-    lattice = atip.utils.loader()
     for element in lattice:
         for field in element.get_fields()[pytac.SIM]:
             pv = element.get_pv_name(field, pytac.RB)
@@ -170,7 +96,7 @@ def generate_pv_limits():
     return data
 
 
-def generate_mirrored_pvs():
+def generate_mirrored_pvs(lattice):
     """Structure of data:
     output type: The type of output record to create, only 'aIn', 'longIn',
         'Waveform' types are currently supported; if '' then output to an
@@ -194,7 +120,6 @@ def generate_mirrored_pvs():
         record will be created and so must not exist already.
     value: The inital value of the output record.
     """
-    lattice = atip.utils.loader()
     data = [("output type", "mirror type", "in", "out", "value")]
     # Tune PV aliases.
     tune = [
@@ -292,14 +217,13 @@ def generate_mirrored_pvs():
     return data
 
 
-def generate_tune_pvs():
+def generate_tune_pvs(lattice):
     """Get the PVs associated with the tune feedback system, the structure of
     data is:
     set pv: The PV to set the offset to.
     offset: The PV which the set pv reads the offset from.
     delta: The PV to get the offset from.
     """
-    lattice = atip.utils.loader()
     data = [("set pv", "offset", "delta")]
     # Offset PV for quadrupoles in tune feedback.
     tune_pvs = []
@@ -361,11 +285,14 @@ def parse_arguments():
 
 if __name__ == "__main__":
     args = parse_arguments()
-    data = generate_feedback_pvs()
+    lattice = atip.utils.loader()
+    all_elements = atip.utils.preload(lattice)
+    data = generate_feedback_pvs(all_elements)
+    data.extend(generate_bba_pvs(all_elements)[1:])
     write_data_to_file(data, args.feedback)
-    data = generate_pv_limits()
+    data = generate_pv_limits(lattice)
     write_data_to_file(data, args.limits)
-    data = generate_mirrored_pvs()
+    data = generate_mirrored_pvs(lattice)
     write_data_to_file(data, args.mirrored)
-    data = generate_tune_pvs()
+    data = generate_tune_pvs(lattice)
     write_data_to_file(data, args.tune)
