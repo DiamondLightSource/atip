@@ -33,7 +33,6 @@ def parse_arguments():
 
 
 def main():
-
     args = parse_arguments()
     log_level = logging.DEBUG if args.verbose else logging.INFO
     logging.basicConfig(level=log_level, format=LOG_FORMAT)
@@ -60,10 +59,6 @@ def main():
         DATADIR / "tunefb.csv",
         not args.disable_emittance,
     )
-
-    # Add special case out record for SOFB to write to.
-    builder.SetDeviceName("CS-CS-MSTAT-01")
-    builder.aOut("FBHEART", initial_value=10)
 
     # Warn if set to default EPICS port(s) accounting for env var inheritance/fallback.
     conflict_warning = ", this may lead to conflicting PV names on multiple servers."
