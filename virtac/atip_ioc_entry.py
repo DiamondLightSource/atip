@@ -24,7 +24,7 @@ def parse_arguments():
         "--disable-emittance", "-d", help="disable emittance calc", action="store_true"
     )
     parser.add_argument(
-        "--enable-tfb", "-t", help="enable Tune Feedback mimicry", action="store_true"
+        "--enable-tfb", "-t", help="enable dummy Tune Feedback", action="store_true"
     )
     parser.add_argument(
         "--verbose", "-v", help="increase output verbosity", action="store_true"

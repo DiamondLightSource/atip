@@ -485,6 +485,9 @@ class ATIPServer(object):
         before starting monitoring them for a change to mimic the behaviour of
         the quadrupoles used by the tune feedback system on the live machine.
 
+        .. Note:: This is intended to be on the recieving end of the tune
+           feedback system and doesn't actually perfom tune feedback itself.
+
         Args:
             tune_csv (str): A path to a tune feedback .csv file to be used
                              instead of the default filepath passed at startup.
