@@ -338,7 +338,8 @@ class ATIPServer(object):
         self._feedback_records[(0, "bpm_id")] = bpm_id_record
         # Special case: Fast BBA oscillation PVs - should also be moved to CSV in future
         for cell in range(1, self.lattice.symmetry + 1):
-            builder.SetDeviceName(f"SR{str(cell).zfill(2)}A-CS-FOFB-01")
+            cell = str(cell).zfill(2)
+            builder.SetDeviceName(f"SR{cell}A-CS-FOFB-01")
             start_times = builder.WaveformOut(
                 "EXCITE:START_TIMES", initial_value=numpy.zeros(18)
             )
