@@ -60,7 +60,7 @@ def main():
         not args.disable_emittance,
     )
 
-    # Warn if set to default EPICS port(s) accounting for env var inheritance/fallback.
+    # Warn if set to default EPICS port(s) as this will likely casue PV conflicts.
     conflict_warning = ", this may lead to conflicting PV names on multiple servers."
     epics_env_vars = [
         "EPICS_CA_REPEATER_PORT",
@@ -68,27 +68,17 @@ def main():
         "EPICS_CA_SERVER_PORT",
         "EPICS_CAS_BEACON_PORT",
     ]
-    # Need 0 & 1 to both be set or just 2 set, but none of the others can be set wrong.
-    if (
-        bool(set(epics_env_vars[:2]) - os.environ.keys())
-        or epics_env_vars[2] not in os.environ.keys()
-    ):
+    ports_list = [int(os.environ.get(env_var, 0)) for env_var in epics_env_vars]
+    if 5064 in ports_list or 5065 in ports_list:
+        warn(
+            f"At least one of {epics_env_vars} is set to 5064 or 5065"
+            + conflict_warning
+        )
+    elif all(port == 0 for port in ports_list):
         warn(
             "No EPICS port set, default base port (5064) will be used"
             + conflict_warning
         )
-    ports_list = [int(os.environ.get(env_var, 0)) for env_var in epics_env_vars]
-    if 5064 in ports_list:
-        warn(
-            "'EPICS_CA_SERVER_PORT' or 'EPICS_CAS_SERVER_PORT' is set to 5064"
-            + conflict_warning
-        )
-    elif 5065 in ports_list:
-        warn(
-            "'EPICS_CA_REPEATER_PORT' or 'EPICS_CAS_BEACON_PORT' is set to 5065"
-            + conflict_warning
-        )
-
     # Avoid PV conflict between multiple IP interfaces on the same machine.
     primary_ip = socket.gethostbyname(socket.getfqdn())
     if primary_ip != "127.0.1.1":
