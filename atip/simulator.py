@@ -236,6 +236,8 @@ class ATSimulator(object):
         """Unpause the physics calculations by clearing the _paused flag."""
         if self._paused:
             cothread.CallbackResult(self._paused.Reset)
+            if not self.up_to_date:
+                self.trigger_calculation()
 
     def trigger_calculation(self):
         """Unpause the physics calculations and add a null item to the queue to
