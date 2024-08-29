@@ -81,13 +81,12 @@ def main():
         )
     # Avoid PV conflict between multiple IP interfaces on the same machine.
     primary_ip = socket.gethostbyname(socket.getfqdn())
-    if primary_ip != "127.0.1.1":
-        if "EPICS_CAS_INTF_ADDR_LIST" in os.environ.keys():
-            warn("Pre-existing 'EPICS_CAS_INTF_ADDR_LIST' value" + conflict_warning)
-        else:
-            os.environ["EPICS_CAS_INTF_ADDR_LIST"] = primary_ip
-            os.environ["EPICS_CAS_BEACON_ADDR_LIST"] = primary_ip
-            os.environ["EPICS_CAS_AUTO_BEACON_ADDR_LIST"] = "NO"
+    if "EPICS_CAS_INTF_ADDR_LIST" in os.environ.keys():
+        warn("Pre-existing 'EPICS_CAS_INTF_ADDR_LIST' value" + conflict_warning)
+    else:
+        os.environ["EPICS_CAS_INTF_ADDR_LIST"] = primary_ip
+        os.environ["EPICS_CAS_BEACON_ADDR_LIST"] = primary_ip
+        os.environ["EPICS_CAS_AUTO_BEACON_ADDR_LIST"] = "NO"
 
     # Start the IOC.
     builder.LoadDatabase()
