@@ -21,10 +21,16 @@ def parse_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument("ring_mode", nargs="?", type=str, help="Ring mode name")
     parser.add_argument(
-        "--disable-emittance", "-d", help="disable emittance calc", action="store_true"
+        "--disable-emittance",
+        "-d",
+        help="disable the simulator's time-consuming emittance calculation",
+        action="store_true",
     )
     parser.add_argument(
-        "--enable-tfb", "-t", help="enable dummy Tune Feedback", action="store_true"
+        "--enable-tfb",
+        "-t",
+        help="simulate extra dummy hardware to be used by the Tune Feedback system",
+        action="store_true",
     )
     parser.add_argument(
         "--verbose", "-v", help="increase output verbosity", action="store_true"
@@ -60,8 +66,8 @@ def main():
         not args.disable_emittance,
     )
 
-    # Warn if set to default EPICS port(s) as this will likely casue PV conflicts.
-    conflict_warning = ", this may lead to conflicting PV names on multiple servers."
+    # Warn if set to default EPICS port(s) as this will likely cause PV conflicts.
+    conflict_warning = ", this may lead to conflicting PV names with production IOCs."
     epics_env_vars = [
         "EPICS_CA_REPEATER_PORT",
         "EPICS_CAS_SERVER_PORT",
