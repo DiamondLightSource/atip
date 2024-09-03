@@ -6,7 +6,7 @@ import pytac
 import atip
 
 
-def load_at_lattice(mode="DIAD", **kwargs):
+def load_at_lattice(mode="I04", **kwargs):
     """Load an AT lattice from a .mat file in the 'rings' directory.
 
     .. Note:: I add custom attributes 'Index' and 'Class' to each of the
@@ -22,14 +22,14 @@ def load_at_lattice(mode="DIAD", **kwargs):
     filepath = os.path.join(
         os.path.dirname(__file__), "".join(["rings/", mode, ".mat"])
     )
-    at_lattice = at.load.load_mat(filepath, **kwargs)
+    at_lattice = at.load.load_mat(filepath, name=mode, **kwargs)
     for index, elem in enumerate(at_lattice):
         elem.Index = index + 1
         elem.Class = elem.__class__.__name__
     return at_lattice
 
 
-def loader(mode="DIAD", callback=None, disable_emittance=False):
+def loader(mode="I04", callback=None, disable_emittance=False):
     """Load a unified lattice of the specifed mode.
 
     .. Note:: A unified lattice is a Pytac lattice where the corresponding AT
@@ -49,7 +49,6 @@ def loader(mode="DIAD", callback=None, disable_emittance=False):
     pytac_lattice = pytac.load_csv.load(mode, symmetry=24)
     at_lattice = load_at_lattice(
         mode,
-        name=pytac_lattice.name,
         periodicity=1,
         energy=pytac_lattice.get_value("energy"),
     )

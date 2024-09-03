@@ -239,7 +239,7 @@ def generate_tune_pvs(lattice):
     return data
 
 
-def write_data_to_file(data, filename):
+def write_data_to_file(data, filename, ring_mode):
     """Write the collected data to a .csv file with the given name. If the file
     already exists it will be overwritten.
 
@@ -249,8 +249,10 @@ def write_data_to_file(data, filename):
     """
     if not filename.endswith(".csv"):
         filename += ".csv"
-    here = os.path.abspath(os.path.dirname(__file__))
-    with open(os.path.join(here, filename), "w", newline="") as file:
+    filepath = os.path.join(
+        os.path.abspath(os.path.dirname(__file__)), "data", ring_mode, filename
+    )
+    with open(filepath, "w", newline="") as file:
         csv_writer = csv.writer(file)
         csv_writer.writerows(data)
 
@@ -259,6 +261,13 @@ def parse_arguments():
     parser = argparse.ArgumentParser(
         description="Generate CSV file to define the PVs served by the "
         "virtual accelerator IOC."
+    )
+    parser.add_argument(
+        "ring_mode",
+        nargs="?",
+        type=str,
+        help="Ring mode name",
+        default="I04",
     )
     parser.add_argument(
         "--feedback",
@@ -285,14 +294,14 @@ def parse_arguments():
 
 if __name__ == "__main__":
     args = parse_arguments()
-    lattice = atip.utils.loader()
+    lattice = atip.utils.loader(args.ring_mode)
     all_elements = atip.utils.preload(lattice)
     data = generate_feedback_pvs(all_elements)
     data.extend(generate_bba_pvs(all_elements)[1:])
-    write_data_to_file(data, args.feedback)
+    write_data_to_file(data, args.feedback, args.ring_mode)
     data = generate_pv_limits(lattice)
-    write_data_to_file(data, args.limits)
+    write_data_to_file(data, args.limits, args.ring_mode)
     data = generate_mirrored_pvs(lattice)
-    write_data_to_file(data, args.mirrored)
+    write_data_to_file(data, args.mirrored, args.ring_mode)
     data = generate_tune_pvs(lattice)
-    write_data_to_file(data, args.tune)
+    write_data_to_file(data, args.tune, args.ring_mode)

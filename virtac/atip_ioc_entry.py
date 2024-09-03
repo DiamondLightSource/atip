@@ -59,10 +59,10 @@ def main():
     # Create PVs.
     server = atip_server.ATIPServer(
         ring_mode,
-        DATADIR / "limits.csv",
-        DATADIR / "feedback.csv",
-        DATADIR / "mirrored.csv",
-        DATADIR / "tunefb.csv",
+        DATADIR / ring_mode / "limits.csv",
+        DATADIR / ring_mode / "feedback.csv",
+        DATADIR / ring_mode / "mirrored.csv",
+        DATADIR / ring_mode / "tunefb.csv",
         not args.disable_emittance,
     )
 
