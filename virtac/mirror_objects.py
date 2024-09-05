@@ -70,9 +70,7 @@ class transform(object):
         """
         if not callable(transformation):
             raise TypeError(
-                "Transformation should be a callable, {0} is not.".format(
-                    transformation
-                )
+                f"Transformation should be a callable, {transformation} is not."
             )
         self.output_record = output_record
         self.transformation = transformation

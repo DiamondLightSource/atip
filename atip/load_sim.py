@@ -2,11 +2,10 @@
 import at
 import pytac
 from pytac.exceptions import FieldException
-from pytac.load_csv import DEFAULT_UC
+from pytac.units import NullUnitConv
 
-from atip.simulator import ATSimulator
 from atip.sim_data_sources import ATElementDataSource, ATLatticeDataSource
-
+from atip.simulator import ATSimulator
 
 # List of all the element fields that can be currently simulated.
 SIMULATED_FIELDS = {"a1", "b0", "b1", "b2", "x", "y", "f", "x_kick", "y_kick"}
@@ -55,7 +54,7 @@ def load(pytac_lattice, at_lattice, callback=None, disable_emittance=False):
     if len(at_lattice) != len(pytac_lattice):
         raise ValueError(
             "Incompatible AT and Pytac lattices, length mismatch "
-            "(AT:{0} Pytac:{1}).".format(len(at_lattice), len(pytac_lattice))
+            f"(AT:{len(at_lattice)} Pytac:{len(pytac_lattice)})."
         )
     # Initialise an instance of the ATSimulator Object.
     atsim = ATSimulator(at_lattice, callback, disable_emittance)
@@ -75,5 +74,5 @@ def load(pytac_lattice, at_lattice, callback=None, disable_emittance=False):
         try:
             pytac_lattice.get_unitconv(field)
         except FieldException:
-            pytac_lattice.set_unitconv(field, DEFAULT_UC)
+            pytac_lattice.set_unitconv(field, NullUnitConv())
     return pytac_lattice

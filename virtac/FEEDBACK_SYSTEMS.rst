@@ -15,9 +15,9 @@ makes several adjustments and additions to core ATIP functionality.
 Mirrored Records:
 -----------------
 
-The ability to create mirror records is provided. Mirror records take value(s)
-from one or more records and set their value dependent on their input. A
-variety of mirror types are available:
+The ability to create mirror records is provided. A mirror record can take
+value(s) from one or more records as inputs and set its output dependent on
+those input values. A variety of mirror types are available:
 
 1. ``basic`` - Sets the value of the output record equal to the value of a
    single input PV.
@@ -28,8 +28,8 @@ variety of mirror types are available:
    array and sets this as the value of the ouptut record.
 4. ``summate`` - Sums the values of several input PVs and sets the result to
    the output record.
-5. ``refresher`` - Whenever an input PV changes value, refreshes the held
-   output record, by calling
+5. ``refresher`` - Whenever an input PV changes value, the held output record
+   is refreshed, by calling
    ``ATIPServer.refresh_record(output_record_pv_name)``.
 
 For more information on mirror records see docstrings of the classes in
@@ -39,8 +39,8 @@ For more information on mirror records see docstrings of the classes in
 Masks:
 ------
 
-Masks are wrappers for existing functions to enable them to be addressed in a
-different syntax than normal. The types of masks are:
+Masks are wrappers for existing functions to enable them to be addressed using
+a different syntax than normal. The types of masks are:
 
 1. ``callback_offset`` - Provides a method to be passed to as a callback. When
    called, the stored offset record is set to the passed value and the stored
@@ -48,10 +48,10 @@ different syntax than normal. The types of masks are:
    feedback to operate, see below for more information.
 2. ``callback_set`` - Provides a method to be passed to as a callback. When
    called, the stored offset records are set to the passed value.
-3. ``caget_mask`` - Used to allow a PV to imitate a record object, ``.get()``
-   simply calls ``caget(stored_pv)``.
-4. ``caput_mask`` - Used to allow a PV to imitate a record object,
-   ``.set(value)`` simply calls ``caput(stored_pv, value)``.
+3. ``caget_mask`` - Used to allow an existing external PV to imitate an input
+   record object, ``.get()`` simply calls ``caget(stored_pv)``.
+4. ``caput_mask`` - Used to allow an existing external PV to imitate an output
+   record object, ``.set(value)`` simply calls ``caput(stored_pv, value)``.
 
 
 Tune feedback

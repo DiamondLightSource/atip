@@ -19,6 +19,9 @@ Start the virtual accelerator
 Run the virtac under the development EPICS port::
 
     $ export EPICS_CA_SERVER_PORT=6064
+    $ export EPICS_CAS_SERVER_PORT=6064
+    $ export EPICS_CA_REPEATER_PORT=6065
+    $ # at Diamond the above can be set in one go using:    . changeports 6064
     $ pipenv run virtac
 
 It takes 10 seconds or so to load the interactive console::
@@ -41,6 +44,7 @@ It takes 10 seconds or so to load the interactive console::
 Leave the server running and in a new terminal update the EPICS port::
 
     $ export EPICS_CA_SERVER_PORT=6064
+    $ # or:    . changeports 6064
 
 In this new terminal you are then free to address the simulator as you would
 the live machine, either through Pytac or by directly accessing the PVs.
@@ -66,18 +70,13 @@ This is done inside the server console, in the terminal where one you ran
 
    Possible element fields are:
 
-   - ``x_fofb_disabled``
-   - ``x_sofb_disabled``
-   - ``y_fofb_disabled``
-   - ``y_sofb_disabled``
-   - ``h_fofb_disabled``
-   - ``h_sofb_disabled``
-   - ``v_fofb_disabled``
-   - ``v_sofb_disabled``
    - ``error_sum``
    - ``enabled``
    - ``state``
    - ``offset``
+   - ``golden_offset``
+   - ``bcd_offset``
+   - ``bba_offset``
 
    Possible lattice fields are:
 
@@ -85,6 +84,12 @@ This is done inside the server console, in the terminal where one you ran
    - ``feedback_status``
    - ``bpm_id``
    - ``emittance_status``
+   - ``fofb_status``
+   - ``cell_<cell_number>_excite_start_times``
+   - ``cell_<cell_number>_excite_amps``
+   - ``cell_<cell_number>_excite_deltas``
+   - ``cell_<cell_number>_excite_ticks``
+   - ``cell_<cell_number>_excite_prime``
 
 3. The value to be set:
 
@@ -103,18 +108,18 @@ Ring Mode:
 ----------
 
 You can run the virtual accelerator in any ring mode that is supported by
-Pytac; currently 'VMX', 'VMXSP', and 'DIAD'. The ring mode can be set by the
+Pytac; currently 'VMX', 'VMXSP', 'DIAD', and 'I04'. The ring mode can be set by the
 following methods, which are checked in this order:
 
 - as a command line argument to ``virtac``;
 - by changing the ``RINGMODE`` environment variable
 - a PV ``SR-CS-RING-01:MODE`` which has the ring mode as its value
 
-If none of these is set then the virtual accelerator will default to 'DIAD'.
+If none of these is set then the virtual accelerator will default to 'I04'.
 
 For example::
 
-    $ pipenv run virtac DIAD
-    $ export RINGMODE=DIAD
-    $ caput SR-CS-RING-01:MODE 11
-    $ # Having none of these set would also start in mode 'DIAD'.
+    $ pipenv run virtac I04
+    $ export RINGMODE=I04
+    $ caput SR-CS-RING-01:MODE 3
+    $ # Having none of these set would also start in mode 'I04'.

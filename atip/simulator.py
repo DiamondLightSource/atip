@@ -4,11 +4,11 @@ from dataclasses import dataclass
 from warnings import warn
 
 import at
+import cothread
 import numpy
 from numpy.typing import ArrayLike
-import cothread
-from scipy.constants import speed_of_light
 from pytac.exceptions import DataSourceException, FieldException
+from scipy.constants import speed_of_light
 
 
 @dataclass
@@ -22,28 +22,29 @@ class LatticeData:
 
 
 def calculate_optics(
-    at_lattice: at.Lattice, refpts: ArrayLike, disable_emittance: bool = True
+    at_lattice: at.Lattice, refpts: ArrayLike, disable_emittance: bool = False
 ) -> LatticeData:
-    """Perform physics calculations on lattice.
+    """Perform the physics calculations on the lattice.
+
+    .. Note:: We choose to use the more physically accurate find_orbit6 and
+       linopt6 functions over their faster but less representative 4d or 2d
+       equivalents (find_orbit4, linopt2, & linopt4), see the docstrings for
+       those functions in PyAT for more information.
 
     Args:
-        at_lattice: AT lattice definition
-        refpts: points at which to calculate physics data
-        disable_emittance: whether to calculate emittances
+        at_lattice (at.lattice_object.Lattice): AT lattice definition.
+        refpts (numpy.array): A boolean array specifying the points at which
+                               to calculate physics data.
+        disable_emittance (bool): whether to calculate emittance.
 
     Returns:
-        calculated lattice data
+        LatticeData: The calculated lattice data.
     """
-    logging.debug("Starting optics calculations.")
+    logging.debug("Starting physics calculations.")
 
     orbit0, _ = at_lattice.find_orbit6()
     logging.debug("Completed orbit calculation.")
 
-    # Here one could use the faster linopt2 or linopt4 functions,
-    # but linopt6 appears to be more correct.
-    # If you try linopt2 or linopt4 be aware that the calculated
-    # data from this call may not be physically accurate.
-    # See the docstrings for those functions in pyat.
     _, beamdata, twiss = at_lattice.linopt6(
         refpts=refpts, get_chrom=True, orbit=orbit0, keep_lattice=True
     )
@@ -80,8 +81,8 @@ class ATSimulator(object):
                                                  physics data is calculated.
            _rp (numpy.array): A boolean array to be used as refpts for the
                                physics calculations.
-            _disable_emittance (bool): Whether or not to perform the beam envelope
-                                based emittance calculations.
+            _disable_emittance (bool): Whether or not to perform the beam
+                                        envelope based emittance calculations.
            _lattice_data (LatticeData): calculated physics data
                               function linopt (see at.lattice.linear.py).
            _queue (cothread.EventQueue): A queue of changes to be applied to
@@ -108,15 +109,14 @@ class ATSimulator(object):
                                                      lattice object.
             callback (callable): Optional, if passed it is called on completion
                                   of each round of physics calculations.
-            disable_emittance (bool): Whether or not to perform the beam envelope based
-                               emittance calculations.
+            disable_emittance (bool): Whether or not to perform the beam
+                                       envelope based emittance calculations.
 
         **Methods:**
         """
         if (not callable(callback)) and (callback is not None):
             raise TypeError(
-                "If passed, 'callback' should be callable, {0} is "
-                "not.".format(callback)
+                f"If passed, 'callback' should be callable, {callback} is not."
             )
         self._at_lat = at_lattice
         self._rp = numpy.ones(len(at_lattice) + 1, dtype=bool)
@@ -133,6 +133,7 @@ class ATSimulator(object):
         # Explicitly manage the cothread Events, so turn off auto_reset.
         # These are False when reset, True when signalled.
         self._paused = cothread.Event(auto_reset=False)
+        self._quit_thread = cothread.Event(auto_reset=False)
         self.up_to_date = cothread.Event(auto_reset=False)
         self.up_to_date.Signal()
         self._calculation_thread = cothread.Spawn(self._recalculate_phys_data, callback)
@@ -145,7 +146,8 @@ class ATSimulator(object):
             field (str): The field to be changed.
             value (float): The value to be set.
         """
-        self._queue.Signal((func, field, value))
+        cothread.CallbackResult(self.up_to_date.Reset)
+        cothread.Callback(self._queue.Signal, (func, field, value))
 
     def _gather_one_sample(self):
         """If the queue is empty Wait() yields until an item is added. When the
@@ -155,11 +157,20 @@ class ATSimulator(object):
         apply_change_method, field, value = self._queue.Wait()
         apply_change_method(field, value)
 
+    def quit_calculation_thread(self, timeout=10):
+        """Quit the calculation thread after the current loop is complete."""
+        cothread.CallbackResult(self._quit_thread.Signal)
+        self.trigger_calculation()
+        cothread.CallbackResult(self._calculation_thread.Wait, timeout)
+        # For some reason we have to wait a bit before we can clear the queue.
+        cothread.Sleep(0.1)
+        cothread.CallbackResult(self._queue.Reset)
+
     def _recalculate_phys_data(self, callback):
         """Target function for the Cothread thread. Recalculates the physics
         data dependent on the status of the '_paused' flag and the length of
         the queue. The calculations only take place if '_paused' is False and
-        there is one or more changes on the queue.
+        there are one or more changes on the queue.
 
         .. Note:: If an error or exception is raised in the running thread then
            it does not continue running so subsequent calculations are not
@@ -174,7 +185,8 @@ class ATSimulator(object):
             at.AtWarning: any error or exception that was raised in the thread,
                            but as a warning.
         """
-        while True:
+        # Using Cothread Event is only ~4% slower than a normal Boolean but much safer.
+        while not self._quit_thread:
             logging.debug("Starting recalculation loop")
             self._gather_one_sample()
             while self._queue:
@@ -186,35 +198,55 @@ class ATSimulator(object):
                     )
                 except Exception as e:
                     warn(at.AtWarning(e))
-                # Signal up to date before the callback is executed in case
-                # the callback requires data that requires the calculation
-                # to be up to date.
+                # Signal the up to date flag since the physics data is now up to date.
+                # We do this before the callback is executed in case the callback
+                # checks the flag.
                 self.up_to_date.Signal()
                 if callback is not None:
                     logging.debug("Executing callback function.")
                     callback()
                     logging.debug("Callback completed.")
+            # This could cause thread-locking issues if another application using
+            # cothreads is poorly written and running on the same machine, but this
+            # isn't the case with any of the software that currently runs against
+            # ATIP/virtac and it's required for cothread.CallbackResult to play nicely
+            # with Bluesky. So it's a calculated risk until we move away from Cothread.
+            cothread.Yield()
 
     def toggle_calculations(self):
         """Pause or unpause the physics calculations by setting or clearing the
-        _paused flag. N.B. this does not pause the emptying of the queue.
+        _paused flag.
+
+        .. Note:: This does not pause the emptying of the queue.
         """
         if self._paused:
-            self._paused.Reset()
+            cothread.CallbackResult(self._paused.Reset)
         else:
-            self._paused.Signal()
+            cothread.CallbackResult(self._paused.Signal)
 
     def pause_calculations(self):
-        self._paused.Signal()
+        """Pause the physics calculations by setting the _paused flag.
+
+        .. Note:: This does not pause the emptying of the queue.
+        """
+        if not self._paused:
+            cothread.CallbackResult(self._paused.Signal)
 
     def unpause_calculations(self):
-        self._paused.Reset()
+        """Unpause the physics calculations by clearing the _paused flag."""
+        if self._paused:
+            cothread.CallbackResult(self._paused.Reset)
+            if not self.up_to_date:
+                self.trigger_calculation()
 
     def trigger_calculation(self):
-        self.up_to_date.Reset()
+        """Unpause the physics calculations and add a null item to the queue to
+        trigger a recalculation.
+
+        .. Note:: This method does not wait for the recalculation to complete,
+           that is up to the user.
+        """
         self.unpause_calculations()
-        # Add a null item to the queue. A recalculation will happen
-        # when it has been applied.
         self.queue_set(lambda *x: None, None, None)
 
     def wait_for_calculations(self, timeout=10):
@@ -229,7 +261,7 @@ class ATSimulator(object):
             concluded, else True.
         """
         try:
-            self.up_to_date.Wait(timeout)
+            cothread.CallbackResult(self.up_to_date.Wait, timeout)
             return True
         except cothread.Timedout:
             return False
@@ -320,7 +352,7 @@ class ATSimulator(object):
         elif field == "y":
             return tunes[1] % 1
         else:
-            raise FieldException("Field {0} is not a valid tune plane.".format(field))
+            raise FieldException(f"Field {field} is not a valid tune plane.")
 
     def get_chromaticity(self, field=None):
         """Return the chromaticity for the AT lattice for the specified plane.
@@ -344,9 +376,7 @@ class ATSimulator(object):
         elif field == "y":
             return chrom[1]
         else:
-            raise FieldException(
-                "Field {0} is not a valid chromaticity plane.".format(field)
-            )
+            raise FieldException(f"Field {field} is not a valid chromaticity plane.")
 
     # Get local linear optics data:
     def get_orbit(self, field=None):
@@ -376,9 +406,7 @@ class ATSimulator(object):
         elif field == "py":
             return closed_orbit[:-1, 3]
         else:
-            raise FieldException(
-                "Field {0} is not a valid closed orbit plane.".format(field)
-            )
+            raise FieldException(f"Field {field} is not a valid closed orbit plane.")
 
     def get_dispersion(self, field=None):
         """Return the dispersion at every element in the AT lattice for the
@@ -407,9 +435,7 @@ class ATSimulator(object):
         elif field == "py":
             return dispersion[:-1, 3]
         else:
-            raise FieldException(
-                "Field {0} is not a valid dispersion plane.".format(field)
-            )
+            raise FieldException(f"Field {field} is not a valid dispersion plane.")
 
     def get_alpha(self):
         """Return the alpha vector at every element in the AT lattice.
@@ -447,9 +473,9 @@ class ATSimulator(object):
     def get_emittance(self, field=None):
         """Return the emittance for the AT lattice for the specified plane.
 
-        .. Note:: The emittance at the entrance of the AT lattice as it is
-           constant throughout the lattice, and so which element's emittance
-           is returned is arbitrary.
+        .. Note:: The emittance at the entrance of the AT lattice is returned
+           as it is constant throughout the lattice, and so which element's
+           emittance is returned is arbitrary.
 
         Args:
             field (str): The desired field (x or y) of emittance, if None
@@ -469,9 +495,7 @@ class ATSimulator(object):
             elif field == "y":
                 return self._lattice_data.emittance[0]["emitXY"][1]
             else:
-                raise FieldException(
-                    "Field {0} is not a valid emittance plane.".format(field)
-                )
+                raise FieldException(f"Field {field} is not a valid emittance plane.")
         else:
             raise DataSourceException(
                 "Emittance calculations not enabled on this simulator object."
@@ -560,4 +584,4 @@ class ATSimulator(object):
         """
         _, I2, _, I4, I5 = self._lattice_data.radint
         gamma = self.get_energy() / (at.constants.e_mass)
-        return (I5 * at.constants.Cq * gamma ** 2) / (I2 - I4)
+        return (I5 * at.constants.Cq * gamma**2) / (I2 - I4)

@@ -1,7 +1,7 @@
-.. image:: https://travis-ci.org/dls-controls/atip.svg?branch=master
-    :target: https://travis-ci.org/dls-controls/atip
-.. image:: https://coveralls.io/repos/github/dls-controls/atip/badge.svg?branch=master
-    :target: https://coveralls.io/github/dls-controls/atip?branch=master
+.. image:: https://travis-ci.org/DiamondLightSource/atip.svg?branch=master
+    :target: https://travis-ci.org/DiamondLightSource/atip
+.. image:: https://coveralls.io/repos/github/DiamondLightSource/atip/badge.svg?branch=master
+    :target: https://coveralls.io/github/DiamondLightSource/atip?branch=master
 .. image:: https://readthedocs.org/projects/atip/badge/?version=latest
     :target: https://atip.readthedocs.io/en/latest/?badge=latest
 .. image:: https://badge.fury.io/py/atip.svg
@@ -11,7 +11,7 @@
 ATIP - Accelerator Toolbox Interface for Pytac
 ==============================================
 
-ATIP is an addition to `Pytac <https://github.com/dls-controls/pytac>`_,
+ATIP is an addition to `Pytac <https://github.com/DiamondLightSource/pytac>`_,
 a framework for controlling particle accelerators. ATIP adds a simulator to
 Pytac, which can be used and addressed in the same way as a real accelerator.
 
@@ -108,7 +108,7 @@ that AT element is returned.
 The ``ATSimulator`` object has a queue of pending changes. When a set request
 is received by an element, the element puts the changes onto the queue of the
 ``ATSimulator``. Inside the ``ATSimulator`` a
-`Cothread <https://github.com/dls-controls/cothread>`_ thread checks the
+`Cothread <https://github.com/DiamondLightSource/cothread>`_ thread checks the
 length of the queue. When it sees changes on the queue, the thread
 recalculates the physics data of the lattice to ensure that it is up to date.
 This means that the emittance and linear optics data held by ``ATSimulator``

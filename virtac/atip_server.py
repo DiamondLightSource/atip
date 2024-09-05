@@ -1,3 +1,4 @@
+import ast
 import csv
 from warnings import warn
 
@@ -97,7 +98,7 @@ class ATIPServer(object):
             self._create_feedback_records(feedback_csv, disable_emittance)
         if mirror_csv is not None:
             self._create_mirror_records(mirror_csv)
-        print("Finished creating all {0} records.".format(len(self.all_record_names)))
+        print(f"Finished creating all {len(self.all_record_names)} records.")
 
     @property
     def all_record_names(self):
@@ -150,7 +151,8 @@ class ATIPServer(object):
         Args:
             limits_csv (string): The filepath to the .csv file from which to
                                     load the pv limits.
-            disable_emittance (bool): Whether the emittance related PVs should be created.
+            disable_emittance (bool): Whether the emittance related PVs should be
+                                        created or not.
         """
         limits_dict = {}
         if limits_csv is not None:
@@ -297,14 +299,32 @@ class ATIPServer(object):
         Args:
             feedback_csv (string): The filepath to the .csv file to load the
                                     records in accordance with.
-            disable_emittance (bool): Whether the emittance related PVs should be created.
+            disable_emittance (bool): Whether the emittance related PVs should be
+                                        created or not.
         """
+        # We don't set limits or precision but this shouldn't be an issue as these
+        # records aren't really intended to be set to by a user.
         csv_reader = csv.DictReader(open(feedback_csv))
         for line in csv_reader:
+            try:
+                readonly = ast.literal_eval(line["read-only"])
+                assert isinstance(readonly, bool)
+            except (ValueError, AssertionError):
+                raise ValueError(
+                    f"Unable to evaluate {line['read-only']} as a boolean."
+                )
             prefix, suffix = line["pv"].split(":", 1)
             builder.SetDeviceName(prefix)
-            in_record = builder.aIn(suffix, initial_value=int(line["value"]), MDEL="-1")
-            self._feedback_records[(int(line["index"]), line["field"])] = in_record
+            if readonly:
+                in_record = builder.aIn(
+                    suffix, initial_value=int(line["value"]), MDEL="-1"
+                )
+                self._feedback_records[(int(line["index"]), line["field"])] = in_record
+            else:
+                out_record = builder.aOut(
+                    suffix, initial_value=int(line["value"]), always_update=True
+                )
+                self._feedback_records[(int(line["index"]), line["field"])] = out_record
         # Special case: BPM ID for the x axis of beam position plot, since we
         # cannot currently create Waveform records via CSV.
         bpm_ids = [
@@ -316,6 +336,28 @@ class ATIPServer(object):
             "BPMID", NELM=len(bpm_ids), initial_value=bpm_ids
         )
         self._feedback_records[(0, "bpm_id")] = bpm_id_record
+        # Special case: Fast BBA oscillation PVs - should also be moved to CSV in future
+        for cell in range(1, self.lattice.symmetry + 1):
+            cell = str(cell).zfill(2)
+            builder.SetDeviceName(f"SR{cell}A-CS-FOFB-01")
+            start_times = builder.WaveformOut(
+                "EXCITE:START_TIMES", initial_value=numpy.zeros(18)
+            )
+            self._feedback_records[(0, f"cell_{cell}_excite_start_times")] = start_times
+            excite_amps = builder.WaveformOut(
+                "EXCITE:AMPS", initial_value=numpy.zeros(18)
+            )
+            self._feedback_records[(0, f"cell_{cell}_excite_amps")] = excite_amps
+            excite_deltas = builder.WaveformOut(
+                "EXCITE:DELTAS", initial_value=numpy.zeros(18)
+            )
+            self._feedback_records[(0, f"cell_{cell}_excite_deltas")] = excite_deltas
+            excite_ticks = builder.WaveformOut(
+                "EXCITE:TICKS", initial_value=numpy.zeros(18)
+            )
+            self._feedback_records[(0, f"cell_{cell}_excite_ticks")] = excite_ticks
+            excite_prime = builder.aOut("EXCITE:PRIME", initial_value=1)
+            self._feedback_records[(0, f"cell_{cell}_excite_prime")] = excite_prime
         # We can choose to not calculate emittance as it is not always required,
         # which decreases computation time.
         if not disable_emittance:
@@ -380,9 +422,8 @@ class ATIPServer(object):
                 output_record = builder.Waveform(suffix, initial_value=value)
             else:
                 raise TypeError(
-                    "{0} isn't a supported mirroring output type;"
-                    "please enter 'caput', 'aIn', 'longIn', or "
-                    "'Waveform'.".format(line["output type"])
+                    f"{line['output type']} isn't a supported mirroring output type;"
+                    "please enter 'caput', 'aIn', 'longIn', or 'Waveform'."
                 )
             # Update the mirror dictionary.
             for pv in monitor:
@@ -407,10 +448,9 @@ class ATIPServer(object):
                 self._mirrored_records[pv].append(refresh_object)
             else:
                 raise TypeError(
-                    "{0} is not a valid mirror type; please enter "
-                    "a currently supported type from: 'basic', "
-                    "'summate', 'collate', 'inverse', and "
-                    "'refresh'.".format(line["mirror type"])
+                    f"{line['mirror type']} is not a valid mirror type; please enter a "
+                    "a currently supported type from: 'basic', 'summate', 'collate', "
+                    "'inverse', and 'refresh'."
                 )
 
     def monitor_mirrored_pvs(self):
@@ -436,8 +476,7 @@ class ATIPServer(object):
             record = self.all_record_names[pv_name]
         except KeyError:
             raise ValueError(
-                "{0} is not the name of a record created by this "
-                "server.".format(pv_name)
+                f"{pv_name} is not the name of a record created by this server."
             )
         else:
             record.set(record.get())
@@ -446,6 +485,9 @@ class ATIPServer(object):
         """Read the tune feedback .csv and find the associated offset PVs,
         before starting monitoring them for a change to mimic the behaviour of
         the quadrupoles used by the tune feedback system on the live machine.
+
+        .. Note:: This is intended to be on the recieving end of the tune
+           feedback system and doesn't actually perfom tune feedback itself.
 
         Args:
             tune_csv (str): A path to a tune feedback .csv file to be used
@@ -485,12 +527,13 @@ class ATIPServer(object):
         """Set a value to the feedback in records.
 
         possible element fields are:
-            ['x_fofb_disabled', 'x_sofb_disabled', 'y_fofb_disabled',
-             'y_sofb_disabled', 'h_fofb_disabled', 'h_sofb_disabled',
-             'v_fofb_disabled', 'v_sofb_disabled', 'error_sum', 'enabled',
-             'state', 'offset']
+            ['error_sum', 'enabled', 'state', 'offset', 'golden_offset', 'bcd_offset',
+             'bba_offset']
         possible lattice fields are:
-            ['beam_current', 'feedback_status', 'bpm_id', 'emittance_status']
+            ['beam_current', 'feedback_status', 'bpm_id', 'emittance_status',
+             'fofb_status', 'cell_<cell_number>_excite_start_times',
+             'cell_<cell_number>_excite_amps', 'cell_<cell_number>_excite_deltas',
+             'cell_<cell_number>_excite_ticks', 'cell_<cell_number>_excite_prime']
 
         Args:
             index (int): The index of the element on which to set the value;
@@ -507,11 +550,9 @@ class ATIPServer(object):
         except KeyError:
             if index == 0:
                 raise FieldException(
-                    "Lattice {0} does not have field {1}.".format(self.lattice, field)
+                    f"Simulated lattice {self.lattice} does not have field {field}."
                 )
             else:
                 raise FieldException(
-                    "Element {0} does not have field {1}.".format(
-                        self.lattice[index], field
-                    )
+                    f"Simulated element {self.lattice[index]} does not have field {field}."
                 )
