@@ -63,7 +63,7 @@ def main():
         DATADIR / ring_mode / "feedback.csv",
         DATADIR / ring_mode / "mirrored.csv",
         DATADIR / ring_mode / "tunefb.csv",
-        not args.disable_emittance,
+        args.disable_emittance,
     )
 
     # Warn if set to default EPICS port(s) as this will likely cause PV conflicts.

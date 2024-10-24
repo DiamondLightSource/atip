@@ -162,6 +162,8 @@ class ATIPServer(object):
                     float(line["upper"]),
                     float(line["lower"]),
                     int(line["precision"]),
+                    float(line["drive high"]),
+                    float(line["drive low"]),
                 )
         bend_in_record = None
         for element in self.lattice:
@@ -178,8 +180,6 @@ class ATIPServer(object):
                     builder.SetDeviceName(get_pv.split(":", 1)[0])
                     in_record = builder.aIn(
                         get_pv.split(":", 1)[1],
-                        DRVH=drive_high,
-                        DRVL=drive_low,
                         LOPR=lower,
                         HOPR=upper,
                         PREC=precision,
@@ -220,8 +220,6 @@ class ATIPServer(object):
                     builder.SetDeviceName(get_pv.split(":", 1)[0])
                     in_record = builder.aIn(
                         get_pv.split(":", 1)[1],
-                        DRVH=drive_high,
-                        DRVL=drive_low,
                         LOPR=lower,
                         HOPR=upper,
                         PREC=precision,
