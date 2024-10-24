@@ -13,8 +13,8 @@ used by convention at Diamond for simulations) to avoid conflict with the same
 PVs on the live machine.
 
 
-Start the virtual accelerator
------------------------------
+Starting the virtual accelerator:
+---------------------------------
 
 Run the virtac under the development EPICS port::
 
@@ -48,6 +48,30 @@ Leave the server running and in a new terminal update the EPICS port::
 
 In this new terminal you are then free to address the simulator as you would
 the live machine, either through Pytac or by directly accessing the PVs.
+
+Command Line Options:
+---------------------
+
+Usage::
+
+    virtac [-h] [--disable-emittance] [--enable-tfb] [--verbose] [ring_mode]
+
+Positional arguments::
+
+    ring_mode             The ring mode to be used, e.g., IO4 or DIAD
+
+Optional arguments::
+
+    -h, --help            show this help message and exit
+    -d, --disable-emittance
+                          Disable the simulator's time-consuming emittance
+                          calculation
+    -t, --enable-tfb      Simulate extra dummy hardware to be used by the Tune
+                          Feedback system
+    -v, --verbose         Increase output and logging verbosity
+
+N.B. The relatively slow emittance calculation is enabled by default, if the
+virtac isn't as performant as your would like try disabling it using ``-d``.
 
 Feedback Records:
 -----------------
