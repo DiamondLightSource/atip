@@ -76,13 +76,20 @@ def generate_pv_limits(lattice):
     """Get the control limits and precision values from the live machine for
     all normal PVS.
     """
-    data = [("pv", "upper", "lower", "precision")]
+    data = [("pv", "upper", "lower", "precision", "drive high", "drive low")]
     for element in lattice:
         for field in element.get_fields()[pytac.SIM]:
             pv = element.get_pv_name(field, pytac.RB)
             ctrl = caget(pv, format=FORMAT_CTRL)
             data.append(
-                (pv, ctrl.upper_ctrl_limit, ctrl.lower_ctrl_limit, ctrl.precision)
+                (
+                    pv,
+                    ctrl.upper_ctrl_limit,
+                    ctrl.lower_ctrl_limit,
+                    ctrl.precision,
+                    ctrl.upper_disp_limit,
+                    ctrl.lower_disp_limit,
+                )
             )
             try:
                 pv = element.get_pv_name(field, pytac.SP)
@@ -91,7 +98,14 @@ def generate_pv_limits(lattice):
             else:
                 ctrl = caget(pv, format=FORMAT_CTRL)
                 data.append(
-                    (pv, ctrl.upper_ctrl_limit, ctrl.lower_ctrl_limit, ctrl.precision)
+                    (
+                        pv,
+                        ctrl.upper_ctrl_limit,
+                        ctrl.lower_ctrl_limit,
+                        ctrl.precision,
+                        ctrl.upper_disp_limit,
+                        ctrl.lower_disp_limit,
+                    )
                 )
     return data
 

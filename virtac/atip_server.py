@@ -162,6 +162,8 @@ class ATIPServer(object):
                     float(line["upper"]),
                     float(line["lower"]),
                     int(line["precision"]),
+                    float(line["drive high"]),
+                    float(line["drive low"]),
                 )
         bend_in_record = None
         for element in self.lattice:
@@ -172,8 +174,8 @@ class ATIPServer(object):
                         "b0", units=pytac.ENG, data_source=pytac.SIM
                     )
                     get_pv = element.get_pv_name("b0", pytac.RB)
-                    upper, lower, precision = limits_dict.get(
-                        get_pv, (None, None, None)
+                    upper, lower, precision, drive_high, drive_low = limits_dict.get(
+                        get_pv, (None, None, None, None, None)
                     )
                     builder.SetDeviceName(get_pv.split(":", 1)[0])
                     in_record = builder.aIn(
@@ -185,12 +187,14 @@ class ATIPServer(object):
                         initial_value=value,
                     )
                     set_pv = element.get_pv_name("b0", pytac.SP)
-                    upper, lower, precision = limits_dict.get(
-                        set_pv, (None, None, None)
+                    upper, lower, precision, drive_high, drive_low = limits_dict.get(
+                        set_pv, (None, None, None, None, None)
                     )
                     builder.SetDeviceName(set_pv.split(":", 1)[0])
                     out_record = builder.aOut(
                         set_pv.split(":", 1)[1],
+                        DRVH=drive_high,
+                        DRVL=drive_low,
                         LOPR=lower,
                         HOPR=upper,
                         PREC=precision,
@@ -210,8 +214,8 @@ class ATIPServer(object):
                         field, units=pytac.ENG, data_source=pytac.SIM
                     )
                     get_pv = element.get_pv_name(field, pytac.RB)
-                    upper, lower, precision = limits_dict.get(
-                        get_pv, (None, None, None)
+                    upper, lower, precision, drive_high, drive_low = limits_dict.get(
+                        get_pv, (None, None, None, None, None)
                     )
                     builder.SetDeviceName(get_pv.split(":", 1)[0])
                     in_record = builder.aIn(
@@ -228,12 +232,14 @@ class ATIPServer(object):
                     except HandleException:
                         self._rb_only_records.append(in_record)
                     else:
-                        upper, lower, precision = limits_dict.get(
-                            set_pv, (None, None, None)
+                        upper, lower, precision, drive_high, drive_low = limits_dict.get(
+                            set_pv, (None, None, None, None, None)
                         )
                         builder.SetDeviceName(set_pv.split(":", 1)[0])
                         out_record = builder.aOut(
                             set_pv.split(":", 1)[1],
+                            DRVH=drive_high,
+                            DRVL=drive_low,
                             LOPR=lower,
                             HOPR=upper,
                             PREC=precision,
