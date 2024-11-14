@@ -87,10 +87,8 @@ def generate_pv_limits(lattice):
                     ctrl.upper_ctrl_limit,
                     ctrl.lower_ctrl_limit,
                     ctrl.precision,
-                    #ctrl.upper_disp_limit,
-                    #ctrl.lower_disp_limit,
-                    ctrl.upper_ctrl_limit,
-                    ctrl.lower_ctrl_limit,
+                    ctrl.upper_disp_limit,
+                    ctrl.lower_disp_limit,
                 )
             )
             try:
@@ -105,10 +103,8 @@ def generate_pv_limits(lattice):
                         ctrl.upper_ctrl_limit,
                         ctrl.lower_ctrl_limit,
                         ctrl.precision,
-                        #ctrl.upper_disp_limit,
-                        #ctrl.lower_disp_limit,
-                        ctrl.upper_ctrl_limit,
-                        ctrl.lower_ctrl_limit,
+                        ctrl.upper_disp_limit,
+                        ctrl.lower_disp_limit,
                     )
                 )
     return data
