@@ -268,7 +268,7 @@ def write_data_to_file(data, filename, ring_mode):
     )
     with open(filepath, "w", newline="") as file:
         csv_writer = csv.writer(file)
-        csv_writer.writerows(data)
+        csv_writer.writerows([data[0]] + sorted(data[1:]))
 
 
 def parse_arguments():
@@ -310,12 +310,16 @@ if __name__ == "__main__":
     args = parse_arguments()
     lattice = atip.utils.loader(args.ring_mode)
     all_elements = atip.utils.preload(lattice)
+    print("Creating feedback PVs CSV file.")
     data = generate_feedback_pvs(all_elements)
     data.extend(generate_bba_pvs(all_elements)[1:])
     write_data_to_file(data, args.feedback, args.ring_mode)
+    print("Creating limits PVs CSV file.")
     data = generate_pv_limits(lattice)
     write_data_to_file(data, args.limits, args.ring_mode)
+    print("Creating mirrored PVs CSV file.")
     data = generate_mirrored_pvs(lattice)
     write_data_to_file(data, args.mirrored, args.ring_mode)
+    print("Creating tune PVs CSV file.")
     data = generate_tune_pvs(lattice)
     write_data_to_file(data, args.tune, args.ring_mode)
