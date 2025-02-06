@@ -79,8 +79,6 @@ class ATSimulator(object):
            _at_lat (at.lattice_object.Lattice): The centralised instance of an
                                                  AT lattice from which the
                                                  physics data is calculated.
-           _rp (numpy.array): A boolean array to be used as refpts for the
-                               physics calculations.
             _disable_emittance (bool): Whether or not to perform the beam
                                         envelope based emittance calculations.
            _lattice_data (LatticeData): calculated physics data
@@ -119,13 +117,12 @@ class ATSimulator(object):
                 f"If passed, 'callback' should be callable, {callback} is not."
             )
         self._at_lat = at_lattice
-        self._rp = numpy.ones(len(at_lattice) + 1, dtype=bool)
         self._disable_emittance = disable_emittance
         self._at_lat.radiation_on()
 
         # Initial phys data calculation.
         self._lattice_data = calculate_optics(
-            self._at_lat, self._rp, self._disable_emittance
+            self._at_lat, at.All, self._disable_emittance
         )
 
         # Threading stuff initialisation.
@@ -194,7 +191,7 @@ class ATSimulator(object):
             if bool(self._paused) is False:
                 try:
                     self._lattice_data = calculate_optics(
-                        self._at_lat, self._rp, self._disable_emittance
+                        self._at_lat, at.All, self._disable_emittance
                     )
                 except Exception as e:
                     warn(at.AtWarning(e))
