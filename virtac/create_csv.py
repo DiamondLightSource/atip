@@ -76,13 +76,20 @@ def generate_pv_limits(lattice):
     """Get the control limits and precision values from the live machine for
     all normal PVS.
     """
-    data = [("pv", "upper", "lower", "precision")]
+    data = [("pv", "upper", "lower", "precision", "drive high", "drive low")]
     for element in lattice:
         for field in element.get_fields()[pytac.SIM]:
             pv = element.get_pv_name(field, pytac.RB)
             ctrl = caget(pv, format=FORMAT_CTRL)
             data.append(
-                (pv, ctrl.upper_ctrl_limit, ctrl.lower_ctrl_limit, ctrl.precision)
+                (
+                    pv,
+                    ctrl.upper_ctrl_limit,
+                    ctrl.lower_ctrl_limit,
+                    ctrl.precision,
+                    ctrl.upper_disp_limit,
+                    ctrl.lower_disp_limit,
+                )
             )
             try:
                 pv = element.get_pv_name(field, pytac.SP)
@@ -91,7 +98,14 @@ def generate_pv_limits(lattice):
             else:
                 ctrl = caget(pv, format=FORMAT_CTRL)
                 data.append(
-                    (pv, ctrl.upper_ctrl_limit, ctrl.lower_ctrl_limit, ctrl.precision)
+                    (
+                        pv,
+                        ctrl.upper_ctrl_limit,
+                        ctrl.lower_ctrl_limit,
+                        ctrl.precision,
+                        ctrl.upper_disp_limit,
+                        ctrl.lower_disp_limit,
+                    )
                 )
     return data
 
@@ -254,7 +268,7 @@ def write_data_to_file(data, filename, ring_mode):
     )
     with open(filepath, "w", newline="") as file:
         csv_writer = csv.writer(file)
-        csv_writer.writerows(data)
+        csv_writer.writerows([data[0]] + sorted(data[1:]))
 
 
 def parse_arguments():
@@ -296,12 +310,16 @@ if __name__ == "__main__":
     args = parse_arguments()
     lattice = atip.utils.loader(args.ring_mode)
     all_elements = atip.utils.preload(lattice)
+    print("Creating feedback PVs CSV file.")
     data = generate_feedback_pvs(all_elements)
     data.extend(generate_bba_pvs(all_elements)[1:])
     write_data_to_file(data, args.feedback, args.ring_mode)
+    print("Creating limits PVs CSV file.")
     data = generate_pv_limits(lattice)
     write_data_to_file(data, args.limits, args.ring_mode)
+    print("Creating mirrored PVs CSV file.")
     data = generate_mirrored_pvs(lattice)
     write_data_to_file(data, args.mirrored, args.ring_mode)
+    print("Creating tune PVs CSV file.")
     data = generate_tune_pvs(lattice)
     write_data_to_file(data, args.tune, args.ring_mode)
