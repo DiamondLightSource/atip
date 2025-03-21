@@ -108,5 +108,5 @@ def main():
     server.monitor_mirrored_pvs()
     if args.enable_tfb:
         server.setup_tune_feedback()
-
-    softioc.interactive_ioc(globals())
+    context = globals() | {"server": server}
+    softioc.interactive_ioc(context)
