@@ -1,6 +1,7 @@
+from unittest import mock
+
 import at
 import cothread
-import mock
 import numpy
 import pytest
 from pytac.exceptions import DataSourceException, FieldException
@@ -225,7 +226,7 @@ def test_get_at_element(atsim, at_lattice):
 
 
 def test_get_at_lattice(atsim, at_lattice):
-    for elem1, elem2 in zip(atsim.get_at_lattice(), atsim._at_lat):
+    for elem1, elem2 in zip(atsim.get_at_lattice(), atsim._at_lat, strict=False):
         assert elem1 == elem2
 
 

@@ -7,8 +7,7 @@ See README.rst & INSTALL.rst for more information.
     Version number as calculated by https://github.com/pypa/setuptools_scm
 """
 
-from ._version import __version__
-
 from . import load_sim, sim_data_sources, simulator, utils
+from ._version import __version__
 
 __all__ = ["__version__", "load_sim", "sim_data_sources", "simulator", "utils"]

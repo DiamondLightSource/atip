@@ -60,7 +60,7 @@ def calculate_optics(
     return LatticeData(twiss, beamdata.tune, beamdata.chromaticity, emitdata, radint)
 
 
-class ATSimulator(object):
+class ATSimulator:
     """A centralised class which makes use of AT to simulate the physics data
     for the copy of the AT lattice which it holds. It works as follows, when a
     change is made to the lattice in Pytac it is added to the queue attribute

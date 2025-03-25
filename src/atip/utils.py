@@ -73,7 +73,7 @@ def preload_at(at_lat):
     class elems:
         pass
 
-    setattr(elems, "all", [elem for elem in at_lat])
+    elems.all = [elem for elem in at_lat]
     elems_dict = {
         type_: []
         for type_ in [
@@ -120,7 +120,7 @@ def preload(pytac_lat):
     class elems:
         pass
 
-    setattr(elems, "all", pytac_lat.get_elements())
+    elems.all = pytac_lat.get_elements()
     for family in pytac_lat.get_all_families():
         setattr(elems, family, pytac_lat.get_elements(family))
     return elems

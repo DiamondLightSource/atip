@@ -11,7 +11,7 @@ import epicscorelibs.path.cothread  # noqa
 from cothread.catools import ca_nothing, caget
 from softioc import builder, softioc
 
-from . import __version__, atip_server
+from . import __version__
 
 __all__ = ["main"]
 
@@ -49,6 +49,7 @@ def parse_arguments():
 
 
 def main():
+    print("Hi")
     args = parse_arguments()
     log_level = logging.DEBUG if args.verbose else logging.INFO
     logging.basicConfig(level=log_level, format=LOG_FORMAT)

@@ -1,4 +1,5 @@
-import mock
+from unittest import mock
+
 import pytest
 from pytac.exceptions import ControlSystemException, FieldException, HandleException
 from testfixtures import LogCapture
