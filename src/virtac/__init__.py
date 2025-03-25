@@ -7,12 +7,12 @@ See README.rst & FEEDBACK_SYSTEMS.rst for more information.
     Version number as calculated by https://github.com/pypa/setuptools_scm
 """
 
-from . import atip_ioc_entry, atip_server, create_csv, masks, mirror_objects
+from . import __main__, atip_server, create_csv, masks, mirror_objects
 from ._version import __version__
 
 __all__ = [
     "__version__",
-    "atip_ioc_entry",
+    "__main__",
     "atip_server",
     "create_csv",
     "masks",

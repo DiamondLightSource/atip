@@ -1,6 +1,6 @@
 """Interface for ``python -m atip``."""
 
-import argparse
+import argparse  # noqa: I001
 import logging
 import os
 import socket
@@ -9,9 +9,10 @@ from warnings import warn
 
 import epicscorelibs.path.cothread  # noqa
 from cothread.catools import ca_nothing, caget
-from softioc import builder, softioc
 
-from . import __version__
+from softioc import builder, softioc
+from . import atip_server
+from ._version import __version__
 
 __all__ = ["main"]
 
@@ -49,7 +50,6 @@ def parse_arguments():
 
 
 def main():
-    print("Hi")
     args = parse_arguments()
     log_level = logging.DEBUG if args.verbose else logging.INFO
     logging.basicConfig(level=log_level, format=LOG_FORMAT)
