@@ -32,12 +32,8 @@ simulation.
 Source          | <https://github.com/DiamondLightSource/atip>
 :---:           | :---:
 PyPI            | `pip install atip`
-<<<<<<< before updating
-Documentation   | <https://atip.readthedocs.io/en/latest/>
-=======
 Docker          | `docker run ghcr.io/diamondlightsource/atip:latest`
 Documentation   | <https://diamondlightsource.github.io/atip>
->>>>>>> after updating
 Releases        | <https://github.com/DiamondLightSource/atip/releases>
 
 Installation:
