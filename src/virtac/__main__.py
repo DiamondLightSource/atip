@@ -1,3 +1,5 @@
+"""Interface for ``python -m atip``."""
+
 import argparse
 import logging
 import os
@@ -9,7 +11,9 @@ import epicscorelibs.path.cothread  # noqa
 from cothread.catools import ca_nothing, caget
 from softioc import builder, softioc
 
-from . import atip_server
+from . import __version__, atip_server
+
+__all__ = ["main"]
 
 LOG_FORMAT = "%(asctime)s %(message)s"
 
@@ -34,6 +38,12 @@ def parse_arguments():
     )
     parser.add_argument(
         "--verbose", "-v", help="increase output verbosity", action="store_true"
+    )
+    parser.add_argument(
+        "-V",
+        "--version",
+        action="version",
+        version=__version__,
     )
     return parser.parse_args()
 
@@ -102,3 +112,7 @@ def main():
         server.setup_tune_feedback()
 
     softioc.interactive_ioc(globals())
+
+
+if __name__ == "__main__":
+    main()

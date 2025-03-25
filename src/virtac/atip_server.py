@@ -392,8 +392,7 @@ class ATIPServer(object):
                 line["mirror type"] in ["collate", "summate"]
             ):
                 raise IndexError(
-                    "collation and summation mirror types take at"
-                    " least two input PVs."
+                    "collation and summation mirror types take at least two input PVs."
                 )
             monitor = input_pvs  # need to update to support camonitor multiple
             # Convert input pvs to record objects
