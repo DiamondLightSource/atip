@@ -89,17 +89,22 @@ def main():
     if 5064 in ports_list or 5065 in ports_list:
         warn(
             f"At least one of {epics_env_vars} is set to 5064 or 5065"
-            + conflict_warning
+            + conflict_warning,
+            stacklevel=1,
         )
     elif all(port == 0 for port in ports_list):
         warn(
             "No EPICS port set, default base port (5064) will be used"
-            + conflict_warning
+            + conflict_warning,
+            stacklevel=1,
         )
     # Avoid PV conflict between multiple IP interfaces on the same machine.
     primary_ip = socket.gethostbyname(socket.getfqdn())
     if "EPICS_CAS_INTF_ADDR_LIST" in os.environ.keys():
-        warn("Pre-existing 'EPICS_CAS_INTF_ADDR_LIST' value" + conflict_warning)
+        warn(
+            "Pre-existing 'EPICS_CAS_INTF_ADDR_LIST' value" + conflict_warning,
+            stacklevel=1,
+        )
     else:
         os.environ["EPICS_CAS_INTF_ADDR_LIST"] = primary_ip
         os.environ["EPICS_CAS_BEACON_ADDR_LIST"] = primary_ip

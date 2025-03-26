@@ -56,6 +56,7 @@ def loader(mode="I04", callback=None, disable_emittance=False):
     return lattice
 
 
+# TODO: This doesnt seem to work, fix or remove
 def preload_at(at_lat):
     """Load the elements onto an 'elems' object's attributes by type so that
     groups of elements of the same type (class) can be more easily accessed,
@@ -73,7 +74,7 @@ def preload_at(at_lat):
     class elems:
         pass
 
-    elems.all = [elem for elem in at_lat]
+    elems.all = [elem for elem in at_lat]  # noqa: C416
     elems_dict = {
         type_: []
         for type_ in [
@@ -142,7 +143,7 @@ def get_atsim(target):
     if isinstance(target, atip.simulator.ATSimulator):
         return target
     else:  # Pytac lattice
-        return target._data_source_manager._data_sources[pytac.SIM]._atsim
+        return target._data_source_manager._data_sources[pytac.SIM]._atsim  # noqa: SLF001 TODO: Fix private member access
 
 
 def get_sim_lattice(target):

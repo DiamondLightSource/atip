@@ -197,7 +197,7 @@ class ATSimulator:
                         self._at_lat, self._rp, self._disable_emittance
                     )
                 except Exception as e:
-                    warn(at.AtWarning(e))
+                    warn(at.AtWarning(e), stacklevel=1)
                 # Signal the up to date flag since the physics data is now up to date.
                 # We do this before the callback is executed in case the callback
                 # checks the flag.

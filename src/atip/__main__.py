@@ -4,7 +4,10 @@ library and not really designed to be a runnable application."""
 from argparse import ArgumentParser
 from collections.abc import Sequence
 
-from . import __version__
+import pytac
+
+import atip
+from atip import __version__
 
 __all__ = ["main"]
 
@@ -19,6 +22,14 @@ def main(args: Sequence[str] | None = None) -> None:
         version=__version__,
     )
     parser.parse_args(args)
+
+    lat = pytac.load_csv.load("DIAD")
+    atip.load_sim.load_from_filepath(lat, "src/atip/rings/DIAD.mat")
+    lat.set_default_data_source(pytac.SIM)
+    print(lat.get_value("x"))
+    hcor1 = lat.get_elements("HSTR")[0]
+    hcor1.set_value("x_kick", 1, units=pytac.ENG)
+    print(lat.get_value("x"))
 
 
 if __name__ == "__main__":

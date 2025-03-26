@@ -199,7 +199,7 @@ def test_toggle_calculations_and_wait_for_calculations(atsim, initial_phys_data)
     atsim._at_lat[5].PolynomB[1] = 2.5
     atsim.queue_set(mock.Mock(), "f", 0)
     assert atsim.wait_for_calculations(2) is False
-    _check_initial_phys_data(atsim, initial_phys_data) is True
+    assert _check_initial_phys_data(atsim, initial_phys_data) is True
     atsim.toggle_calculations()
     atsim.queue_set(mock.Mock(), "f", 0)
     assert atsim.wait_for_calculations() is True

@@ -309,10 +309,10 @@ class ATIPServer:
             try:
                 readonly = ast.literal_eval(line["read-only"])
                 assert isinstance(readonly, bool)
-            except (ValueError, AssertionError):
+            except (ValueError, AssertionError) as err:
                 raise ValueError(
                     f"Unable to evaluate {line['read-only']} as a boolean."
-                )
+                ) from err
             prefix, suffix = line["pv"].split(":", 1)
             builder.SetDeviceName(prefix)
             if readonly:
@@ -462,7 +462,7 @@ class ATIPServer:
             try:
                 self._monitored_pvs[pv] = camonitor(pv, mask.callback)
             except Exception as e:
-                warn(e)
+                warn(str(e), stacklevel=1)
 
     def refresh_record(self, pv_name):
         """For a given PV refresh the time-stamp of the associated record,
@@ -476,7 +476,7 @@ class ATIPServer:
         except KeyError:
             raise ValueError(
                 f"{pv_name} is not the name of a record created by this server."
-            )
+            ) from KeyError
         else:
             record.set(record.get())
 
@@ -513,7 +513,7 @@ class ATIPServer:
                     line["delta"], mask.callback
                 )
             except Exception as e:
-                warn(e)
+                warn(str(e), stacklevel=1)
 
     def stop_all_monitoring(self):
         """Stop monitoring mirrored records and tune feedback offsets."""
@@ -550,8 +550,9 @@ class ATIPServer:
             if index == 0:
                 raise FieldException(
                     f"Simulated lattice {self.lattice} does not have field {field}."
-                )
+                ) from KeyError
             else:
                 raise FieldException(
-                    f"Simulated element {self.lattice[index]} does not have field {field}."
-                )
+                    f"Simulated element {self.lattice[index]} does not have \
+                    field {field}."
+                ) from KeyError
