@@ -46,7 +46,7 @@ dev = [
 ]
 
 [project.scripts]
-#Do we want an entry into atip as well?
+atip = "atip.__main__:main"
 virtac = "virtac.__main__:main"
 
 [project.urls]
