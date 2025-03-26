@@ -36,6 +36,7 @@ dev = [
     "pyright",
     "pytest",
     "pytest-cov",
+    "testfixtures",
     "ruff",
     "sphinx-autobuild",
     "sphinx-copybutton",
