@@ -1,5 +1,5 @@
-"""Atip entrypoint. This file currently does not do anything interesting, as atip is a library
-and not really designed to be a runnable application."""
+"""Atip entrypoint. This file currently does not do anything interesting, as atip is a
+library and not really designed to be a runnable application."""
 
 from argparse import ArgumentParser
 from collections.abc import Sequence
