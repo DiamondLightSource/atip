@@ -216,3 +216,5 @@ ATSimulator object having a large number of methods.
 
 A number of functions that perform tasks that are frequent or long-winded are
 included in ``utils.py`` to make life easier for the user.
+
+<!-- README only content. Anything below this line won't be included in index.md -->
