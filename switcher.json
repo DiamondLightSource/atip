@@ -1,0 +1,26 @@
+[
+  {
+    "version": ".github",
+    "url": "https://DiamondLightSource.github.io/atip/.github/"
+  },
+  {
+    "version": "atip",
+    "url": "https://DiamondLightSource.github.io/atip/atip/"
+  },
+  {
+    "version": "docs",
+    "url": "https://DiamondLightSource.github.io/atip/docs/"
+  },
+  {
+    "version": "switch_to_copier_template",
+    "url": "https://DiamondLightSource.github.io/atip/switch_to_copier_template/"
+  },
+  {
+    "version": "tests",
+    "url": "https://DiamondLightSource.github.io/atip/tests/"
+  },
+  {
+    "version": "virtac",
+    "url": "https://DiamondLightSource.github.io/atip/virtac/"
+  }
+]
