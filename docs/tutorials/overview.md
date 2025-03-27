@@ -12,7 +12,9 @@ The python implementation of
 [Accelerator Toolbox](<https://github.com/atcollab/at>) (pyAT) is used
 for the simulation.
 
-![How ATIP fits into the combined control structure.](../images/control_structure.png)
+:::sidebar
+<img src="../_images/control_structure.png" alt="How ATIP fits into the combined control structure." width="300px" class="bg-primary" align="right">
+:::
 
 ATIP allows an AT lattice to be fitted into the simulation data source of a
 Pytac lattice. This integrated lattice acts like a normal Pytac lattice, and

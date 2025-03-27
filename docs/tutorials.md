@@ -6,5 +6,8 @@ Tutorials for installation and typical usage. New users start here.
 :maxdepth: 1
 :glob:
 
-tutorials/*
+tutorials/installation
+tutorials/overview
+tutorials/atip_example
+tutorials/virtac_example
 ```
