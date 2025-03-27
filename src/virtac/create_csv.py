@@ -99,12 +99,14 @@ def generate_pv_limits(lattice):
 
 def generate_mirrored_pvs(lattice):
     """Structure of data:
+
     output type: The type of output record to create, only 'aIn', 'longIn',
         'Waveform' types are currently supported; if '' then output to an
         existing in record already created in ATIPServer, 'caput' is also a
         special case it creates a mask for cothread.catools.caput calling
         set(value) on this mask will call caput with the output PV and the
         passed value.
+
     mirror type: The type of mirroring to apply:
         - basic: set the value of the input record to the output record.
         - summate: sum the values of the input records and set the result to
@@ -115,10 +117,13 @@ def generate_mirrored_pvs(lattice):
             the only transformation type currently supported is 'inverse'.
         - refresh: monitor the in PV and on a change call refresh_record on
                    the output PV.
+
     in: The PV(s) to be monitored, on change mirror is updated, if multiple
         then the PVs should be separated by a comma and one space.
+
     out: The single PV to output to, if a 'record type' is spcified then a new
         record will be created and so must not exist already.
+
     value: The inital value of the output record.
     """
     data = [("output type", "mirror type", "in", "out", "value")]

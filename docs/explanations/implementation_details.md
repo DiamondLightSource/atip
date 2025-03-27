@@ -1,10 +1,10 @@
-# Implementation:
+# Implementation details
 
 All the accelerator data for the simulator is held in an ATSimulator object, which is referenced by the data sources of the lattice and each element.Each Pytac element has an equivalent pyAT element, held in a ATElementDataSource; when a get request is made, the appropriate data from that AT element is returned.
 
 The ATSimulator object has a queue of pending changes. When a set request is received by an element, the element puts the changes onto the queue of the ATSimulator. Inside the ATSimulator a Cothread thread checks the length of the queue. When it sees changes on the queue, the thread recalculates the physics data of the lattice to ensure that it is up to date. This means that the emittance and linear optics data held by ATSimulator is updated after every batch of changes, and that without excessive calculation a very recent version of the lattice's physics data is always available.
 
-# API:
+## API:
 
 load_sim:
 
