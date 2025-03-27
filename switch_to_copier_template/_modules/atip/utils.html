@@ -1,0 +1,712 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>atip.utils &#8212; atip 0.1.1.dev59+g8832c4e documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=15312705" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=3240a4cf"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=30646c52"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/atip/utils';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://DiamondLightSource.github.io/atip/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'switch_to_copier_template';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="icon" href="../../_static/dls-logo.svg"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="switch_to_copier_template" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/dls-logo.svg" class="logo__image only-light" alt=""/>
+    <img src="../../_static/dls-logo.svg" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">atip</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../how-to.html">
+    How-to Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../explanations.html">
+    Explanations
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../reference.html">
+    Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/DiamondLightSource/atip" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/atip" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-cube fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../how-to.html">
+    How-to Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../explanations.html">
+    Explanations
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../reference.html">
+    Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/DiamondLightSource/atip" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/atip" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-cube fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">atip.utils</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for atip.utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">at</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pytac</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">atip</span>
+
+
+<div class="viewcode-block" id="load_at_lattice">
+<a class="viewcode-back" href="../../_api/atip.utils.html#atip.utils.load_at_lattice">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_at_lattice</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;I04&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load an AT lattice from a .mat file in the &#39;rings&#39; directory.</span>
+
+<span class="sd">    .. Note:: I add custom attributes &#39;Index&#39; and &#39;Class&#39; to each of the</span>
+<span class="sd">       elements in the AT lattice as I find them useful for debugging.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        mode (str): The lattice operation mode.</span>
+<span class="sd">        kwargs: any keyword arguments are passed to the AT lattice creator.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        at.lattice.Lattice: An AT lattice object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;rings/&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="s2">&quot;.mat&quot;</span><span class="p">])</span>
+    <span class="p">)</span>
+    <span class="n">at_lattice</span> <span class="o">=</span> <span class="n">at</span><span class="o">.</span><span class="n">load</span><span class="o">.</span><span class="n">load_mat</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">elem</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">at_lattice</span><span class="p">):</span>
+        <span class="n">elem</span><span class="o">.</span><span class="n">Index</span> <span class="o">=</span> <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">elem</span><span class="o">.</span><span class="n">Class</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+    <span class="k">return</span> <span class="n">at_lattice</span></div>
+
+
+
+<div class="viewcode-block" id="loader">
+<a class="viewcode-back" href="../../_api/atip.utils.html#atip.utils.loader">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">loader</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;I04&quot;</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">disable_emittance</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load a unified lattice of the specifed mode.</span>
+
+<span class="sd">    .. Note:: A unified lattice is a Pytac lattice where the corresponding AT</span>
+<span class="sd">       lattice has been loaded into the Pytac lattice&#39;s simulator data source</span>
+<span class="sd">       by means of ATIP.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        mode (str): The lattice operation mode.</span>
+<span class="sd">        callback (callable): Callable to be called after completion of each</span>
+<span class="sd">                              round of physics calculations in ATSimulator.</span>
+<span class="sd">        disable_emittance (bool): Whether the emittance should be calculated.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        pytac.lattice.Lattice: A Pytac lattice object with the simulator data</span>
+<span class="sd">                                source loaded.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pytac_lattice</span> <span class="o">=</span> <span class="n">pytac</span><span class="o">.</span><span class="n">load_csv</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="n">symmetry</span><span class="o">=</span><span class="mi">24</span><span class="p">)</span>
+    <span class="n">at_lattice</span> <span class="o">=</span> <span class="n">load_at_lattice</span><span class="p">(</span>
+        <span class="n">mode</span><span class="p">,</span>
+        <span class="n">periodicity</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">energy</span><span class="o">=</span><span class="n">pytac_lattice</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;energy&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">lattice</span> <span class="o">=</span> <span class="n">atip</span><span class="o">.</span><span class="n">load_sim</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">pytac_lattice</span><span class="p">,</span> <span class="n">at_lattice</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">disable_emittance</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">lattice</span></div>
+
+
+
+<span class="c1"># TODO: This doesnt seem to work, fix or remove</span>
+<div class="viewcode-block" id="preload_at">
+<a class="viewcode-back" href="../../_api/atip.utils.html#atip.utils.preload_at">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">preload_at</span><span class="p">(</span><span class="n">at_lat</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load the elements onto an &#39;elems&#39; object&#39;s attributes by type so that</span>
+<span class="sd">    groups of elements of the same type (class) can be more easily accessed,</span>
+<span class="sd">    e.g. &#39;elems.dipole&#39; will return a list of all the dipoles in the lattice.</span>
+<span class="sd">    As a special case &#39;elems.all&#39; will return all the elements in the lattice.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        at_lat (at.lattice.Lattice): The AT lattice object from which to get</span>
+<span class="sd">                                      the elements.</span>
+
+<span class="sd">    returns:</span>
+<span class="sd">        obj: The elems object with the elements loaded onto it by type.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">class</span><span class="w"> </span><span class="nc">elems</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="n">elems</span><span class="o">.</span><span class="n">all</span> <span class="o">=</span> <span class="p">[</span><span class="n">elem</span> <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">at_lat</span><span class="p">]</span>  <span class="c1"># noqa: C416</span>
+    <span class="n">elems_dict</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">type_</span><span class="p">:</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">type_</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="s2">&quot;ThinMultipole&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Quadrupole&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;M66&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Octupole&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Sextupole&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Corrector&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;LongElement&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Element&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;RFCavity&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Monitor&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Bend&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Marker&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Drift&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Multipole&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Aperture&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Dipole&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+    <span class="p">}</span>
+    <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">at_lat</span><span class="p">:</span>
+        <span class="n">elems_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">elem_type</span><span class="p">,</span> <span class="n">elements</span> <span class="ow">in</span> <span class="n">elems_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">elements</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">elems</span><span class="p">,</span> <span class="n">elem_type</span><span class="p">,</span> <span class="n">elements</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">elems</span></div>
+
+
+
+<div class="viewcode-block" id="preload">
+<a class="viewcode-back" href="../../_api/atip.utils.html#atip.utils.preload">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">preload</span><span class="p">(</span><span class="n">pytac_lat</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load the elements onto an &#39;elems&#39; object&#39;s attributes by family so that</span>
+<span class="sd">    groups of elements of the same family can be more easily accessed, e.g.</span>
+<span class="sd">    &#39;elems.bpm&#39; will return a list of all the BPMs in the lattice. As a</span>
+<span class="sd">    special case &#39;elems.all&#39; will return all the elements in the lattice.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        pytac_lat (pytac.lattice.Lattice): The Pytac lattice object from which</span>
+<span class="sd">                                            to get the elements.</span>
+
+<span class="sd">    returns:</span>
+<span class="sd">        obj: The elems object with the elements loaded onto it by family.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">class</span><span class="w"> </span><span class="nc">elems</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="n">elems</span><span class="o">.</span><span class="n">all</span> <span class="o">=</span> <span class="n">pytac_lat</span><span class="o">.</span><span class="n">get_elements</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">family</span> <span class="ow">in</span> <span class="n">pytac_lat</span><span class="o">.</span><span class="n">get_all_families</span><span class="p">():</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="n">elems</span><span class="p">,</span> <span class="n">family</span><span class="p">,</span> <span class="n">pytac_lat</span><span class="o">.</span><span class="n">get_elements</span><span class="p">(</span><span class="n">family</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">elems</span></div>
+
+
+
+<div class="viewcode-block" id="get_atsim">
+<a class="viewcode-back" href="../../_api/atip.utils.html#atip.utils.get_atsim">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_atsim</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the ATSimulator object being used by a unified Pytac lattice.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        target (pytac.lattice.Lattice or ATSimulator): An ATSimulator object</span>
+<span class="sd">                                                        or a Pytac lattice</span>
+<span class="sd">                                                        from which an</span>
+<span class="sd">                                                        ATSimulator object can</span>
+<span class="sd">                                                        be extracted.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        ATSimulator: The simulator object performing the physics calculations.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">atip</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">ATSimulator</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">target</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># Pytac lattice</span>
+        <span class="k">return</span> <span class="n">target</span><span class="o">.</span><span class="n">_data_source_manager</span><span class="o">.</span><span class="n">_data_sources</span><span class="p">[</span><span class="n">pytac</span><span class="o">.</span><span class="n">SIM</span><span class="p">]</span><span class="o">.</span><span class="n">_atsim</span>  <span class="c1"># noqa: SLF001 TODO: Fix private member access</span></div>
+
+
+
+<div class="viewcode-block" id="get_sim_lattice">
+<a class="viewcode-back" href="../../_api/atip.utils.html#atip.utils.get_sim_lattice">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_sim_lattice</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the AT lattice that the simulator is using.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        target (pytac.lattice.Lattice or ATSimulator): An ATSimulator object</span>
+<span class="sd">                                                        or a Pytac lattice</span>
+<span class="sd">                                                        from which an</span>
+<span class="sd">                                                        ATSimulator object can</span>
+<span class="sd">                                                        be extracted.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        at.lattice.Lattice: The corresponding AT lattice used by the simulator.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">get_atsim</span><span class="p">(</span><span class="n">target</span><span class="p">)</span><span class="o">.</span><span class="n">get_at_lattice</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="toggle_thread">
+<a class="viewcode-back" href="../../_api/atip.utils.html#atip.utils.toggle_thread">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">toggle_thread</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pause or unpause the ATSimulator calculation thread.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        target (pytac.lattice.Lattice or ATSimulator): An ATSimulator object</span>
+<span class="sd">                                                        or a Pytac lattice</span>
+<span class="sd">                                                        from which an</span>
+<span class="sd">                                                        ATSimulator object can</span>
+<span class="sd">                                                        be extracted.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">get_atsim</span><span class="p">(</span><span class="n">target</span><span class="p">)</span><span class="o">.</span><span class="n">toggle_calculations</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="trigger_calc">
+<a class="viewcode-back" href="../../_api/atip.utils.html#atip.utils.trigger_calc">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">trigger_calc</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Manually trigger a recalculation of the physics data on the ATSimulator</span>
+<span class="sd">    object of the given unified Pytac lattice.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        target (pytac.lattice.Lattice or ATSimulator): An ATSimulator object</span>
+<span class="sd">                                                        or a Pytac lattice</span>
+<span class="sd">                                                        from which an</span>
+<span class="sd">                                                        ATSimulator object can</span>
+<span class="sd">                                                        be extracted.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">atsim</span> <span class="o">=</span> <span class="n">get_atsim</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+    <span class="n">atsim</span><span class="o">.</span><span class="n">trigger_calculation</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recalculation manually triggered.&quot;</span><span class="p">)</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
