@@ -7,7 +7,6 @@ from collections.abc import Sequence
 import pytac
 
 import atip
-from atip import __version__
 
 __all__ = ["main"]
 
@@ -19,7 +18,7 @@ def main(args: Sequence[str] | None = None) -> None:
         "-v",
         "--version",
         action="version",
-        version=__version__,
+        version=atip.__version__,
     )
     parser.parse_args(args)
 

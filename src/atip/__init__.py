@@ -1,5 +1,5 @@
 """ATIP: Accelerator Toolbox Interface for Pytac.
-See README.rst & INSTALL.rst for more information.
+See README.md for more information.
 
 .. data:: __version__
     :type: str

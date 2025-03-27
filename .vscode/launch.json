@@ -8,6 +8,13 @@
             "console": "integratedTerminal"
         },
         {
+            "name": "Python Debugger: Virtac",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "/venv/bin/virtac",
+            "console": "integratedTerminal"
+        },
+        {
             "name": "Debug Unit Test",
             "type": "debugpy",
             "request": "launch",

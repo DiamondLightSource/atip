@@ -64,8 +64,9 @@ name = "Phil Smith"
 version_file = "src/atip/_version.py"
 
 [tool.pyright]
-typeCheckingMode = "off" # TODO: This should be switched back to "standard" at some point!
+typeCheckingMode = "standard" # TODO: This should be switched back to "standard" at some point!
 reportMissingImports = false # Ignore missing stubs in imported modules
+ignore = ["tests"] #Not currently type checking tests
 
 [tool.pytest.ini_options]
 # Run pytest with all our checkers, and don't spam us with massive tracebacks on error
@@ -105,8 +106,10 @@ commands =
     pre-commit: pre-commit run --all-files --show-diff-on-failure {posargs}
     type-checking: pyright src tests {posargs}
     tests: pytest --cov=atip --cov-report term --cov-report xml:cov.xml {posargs}
-    docs: sphinx-{posargs:build -E --keep-going} -T docs build/html
+    docs: sphinx-{posargs:build -EW --keep-going} -T docs build/html
 """
+
+#TODO: ^ Add/remove the -W flag from sphinx to enable/disable exiting on docs build errors
 
 [tool.ruff]
 src = ["src", "tests"]

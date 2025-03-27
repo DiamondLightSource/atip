@@ -12,7 +12,7 @@ from cothread.catools import ca_nothing, caget
 
 from softioc import builder, softioc
 from . import atip_server
-from atip._version import __version__
+from atip import __version__
 
 __all__ = ["main"]
 

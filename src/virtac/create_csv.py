@@ -126,7 +126,9 @@ def generate_mirrored_pvs(lattice):
 
     value: The inital value of the output record.
     """
-    data = [("output type", "mirror type", "in", "out", "value")]
+    data: list[tuple[str, str, str, str, int]] = [
+        ("output type", "mirror type", "in", "out", 0)
+    ]
     # Tune PV aliases.
     tune = [
         lattice.get_value("tune_x", pytac.RB, data_source=pytac.SIM),
@@ -171,7 +173,9 @@ def generate_mirrored_pvs(lattice):
         )
     )
     # Electron BPMs enabled.
-    bpm_enabled_pvs = lattice.get_element_pv_names("BPM", "enabled", pytac.RB)
+    bpm_enabled_pvs: list[str] = lattice.get_element_pv_names(
+        "BPM", "enabled", pytac.RB
+    )
     data.append(
         (
             "Waveform",
