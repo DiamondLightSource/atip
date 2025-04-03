@@ -1,0 +1,129 @@
+classDiagram
+        pytac.data_source.DataSource <|-- ATElementDataSource : inherits
+        pytac.data_source.DataSource <|-- ATLatticeDataSource : inherits
+        pyAT.lattice_object.Lattice <|-- ATSimulator : implements
+        ATLatticeDataSource --|> ATSimulator : implements
+        ATElementDataSource --|> ATSimulator : implements
+        ATElementDataSource --|> pyAT.elements.Element : implements
+        LatticeData --|>  pyAT.lattice_object.Lattice : relates to
+        LatticeData <|--  ATSimulator : implements
+        ATIPServer --|>   pytac.lattice.Lattice : implements
+        callback_offset --|> ATIPServer: implements
+
+
+        namespace pytac {
+                class pytac.data_source.DataSource {
+
+                }
+                class pytac.lattice.Lattice {
+
+                }
+        }
+
+        namespace pyAT {
+                class pyAT.lattice_object.Lattice {
+
+                }
+                class pyAT.elements.Element {
+
+                }
+        }
+
+        namespace atip {
+                class ATElementDataSource {
+                +String units
+                +__init__(at_element, index, atsim, fields)
+                +get_fields()
+                +add_field()
+                +get_value()
+                +set_value()
+                }
+
+                class ATLatticeDataSource {
+                +String units
+                +__init__(atsim)
+                +get_fields()
+                +get_value()
+                +set_value()
+                }
+                class LatticeData {
+                +ArrayLike twiss
+                +ArrayLike tunes
+                +ArrayLike chrom
+                +ArrayLike emittance
+                +ArrayLike radint
+                }
+                class ATSimulator {
+                +cothread.Event up_to_date
+                +__init__(at_lattice, callback, disable_emittance)
+                +queue_set(func, field, value)
+                +quit_calculation_thread(timeout)
+                +toggle_calculations()
+                +pause_calculations()
+                +unpause_calculations()
+                +trigger_calculation()
+                +wait_for_calculations()
+                +get_at_element()
+                +get_at_lattice()
+                +get_s()
+                +get_total_bend_angle()
+                +get_total_absolute_bend_angle()
+                +get_energy()
+                +get_tune()
+                +get_chromaticity()
+                +get_orbit()
+                +get_dispersion()
+                +get_alpha()
+                +get_beta()
+                +get_mu()
+                +get_m66()
+                +get_emittance()
+                +get_radiation_integrals()
+                +get_momentum_compaction()
+                +get_energy_spread()
+                +get_energy_loss()
+                +get_damping_partition_numbers()
+                +get_damping_times()
+                +get_linear_dispersion_action()
+                +get_horizontal_emittance()
+                }
+        }
+
+        namespace virtac {
+                class ATIPServer {
+                +pytac.lattice.Lattice lattice
+                +bool tune_feedback_status
+                +dict all_record_names
+                +__init__(ring_mode, limits_csv, feedbac_csv, mirror_csv, tune_csv, disable_emittance)
+                +update_pvs()
+                +monitor_mirrored_pvs()
+                +refresh_record()
+                +setup_tune_feedback()
+                +stop_all_monitoring()
+                +set_feedback_record()
+                }
+                class callback_offset {
+                +ATIPServer server
+                +String quad_pv
+                +pythonSoftIoc.RecordWrapper offset_record
+                +callback(value, index)
+                }
+                class callback_set {
+                +list(pythonSoftIoc.RecordWrapper) output
+                +callback(value, index)
+                }
+                class caget_mask {
+                +String pv
+                +String name
+                +get
+                }
+                class caput_mask {
+                +String pv
+                +String name
+                +set
+                }
+        }
+
+        note for ATIPServer "Creates softioc records"
+        note for callback_offset "Should be done in pytac?"
+        note for ATIPServer "Calls atip.utils.loader which creates a pytac lattice and sets up ATSimulator"
