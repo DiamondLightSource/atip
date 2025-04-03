@@ -49,10 +49,15 @@ extensions = [
     "sphinx_design",
     # So we can write markdown files
     "myst_parser",
+    # For rendering mermaid diagrams
+    "sphinxcontrib.mermaid",
 ]
 
 # So we can use the ::: syntax
 myst_enable_extensions = ["colon_fence"]
+
+myst_fence_as_directive = ["mermaid", "autoclasstree"]
+mermaid_version = "11.6.0"
 
 # If true, Sphinx will warn about all references where the target cannot
 # be found.

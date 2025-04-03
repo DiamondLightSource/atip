@@ -51,3 +51,11 @@ ATSimulator:
         get_damping_times() - return the damping times for the lattice's three normal modes.
         get_linear_dispersion_action() - return the Linear Dispersion Action ("curly H") for the lattice.
         get_horizontal_emittance() - return the horizontal ('x') emittance for the lattice calculated from the radiation integrals.
+
+<!-- ```autoclasstree atip.simulator atip.sim_data_sources virtac.atip_server virtac.mirror_objects
+:full: true
+``` -->
+
+```mermaid ../atip_class_diagram.uml
+:zoom:
+```
