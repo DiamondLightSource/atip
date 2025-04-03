@@ -12,7 +12,11 @@
             "type": "debugpy",
             "request": "launch",
             "program": "/venv/bin/virtac",
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "env": {
+                "EPICS_CA_SERVER_PORT": "7064",
+                "EPICS_CA_REPEATER_PORT": "7065",
+            },
         },
         {
             "name": "Debug Unit Test",
@@ -27,6 +31,8 @@
             "env": {
                 // Enable break on exception when debugging tests (see: tests/conftest.py)
                 "PYTEST_RAISE": "1",
+                "EPICS_CA_SERVER_PORT": "7064",
+                "EPICS_CA_REPEATER_PORT": "7065",
             },
         }
     ]
