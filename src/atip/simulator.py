@@ -107,7 +107,7 @@ class ATSimulator:
         Args:
             at_lattice (at.lattice_object.Lattice): An instance of an AT
                                                      lattice object.
-            callback (callable): Optional, if passed it is called on completion
+            callback (typing.Callable): Optional, if passed it is called on completion
                                   of each round of physics calculations.
             disable_emittance (bool): Whether or not to perform the beam
                                        envelope based emittance calculations.
@@ -142,7 +142,7 @@ class ATSimulator:
         """Add a change to the queue, to be applied when the queue is emptied.
 
         Args:
-            func (callable): The function to be called to apply the change.
+            func (typing.Callable): The function to be called to apply the change.
             field (str): The field to be changed.
             value (float): The value to be set.
         """
@@ -178,7 +178,7 @@ class ATSimulator:
            thread to warnings.
 
         Args:
-            callback (callable): to be called after each round of calculations,
+            callback (typing.Callable): to be called after each round of calculations,
                                   indicating that they have concluded.
 
         Warns:
@@ -254,7 +254,7 @@ class ATSimulator:
         changes to the AT lattice, i.e. the physics data is fully up to date.
 
         Args:
-            timeout (float, optional): The number of seconds to wait for.
+            timeout (float, typing.Optional): The number of seconds to wait for.
 
         Returns:
             bool: False if the timeout elapsed before the calculations
@@ -342,7 +342,7 @@ class ATSimulator:
             float: The x or y tune for the AT lattice.
 
         Raises:
-            FieldException: if the specified field is not valid for tune.
+            pytac.FieldException: if the specified field is not valid for tune.
         """
         tunes = self._lattice_data.tunes
         if field is None:
@@ -365,7 +365,7 @@ class ATSimulator:
             float: The x or y chromaticity for the AT lattice.
 
         Raises:
-            FieldException: if the specified field is not valid for
+            pytac.FieldException: if the specified field is not valid for
                              chromaticity.
         """
         chrom = self._lattice_data.chrom
@@ -392,7 +392,7 @@ class ATSimulator:
             array of floats the length of the AT lattice.
 
         Raises:
-            FieldException: if the specified field is not valid for orbit.
+            pytac.FieldException: if the specified field is not valid for orbit.
         """
         closed_orbit = self._lattice_data.twiss["closed_orbit"]
         if field is None:
@@ -421,7 +421,7 @@ class ATSimulator:
             AT lattice as an array of floats the length of the AT lattice.
 
         Raises:
-            FieldException: if the specified field is not valid for dispersion.
+            pytac.FieldException: if the specified field is not valid for dispersion.
         """
         dispersion = self._lattice_data.twiss["dispersion"]
         if field is None:
@@ -485,7 +485,7 @@ class ATSimulator:
             float: The x or y emittance for the AT lattice.
 
         Raises:
-            FieldException: if the specified field is not valid for emittance.
+            pytac.FieldException: if the specified field is not valid for emittance.
         """
         if not self._disable_emittance:
             if field is None:

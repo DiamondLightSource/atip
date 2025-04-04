@@ -38,7 +38,7 @@ def loader(mode="I04", callback=None, disable_emittance=False):
 
     Args:
         mode (str): The lattice operation mode.
-        callback (callable): Callable to be called after completion of each
+        callback (typing.Callable): Callable to be called after completion of each
                               round of physics calculations in ATSimulator.
         disable_emittance (bool): Whether the emittance should be calculated.
 
@@ -67,7 +67,7 @@ def preload_at(at_lat):
                                       the elements.
 
     returns:
-        obj: The elems object with the elements loaded onto it by type.
+        obj (class): The elems object with the elements loaded onto it by type.
     """
 
     class elems:
@@ -114,7 +114,7 @@ def preload(pytac_lat):
                                             to get the elements.
 
     returns:
-        obj: The elems object with the elements loaded onto it by family.
+        obj(class): The elems object with the elements loaded onto it by family.
     """
 
     class elems:

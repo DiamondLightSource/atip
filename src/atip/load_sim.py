@@ -21,7 +21,7 @@ def load_from_filepath(
         pytac_lattice (pytac.lattice.Lattice): An instance of a Pytac lattice.
         at_lattice_filepath (str): The path to a .mat file from which the
                                     Accelerator Toolbox lattice can be loaded.
-        callback (callable): To be called after completion of each round of
+        callback (typing.Callable): To be called after completion of each round of
                               physics calculations.
         disable_emittance (bool): Whether the emittance should be calculated.
 
@@ -44,7 +44,7 @@ def load(pytac_lattice, at_lattice, callback=None, disable_emittance=False):
         pytac_lattice (pytac.lattice.Lattice): An instance of a Pytac lattice.
         at_lattice (at.lattice_object.Lattice): An instance of an Accelerator
                                               Toolbox lattice object.
-        callback (callable): To be called after completion of each round of
+        callback (typing.Callable): To be called after completion of each round of
                               physics calculations.
         disable_emittance (bool): Whether the emittance should be calculated.
 
