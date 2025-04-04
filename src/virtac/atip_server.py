@@ -309,10 +309,10 @@ class ATIPServer:
             try:
                 readonly = ast.literal_eval(line["read-only"])
                 assert isinstance(readonly, bool)
-            except (ValueError, AssertionError):
+            except (ValueError, AssertionError) as exc:
                 raise ValueError(
                     f"Unable to evaluate {line['read-only']} as a boolean."
-                )
+                ) from exc
             prefix, suffix = line["pv"].split(":", 1)
             builder.SetDeviceName(prefix)
             if readonly:
@@ -462,7 +462,7 @@ class ATIPServer:
             try:
                 self._monitored_pvs[pv] = camonitor(pv, mask.callback)
             except Exception as e:
-                warn(e)
+                warn(e, stacklevel=1)
 
     def refresh_record(self, pv_name):
         """For a given PV refresh the time-stamp of the associated record,
@@ -473,10 +473,10 @@ class ATIPServer:
         """
         try:
             record = self.all_record_names[pv_name]
-        except KeyError:
+        except KeyError as exc:
             raise ValueError(
                 f"{pv_name} is not the name of a record created by this server."
-            )
+            ) from exc
         else:
             record.set(record.get())
 
@@ -513,7 +513,7 @@ class ATIPServer:
                     line["delta"], mask.callback
                 )
             except Exception as e:
-                warn(e)
+                warn(e, stacklevel=1)
 
     def stop_all_monitoring(self):
         """Stop monitoring mirrored records and tune feedback offsets."""
@@ -546,12 +546,13 @@ class ATIPServer:
         """
         try:
             self._feedback_records[(index, field)].set(value)
-        except KeyError:
+        except KeyError as exc:
             if index == 0:
                 raise FieldException(
                     f"Simulated lattice {self.lattice} does not have field {field}."
-                )
+                ) from exc
             else:
                 raise FieldException(
-                    f"Simulated element {self.lattice[index]} does not have field {field}."
-                )
+                    f"Simulated element {self.lattice[index]} does not have "
+                    f"field {field}."
+                ) from exc
