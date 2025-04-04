@@ -6,7 +6,8 @@ Technical reference material including APIs and release notes.
 :maxdepth: 1
 :glob:
 
-API <_api/atip>
+Atip API <_api/atip>
+Virtac API <_api/virtac>
 genindex
 Release Notes <https://github.com/DiamondLightSource/atip/releases>
 ```
