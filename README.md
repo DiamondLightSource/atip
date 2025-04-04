@@ -13,6 +13,7 @@ how it does it, and why people should use it.
 Source          | <https://github.com/DiamondLightSource/atip>
 :---:           | :---:
 PyPI            | `pip install atip`
+Documentation   | <https://diamondlightsource.github.io/atip>
 Releases        | <https://github.com/DiamondLightSource/atip/releases>
 
 This is where you should put some images or code snippets that illustrate
@@ -30,3 +31,7 @@ Or if it is a commandline tool then you might put some example commands here:
 ```
 python -m atip --version
 ```
+
+<!-- README only content. Anything below this line won't be included in index.md -->
+
+See https://diamondlightsource.github.io/atip for more detailed documentation.
