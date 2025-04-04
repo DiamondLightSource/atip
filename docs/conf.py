@@ -52,7 +52,7 @@ extensions = [
 ]
 
 # So we can use the ::: syntax
-myst_enable_extensions = ["colon_fence"]
+myst_enable_extensions = ["colon_fence", "html_image"]
 
 # If true, Sphinx will warn about all references where the target cannot
 # be found.
