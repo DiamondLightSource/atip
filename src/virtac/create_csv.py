@@ -235,7 +235,9 @@ def generate_tune_pvs(lattice):
     for pv in tune_pvs:
         offset_pvs.append(":".join([pv.split(":")[0], "OFFSET1"]))
         delta_pvs.append(f"SR-CS-TFB-01:{pv[2:4]}{pv[9:12]}{pv[13:15]}:I")
-    for tune_pv, offset_pv, delta_pv in zip(tune_pvs, offset_pvs, delta_pvs):
+    for tune_pv, offset_pv, delta_pv in zip(
+        tune_pvs, offset_pvs, delta_pvs, strict=False
+    ):
         data.append((tune_pv, offset_pv, delta_pv))
     return data
 

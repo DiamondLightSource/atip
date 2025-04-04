@@ -1,7 +1,7 @@
 import numpy
 
 
-class summate(object):
+class summate:
     """This class is designed to be passed instead of a mirror record, when its
     set method is then called it takes the sum of all the input records and
     sets it to the output record.
@@ -27,7 +27,7 @@ class summate(object):
         self.output_record.set(value)
 
 
-class collate(object):
+class collate:
     """This class is designed to be passed instead of a mirror record, when its
     set method is then called it gets the values of all the input records and
     combines them in order before setting the combined array to the output
@@ -55,7 +55,7 @@ class collate(object):
         self.output_record.set(value)
 
 
-class transform(object):
+class transform:
     """This class is designed to be passed instead of a mirror record, when its
     set method is then called it applies the held transformation and then sets
     the new value to the held output record.
@@ -85,7 +85,7 @@ class transform(object):
         self.output_record.set(value)
 
 
-class refresher(object):
+class refresher:
     """This class is designed to be passed instead of a mirror record, when its
     set method is then called it refreshes the held PV on the held server.
     """
