@@ -42,7 +42,7 @@ dev = [
 
 [project.scripts]
 atip = "atip.__main__:main"
-virtac = "virtac.__main__:main"
+virtac = "virtac.atip_ioc_entry:main"
 
 [project.urls]
 GitHub = "https://github.com/DiamondLightSource/atip"
