@@ -15,7 +15,7 @@ from .masks import caget_mask, callback_offset, callback_set, caput_mask
 from .mirror_objects import collate, refresher, summate, transform
 
 
-class ATIPServer(object):
+class ATIPServer:
     """A soft-ioc server allowing ATIP to be interfaced using EPICS, in the
     same manner as the live machine.
 
@@ -309,10 +309,10 @@ class ATIPServer(object):
             try:
                 readonly = ast.literal_eval(line["read-only"])
                 assert isinstance(readonly, bool)
-            except (ValueError, AssertionError):
+            except (ValueError, AssertionError) as exc:
                 raise ValueError(
                     f"Unable to evaluate {line['read-only']} as a boolean."
-                )
+                ) from exc
             prefix, suffix = line["pv"].split(":", 1)
             builder.SetDeviceName(prefix)
             if readonly:
@@ -392,8 +392,7 @@ class ATIPServer(object):
                 line["mirror type"] in ["collate", "summate"]
             ):
                 raise IndexError(
-                    "collation and summation mirror types take at"
-                    " least two input PVs."
+                    "collation and summation mirror types take at least two input PVs."
                 )
             monitor = input_pvs  # need to update to support camonitor multiple
             # Convert input pvs to record objects
@@ -463,7 +462,7 @@ class ATIPServer(object):
             try:
                 self._monitored_pvs[pv] = camonitor(pv, mask.callback)
             except Exception as e:
-                warn(e)
+                warn(e, stacklevel=1)
 
     def refresh_record(self, pv_name):
         """For a given PV refresh the time-stamp of the associated record,
@@ -474,10 +473,10 @@ class ATIPServer(object):
         """
         try:
             record = self.all_record_names[pv_name]
-        except KeyError:
+        except KeyError as exc:
             raise ValueError(
                 f"{pv_name} is not the name of a record created by this server."
-            )
+            ) from exc
         else:
             record.set(record.get())
 
@@ -514,7 +513,7 @@ class ATIPServer(object):
                     line["delta"], mask.callback
                 )
             except Exception as e:
-                warn(e)
+                warn(e, stacklevel=1)
 
     def stop_all_monitoring(self):
         """Stop monitoring mirrored records and tune feedback offsets."""
@@ -547,12 +546,13 @@ class ATIPServer(object):
         """
         try:
             self._feedback_records[(index, field)].set(value)
-        except KeyError:
+        except KeyError as exc:
             if index == 0:
                 raise FieldException(
                     f"Simulated lattice {self.lattice} does not have field {field}."
-                )
+                ) from exc
             else:
                 raise FieldException(
-                    f"Simulated element {self.lattice[index]} does not have field {field}."
-                )
+                    f"Simulated element {self.lattice[index]} does not have "
+                    f"field {field}."
+                ) from exc

@@ -1,4 +1,5 @@
-import mock
+from unittest import mock
+
 import pytest
 from pytac.exceptions import ControlSystemException, FieldException, HandleException
 from testfixtures import LogCapture
@@ -114,13 +115,13 @@ def test_lat_get_value():
     atlds = atip.sim_data_sources.ATLatticeDataSource(atsim)
     assert atlds.get_value("dispersion") == 2.5
     atlds.get_value("x")
-    assert atsim.get_orbit.called_with("x")
+    atsim.get_orbit.assert_called_with("x")
     atlds.get_value("phase_x")
-    assert atsim.get_orbit.called_with("px")
+    atsim.get_orbit.assert_called_with("px")
     atlds.get_value("y")
-    assert atsim.get_orbit.called_with("y")
+    atsim.get_orbit.assert_called_with("y")
     atlds.get_value("phase_y")
-    assert atsim.get_orbit.called_with("py")
+    atsim.get_orbit.assert_called_with("py")
 
 
 @pytest.mark.parametrize(

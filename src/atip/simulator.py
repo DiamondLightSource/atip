@@ -1,4 +1,5 @@
 """Module containing an interface with the AT simulator."""
+
 import logging
 from dataclasses import dataclass
 from warnings import warn
@@ -13,7 +14,6 @@ from scipy.constants import speed_of_light
 
 @dataclass
 class LatticeData:
-
     twiss: ArrayLike
     tunes: ArrayLike
     chrom: ArrayLike
@@ -60,7 +60,7 @@ def calculate_optics(
     return LatticeData(twiss, beamdata.tune, beamdata.chromaticity, emitdata, radint)
 
 
-class ATSimulator(object):
+class ATSimulator:
     """A centralised class which makes use of AT to simulate the physics data
     for the copy of the AT lattice which it holds. It works as follows, when a
     change is made to the lattice in Pytac it is added to the queue attribute
@@ -197,7 +197,7 @@ class ATSimulator(object):
                         self._at_lat, self._rp, self._disable_emittance
                     )
                 except Exception as e:
-                    warn(at.AtWarning(e))
+                    warn(at.AtWarning(e), stacklevel=1)
                 # Signal the up to date flag since the physics data is now up to date.
                 # We do this before the callback is executed in case the callback
                 # checks the flag.

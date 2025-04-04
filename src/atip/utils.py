@@ -73,7 +73,7 @@ def preload_at(at_lat):
     class elems:
         pass
 
-    setattr(elems, "all", [elem for elem in at_lat])
+    elems.all = [elem for elem in at_lat]  # noqa: C416
     elems_dict = {
         type_: []
         for type_ in [
@@ -120,7 +120,7 @@ def preload(pytac_lat):
     class elems:
         pass
 
-    setattr(elems, "all", pytac_lat.get_elements())
+    elems.all = pytac_lat.get_elements()
     for family in pytac_lat.get_all_families():
         setattr(elems, family, pytac_lat.get_elements(family))
     return elems
@@ -142,7 +142,7 @@ def get_atsim(target):
     if isinstance(target, atip.simulator.ATSimulator):
         return target
     else:  # Pytac lattice
-        return target._data_source_manager._data_sources[pytac.SIM]._atsim
+        return target._data_source_manager._data_sources[pytac.SIM]._atsim  # noqa: SLF001
 
 
 def get_sim_lattice(target):
