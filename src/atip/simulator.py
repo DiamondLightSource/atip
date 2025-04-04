@@ -1,4 +1,5 @@
 """Module containing an interface with the AT simulator."""
+
 import logging
 from dataclasses import dataclass
 from warnings import warn
@@ -13,7 +14,6 @@ from scipy.constants import speed_of_light
 
 @dataclass
 class LatticeData:
-
     twiss: ArrayLike
     tunes: ArrayLike
     chrom: ArrayLike
