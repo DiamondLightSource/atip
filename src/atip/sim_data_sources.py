@@ -52,7 +52,7 @@ class ATElementDataSource(pytac.data_source.DataSource):
                                                data source is attached to.
             index (int): The element's index in the ring, starting from 1.
             atsim (ATSimulator): An instance of an ATSimulator object.
-            fields (list, optional): The fields found on this element.
+            fields (list, typing.Optional): The fields found on this element.
 
         Raises:
             ValueError: if an unsupported field is passed, i.e. a field not in
@@ -111,7 +111,7 @@ class ATElementDataSource(pytac.data_source.DataSource):
                           this data_source.
 
         Raises:
-            FieldException: if the specified field is already present or if it
+            pytac.FieldException: if the specified field is already present or if it
                              is not supported.
         """
         if field in self._fields:
@@ -128,10 +128,10 @@ class ATElementDataSource(pytac.data_source.DataSource):
 
         Args:
             field (str): The requested field.
-            handle (str, optional): Handle is not needed and is only here to
+            handle (str, typing.Optional): Handle is not needed and is only here to
                                      conform with the structure of the
                                      DataSource base class.
-            throw (bool, optional): If the check for completion of outstanding
+            throw (bool, typing.Optional): If the check for completion of outstanding
                                      calculations times out, then:
                                      if True, raise a ControlSystemException;
                                      if False, log a warning and return the
@@ -141,8 +141,8 @@ class ATElementDataSource(pytac.data_source.DataSource):
             float: The value of the specified field on this data source.
 
         Raises:
-            FieldException: if the specified field does not exist.
-            ControlSystemException: if the calculation completion check fails,
+            pytac.FieldException: if the specified field does not exist.
+            pytac.ControlSystemException: if the calculation completion check fails,
                                      and throw is True.
         """
         # Wait for any outstanding calculations to conclude, to ensure they are
@@ -168,13 +168,13 @@ class ATElementDataSource(pytac.data_source.DataSource):
         Args:
             field (str): The requested field.
             value (float): The value to be set.
-            throw (bool, optional): Throw is not needed and is only here to
+            throw (bool, typing.Optional): Throw is not needed and is only here to
                                      conform with the structure of the
                                      DataSource base class.
 
         Raises:
-            HandleException: if the specified field cannot be set to.
-            FieldException: if the specified field does not exist.
+            pytac.HandleException: if the specified field cannot be set to.
+            pytac.FieldException: if the specified field does not exist.
         """
         if field in self._fields:
             if field in self._set_field_funcs.keys():
@@ -418,10 +418,10 @@ class ATLatticeDataSource(pytac.data_source.DataSource):
 
         Args:
             field (str): The requested field.
-            handle (str, optional): Handle is not needed and is only here to
+            handle (str, typing.Optional): Handle is not needed and is only here to
                                      conform with the structure of the
                                      DataSource base class.
-            throw (bool, optional): If the check for completion of outstanding
+            throw (bool, typing.Optional): If the check for completion of outstanding
                                      calculations times out, then:
                                      if True, raise a ControlSystemException;
                                      if False, log a warning and return the
@@ -431,8 +431,8 @@ class ATLatticeDataSource(pytac.data_source.DataSource):
             float: The value of the specified field on this data source.
 
         Raises:
-            FieldException: if the specified field does not exist.
-            ControlSystemException: if the calculation completion check fails,
+            pytac.FieldException: if the specified field does not exist.
+            pytac.ControlSystemException: if the calculation completion check fails,
                                      and throw is True.
         """
         # Wait for any outstanding calculations to conclude, to ensure they are
@@ -469,12 +469,12 @@ class ATLatticeDataSource(pytac.data_source.DataSource):
         Args:
             field (str): The requested field.
             value (float): The value to be set.
-            throw (bool, optional): Throw is not needed and is only here to
+            throw (bool, typing.Optional): Throw is not needed and is only here to
                                      conform with the structure of the
                                      DataSource base class.
 
         Raises:
-            HandleException: as setting values to Pytac lattice fields is not
+            pytac.HandleException: as setting values to Pytac lattice fields is not
                               currently supported.
         """
         raise HandleException(

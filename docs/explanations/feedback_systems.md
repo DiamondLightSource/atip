@@ -1,6 +1,5 @@
-================
-Feedback Systems
-================
+# Feedback Systems
+
 
 Currently supported "slow" feedback systems at Diamond are:
 
@@ -12,8 +11,7 @@ Currently supported "slow" feedback systems at Diamond are:
 In order to support these various feedback systems, the virtual accelerator
 makes several adjustments and additions to core ATIP functionality.
 
-Mirrored Records:
------------------
+## Mirrored Records:
 
 The ability to create mirror records is provided. A mirror record can take
 value(s) from one or more records as inputs and set its output dependent on
@@ -36,8 +34,7 @@ For more information on mirror records see docstrings of the classes in
 ``mirror_objects.py``, the relevant methods on ``ATIPServer``, and
 ``generate_mirrored_pvs`` in ``create_csv.py``.
 
-Masks:
-------
+## Masks:
 
 Masks are wrappers for existing functions to enable them to be addressed using
 a different syntax than normal. The types of masks are:
@@ -54,8 +51,7 @@ a different syntax than normal. The types of masks are:
    record object, ``.set(value)`` simply calls ``caput(stored_pv, value)``.
 
 
-Tune feedback
--------------
+## Tune feedback
 
 As mentioned above, the ``callback_offset`` class allows the tune feedback
 system to function exactly as it does on the live machine.

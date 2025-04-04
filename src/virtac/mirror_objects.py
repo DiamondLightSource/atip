@@ -64,7 +64,7 @@ class transform:
     def __init__(self, transformation, output_record):
         """
         Args:
-            transformation (callable): The transformation to be applied.
+            transformation (typing.Callable): The transformation to be applied.
             output_record (pythonSoftIoc.RecordWrapper): The record to set the
                                                           transformed value to.
         """

@@ -9,7 +9,7 @@ component_type: library
 description: Accelerator Toolbox Interface for Pytac
 distribution_name: atip
 docker: false
-docs_type: README
+docs_type: sphinx
 git_platform: github.com
 github_org: DiamondLightSource
 package_name: atip
