@@ -41,6 +41,9 @@ GitHub = "https://github.com/DiamondLightSource/atip"
 email = "tobyn.nicholls@diamond.ac.uk"
 name = "Tobyn Nicholls"
 
+[[project.authors]] # Further authors may be added by duplicating this section
+email = "philip.smith@diamond.ac.uk"
+name = "Phil Smith"
 
 [tool.setuptools_scm]
 version_file = "src/atip/_version.py"
