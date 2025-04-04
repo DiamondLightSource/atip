@@ -12,7 +12,15 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
 ]
 description = "Accelerator Toolbox Interface for Pytac"
-dependencies = [] # Add project dependencies here, e.g. ["click", "numpy"]
+dependencies = [
+    "numpy",
+    "scipy",
+    "pytac>=0.3.0",
+    "accelerator-toolbox>=0.2.0",
+    "cothread",
+    "softioc",
+]
+
 dynamic = ["version"]
 license.file = "LICENSE"
 readme = "README.md"
@@ -34,6 +42,7 @@ dev = [
 
 [project.scripts]
 atip = "atip.__main__:main"
+virtac = "virtac.__main__:main"
 
 [project.urls]
 GitHub = "https://github.com/DiamondLightSource/atip"
