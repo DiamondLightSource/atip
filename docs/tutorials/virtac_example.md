@@ -15,14 +15,16 @@ PVs on the live machine.
 
 ## Start the virtual accelerator
 
-Run the virtac under the development EPICS port::
+Once ATIP has been installed using pip or by running the docker image:
+
+Run the virtac under the development EPICS port:
 
 :::{code-block} bash
 $ export EPICS_CA_SERVER_PORT=6064
 $ export EPICS_CAS_SERVER_PORT=6064
 $ export EPICS_CA_REPEATER_PORT=6065
 $ # at Diamond the above can be set in one go using:    . changeports 6064
-$ pipenv run virtac
+$ virtac
 :::
 
 It takes 10 seconds or so to load the interactive console::
@@ -127,7 +129,7 @@ If none of these is set then the virtual accelerator will default to 'I04'.
 For example::
 
 :::{code-block} bash
-$ pipenv run virtac I04
+$ virtac I04
 $ export RINGMODE=I04
 $ caput SR-CS-RING-01:MODE 3
 $ # Having none of these set would also start in mode 'I04'.
