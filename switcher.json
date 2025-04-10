@@ -1,10 +1,10 @@
 [
   {
-    "version": "",
-    "url": "https://DiamondLightSource.github.io/atip//"
-  },
-  {
     "version": "switch_to_copier_template",
     "url": "https://DiamondLightSource.github.io/atip/switch_to_copier_template/"
+  },
+  {
+    "version": "testing_gh_pages",
+    "url": "https://DiamondLightSource.github.io/atip/testing_gh_pages/"
   }
 ]
