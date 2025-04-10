@@ -22,7 +22,9 @@ class LatticeData:
 
 
 def calculate_optics(
-    at_lattice: at.Lattice, refpts: ArrayLike, disable_emittance: bool = False
+    at_lattice: at.lattice_object.Lattice,
+    refpts: ArrayLike,
+    disable_emittance: bool = False,
 ) -> LatticeData:
     """Perform the physics calculations on the lattice.
 
@@ -33,7 +35,7 @@ def calculate_optics(
 
     Args:
         at_lattice (at.lattice_object.Lattice): AT lattice definition.
-        refpts (numpy.array): A boolean array specifying the points at which
+        refpts (numpy.typing.NDArray): A boolean array specifying the points at which
                                to calculate physics data.
         disable_emittance (bool): whether to calculate emittance.
 
@@ -79,7 +81,7 @@ class ATSimulator:
            _at_lat (at.lattice_object.Lattice): The centralised instance of an
                                                  AT lattice from which the
                                                  physics data is calculated.
-           _rp (numpy.array): A boolean array to be used as refpts for the
+           _rp (numpy.typing.NDArray): A boolean array to be used as refpts for the
                                physics calculations.
             _disable_emittance (bool): Whether or not to perform the beam
                                         envelope based emittance calculations.
@@ -388,7 +390,7 @@ class ATSimulator:
                           if None return whole orbit vector.
 
         Returns:
-            numpy.array: The x, x phase, y or y phase for the AT lattice as an
+            numpy.typing.NDArray: The x, x phase, y or y phase for the AT lattice as an
             array of floats the length of the AT lattice.
 
         Raises:
@@ -417,7 +419,7 @@ class ATSimulator:
                           None return whole dispersion vector.
 
         Returns:
-            numpy.array: The eta x, eta prime x, eta y or eta prime y for the
+            numpy.typing.NDArray: The eta x, eta prime x, eta y or eta prime y for the
             AT lattice as an array of floats the length of the AT lattice.
 
         Raises:
@@ -441,7 +443,7 @@ class ATSimulator:
         """Return the alpha vector at every element in the AT lattice.
 
         Returns:
-            numpy.array: The alpha vector for each element.
+            numpy.typing.NDArray: The alpha vector for each element.
         """
         return self._lattice_data.twiss["alpha"][:-1]
 
@@ -449,7 +451,7 @@ class ATSimulator:
         """Return the beta vector at every element in the AT lattice.
 
         Returns:
-            numpy.array: The beta vector for each element.
+            numpy.typing.NDArray: The beta vector for each element.
         """
         return self._lattice_data.twiss["beta"][:-1]
 
@@ -457,7 +459,7 @@ class ATSimulator:
         """Return mu at every element in the AT lattice.
 
         Returns:
-            numpy.array: The mu array for each element.
+            numpy.typing.NDArray: The mu array for each element.
         """
         return self._lattice_data.twiss["mu"][:-1]
 
@@ -465,7 +467,7 @@ class ATSimulator:
         """Return the 6x6 transfer matrix for every element in the AT lattice.
 
         Returns:
-            numpy.array: The 6x6 transfer matrix for each element.
+            numpy.typing.NDArray: The 6x6 transfer matrix for each element.
         """
         return self._lattice_data.twiss["M"][:-1]
 
@@ -506,7 +508,7 @@ class ATSimulator:
         """Return the 5 Synchrotron Integrals for the AT lattice.
 
         Returns:
-            numpy.array: The 5 radiation integrals.
+            numpy.typing.NDArray: The 5 radiation integrals.
         """
         return numpy.asarray(self._lattice_data.radint)
 
@@ -542,7 +544,7 @@ class ATSimulator:
         """Return the damping partition numbers for the 3 normal modes.
 
         Returns:
-            numpy.array: The damping partition numbers of the AT lattice.
+            numpy.typing.NDArray: The damping partition numbers of the AT lattice.
         """
         _, I2, _, I4, _ = self._lattice_data.radint
         Jx = 1 - (I4 / I2)
@@ -558,7 +560,7 @@ class ATSimulator:
         Radiation; August 2013; eqn. 68
 
         Returns:
-            numpy.array: The damping times of the AT lattice.
+            numpy.typing.NDArray: The damping times of the AT lattice.
         """
         E0 = self.get_energy()
         U0 = self.get_energy_loss()

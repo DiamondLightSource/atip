@@ -541,7 +541,7 @@ class ATIPServer:
             value (number): The value to be set.
 
         Raises:
-            pytac.exceptions.FieldException: If the lattice or element does
+            pytac.FieldException: If the lattice or element does
                                               not have the specified field.
         """
         try:

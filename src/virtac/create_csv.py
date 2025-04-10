@@ -13,7 +13,7 @@ import atip
 
 
 def generate_feedback_pvs(all_elements):
-    # Also get families for tune feedback
+    """Get feedback pvs. Also get families for tune feedback"""
     tune_quad_elements = set(
         all_elements.q1d
         + all_elements.q2d
@@ -54,8 +54,9 @@ def generate_feedback_pvs(all_elements):
 
 
 def generate_bba_pvs(all_elements):
-    # Data to be written is stored as a list of tuples each with structure:
-    #     element index (int), field (str), pv (str), value (int).
+    """Data to be written is stored as a list of tuples each with structure:
+    element index (int), field (str), pv (str), value (int).
+    """
     data = [("index", "field", "pv", "value", "read-only")]
     # Iterate over the BPMs to construct the PV names.
     for elem in all_elements.bpm:
@@ -76,6 +77,10 @@ def generate_bba_pvs(all_elements):
 def generate_pv_limits(lattice):
     """Get the control limits and precision values from the live machine for
     all normal PVS.
+
+    Args:
+        lattice (pytac.lattice.Lattice): The pytac lattice being used by the virtual
+        machine
     """
     data = [("pv", "upper", "lower", "precision")]
     for element in lattice:
@@ -271,6 +276,7 @@ def write_data_to_file(data, filename, ring_mode):
 
 
 def parse_arguments():
+    """The arguments passed to this script to configure how the csv is to be created"""
     parser = argparse.ArgumentParser(
         description="Generate CSV file to define the PVs served by the "
         "virtual accelerator IOC."
