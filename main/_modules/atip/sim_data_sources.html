@@ -1,0 +1,1005 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>atip.sim_data_sources &#8212; atip 0.1.1.dev66+gb0449bf documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=0b90bf47"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=30646c52"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/atip/sim_data_sources';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://DiamondLightSource.github.io/atip/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'main';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="icon" href="../../_static/dls-logo.svg"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="main" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/dls-logo.svg" class="logo__image only-light" alt=""/>
+    <img src="../../_static/dls-logo.svg" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">atip</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../how-to.html">
+    How-to Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../explanations.html">
+    Explanations
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../reference.html">
+    Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/DiamondLightSource/atip" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/atip" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-cube fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../how-to.html">
+    How-to Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../explanations.html">
+    Explanations
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../reference.html">
+    Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/DiamondLightSource/atip" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/atip" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-cube fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">atip.sim_data_sources</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for atip.sim_data_sources</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Module containing the pytac data sources for the AT simulator.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">partial</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">at</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pytac</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pytac.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ControlSystemException</span><span class="p">,</span> <span class="n">FieldException</span><span class="p">,</span> <span class="n">HandleException</span>
+
+
+<div class="viewcode-block" id="ATElementDataSource">
+<a class="viewcode-back" href="../../_api/atip.sim_data_sources.html#atip.sim_data_sources.ATElementDataSource">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ATElementDataSource</span><span class="p">(</span><span class="n">pytac</span><span class="o">.</span><span class="n">data_source</span><span class="o">.</span><span class="n">DataSource</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A simulator data source to enable AT elements to be addressed using the</span>
+<span class="sd">    standard Pytac syntax.</span>
+
+<span class="sd">    **Attributes**</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        units (str): pytac.ENG or pytac.PHYS, pytac.PHYS by default.</span>
+
+<span class="sd">    .. Private Attributes:</span>
+<span class="sd">           _at_element (at.elements.Element): A pointer to the AT element</span>
+<span class="sd">                                               equivalent of the Pytac element,</span>
+<span class="sd">                                               which this data source instance</span>
+<span class="sd">                                               is attached to.</span>
+<span class="sd">           _index (int): The element&#39;s index in the ring, starting from 1.</span>
+<span class="sd">           _atsim (ATSimulator): A pointer to the centralised instance of an</span>
+<span class="sd">                                  ATSimulator object.</span>
+<span class="sd">           _fields (list): A list of all the fields that are present on this</span>
+<span class="sd">                            element. N.B. not all possible fields i.e. _fields</span>
+<span class="sd">                            != _get_field_funcs.keys()</span>
+<span class="sd">           _get_field_funcs (dict): A dictionary which maps element fields to</span>
+<span class="sd">                                     the correct get function. Some of these</span>
+<span class="sd">                                     functions, via partial(), are passed a</span>
+<span class="sd">                                     cell argument so only relevant data is</span>
+<span class="sd">                                     returned.</span>
+<span class="sd">           _set_field_funcs (dict): A dictionary which maps element fields to</span>
+<span class="sd">                                     the correct set function. Some of these</span>
+<span class="sd">                                     functions, via partial(), are passed a</span>
+<span class="sd">                                     cell argument so only relevant data is</span>
+<span class="sd">                                     returned.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">at_element</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">atsim</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        .. Note:: This data source, currently, cannot understand the simulated</span>
+<span class="sd">           equivalent of shared devices on the live machine, or multiple</span>
+<span class="sd">           devices that address the same field/attribute for that matter.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            at_element (at.elements.Element): The AT element corresponding to</span>
+<span class="sd">                                               the Pytac element which this</span>
+<span class="sd">                                               data source is attached to.</span>
+<span class="sd">            index (int): The element&#39;s index in the ring, starting from 1.</span>
+<span class="sd">            atsim (ATSimulator): An instance of an ATSimulator object.</span>
+<span class="sd">            fields (list, typing.Optional): The fields found on this element.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if an unsupported field is passed, i.e. a field not in</span>
+<span class="sd">                         _field_funcs.keys().</span>
+
+<span class="sd">        **Methods:**</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="n">pytac</span><span class="o">.</span><span class="n">PHYS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_at_element</span> <span class="o">=</span> <span class="n">at_element</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_index</span> <span class="o">=</span> <span class="n">index</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_atsim</span> <span class="o">=</span> <span class="n">atsim</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_get_field_funcs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;x_kick&quot;</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_KickAngle</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s2">&quot;y_kick&quot;</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_KickAngle</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_ClosedOrbit</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_ClosedOrbit</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;a1&quot;</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_PolynomA</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="s2">&quot;b1&quot;</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_PolynomB</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="s2">&quot;b2&quot;</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_PolynomB</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+            <span class="s2">&quot;b0&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_BendingAngle</span><span class="p">,</span>
+            <span class="s2">&quot;f&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_Frequency</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_field_funcs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;x_kick&quot;</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_set_KickAngle</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s2">&quot;y_kick&quot;</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_set_KickAngle</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="s2">&quot;a1&quot;</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_set_PolynomA</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="s2">&quot;b1&quot;</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_set_PolynomB</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="s2">&quot;b2&quot;</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_set_PolynomB</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+            <span class="s2">&quot;b0&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_BendingAngle</span><span class="p">,</span>
+            <span class="s2">&quot;f&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_Frequency</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span> <span class="k">if</span> <span class="n">fields</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">set</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
+        <span class="c1"># We assume that every set field has a corresponding get field.</span>
+        <span class="n">supported_fields</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_field_funcs</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">f</span> <span class="ow">in</span> <span class="n">supported_fields</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">FieldException</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported field(s) </span><span class="si">{</span><span class="n">fields</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">supported_fields</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fields</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ATElementDataSource.get_fields">
+<a class="viewcode-back" href="../../_api/atip.sim_data_sources.html#atip.sim_data_sources.ATElementDataSource.get_fields">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get all the fields that are defined for the data source on this</span>
+<span class="sd">        element.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: A list of all the fields that are present on this element.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fields</span></div>
+
+
+<div class="viewcode-block" id="ATElementDataSource.add_field">
+<a class="viewcode-back" href="../../_api/atip.sim_data_sources.html#atip.sim_data_sources.ATElementDataSource.add_field">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a field to this data source. This is normally done</span>
+<span class="sd">        automatically when adding a device, however since the simulated data</span>
+<span class="sd">        sources do not use devices this method is needed.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            field (str): The name of a supported field that is not already on</span>
+<span class="sd">                          this data_source.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            pytac.FieldException: if the specified field is already present or if it</span>
+<span class="sd">                             is not supported.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fields</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">FieldException</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Field </span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2"> already present on element data source </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">field</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_field_funcs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="n">FieldException</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported field </span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fields</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">field</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ATElementDataSource.get_value">
+<a class="viewcode-back" href="../../_api/atip.sim_data_sources.html#atip.sim_data_sources.ATElementDataSource.get_value">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">handle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">throw</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the value for a field.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            field (str): The requested field.</span>
+<span class="sd">            handle (str, typing.Optional): Handle is not needed and is only here to</span>
+<span class="sd">                                     conform with the structure of the</span>
+<span class="sd">                                     DataSource base class.</span>
+<span class="sd">            throw (bool, typing.Optional): If the check for completion of outstanding</span>
+<span class="sd">                                     calculations times out, then:</span>
+<span class="sd">                                     if True, raise a ControlSystemException;</span>
+<span class="sd">                                     if False, log a warning and return the</span>
+<span class="sd">                                     potentially out of date data anyway.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The value of the specified field on this data source.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            pytac.FieldException: if the specified field does not exist.</span>
+<span class="sd">            pytac.ControlSystemException: if the calculation completion check fails,</span>
+<span class="sd">                                     and throw is True.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Wait for any outstanding calculations to conclude, to ensure they are</span>
+        <span class="c1"># complete before a value is returned; if the wait times out then raise</span>
+        <span class="c1"># an error message or log a warning according to the value of throw.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atsim</span><span class="o">.</span><span class="n">wait_for_calculations</span><span class="p">():</span>
+            <span class="n">error_msg</span> <span class="o">=</span> <span class="s2">&quot;Check for completion of outstanding calculations timed out.&quot;</span>
+            <span class="k">if</span> <span class="n">throw</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ControlSystemException</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Potentially out of date data returned. &quot;</span> <span class="o">+</span> <span class="n">error_msg</span><span class="p">)</span>
+        <span class="c1"># Again we assume that every set field has a corresponding get field.</span>
+        <span class="k">if</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fields</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_field_funcs</span><span class="p">[</span><span class="n">field</span><span class="p">]()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">FieldException</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No field </span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2"> on AT element </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_at_element</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ATElementDataSource.set_value">
+<a class="viewcode-back" href="../../_api/atip.sim_data_sources.html#atip.sim_data_sources.ATElementDataSource.set_value">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">throw</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the value for a field. The field and value go onto the queue of</span>
+<span class="sd">        changes on the ATSimulator to be passed to make_change when the queue</span>
+<span class="sd">        is emptied.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            field (str): The requested field.</span>
+<span class="sd">            value (float): The value to be set.</span>
+<span class="sd">            throw (bool, typing.Optional): Throw is not needed and is only here to</span>
+<span class="sd">                                     conform with the structure of the</span>
+<span class="sd">                                     DataSource base class.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            pytac.HandleException: if the specified field cannot be set to.</span>
+<span class="sd">            pytac.FieldException: if the specified field does not exist.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fields</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_field_funcs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_atsim</span><span class="o">.</span><span class="n">queue_set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_make_change</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">HandleException</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Field </span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2"> cannot be set on element data source </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">.&quot;</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">FieldException</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No field </span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2"> on AT element </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_at_element</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_make_change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calls the appropriate field setting function to actually modify the</span>
+<span class="sd">        AT element, called in ATSimulator when the queue is being emptied.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            field (str): The requested field.</span>
+<span class="sd">            value (float): The value to be set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_field_funcs</span><span class="p">[</span><span class="n">field</span><span class="p">](</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_KickAngle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cell</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A data handling function used to get the value of a specific cell</span>
+<span class="sd">        of the KickAngle attribute of the AT element.</span>
+
+<span class="sd">        .. Note:: If the Corrector is attached to a Sextupole then KickAngle</span>
+<span class="sd">           needs to be returned from cell 0 of the applicable Polynom(A/B)</span>
+<span class="sd">           attribute and so a conversion must take place. For independent</span>
+<span class="sd">           Correctors KickAngle can be returned directly from the element&#39;s</span>
+<span class="sd">           KickAngle attribute without any conversion. This is because</span>
+<span class="sd">           independent Correctors have a KickAngle attribute in our AT lattice,</span>
+<span class="sd">           but those attached to Sextupoles do not.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cell (int): Which cell of KickAngle to get.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The kick angle of the specified cell.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_at_element</span><span class="p">,</span> <span class="n">at</span><span class="o">.</span><span class="n">elements</span><span class="o">.</span><span class="n">Sextupole</span><span class="p">):</span>
+            <span class="n">length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_at_element</span><span class="o">.</span><span class="n">Length</span>
+            <span class="k">if</span> <span class="n">cell</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="o">-</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_at_element</span><span class="o">.</span><span class="n">PolynomB</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">length</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">cell</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_at_element</span><span class="o">.</span><span class="n">PolynomA</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">length</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_at_element</span><span class="o">.</span><span class="n">KickAngle</span><span class="p">[</span><span class="n">cell</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_KickAngle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cell</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A data handling function used to set the value of a specific cell</span>
+<span class="sd">        of the KickAngle attribute of the AT element.</span>
+
+<span class="sd">        .. Note:: If the Corrector is attached to a Sextupole then KickAngle</span>
+<span class="sd">           needs to be assigned to cell 0 of the applicable Polynom(A/B)</span>
+<span class="sd">           attribute and so a conversion must take place. For independent</span>
+<span class="sd">           Correctors KickAngle can be assigned directly to the element&#39;s</span>
+<span class="sd">           KickAngle attribute without any conversion. This is because</span>
+<span class="sd">           independent Correctors have a KickAngle attribute in our AT lattice,</span>
+<span class="sd">           but those attached to Sextupoles do not.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cell (int): Which cell of KickAngle to set.</span>
+<span class="sd">            value (float): The angle to be set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_at_element</span><span class="p">,</span> <span class="n">at</span><span class="o">.</span><span class="n">elements</span><span class="o">.</span><span class="n">Sextupole</span><span class="p">):</span>
+            <span class="n">length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_at_element</span><span class="o">.</span><span class="n">Length</span>
+            <span class="k">if</span> <span class="n">cell</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_at_element</span><span class="o">.</span><span class="n">PolynomB</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">value</span> <span class="o">/</span> <span class="n">length</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">cell</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_at_element</span><span class="o">.</span><span class="n">PolynomA</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span> <span class="o">/</span> <span class="n">length</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_at_element</span><span class="o">.</span><span class="n">KickAngle</span><span class="p">[</span><span class="n">cell</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_PolynomA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cell</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A data handling function used to get the value of a specific cell</span>
+<span class="sd">        of the PolynomA attribute of the AT element.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cell (int): Which cell of PolynomA to get.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The value of the specified cell of PolynomA.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_at_element</span><span class="o">.</span><span class="n">PolynomA</span><span class="p">[</span><span class="n">cell</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_PolynomA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cell</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A data handling function used to set the value of a specific cell</span>
+<span class="sd">        of the PolynomA attribute of the AT element.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cell (int): Which cell of PolynomA to set.</span>
+<span class="sd">            value (float): The value to be set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_at_element</span><span class="o">.</span><span class="n">PolynomA</span><span class="p">[</span><span class="n">cell</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_PolynomB</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cell</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A data handling function used to get the value of a specific cell</span>
+<span class="sd">        of the PolynomB attribute of the AT element.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cell (int): Which cell of PolynomB to get.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The value of the specified cell of PolynomB.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_at_element</span><span class="o">.</span><span class="n">PolynomB</span><span class="p">[</span><span class="n">cell</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_PolynomB</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cell</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A data handling function used to set the value of a specific cell</span>
+<span class="sd">        of the PolynomB attribute of the AT element.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cell (int): Which cell of PolynomB to set.</span>
+<span class="sd">            value (float): The value to be set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_at_element</span><span class="o">.</span><span class="n">PolynomB</span><span class="p">[</span><span class="n">cell</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_ClosedOrbit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A data handling function used to get the value of a specific cell</span>
+<span class="sd">        of the orbit data for the AT element. This is the only function on</span>
+<span class="sd">        this data source to get data from the central ATSimulator object, it</span>
+<span class="sd">        must do this because in AT the closed orbit is calculated over the</span>
+<span class="sd">        whole lattice.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            field (str): Which cell of closed_orbit to get.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The value of the specified cell of closed_orbit.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_atsim</span><span class="o">.</span><span class="n">get_orbit</span><span class="p">(</span><span class="n">field</span><span class="p">)[</span><span class="bp">self</span><span class="o">.</span><span class="n">_index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_BendingAngle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A data handling function used to get the value of the BendingAngle</span>
+<span class="sd">        attribute of the AT element.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The value of the element&#39;s BendingAngle attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_at_element</span><span class="o">.</span><span class="n">BendingAngle</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_BendingAngle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A data handling function used to set the value of the BendingAngle</span>
+<span class="sd">        attribute of the AT element.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value (float): The value to be set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_at_element</span><span class="o">.</span><span class="n">BendingAngle</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_Frequency</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A data handling function used to get the value of the Frequency</span>
+<span class="sd">        attribute of the AT element.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The value of the element&#39;s Frequency attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_at_element</span><span class="o">.</span><span class="n">Frequency</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_Frequency</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A data handling function used to set the value of the Frequency</span>
+<span class="sd">        attribute of the AT element.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value (float): The value to be set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_at_element</span><span class="o">.</span><span class="n">Frequency</span> <span class="o">=</span> <span class="n">value</span></div>
+
+
+
+<div class="viewcode-block" id="ATLatticeDataSource">
+<a class="viewcode-back" href="../../_api/atip.sim_data_sources.html#atip.sim_data_sources.ATLatticeDataSource">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ATLatticeDataSource</span><span class="p">(</span><span class="n">pytac</span><span class="o">.</span><span class="n">data_source</span><span class="o">.</span><span class="n">DataSource</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A simulator data source to allow the physics data of the AT lattice to</span>
+<span class="sd">    be addressed using the standard Pytac syntax.</span>
+
+<span class="sd">    **Attributes**</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        units (str): pytac.ENG or pytac.PHYS, pytac.PHYS by default.</span>
+
+<span class="sd">    .. Private Attributes:</span>
+<span class="sd">           _atsim (ATSimulator): A pointer to the centralised instance of an</span>
+<span class="sd">                                  ATSimulator object.</span>
+<span class="sd">           _field_funcs (dict): A dictionary which maps Pytac lattice fields to</span>
+<span class="sd">                                 the correct data function on the centralised</span>
+<span class="sd">                                 ATSimulator object. Some of these functions,</span>
+<span class="sd">                                 via partial(), are passed a cell argument so</span>
+<span class="sd">                                 only relevant data is returned.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atsim</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        .. Note:: Though not currently supported, there are plans to add</span>
+<span class="sd">           get_element_values and set_element_values methods to this data</span>
+<span class="sd">           source in future.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            atsim (ATSimulator): An instance of an ATSimulator object.</span>
+
+<span class="sd">        **Methods:**</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="n">pytac</span><span class="o">.</span><span class="n">PHYS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_atsim</span> <span class="o">=</span> <span class="n">atsim</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_field_funcs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;chromaticity_x&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atsim</span><span class="o">.</span><span class="n">get_chromaticity</span><span class="p">,</span>
+            <span class="s2">&quot;chromaticity_y&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atsim</span><span class="o">.</span><span class="n">get_chromaticity</span><span class="p">,</span>
+            <span class="s2">&quot;chromaticity&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atsim</span><span class="o">.</span><span class="n">get_chromaticity</span><span class="p">,</span>
+            <span class="s2">&quot;eta_prime_x&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atsim</span><span class="o">.</span><span class="n">get_dispersion</span><span class="p">,</span>
+            <span class="s2">&quot;eta_prime_y&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atsim</span><span class="o">.</span><span class="n">get_dispersion</span><span class="p">,</span>
+            <span class="s2">&quot;dispersion&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atsim</span><span class="o">.</span><span class="n">get_dispersion</span><span class="p">,</span>
+            <span class="s2">&quot;emittance_x&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atsim</span><span class="o">.</span><span class="n">get_emittance</span><span class="p">,</span>
+            <span class="s2">&quot;emittance_y&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atsim</span><span class="o">.</span><span class="n">get_emittance</span><span class="p">,</span>
+            <span class="s2">&quot;emittance&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atsim</span><span class="o">.</span><span class="n">get_emittance</span><span class="p">,</span>
+            <span class="s2">&quot;closed_orbit&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atsim</span><span class="o">.</span><span class="n">get_orbit</span><span class="p">,</span>
+            <span class="s2">&quot;eta_x&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atsim</span><span class="o">.</span><span class="n">get_dispersion</span><span class="p">,</span>
+            <span class="s2">&quot;eta_y&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atsim</span><span class="o">.</span><span class="n">get_dispersion</span><span class="p">,</span>
+            <span class="s2">&quot;energy&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atsim</span><span class="o">.</span><span class="n">get_energy</span><span class="p">,</span>
+            <span class="s2">&quot;phase_x&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atsim</span><span class="o">.</span><span class="n">get_orbit</span><span class="p">,</span>
+            <span class="s2">&quot;phase_y&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atsim</span><span class="o">.</span><span class="n">get_orbit</span><span class="p">,</span>
+            <span class="s2">&quot;s_position&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atsim</span><span class="o">.</span><span class="n">get_s</span><span class="p">,</span>
+            <span class="s2">&quot;tune_x&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atsim</span><span class="o">.</span><span class="n">get_tune</span><span class="p">,</span>
+            <span class="s2">&quot;tune_y&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atsim</span><span class="o">.</span><span class="n">get_tune</span><span class="p">,</span>
+            <span class="s2">&quot;alpha&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atsim</span><span class="o">.</span><span class="n">get_alpha</span><span class="p">,</span>
+            <span class="s2">&quot;beta&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atsim</span><span class="o">.</span><span class="n">get_beta</span><span class="p">,</span>
+            <span class="s2">&quot;tune&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atsim</span><span class="o">.</span><span class="n">get_tune</span><span class="p">,</span>
+            <span class="s2">&quot;m66&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atsim</span><span class="o">.</span><span class="n">get_m66</span><span class="p">,</span>
+            <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atsim</span><span class="o">.</span><span class="n">get_orbit</span><span class="p">,</span>
+            <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atsim</span><span class="o">.</span><span class="n">get_orbit</span><span class="p">,</span>
+            <span class="s2">&quot;mu&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atsim</span><span class="o">.</span><span class="n">get_mu</span><span class="p">,</span>
+        <span class="p">}</span>
+
+<div class="viewcode-block" id="ATLatticeDataSource.get_fields">
+<a class="viewcode-back" href="../../_api/atip.sim_data_sources.html#atip.sim_data_sources.ATLatticeDataSource.get_fields">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get all the fields that are defined for this data source on the</span>
+<span class="sd">        Pytac lattice.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: A list of all the fields that are present on this element.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_field_funcs</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="ATLatticeDataSource.get_value">
+<a class="viewcode-back" href="../../_api/atip.sim_data_sources.html#atip.sim_data_sources.ATLatticeDataSource.get_value">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">handle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">throw</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the value for a field on the Pytac lattice.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            field (str): The requested field.</span>
+<span class="sd">            handle (str, typing.Optional): Handle is not needed and is only here to</span>
+<span class="sd">                                     conform with the structure of the</span>
+<span class="sd">                                     DataSource base class.</span>
+<span class="sd">            throw (bool, typing.Optional): If the check for completion of outstanding</span>
+<span class="sd">                                     calculations times out, then:</span>
+<span class="sd">                                     if True, raise a ControlSystemException;</span>
+<span class="sd">                                     if False, log a warning and return the</span>
+<span class="sd">                                     potentially out of date data anyway.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The value of the specified field on this data source.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            pytac.FieldException: if the specified field does not exist.</span>
+<span class="sd">            pytac.ControlSystemException: if the calculation completion check fails,</span>
+<span class="sd">                                     and throw is True.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Wait for any outstanding calculations to conclude, to ensure they are</span>
+        <span class="c1"># complete before a value is returned; if the wait times out then raise</span>
+        <span class="c1"># an error message or log a warning according to the value of throw.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atsim</span><span class="o">.</span><span class="n">wait_for_calculations</span><span class="p">():</span>
+            <span class="n">error_msg</span> <span class="o">=</span> <span class="s2">&quot;Check for completion of outstanding calculations timed out.&quot;</span>
+            <span class="k">if</span> <span class="n">throw</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ControlSystemException</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Potentially out of date data returned. &quot;</span> <span class="o">+</span> <span class="n">error_msg</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">field</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_field_funcs</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="c1"># The orbit x_phase and y_phase, and the eta prime_x and prime_y</span>
+            <span class="c1"># fields are represented by &#39;px&#39; or &#39;py&#39; in the ATSimulator data</span>
+            <span class="c1"># handling functions.</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;phase&quot;</span><span class="p">))</span> <span class="ow">or</span> <span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;prime&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_field_funcs</span><span class="p">[</span><span class="n">field</span><span class="p">](</span><span class="s2">&quot;p&quot;</span> <span class="o">+</span> <span class="n">field</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">field</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">):</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_field_funcs</span><span class="p">[</span><span class="n">field</span><span class="p">](</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">field</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">):</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_field_funcs</span><span class="p">[</span><span class="n">field</span><span class="p">](</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_field_funcs</span><span class="p">[</span><span class="n">field</span><span class="p">]()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">FieldException</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Lattice data source </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> does not have field </span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ATLatticeDataSource.set_value">
+<a class="viewcode-back" href="../../_api/atip.sim_data_sources.html#atip.sim_data_sources.ATLatticeDataSource.set_value">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">throw</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the value for a field.</span>
+
+<span class="sd">        .. Note:: Currently, a HandleException is always raised.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            field (str): The requested field.</span>
+<span class="sd">            value (float): The value to be set.</span>
+<span class="sd">            throw (bool, typing.Optional): Throw is not needed and is only here to</span>
+<span class="sd">                                     conform with the structure of the</span>
+<span class="sd">                                     DataSource base class.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            pytac.HandleException: as setting values to Pytac lattice fields is not</span>
+<span class="sd">                              currently supported.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="n">HandleException</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Field </span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2"> cannot be set on lattice data source </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

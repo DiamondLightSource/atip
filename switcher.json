@@ -1,5 +1,9 @@
 [
   {
+    "version": "main",
+    "url": "https://DiamondLightSource.github.io/atip/main/"
+  },
+  {
     "version": "switch_to_copier_template",
     "url": "https://DiamondLightSource.github.io/atip/switch_to_copier_template/"
   },

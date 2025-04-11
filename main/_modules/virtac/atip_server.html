@@ -1,0 +1,1075 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>virtac.atip_server &#8212; atip 0.1.1.dev66+gb0449bf documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=0b90bf47"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=30646c52"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/virtac/atip_server';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://DiamondLightSource.github.io/atip/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'main';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="icon" href="../../_static/dls-logo.svg"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="main" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/dls-logo.svg" class="logo__image only-light" alt=""/>
+    <img src="../../_static/dls-logo.svg" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">atip</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../how-to.html">
+    How-to Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../explanations.html">
+    Explanations
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../reference.html">
+    Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/DiamondLightSource/atip" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/atip" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-cube fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../how-to.html">
+    How-to Guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../explanations.html">
+    Explanations
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../reference.html">
+    Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/DiamondLightSource/atip" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/atip" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-cube fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">virtac.atip_server</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for virtac.atip_server</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">ast</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">csv</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pytac</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cothread.catools</span><span class="w"> </span><span class="kn">import</span> <span class="n">camonitor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pytac.device</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleDevice</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pytac.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldException</span><span class="p">,</span> <span class="n">HandleException</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">softioc</span><span class="w"> </span><span class="kn">import</span> <span class="n">builder</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">atip</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.masks</span><span class="w"> </span><span class="kn">import</span> <span class="n">caget_mask</span><span class="p">,</span> <span class="n">callback_offset</span><span class="p">,</span> <span class="n">callback_set</span><span class="p">,</span> <span class="n">caput_mask</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.mirror_objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">collate</span><span class="p">,</span> <span class="n">refresher</span><span class="p">,</span> <span class="n">summate</span><span class="p">,</span> <span class="n">transform</span>
+
+
+<div class="viewcode-block" id="ATIPServer">
+<a class="viewcode-back" href="../../_api/virtac.atip_server.html#virtac.atip_server.ATIPServer">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ATIPServer</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A soft-ioc server allowing ATIP to be interfaced using EPICS, in the</span>
+<span class="sd">    same manner as the live machine.</span>
+
+<span class="sd">    **Attributes**</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        lattice (pytac.lattice.Lattice): An instance of a Pytac lattice with a</span>
+<span class="sd">                                          simulator data source.</span>
+<span class="sd">        tune_feedback_status (bool): A boolean indicating whether the tune</span>
+<span class="sd">                                      feedback records have been created and</span>
+<span class="sd">                                      the monitoring systems are running.</span>
+<span class="sd">    .. Private Attributes:</span>
+<span class="sd">           _pv_monitoring (bool): Whether the mirrored PVs are being monitored.</span>
+<span class="sd">           _tune_fb_csv_path (str): The path to the tune feedback .csv file.</span>
+<span class="sd">           _in_records (dict): A dictionary containing all the created in</span>
+<span class="sd">                                records and their associated element index and</span>
+<span class="sd">                                Pytac field, i.e. {in_record: [index, field]}.</span>
+<span class="sd">           _out_records (dict): A dictionary containing the names of all the</span>
+<span class="sd">                                 created out records and their associated in</span>
+<span class="sd">                                 records, i.e. {out_record.name: in_record}.</span>
+<span class="sd">           _rb_only_records (list): A list of all the in records that do not</span>
+<span class="sd">                                     have an associated out record.</span>
+<span class="sd">           _feedback_records (dict): A dictionary containing all the feedback</span>
+<span class="sd">                                      related records, in the same format as</span>
+<span class="sd">                                      _in_records because they are all readback</span>
+<span class="sd">                                      only.</span>
+<span class="sd">           _mirrored_records (dict): A dictionary containing the PVs that the</span>
+<span class="sd">                                      mirrored records monitor for a change</span>
+<span class="sd">                                      and the associated mirror, in the form</span>
+<span class="sd">                                      {monitored PV: mirror record/object}.</span>
+<span class="sd">           _monitored_pvs (dict): A dictionary of all the PVs that are being</span>
+<span class="sd">                                   monitored for a change and the associated</span>
+<span class="sd">                                   camonitor object, in the form</span>
+<span class="sd">                                   {monitored PV: camonitor object}.</span>
+<span class="sd">           _offset_pvs (dict): A dictionary of the PVs to apply offset to and</span>
+<span class="sd">                                their associated offset records from which to</span>
+<span class="sd">                                get the offset from.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">ring_mode</span><span class="p">,</span>
+        <span class="n">limits_csv</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">feedback_csv</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">mirror_csv</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">tune_csv</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">disable_emittance</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            ring_mode (str): The ring mode to create the lattice in.</span>
+<span class="sd">            limits_csv (str): The filepath to the .csv file from which to</span>
+<span class="sd">                                    load the pv limits, for more information</span>
+<span class="sd">                                    see create_csv.py.</span>
+<span class="sd">            feedback_csv (str): The filepath to the .csv file from which to</span>
+<span class="sd">                                    load the feedback records, for more</span>
+<span class="sd">                                    information see create_csv.py.</span>
+<span class="sd">            mirror_csv (str): The filepath to the .csv file from which to</span>
+<span class="sd">                                  load the mirror records, for more information</span>
+<span class="sd">                                  see create_csv.py.</span>
+<span class="sd">            tune_csv (str): The filepath to the .csv file from which to</span>
+<span class="sd">                                load the tune feedback records, for more</span>
+<span class="sd">                                information see create_csv.py.</span>
+<span class="sd">            disable_emittance (bool): Whether the emittance should be disabled.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lattice</span> <span class="o">=</span> <span class="n">atip</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">loader</span><span class="p">(</span><span class="n">ring_mode</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_pvs</span><span class="p">,</span> <span class="n">disable_emittance</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tune_feedback_status</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pv_monitoring</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tune_fb_csv_path</span> <span class="o">=</span> <span class="n">tune_csv</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_in_records</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_out_records</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rb_only_records</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_feedback_records</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mirrored_records</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_monitored_pvs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_offset_pvs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Starting record creation.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_records</span><span class="p">(</span><span class="n">limits_csv</span><span class="p">,</span> <span class="n">disable_emittance</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">feedback_csv</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_feedback_records</span><span class="p">(</span><span class="n">feedback_csv</span><span class="p">,</span> <span class="n">disable_emittance</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mirror_csv</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_mirror_records</span><span class="p">(</span><span class="n">mirror_csv</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Finished creating all </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_record_names</span><span class="p">)</span><span class="si">}</span><span class="s2"> records.&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">all_record_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A dictionary with all the names of records created by this server</span>
+<span class="sd">        as the keys and the corresponding record (and mirror) objects as the</span>
+<span class="sd">        values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mirrored</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">rec_list</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mirrored_records</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">rec_list</span><span class="p">:</span>
+                <span class="n">mirrored</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+        <span class="n">all_records</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_in_records</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_out_records</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_feedback_records</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+            <span class="o">+</span> <span class="n">mirrored</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">record</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">record</span> <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">all_records</span><span class="p">}</span>
+
+<div class="viewcode-block" id="ATIPServer.update_pvs">
+<a class="viewcode-back" href="../../_api/virtac.atip_server.html#virtac.atip_server.ATIPServer.update_pvs">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_pvs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The callback function passed to ATSimulator during lattice creation,</span>
+<span class="sd">        it is called each time a calculation of physics data is completed. It</span>
+<span class="sd">        updates all the in records that do not have a corresponding out record</span>
+<span class="sd">        with the latest values from the simulator.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">rb_record</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rb_only_records</span><span class="p">:</span>
+            <span class="n">index</span><span class="p">,</span> <span class="n">field</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_in_records</span><span class="p">[</span><span class="n">rb_record</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">index</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+                    <span class="n">field</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="n">pytac</span><span class="o">.</span><span class="n">ENG</span><span class="p">,</span> <span class="n">data_source</span><span class="o">=</span><span class="n">pytac</span><span class="o">.</span><span class="n">SIM</span>
+                <span class="p">)</span>
+                <span class="n">rb_record</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lattice</span><span class="p">[</span><span class="n">index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+                    <span class="n">field</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="n">pytac</span><span class="o">.</span><span class="n">ENG</span><span class="p">,</span> <span class="n">data_source</span><span class="o">=</span><span class="n">pytac</span><span class="o">.</span><span class="n">SIM</span>
+                <span class="p">)</span>
+                <span class="n">rb_record</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_records</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limits_csv</span><span class="p">,</span> <span class="n">disable_emittance</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create all the standard records from both lattice and element Pytac</span>
+<span class="sd">        fields. Several assumptions have been made for simplicity and</span>
+<span class="sd">        efficiency, these are:</span>
+<span class="sd">            - That bend elements all share a single PV, and are the only</span>
+<span class="sd">               element family to do so.</span>
+<span class="sd">            - That every field that has an out type record (SP) will also have</span>
+<span class="sd">               an in type record (RB).</span>
+<span class="sd">            - That all lattice fields are never setpoint and so only in records</span>
+<span class="sd">               need to be created for them.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            limits_csv (str): The filepath to the .csv file from which to</span>
+<span class="sd">                                    load the pv limits.</span>
+<span class="sd">            disable_emittance (bool): Whether the emittance related PVs should be</span>
+<span class="sd">                                        created or not.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">limits_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">limits_csv</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">csv_reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">limits_csv</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">csv_reader</span><span class="p">:</span>
+                <span class="n">limits_dict</span><span class="p">[</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;pv&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;upper&quot;</span><span class="p">]),</span>
+                    <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;lower&quot;</span><span class="p">]),</span>
+                    <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;precision&quot;</span><span class="p">]),</span>
+                <span class="p">)</span>
+        <span class="n">bend_in_record</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lattice</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">type_</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;BEND&quot;</span><span class="p">:</span>
+                <span class="c1"># Create bends only once as they all share a single PV.</span>
+                <span class="k">if</span> <span class="n">bend_in_record</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+                        <span class="s2">&quot;b0&quot;</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="n">pytac</span><span class="o">.</span><span class="n">ENG</span><span class="p">,</span> <span class="n">data_source</span><span class="o">=</span><span class="n">pytac</span><span class="o">.</span><span class="n">SIM</span>
+                    <span class="p">)</span>
+                    <span class="n">get_pv</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">get_pv_name</span><span class="p">(</span><span class="s2">&quot;b0&quot;</span><span class="p">,</span> <span class="n">pytac</span><span class="o">.</span><span class="n">RB</span><span class="p">)</span>
+                    <span class="n">upper</span><span class="p">,</span> <span class="n">lower</span><span class="p">,</span> <span class="n">precision</span> <span class="o">=</span> <span class="n">limits_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                        <span class="n">get_pv</span><span class="p">,</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                    <span class="p">)</span>
+                    <span class="n">builder</span><span class="o">.</span><span class="n">SetDeviceName</span><span class="p">(</span><span class="n">get_pv</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+                    <span class="n">in_record</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">aIn</span><span class="p">(</span>
+                        <span class="n">get_pv</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span>
+                        <span class="n">LOPR</span><span class="o">=</span><span class="n">lower</span><span class="p">,</span>
+                        <span class="n">HOPR</span><span class="o">=</span><span class="n">upper</span><span class="p">,</span>
+                        <span class="n">PREC</span><span class="o">=</span><span class="n">precision</span><span class="p">,</span>
+                        <span class="n">MDEL</span><span class="o">=</span><span class="s2">&quot;-1&quot;</span><span class="p">,</span>
+                        <span class="n">initial_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="n">set_pv</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">get_pv_name</span><span class="p">(</span><span class="s2">&quot;b0&quot;</span><span class="p">,</span> <span class="n">pytac</span><span class="o">.</span><span class="n">SP</span><span class="p">)</span>
+                    <span class="n">upper</span><span class="p">,</span> <span class="n">lower</span><span class="p">,</span> <span class="n">precision</span> <span class="o">=</span> <span class="n">limits_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                        <span class="n">set_pv</span><span class="p">,</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                    <span class="p">)</span>
+                    <span class="n">builder</span><span class="o">.</span><span class="n">SetDeviceName</span><span class="p">(</span><span class="n">set_pv</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+                    <span class="n">out_record</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">aOut</span><span class="p">(</span>
+                        <span class="n">set_pv</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span>
+                        <span class="n">LOPR</span><span class="o">=</span><span class="n">lower</span><span class="p">,</span>
+                        <span class="n">HOPR</span><span class="o">=</span><span class="n">upper</span><span class="p">,</span>
+                        <span class="n">PREC</span><span class="o">=</span><span class="n">precision</span><span class="p">,</span>
+                        <span class="n">initial_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
+                        <span class="n">on_update_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_update</span><span class="p">,</span>
+                        <span class="n">always_update</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_in_records</span><span class="p">[</span><span class="n">in_record</span><span class="p">]</span> <span class="o">=</span> <span class="p">([</span><span class="n">element</span><span class="o">.</span><span class="n">index</span><span class="p">],</span> <span class="s2">&quot;b0&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_out_records</span><span class="p">[</span><span class="n">out_record</span><span class="p">]</span> <span class="o">=</span> <span class="n">in_record</span>
+                    <span class="n">bend_in_record</span> <span class="o">=</span> <span class="n">in_record</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_in_records</span><span class="p">[</span><span class="n">bend_in_record</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Create records for all other families.</span>
+                <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">element</span><span class="o">.</span><span class="n">get_fields</span><span class="p">()[</span><span class="n">pytac</span><span class="o">.</span><span class="n">SIM</span><span class="p">]:</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+                        <span class="n">field</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="n">pytac</span><span class="o">.</span><span class="n">ENG</span><span class="p">,</span> <span class="n">data_source</span><span class="o">=</span><span class="n">pytac</span><span class="o">.</span><span class="n">SIM</span>
+                    <span class="p">)</span>
+                    <span class="n">get_pv</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">get_pv_name</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">pytac</span><span class="o">.</span><span class="n">RB</span><span class="p">)</span>
+                    <span class="n">upper</span><span class="p">,</span> <span class="n">lower</span><span class="p">,</span> <span class="n">precision</span> <span class="o">=</span> <span class="n">limits_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                        <span class="n">get_pv</span><span class="p">,</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                    <span class="p">)</span>
+                    <span class="n">builder</span><span class="o">.</span><span class="n">SetDeviceName</span><span class="p">(</span><span class="n">get_pv</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+                    <span class="n">in_record</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">aIn</span><span class="p">(</span>
+                        <span class="n">get_pv</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span>
+                        <span class="n">LOPR</span><span class="o">=</span><span class="n">lower</span><span class="p">,</span>
+                        <span class="n">HOPR</span><span class="o">=</span><span class="n">upper</span><span class="p">,</span>
+                        <span class="n">PREC</span><span class="o">=</span><span class="n">precision</span><span class="p">,</span>
+                        <span class="n">MDEL</span><span class="o">=</span><span class="s2">&quot;-1&quot;</span><span class="p">,</span>
+                        <span class="n">initial_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_in_records</span><span class="p">[</span><span class="n">in_record</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">field</span><span class="p">)</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">set_pv</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">get_pv_name</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">pytac</span><span class="o">.</span><span class="n">SP</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="n">HandleException</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_rb_only_records</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">in_record</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">upper</span><span class="p">,</span> <span class="n">lower</span><span class="p">,</span> <span class="n">precision</span> <span class="o">=</span> <span class="n">limits_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                            <span class="n">set_pv</span><span class="p">,</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                        <span class="p">)</span>
+                        <span class="n">builder</span><span class="o">.</span><span class="n">SetDeviceName</span><span class="p">(</span><span class="n">set_pv</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+                        <span class="n">out_record</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">aOut</span><span class="p">(</span>
+                            <span class="n">set_pv</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span>
+                            <span class="n">LOPR</span><span class="o">=</span><span class="n">lower</span><span class="p">,</span>
+                            <span class="n">HOPR</span><span class="o">=</span><span class="n">upper</span><span class="p">,</span>
+                            <span class="n">PREC</span><span class="o">=</span><span class="n">precision</span><span class="p">,</span>
+                            <span class="n">initial_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
+                            <span class="n">on_update_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_update</span><span class="p">,</span>
+                            <span class="n">always_update</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_out_records</span><span class="p">[</span><span class="n">out_record</span><span class="p">]</span> <span class="o">=</span> <span class="n">in_record</span>
+        <span class="c1"># Now for lattice fields.</span>
+        <span class="n">lat_fields</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">get_fields</span><span class="p">()</span>
+        <span class="n">lat_fields</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">lat_fields</span><span class="p">[</span><span class="n">pytac</span><span class="o">.</span><span class="n">LIVE</span><span class="p">])</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">lat_fields</span><span class="p">[</span><span class="n">pytac</span><span class="o">.</span><span class="n">SIM</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">disable_emittance</span><span class="p">:</span>
+            <span class="n">lat_fields</span> <span class="o">-=</span> <span class="p">{</span><span class="s2">&quot;emittance_x&quot;</span><span class="p">,</span> <span class="s2">&quot;emittance_y&quot;</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">lat_fields</span><span class="p">:</span>
+            <span class="c1"># Ignore basic devices as they do not have PVs.</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">get_device</span><span class="p">(</span><span class="n">field</span><span class="p">),</span> <span class="n">SimpleDevice</span><span class="p">):</span>
+                <span class="n">get_pv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">get_pv_name</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">pytac</span><span class="o">.</span><span class="n">RB</span><span class="p">)</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+                    <span class="n">field</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="n">pytac</span><span class="o">.</span><span class="n">ENG</span><span class="p">,</span> <span class="n">data_source</span><span class="o">=</span><span class="n">pytac</span><span class="o">.</span><span class="n">SIM</span>
+                <span class="p">)</span>
+                <span class="n">builder</span><span class="o">.</span><span class="n">SetDeviceName</span><span class="p">(</span><span class="n">get_pv</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">in_record</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">aIn</span><span class="p">(</span>
+                    <span class="n">get_pv</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span> <span class="n">PREC</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="n">MDEL</span><span class="o">=</span><span class="s2">&quot;-1&quot;</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_in_records</span><span class="p">[</span><span class="n">in_record</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">field</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_rb_only_records</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">in_record</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;~*~*Woah, we&#39;re halfway there, Wo-oah...*~*~&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_on_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The callback function passed to out records, it is called after</span>
+<span class="sd">        successful record processing has been completed. It updates the out</span>
+<span class="sd">        record&#39;s corresponding in record with the value that has been set and</span>
+<span class="sd">        then sets the value to the centralised Pytac lattice.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value (number): The value that has just been set to the record.</span>
+<span class="sd">            name (str): The name of record object that has just been set to.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">in_record</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_out_records</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">all_record_names</span><span class="p">[</span><span class="n">name</span><span class="p">]]</span>
+        <span class="n">in_record</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">index</span><span class="p">,</span> <span class="n">field</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_in_records</span><span class="p">[</span><span class="n">in_record</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tune_feedback_status</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">offset_record</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_offset_pvs</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+                <span class="n">value</span> <span class="o">+=</span> <span class="n">offset_record</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="k">pass</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">index</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">lattice</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span>
+                    <span class="n">field</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="n">pytac</span><span class="o">.</span><span class="n">ENG</span><span class="p">,</span> <span class="n">data_source</span><span class="o">=</span><span class="n">pytac</span><span class="o">.</span><span class="n">SIM</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lattice</span><span class="p">[</span><span class="n">index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span>
+                <span class="n">field</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="n">pytac</span><span class="o">.</span><span class="n">ENG</span><span class="p">,</span> <span class="n">data_source</span><span class="o">=</span><span class="n">pytac</span><span class="o">.</span><span class="n">SIM</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_feedback_records</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feedback_csv</span><span class="p">,</span> <span class="n">disable_emittance</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create all the feedback records from the .csv file at the location</span>
+<span class="sd">        passed, see create_csv.py for more information; records for two edge</span>
+<span class="sd">        cases are also created.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            feedback_csv (str): The filepath to the .csv file to load the</span>
+<span class="sd">                                    records in accordance with.</span>
+<span class="sd">            disable_emittance (bool): Whether the emittance related PVs should be</span>
+<span class="sd">                                        created or not.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># We don&#39;t set limits or precision but this shouldn&#39;t be an issue as these</span>
+        <span class="c1"># records aren&#39;t really intended to be set to by a user.</span>
+        <span class="n">csv_reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">feedback_csv</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">csv_reader</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">readonly</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;read-only&quot;</span><span class="p">])</span>
+                <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">readonly</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">AssertionError</span><span class="p">)</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Unable to evaluate </span><span class="si">{</span><span class="n">line</span><span class="p">[</span><span class="s1">&#39;read-only&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> as a boolean.&quot;</span>
+                <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+            <span class="n">prefix</span><span class="p">,</span> <span class="n">suffix</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;pv&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">builder</span><span class="o">.</span><span class="n">SetDeviceName</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">readonly</span><span class="p">:</span>
+                <span class="n">in_record</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">aIn</span><span class="p">(</span>
+                    <span class="n">suffix</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]),</span> <span class="n">MDEL</span><span class="o">=</span><span class="s2">&quot;-1&quot;</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_feedback_records</span><span class="p">[(</span><span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;index&quot;</span><span class="p">]),</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;field&quot;</span><span class="p">])]</span> <span class="o">=</span> <span class="n">in_record</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">out_record</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">aOut</span><span class="p">(</span>
+                    <span class="n">suffix</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]),</span> <span class="n">always_update</span><span class="o">=</span><span class="kc">True</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_feedback_records</span><span class="p">[(</span><span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;index&quot;</span><span class="p">]),</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;field&quot;</span><span class="p">])]</span> <span class="o">=</span> <span class="n">out_record</span>
+        <span class="c1"># Special case: BPM ID for the x axis of beam position plot, since we</span>
+        <span class="c1"># cannot currently create Waveform records via CSV.</span>
+        <span class="n">bpm_ids</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="nb">int</span><span class="p">(</span><span class="n">pv</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">])</span> <span class="o">+</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">pv</span><span class="p">[</span><span class="mi">14</span><span class="p">:</span><span class="mi">16</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">pv</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">get_element_pv_names</span><span class="p">(</span><span class="s2">&quot;BPM&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">pytac</span><span class="o">.</span><span class="n">RB</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="n">builder</span><span class="o">.</span><span class="n">SetDeviceName</span><span class="p">(</span><span class="s2">&quot;SR-DI-EBPM-01&quot;</span><span class="p">)</span>
+        <span class="n">bpm_id_record</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">Waveform</span><span class="p">(</span>
+            <span class="s2">&quot;BPMID&quot;</span><span class="p">,</span> <span class="n">NELM</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">bpm_ids</span><span class="p">),</span> <span class="n">initial_value</span><span class="o">=</span><span class="n">bpm_ids</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_feedback_records</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;bpm_id&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">bpm_id_record</span>
+        <span class="c1"># Special case: Fast BBA oscillation PVs - should also be moved to CSV in future</span>
+        <span class="k">for</span> <span class="n">cell</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">symmetry</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">cell</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">cell</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">builder</span><span class="o">.</span><span class="n">SetDeviceName</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;SR</span><span class="si">{</span><span class="n">cell</span><span class="si">}</span><span class="s2">A-CS-FOFB-01&quot;</span><span class="p">)</span>
+            <span class="n">start_times</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">WaveformOut</span><span class="p">(</span>
+                <span class="s2">&quot;EXCITE:START_TIMES&quot;</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">18</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_feedback_records</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;cell_</span><span class="si">{</span><span class="n">cell</span><span class="si">}</span><span class="s2">_excite_start_times&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">start_times</span>
+            <span class="n">excite_amps</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">WaveformOut</span><span class="p">(</span>
+                <span class="s2">&quot;EXCITE:AMPS&quot;</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">18</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_feedback_records</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;cell_</span><span class="si">{</span><span class="n">cell</span><span class="si">}</span><span class="s2">_excite_amps&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">excite_amps</span>
+            <span class="n">excite_deltas</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">WaveformOut</span><span class="p">(</span>
+                <span class="s2">&quot;EXCITE:DELTAS&quot;</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">18</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_feedback_records</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;cell_</span><span class="si">{</span><span class="n">cell</span><span class="si">}</span><span class="s2">_excite_deltas&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">excite_deltas</span>
+            <span class="n">excite_ticks</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">WaveformOut</span><span class="p">(</span>
+                <span class="s2">&quot;EXCITE:TICKS&quot;</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">18</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_feedback_records</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;cell_</span><span class="si">{</span><span class="n">cell</span><span class="si">}</span><span class="s2">_excite_ticks&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">excite_ticks</span>
+            <span class="n">excite_prime</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">aOut</span><span class="p">(</span><span class="s2">&quot;EXCITE:PRIME&quot;</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_feedback_records</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;cell_</span><span class="si">{</span><span class="n">cell</span><span class="si">}</span><span class="s2">_excite_prime&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">excite_prime</span>
+        <span class="c1"># We can choose to not calculate emittance as it is not always required,</span>
+        <span class="c1"># which decreases computation time.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">disable_emittance</span><span class="p">:</span>
+            <span class="c1"># Special case: EMIT STATUS for the vertical emittance feedback, since</span>
+            <span class="c1"># we cannot currently create mbbIn records via CSV.</span>
+            <span class="n">builder</span><span class="o">.</span><span class="n">SetDeviceName</span><span class="p">(</span><span class="s2">&quot;SR-DI-EMIT-01&quot;</span><span class="p">)</span>
+            <span class="n">emit_status_record</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">mbbIn</span><span class="p">(</span>
+                <span class="s2">&quot;STATUS&quot;</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ZRVL</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ZRST</span><span class="o">=</span><span class="s2">&quot;Successful&quot;</span><span class="p">,</span> <span class="n">PINI</span><span class="o">=</span><span class="s2">&quot;YES&quot;</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_feedback_records</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;emittance_status&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">emit_status_record</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_mirror_records</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mirror_csv</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create all the mirror records from the .csv file at the location</span>
+<span class="sd">        passed, see create_csv.py for more information.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            mirror_csv (str): The filepath to the .csv file to load the</span>
+<span class="sd">                                    records in accordance with.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">csv_reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">mirror_csv</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">csv_reader</span><span class="p">:</span>
+            <span class="c1"># Parse arguments.</span>
+            <span class="n">input_pvs</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;in&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">input_pvs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
+                <span class="n">line</span><span class="p">[</span><span class="s2">&quot;mirror type&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;basic&quot;</span><span class="p">,</span> <span class="s2">&quot;inverse&quot;</span><span class="p">,</span> <span class="s2">&quot;refresh&quot;</span><span class="p">]</span>
+            <span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span>
+                    <span class="s2">&quot;Transformation, refresher, and basic mirror &quot;</span>
+                    <span class="s2">&quot;types take only one input PV.&quot;</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">input_pvs</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
+                <span class="n">line</span><span class="p">[</span><span class="s2">&quot;mirror type&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;collate&quot;</span><span class="p">,</span> <span class="s2">&quot;summate&quot;</span><span class="p">]</span>
+            <span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span>
+                    <span class="s2">&quot;collation and summation mirror types take at least two input PVs.&quot;</span>
+                <span class="p">)</span>
+            <span class="n">monitor</span> <span class="o">=</span> <span class="n">input_pvs</span>  <span class="c1"># need to update to support camonitor multiple</span>
+            <span class="c1"># Convert input pvs to record objects</span>
+            <span class="n">input_records</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">pv</span> <span class="ow">in</span> <span class="n">input_pvs</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">input_records</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_record_names</span><span class="p">[</span><span class="n">pv</span><span class="p">])</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="n">input_records</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">caget_mask</span><span class="p">(</span><span class="n">pv</span><span class="p">))</span>
+            <span class="c1"># Create output record.</span>
+            <span class="n">prefix</span><span class="p">,</span> <span class="n">suffix</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;out&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">builder</span><span class="o">.</span><span class="n">SetDeviceName</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;mirror type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;refresh&quot;</span><span class="p">:</span>
+                <span class="c1"># Refresh records come first as do not require an output record</span>
+                <span class="k">pass</span>
+            <span class="k">elif</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;output type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;caput&quot;</span><span class="p">:</span>
+                <span class="n">output_record</span> <span class="o">=</span> <span class="n">caput_mask</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;out&quot;</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;output type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;aIn&quot;</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">])</span>
+                <span class="n">output_record</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">aIn</span><span class="p">(</span><span class="n">suffix</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="n">MDEL</span><span class="o">=</span><span class="s2">&quot;-1&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;output type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;longIn&quot;</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">])</span>
+                <span class="n">output_record</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">longIn</span><span class="p">(</span><span class="n">suffix</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="n">MDEL</span><span class="o">=</span><span class="s2">&quot;-1&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;output type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Waveform&quot;</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+                <span class="n">output_record</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">Waveform</span><span class="p">(</span><span class="n">suffix</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">line</span><span class="p">[</span><span class="s1">&#39;output type&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> isn&#39;t a supported mirroring output type;&quot;</span>
+                    <span class="s2">&quot;please enter &#39;caput&#39;, &#39;aIn&#39;, &#39;longIn&#39;, or &#39;Waveform&#39;.&quot;</span>
+                <span class="p">)</span>
+            <span class="c1"># Update the mirror dictionary.</span>
+            <span class="k">for</span> <span class="n">pv</span> <span class="ow">in</span> <span class="n">monitor</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">pv</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mirrored_records</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_mirrored_records</span><span class="p">[</span><span class="n">pv</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;mirror type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;basic&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_mirrored_records</span><span class="p">[</span><span class="n">monitor</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">output_record</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;mirror type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;inverse&quot;</span><span class="p">:</span>
+                <span class="c1"># Other transformation types are not yet supported.</span>
+                <span class="n">transformation</span> <span class="o">=</span> <span class="n">transform</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">invert</span><span class="p">,</span> <span class="n">output_record</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_mirrored_records</span><span class="p">[</span><span class="n">monitor</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">transformation</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;mirror type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;summate&quot;</span><span class="p">:</span>
+                <span class="n">summation_object</span> <span class="o">=</span> <span class="n">summate</span><span class="p">(</span><span class="n">input_records</span><span class="p">,</span> <span class="n">output_record</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">pv</span> <span class="ow">in</span> <span class="n">monitor</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_mirrored_records</span><span class="p">[</span><span class="n">pv</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">summation_object</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;mirror type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;collate&quot;</span><span class="p">:</span>
+                <span class="n">collation_object</span> <span class="o">=</span> <span class="n">collate</span><span class="p">(</span><span class="n">input_records</span><span class="p">,</span> <span class="n">output_record</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">pv</span> <span class="ow">in</span> <span class="n">monitor</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_mirrored_records</span><span class="p">[</span><span class="n">pv</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">collation_object</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;mirror type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;refresh&quot;</span><span class="p">:</span>
+                <span class="n">refresh_object</span> <span class="o">=</span> <span class="n">refresher</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;out&quot;</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_mirrored_records</span><span class="p">[</span><span class="n">pv</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">refresh_object</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">line</span><span class="p">[</span><span class="s1">&#39;mirror type&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> is not a valid mirror type; please enter a &quot;</span>
+                    <span class="s2">&quot;a currently supported type from: &#39;basic&#39;, &#39;summate&#39;, &#39;collate&#39;, &quot;</span>
+                    <span class="s2">&quot;&#39;inverse&#39;, and &#39;refresh&#39;.&quot;</span>
+                <span class="p">)</span>
+
+<div class="viewcode-block" id="ATIPServer.monitor_mirrored_pvs">
+<a class="viewcode-back" href="../../_api/virtac.atip_server.html#virtac.atip_server.ATIPServer.monitor_mirrored_pvs">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">monitor_mirrored_pvs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Start monitoring the input PVs for mirrored records, so that they</span>
+<span class="sd">        can update their value on change.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pv_monitoring</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">for</span> <span class="n">pv</span><span class="p">,</span> <span class="n">output</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mirrored_records</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">callback_set</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_monitored_pvs</span><span class="p">[</span><span class="n">pv</span><span class="p">]</span> <span class="o">=</span> <span class="n">camonitor</span><span class="p">(</span><span class="n">pv</span><span class="p">,</span> <span class="n">mask</span><span class="o">.</span><span class="n">callback</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">warn</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ATIPServer.refresh_record">
+<a class="viewcode-back" href="../../_api/virtac.atip_server.html#virtac.atip_server.ATIPServer.refresh_record">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">refresh_record</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pv_name</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;For a given PV refresh the time-stamp of the associated record,</span>
+<span class="sd">        this is done by setting the record to its current value.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            pv_name (str): The name of the record to refresh.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">record</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_record_names</span><span class="p">[</span><span class="n">pv_name</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pv_name</span><span class="si">}</span><span class="s2"> is not the name of a record created by this server.&quot;</span>
+            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">record</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="ATIPServer.setup_tune_feedback">
+<a class="viewcode-back" href="../../_api/virtac.atip_server.html#virtac.atip_server.ATIPServer.setup_tune_feedback">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup_tune_feedback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tune_csv</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read the tune feedback .csv and find the associated offset PVs,</span>
+<span class="sd">        before starting monitoring them for a change to mimic the behaviour of</span>
+<span class="sd">        the quadrupoles used by the tune feedback system on the live machine.</span>
+
+<span class="sd">        .. Note:: This is intended to be on the recieving end of the tune</span>
+<span class="sd">           feedback system and doesn&#39;t actually perfom tune feedback itself.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            tune_csv (str): A path to a tune feedback .csv file to be used</span>
+<span class="sd">                             instead of the default filepath passed at startup.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">tune_csv</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tune_fb_csv_path</span> <span class="o">=</span> <span class="n">tune_csv</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tune_fb_csv_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;No tune feedback .csv file was given at &quot;</span>
+                <span class="s2">&quot;start-up, please provide one now; i.e. &quot;</span>
+                <span class="s2">&quot;server.start_tune_feedback(&#39;&lt;path_to_csv&gt;&#39;)&quot;</span>
+            <span class="p">)</span>
+        <span class="n">csv_reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tune_fb_csv_path</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pv_monitoring</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">monitor_mirrored_pvs</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tune_feedback_status</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">csv_reader</span><span class="p">:</span>
+            <span class="n">offset_record</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_record_names</span><span class="p">[</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;offset&quot;</span><span class="p">]]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_offset_pvs</span><span class="p">[</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;set pv&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">offset_record</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">callback_offset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;set pv&quot;</span><span class="p">],</span> <span class="n">offset_record</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_monitored_pvs</span><span class="p">[</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;delta&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">camonitor</span><span class="p">(</span>
+                    <span class="n">line</span><span class="p">[</span><span class="s2">&quot;delta&quot;</span><span class="p">],</span> <span class="n">mask</span><span class="o">.</span><span class="n">callback</span>
+                <span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">warn</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ATIPServer.stop_all_monitoring">
+<a class="viewcode-back" href="../../_api/virtac.atip_server.html#virtac.atip_server.ATIPServer.stop_all_monitoring">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">stop_all_monitoring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Stop monitoring mirrored records and tune feedback offsets.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">subscription</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_monitored_pvs</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">subscription</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tune_feedback_status</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pv_monitoring</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="ATIPServer.set_feedback_record">
+<a class="viewcode-back" href="../../_api/virtac.atip_server.html#virtac.atip_server.ATIPServer.set_feedback_record">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_feedback_record</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set a value to the feedback in records.</span>
+
+<span class="sd">        possible element fields are:</span>
+<span class="sd">            [&#39;error_sum&#39;, &#39;enabled&#39;, &#39;state&#39;, &#39;offset&#39;, &#39;golden_offset&#39;, &#39;bcd_offset&#39;,</span>
+<span class="sd">             &#39;bba_offset&#39;]</span>
+<span class="sd">        possible lattice fields are:</span>
+<span class="sd">            [&#39;beam_current&#39;, &#39;feedback_status&#39;, &#39;bpm_id&#39;, &#39;emittance_status&#39;,</span>
+<span class="sd">             &#39;fofb_status&#39;, &#39;cell_&lt;cell_number&gt;_excite_start_times&#39;,</span>
+<span class="sd">             &#39;cell_&lt;cell_number&gt;_excite_amps&#39;, &#39;cell_&lt;cell_number&gt;_excite_deltas&#39;,</span>
+<span class="sd">             &#39;cell_&lt;cell_number&gt;_excite_ticks&#39;, &#39;cell_&lt;cell_number&gt;_excite_prime&#39;]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            index (int): The index of the element on which to set the value;</span>
+<span class="sd">                          starting from 1, 0 is used to set on the lattice.</span>
+<span class="sd">            field (str): The field to set the value to.</span>
+<span class="sd">            value (number): The value to be set.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            pytac.FieldException: If the lattice or element does</span>
+<span class="sd">                                              not have the specified field.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_feedback_records</span><span class="p">[(</span><span class="n">index</span><span class="p">,</span> <span class="n">field</span><span class="p">)]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">index</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">FieldException</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Simulated lattice </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lattice</span><span class="si">}</span><span class="s2"> does not have field </span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2">.&quot;</span>
+                <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">FieldException</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Simulated element </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lattice</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="si">}</span><span class="s2"> does not have &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;field </span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2">.&quot;</span>
+                <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

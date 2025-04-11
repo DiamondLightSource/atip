@@ -1,0 +1,27 @@
+``virtac.masks``
+================
+        
+        
+        
+        
+
+.. automodule:: virtac.masks
+    :members:
+
+    
+    
+    
+
+    
+    
+    .. rubric:: Members
+
+    .. autosummary::
+        :nosignatures:
+    
+        caget_mask
+        callback_offset
+        callback_set
+        caput_mask
+    
+    
