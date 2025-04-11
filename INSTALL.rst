@@ -20,11 +20,10 @@ Initial Setup and Installation
     $ cd <source-directory>
     $ git clone https://github.com/DiamondLightSource/atip.git
 
-2. Create a pipenv and install the dependencies::
+2. From within a python virtual environment, install the dependencies::
 
     $ cd atip
-    $ pipenv install --dev
-    $ pipenv shell
+    $ pip install -e ./
 
 3. Run the tests to ensure everything is working correctly::
 

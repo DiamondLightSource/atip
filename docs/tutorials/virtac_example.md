@@ -1,6 +1,6 @@
-===========================================================
-Running ATIP as a Virtual Accelerator using Python Soft IOC
-===========================================================
+# VIRTAC example
+
+## Running ATIP as a Virtual Accelerator using Python Soft IOC
 
 Using `PythonSoftIOC <https://github.com/Araneidae/pythonIoc>`_, ATIP can
 emulate machine PVs, so that the ATIP simulator can be addressed in the same
@@ -13,44 +13,50 @@ used by convention at Diamond for simulations) to avoid conflict with the same
 PVs on the live machine.
 
 
-Start the virtual accelerator
------------------------------
+## Start the virtual accelerator
 
-Run the virtac under the development EPICS port::
+Once ATIP has been installed using pip or by running the docker image:
 
-    $ export EPICS_CA_SERVER_PORT=6064
-    $ export EPICS_CAS_SERVER_PORT=6064
-    $ export EPICS_CA_REPEATER_PORT=6065
-    $ # at Diamond the above can be set in one go using:    . changeports 6064
-    $ pipenv run virtac
+Run the virtac under the development EPICS port:
+
+:::{code-block} bash
+$ export EPICS_CA_SERVER_PORT=6064
+$ export EPICS_CAS_SERVER_PORT=6064
+$ export EPICS_CA_REPEATER_PORT=6065
+$ # at Diamond the above can be set in one go using:    . changeports 6064
+$ virtac
+:::
 
 It takes 10 seconds or so to load the interactive console::
 
-    Starting record creation.
-    ~*~*Woah, we're halfway there, Wo-oah...*~*~
-    Finished creating all 2981 records.
-    Starting iocInit
-    ############################################################################
-    ## EPICS 7.0.6.0
-    ## Rev. 7.0.6.99.1.0
-    ############################################################################
-    iocRun: All initialization complete
-    Python 3.7.2 (default, Jan 20 2020, 11:03:41)
-    [GCC 4.8.5 20150623 (Red Hat 4.8.5-39)] on linux
-    Type "help", "copyright", "credits" or "license" for more information.
-    (InteractiveConsole)
-    >>>
+:::{code-block} bash
+Starting record creation.
+~*~*Woah, were halfway there, Wo-oah...*~*~
+Finished creating all 2981 records.
+Starting iocInit
+############################################################################
+## EPICS 7.0.6.0
+## Rev. 7.0.6.99.1.0
+############################################################################
+iocRun: All initialization complete
+Python 3.7.2 (default, Jan 20 2020, 11:03:41)
+[GCC 4.8.5 20150623 (Red Hat 4.8.5-39)] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+(InteractiveConsole)
+>>>
+:::
 
 Leave the server running and in a new terminal update the EPICS port::
 
-    $ export EPICS_CA_SERVER_PORT=6064
-    $ # or:    . changeports 6064
+:::{code-block} bash
+$ export EPICS_CA_SERVER_PORT=6064
+$ # or:    . changeports 6064
+:::
 
 In this new terminal you are then free to address the simulator as you would
 the live machine, either through Pytac or by directly accessing the PVs.
 
-Feedback Records:
------------------
+## Feedback Records:
 
 A number of PVs related to feedback systems are supported. These have been
 added to aid testing of the high level applications at Diamond that control
@@ -95,17 +101,20 @@ This is done inside the server console, in the terminal where one you ran
 
    For example disabling SOFB on the first BPM::
 
-       >>> server.set_feedback_record(3, 'enabled', 0)
+:::{code-block} bash
+>>> server.set_feedback_record(3, 'enabled', 0)
+:::
 
    or reducing the beam current::
 
-       >>> server.set_feedback_record(0, 'beam_current', 280)
+:::{code-block} bash
+>>> server.set_feedback_record(0, 'beam_current', 280)
+:::
 
 For further information on working with feedback systems, please refer to
 ``FEEDBACK_SYSTEMS.rst``.
 
-Ring Mode:
-----------
+## Ring Mode:
 
 You can run the virtual accelerator in any ring mode that is supported by
 Pytac; currently 'VMX', 'VMXSP', 'DIAD', and 'I04'. The ring mode can be set by the
@@ -119,7 +128,9 @@ If none of these is set then the virtual accelerator will default to 'I04'.
 
 For example::
 
-    $ pipenv run virtac I04
-    $ export RINGMODE=I04
-    $ caput SR-CS-RING-01:MODE 3
-    $ # Having none of these set would also start in mode 'I04'.
+:::{code-block} bash
+$ virtac I04
+$ export RINGMODE=I04
+$ caput SR-CS-RING-01:MODE 3
+$ # Having none of these set would also start in mode 'I04'.
+:::

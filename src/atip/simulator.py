@@ -22,7 +22,9 @@ class LatticeData:
 
 
 def calculate_optics(
-    at_lattice: at.Lattice, refpts: ArrayLike, disable_emittance: bool = False
+    at_lattice: at.lattice_object.Lattice,
+    refpts: ArrayLike,
+    disable_emittance: bool = False,
 ) -> LatticeData:
     """Perform the physics calculations on the lattice.
 
@@ -33,7 +35,7 @@ def calculate_optics(
 
     Args:
         at_lattice (at.lattice_object.Lattice): AT lattice definition.
-        refpts (numpy.array): A boolean array specifying the points at which
+        refpts (numpy.typing.NDArray): A boolean array specifying the points at which
                                to calculate physics data.
         disable_emittance (bool): whether to calculate emittance.
 
@@ -79,7 +81,7 @@ class ATSimulator:
            _at_lat (at.lattice_object.Lattice): The centralised instance of an
                                                  AT lattice from which the
                                                  physics data is calculated.
-           _rp (numpy.array): A boolean array to be used as refpts for the
+           _rp (numpy.typing.NDArray): A boolean array to be used as refpts for the
                                physics calculations.
             _disable_emittance (bool): Whether or not to perform the beam
                                         envelope based emittance calculations.
@@ -107,7 +109,7 @@ class ATSimulator:
         Args:
             at_lattice (at.lattice_object.Lattice): An instance of an AT
                                                      lattice object.
-            callback (callable): Optional, if passed it is called on completion
+            callback (typing.Callable): Optional, if passed it is called on completion
                                   of each round of physics calculations.
             disable_emittance (bool): Whether or not to perform the beam
                                        envelope based emittance calculations.
@@ -142,7 +144,7 @@ class ATSimulator:
         """Add a change to the queue, to be applied when the queue is emptied.
 
         Args:
-            func (callable): The function to be called to apply the change.
+            func (typing.Callable): The function to be called to apply the change.
             field (str): The field to be changed.
             value (float): The value to be set.
         """
@@ -178,7 +180,7 @@ class ATSimulator:
            thread to warnings.
 
         Args:
-            callback (callable): to be called after each round of calculations,
+            callback (typing.Callable): to be called after each round of calculations,
                                   indicating that they have concluded.
 
         Warns:
@@ -254,7 +256,7 @@ class ATSimulator:
         changes to the AT lattice, i.e. the physics data is fully up to date.
 
         Args:
-            timeout (float, optional): The number of seconds to wait for.
+            timeout (float, typing.Optional): The number of seconds to wait for.
 
         Returns:
             bool: False if the timeout elapsed before the calculations
@@ -342,7 +344,7 @@ class ATSimulator:
             float: The x or y tune for the AT lattice.
 
         Raises:
-            FieldException: if the specified field is not valid for tune.
+            pytac.FieldException: if the specified field is not valid for tune.
         """
         tunes = self._lattice_data.tunes
         if field is None:
@@ -365,7 +367,7 @@ class ATSimulator:
             float: The x or y chromaticity for the AT lattice.
 
         Raises:
-            FieldException: if the specified field is not valid for
+            pytac.FieldException: if the specified field is not valid for
                              chromaticity.
         """
         chrom = self._lattice_data.chrom
@@ -388,11 +390,11 @@ class ATSimulator:
                           if None return whole orbit vector.
 
         Returns:
-            numpy.array: The x, x phase, y or y phase for the AT lattice as an
+            numpy.typing.NDArray: The x, x phase, y or y phase for the AT lattice as an
             array of floats the length of the AT lattice.
 
         Raises:
-            FieldException: if the specified field is not valid for orbit.
+            pytac.FieldException: if the specified field is not valid for orbit.
         """
         closed_orbit = self._lattice_data.twiss["closed_orbit"]
         if field is None:
@@ -417,11 +419,11 @@ class ATSimulator:
                           None return whole dispersion vector.
 
         Returns:
-            numpy.array: The eta x, eta prime x, eta y or eta prime y for the
+            numpy.typing.NDArray: The eta x, eta prime x, eta y or eta prime y for the
             AT lattice as an array of floats the length of the AT lattice.
 
         Raises:
-            FieldException: if the specified field is not valid for dispersion.
+            pytac.FieldException: if the specified field is not valid for dispersion.
         """
         dispersion = self._lattice_data.twiss["dispersion"]
         if field is None:
@@ -441,7 +443,7 @@ class ATSimulator:
         """Return the alpha vector at every element in the AT lattice.
 
         Returns:
-            numpy.array: The alpha vector for each element.
+            numpy.typing.NDArray: The alpha vector for each element.
         """
         return self._lattice_data.twiss["alpha"][:-1]
 
@@ -449,7 +451,7 @@ class ATSimulator:
         """Return the beta vector at every element in the AT lattice.
 
         Returns:
-            numpy.array: The beta vector for each element.
+            numpy.typing.NDArray: The beta vector for each element.
         """
         return self._lattice_data.twiss["beta"][:-1]
 
@@ -457,7 +459,7 @@ class ATSimulator:
         """Return mu at every element in the AT lattice.
 
         Returns:
-            numpy.array: The mu array for each element.
+            numpy.typing.NDArray: The mu array for each element.
         """
         return self._lattice_data.twiss["mu"][:-1]
 
@@ -465,7 +467,7 @@ class ATSimulator:
         """Return the 6x6 transfer matrix for every element in the AT lattice.
 
         Returns:
-            numpy.array: The 6x6 transfer matrix for each element.
+            numpy.typing.NDArray: The 6x6 transfer matrix for each element.
         """
         return self._lattice_data.twiss["M"][:-1]
 
@@ -485,7 +487,7 @@ class ATSimulator:
             float: The x or y emittance for the AT lattice.
 
         Raises:
-            FieldException: if the specified field is not valid for emittance.
+            pytac.FieldException: if the specified field is not valid for emittance.
         """
         if not self._disable_emittance:
             if field is None:
@@ -506,7 +508,7 @@ class ATSimulator:
         """Return the 5 Synchrotron Integrals for the AT lattice.
 
         Returns:
-            numpy.array: The 5 radiation integrals.
+            numpy.typing.NDArray: The 5 radiation integrals.
         """
         return numpy.asarray(self._lattice_data.radint)
 
@@ -542,7 +544,7 @@ class ATSimulator:
         """Return the damping partition numbers for the 3 normal modes.
 
         Returns:
-            numpy.array: The damping partition numbers of the AT lattice.
+            numpy.typing.NDArray: The damping partition numbers of the AT lattice.
         """
         _, I2, _, I4, _ = self._lattice_data.radint
         Jx = 1 - (I4 / I2)
@@ -558,7 +560,7 @@ class ATSimulator:
         Radiation; August 2013; eqn. 68
 
         Returns:
-            numpy.array: The damping times of the AT lattice.
+            numpy.typing.NDArray: The damping times of the AT lattice.
         """
         E0 = self.get_energy()
         U0 = self.get_energy_loss()

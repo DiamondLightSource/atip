@@ -30,12 +30,17 @@ requires-python = ">=3.10"
 dev = [
     "copier",
     "mypy",
+    "myst-parser",
     "pipdeptree",
     "pre-commit",
+    "pydata-sphinx-theme>=0.12",
     "pytest",
     "pytest-cov",
     "testfixtures",
     "ruff",
+    "sphinx-autobuild",
+    "sphinx-copybutton",
+    "sphinx-design",
     "tox-direct",
     "types-mock",
 ]
@@ -64,7 +69,7 @@ ignore_missing_imports = true # Ignore missing stubs in imported modules
 [tool.pytest.ini_options]
 # Run pytest with all our checkers, and don't spam us with massive tracebacks on error
 addopts = """
-    --tb=native -vv
+    --tb=native -vv --doctest-modules --doctest-glob="*.rst"
     """
 # https://iscinumpy.gitlab.io/post/bound-version-constraints/#watch-for-warnings
 filterwarnings = "error"
@@ -85,7 +90,7 @@ legacy_tox_ini = """
 [tox]
 skipsdist=True
 
-[testenv:{pre-commit,type-checking,tests}]
+[testenv:{pre-commit,type-checking,tests,docs}]
 # Don't create a virtualenv for the command, requires tox-direct plugin
 direct = True
 passenv = *
@@ -93,11 +98,15 @@ allowlist_externals =
     pytest
     pre-commit
     mypy
+    sphinx-build
+    sphinx-autobuild
 commands =
     pre-commit: pre-commit run --all-files --show-diff-on-failure {posargs}
     type-checking: mypy src tests {posargs}
     tests: pytest --cov=atip --cov-report term --cov-report xml:cov.xml {posargs}
+    docs: sphinx-{posargs:build -EW --keep-going} -T docs build/html
 """
+# Add -W flag to sphinx-build if you want to fail on warnings
 
 [tool.ruff]
 src = ["src", "tests"]

@@ -18,6 +18,7 @@ DATADIR = Path(__file__).absolute().parent / "data"
 
 
 def parse_arguments():
+    """Parse command line arguments sent to virtac"""
     parser = argparse.ArgumentParser()
     parser.add_argument("ring_mode", nargs="?", type=str, help="Ring mode name")
     parser.add_argument(
@@ -39,6 +40,7 @@ def parse_arguments():
 
 
 def main():
+    """Main entrypoint for virtac. Executed when running the 'virtac' command"""
     args = parse_arguments()
     log_level = logging.DEBUG if args.verbose else logging.INFO
     logging.basicConfig(level=log_level, format=LOG_FORMAT)

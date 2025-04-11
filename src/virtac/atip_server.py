@@ -66,17 +66,17 @@ class ATIPServer:
     ):
         """
         Args:
-            ring_mode (string): The ring mode to create the lattice in.
-            limits_csv (string): The filepath to the .csv file from which to
+            ring_mode (str): The ring mode to create the lattice in.
+            limits_csv (str): The filepath to the .csv file from which to
                                     load the pv limits, for more information
                                     see create_csv.py.
-            feedback_csv (string): The filepath to the .csv file from which to
+            feedback_csv (str): The filepath to the .csv file from which to
                                     load the feedback records, for more
                                     information see create_csv.py.
-            mirror_csv (string): The filepath to the .csv file from which to
+            mirror_csv (str): The filepath to the .csv file from which to
                                   load the mirror records, for more information
                                   see create_csv.py.
-            tune_csv (string): The filepath to the .csv file from which to
+            tune_csv (str): The filepath to the .csv file from which to
                                 load the tune feedback records, for more
                                 information see create_csv.py.
             disable_emittance (bool): Whether the emittance should be disabled.
@@ -149,7 +149,7 @@ class ATIPServer:
                need to be created for them.
 
         Args:
-            limits_csv (string): The filepath to the .csv file from which to
+            limits_csv (str): The filepath to the .csv file from which to
                                     load the pv limits.
             disable_emittance (bool): Whether the emittance related PVs should be
                                         created or not.
@@ -297,7 +297,7 @@ class ATIPServer:
         cases are also created.
 
         Args:
-            feedback_csv (string): The filepath to the .csv file to load the
+            feedback_csv (str): The filepath to the .csv file to load the
                                     records in accordance with.
             disable_emittance (bool): Whether the emittance related PVs should be
                                         created or not.
@@ -374,7 +374,7 @@ class ATIPServer:
         passed, see create_csv.py for more information.
 
         Args:
-            mirror_csv (string): The filepath to the .csv file to load the
+            mirror_csv (str): The filepath to the .csv file to load the
                                     records in accordance with.
         """
         csv_reader = csv.DictReader(open(mirror_csv))
@@ -537,11 +537,11 @@ class ATIPServer:
         Args:
             index (int): The index of the element on which to set the value;
                           starting from 1, 0 is used to set on the lattice.
-            field (string): The field to set the value to.
+            field (str): The field to set the value to.
             value (number): The value to be set.
 
         Raises:
-            pytac.exceptions.FieldException: If the lattice or element does
+            pytac.FieldException: If the lattice or element does
                                               not have the specified field.
         """
         try:

@@ -3,30 +3,35 @@
 [![PyPI](https://img.shields.io/pypi/v/atip.svg)](https://pypi.org/project/atip)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
-# atip
 
-Accelerator Toolbox Interface for Pytac
+# ATIP - Accelerator Toolbox Interface for Pytac
 
-This is where you should write a short paragraph that describes what your module does,
-how it does it, and why people should use it.
+ATIP is an addition to  [Pytac](<https://github.com/DiamondLightSource/pytac>),
+a framework for controlling particle accelerators. ATIP adds a simulator to
+Pytac, which can be used and addressed in the same way as a real accelerator.
+
+ATIP enables the easy offline testing of high level accelerator
+controls applications, by either of two methods:
+
+* By replacing the real accelerator at the point where it is addressed by the
+  software, in the Pytac lattice object;
+
+* In a standalone application as a "virtual accelerator", publishing the same
+  control system interface as the live machine. At Diamond Light Source this
+  has been implemented with EPICS, and run on a different port to the
+  operational control system. So the only change required to test software is
+  to configure this EPICS port.
+
+The python implementation of
+[Accelerator Toolbox](<https://github.com/atcollab/at>) (pyAT) is used for the
+simulation.
 
 Source          | <https://github.com/DiamondLightSource/atip>
 :---:           | :---:
 PyPI            | `pip install atip`
+Docker          | `docker run ghcr.io/diamondlightsource/atip:latest`
+Documentation   | <https://diamondlightsource.github.io/atip>
+Installation    | <https://diamondlightsource.github.io/atip/tutorials/installation>
 Releases        | <https://github.com/DiamondLightSource/atip/releases>
 
-This is where you should put some images or code snippets that illustrate
-some relevant examples. If it is a library then you might put some
-introductory code here:
-
-```python
-from atip import __version__
-
-print(f"Hello atip {__version__}")
-```
-
-Or if it is a commandline tool then you might put some example commands here:
-
-```
-python -m atip --version
-```
+<!-- README only content. Anything below this line won't be included in index.md -->

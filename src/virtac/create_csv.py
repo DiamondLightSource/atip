@@ -13,7 +13,7 @@ import atip
 
 
 def generate_feedback_pvs(all_elements):
-    # Also get families for tune feedback
+    """Get feedback pvs. Also get families for tune feedback"""
     tune_quad_elements = set(
         all_elements.q1d
         + all_elements.q2d
@@ -54,8 +54,9 @@ def generate_feedback_pvs(all_elements):
 
 
 def generate_bba_pvs(all_elements):
-    # Data to be written is stored as a list of tuples each with structure:
-    #     element index (int), field (str), pv (str), value (int).
+    """Data to be written is stored as a list of tuples each with structure:
+    element index (int), field (str), pv (str), value (int).
+    """
     data = [("index", "field", "pv", "value", "read-only")]
     # Iterate over the BPMs to construct the PV names.
     for elem in all_elements.bpm:
@@ -76,6 +77,10 @@ def generate_bba_pvs(all_elements):
 def generate_pv_limits(lattice):
     """Get the control limits and precision values from the live machine for
     all normal PVS.
+
+    Args:
+        lattice (pytac.lattice.Lattice): The pytac lattice being used by the virtual
+        machine
     """
     data = [("pv", "upper", "lower", "precision")]
     for element in lattice:
@@ -99,13 +104,17 @@ def generate_pv_limits(lattice):
 
 def generate_mirrored_pvs(lattice):
     """Structure of data:
-    output type: The type of output record to create, only 'aIn', 'longIn',
+
+    output type:
+        The type of output record to create, only 'aIn', 'longIn',
         'Waveform' types are currently supported; if '' then output to an
         existing in record already created in ATIPServer, 'caput' is also a
         special case it creates a mask for cothread.catools.caput calling
         set(value) on this mask will call caput with the output PV and the
         passed value.
-    mirror type: The type of mirroring to apply:
+
+    mirror type (The type of mirroring to apply):
+
         - basic: set the value of the input record to the output record.
         - summate: sum the values of the input records and set the result to
             the output record.
@@ -114,12 +123,18 @@ def generate_mirrored_pvs(lattice):
             of the input record and set the result to the output record. N.B.
             the only transformation type currently supported is 'inverse'.
         - refresh: monitor the in PV and on a change call refresh_record on
-                   the output PV.
-    in: The PV(s) to be monitored, on change mirror is updated, if multiple
+            the output PV.
+
+    in:
+        The PV(s) to be monitored, on change mirror is updated, if multiple
         then the PVs should be separated by a comma and one space.
-    out: The single PV to output to, if a 'record type' is spcified then a new
+
+    out:
+        The single PV to output to, if a 'record type' is spcified then a new
         record will be created and so must not exist already.
-    value: The inital value of the output record.
+
+    value:
+        The inital value of the output record.
     """
     data = [("output type", "mirror type", "in", "out", "value")]
     # Tune PV aliases.
@@ -261,6 +276,7 @@ def write_data_to_file(data, filename, ring_mode):
 
 
 def parse_arguments():
+    """The arguments passed to this script to configure how the csv is to be created"""
     parser = argparse.ArgumentParser(
         description="Generate CSV file to define the PVs served by the "
         "virtual accelerator IOC."
