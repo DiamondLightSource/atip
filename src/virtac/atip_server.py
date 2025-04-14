@@ -1,4 +1,3 @@
-import ast
 import csv
 from warnings import warn
 
@@ -59,6 +58,7 @@ class ATIPServer:
         self,
         ring_mode,
         limits_csv=None,
+        bba_csv=None,
         feedback_csv=None,
         mirror_csv=None,
         tune_csv=None,
@@ -70,7 +70,10 @@ class ATIPServer:
             limits_csv (str): The filepath to the .csv file from which to
                                     load the pv limits, for more information
                                     see create_csv.py.
-            feedback_csv (str): The filepath to the .csv file from which to
+            bba_csv (str): The filepath to the .csv file from which to
+                                    load the bba records, for more
+                                    information see create_csv.py.
+            feedback_csv (string): The filepath to the .csv file from which to
                                     load the feedback records, for more
                                     information see create_csv.py.
             mirror_csv (str): The filepath to the .csv file from which to
@@ -88,12 +91,15 @@ class ATIPServer:
         self._in_records = {}
         self._out_records = {}
         self._rb_only_records = []
+        self._bba_records = {}
         self._feedback_records = {}
         self._mirrored_records = {}
         self._monitored_pvs = {}
         self._offset_pvs = {}
         print("Starting record creation.")
         self._create_records(limits_csv, disable_emittance)
+        if bba_csv is not None:
+            self._create_bba_records(bba_csv)
         if feedback_csv is not None:
             self._create_feedback_records(feedback_csv, disable_emittance)
         if mirror_csv is not None:
@@ -114,6 +120,7 @@ class ATIPServer:
             list(self._in_records.keys())
             + list(self._out_records.keys())
             + list(self._feedback_records.values())
+            + list(self._bba_records.values())
             + mirrored
         )
         return {record.name: record for record in all_records}
@@ -291,10 +298,47 @@ class ATIPServer:
                 field, value, units=pytac.ENG, data_source=pytac.SIM
             )
 
+    def _create_bba_records(self, bba_csv):
+        """Create all the beam-based-alignment records from the .csv file at the
+        location passed, see create_csv.py for more information.
+
+        Args:
+            bba_csv (str): The filepath to the .csv file to load the
+                                    records in accordance with.
+        """
+        # We don't set limits or precision but this shouldn't be an issue as these
+        # records aren't really intended to be set to by a user.
+        csv_reader = csv.DictReader(open(bba_csv))
+        for line in csv_reader:
+            prefix, suffix = line["pv"].split(":", 1)
+            builder.SetDeviceName(prefix)
+            if line["record_type"] == "ai":
+                record = builder.aIn(
+                    suffix, initial_value=int(line["value"]), MDEL="-1"
+                )
+                self._bba_records[(int(line["index"]), line["field"])] = record
+            elif line["record_type"] == "ao":
+                record = builder.aOut(
+                    suffix, initial_value=int(line["value"]), always_update=True
+                )
+                self._bba_records[(int(line["index"]), line["field"])] = record
+            elif line["record_type"] == "wfm":
+                record = builder.WaveformOut(
+                    suffix,
+                    # We remove the [] around the string
+                    initial_value=numpy.fromstring(
+                        (line["value"])[1:-1], dtype=int, sep=" "
+                    ),
+                    always_update=True,
+                )
+                self._bba_records[(int(line["index"]), line["field"])] = record
+            else:
+                raise ValueError
+
     def _create_feedback_records(self, feedback_csv, disable_emittance):
         """Create all the feedback records from the .csv file at the location
-        passed, see create_csv.py for more information; records for two edge
-        cases are also created.
+        passed, see create_csv.py for more information; records for one edge
+        case are also created.
 
         Args:
             feedback_csv (str): The filepath to the .csv file to load the
@@ -306,25 +350,25 @@ class ATIPServer:
         # records aren't really intended to be set to by a user.
         csv_reader = csv.DictReader(open(feedback_csv))
         for line in csv_reader:
-            try:
-                readonly = ast.literal_eval(line["read-only"])
-                assert isinstance(readonly, bool)
-            except (ValueError, AssertionError) as exc:
-                raise ValueError(
-                    f"Unable to evaluate {line['read-only']} as a boolean."
-                ) from exc
             prefix, suffix = line["pv"].split(":", 1)
             builder.SetDeviceName(prefix)
-            if readonly:
-                in_record = builder.aIn(
+            if line["record_type"] == "ai":
+                record = builder.aIn(
                     suffix, initial_value=int(line["value"]), MDEL="-1"
                 )
-                self._feedback_records[(int(line["index"]), line["field"])] = in_record
-            else:
-                out_record = builder.aOut(
+                self._feedback_records[(int(line["index"]), line["field"])] = record
+            elif line["record_type"] == "ao":
+                record = builder.aOut(
                     suffix, initial_value=int(line["value"]), always_update=True
                 )
-                self._feedback_records[(int(line["index"]), line["field"])] = out_record
+                self._feedback_records[(int(line["index"]), line["field"])] = record
+            elif line["record_type"] == "wfm":
+                record = builder.WaveformOut(
+                    suffix, initial_value=int(line["value"]), always_update=True
+                )
+                self._feedback_records[(int(line["index"]), line["field"])] = record
+            else:
+                raise ValueError
         # Special case: BPM ID for the x axis of beam position plot, since we
         # cannot currently create Waveform records via CSV.
         bpm_ids = [
@@ -336,28 +380,7 @@ class ATIPServer:
             "BPMID", NELM=len(bpm_ids), initial_value=bpm_ids
         )
         self._feedback_records[(0, "bpm_id")] = bpm_id_record
-        # Special case: Fast BBA oscillation PVs - should also be moved to CSV in future
-        for cell in range(1, self.lattice.symmetry + 1):
-            cell = str(cell).zfill(2)
-            builder.SetDeviceName(f"SR{cell}A-CS-FOFB-01")
-            start_times = builder.WaveformOut(
-                "EXCITE:START_TIMES", initial_value=numpy.zeros(18)
-            )
-            self._feedback_records[(0, f"cell_{cell}_excite_start_times")] = start_times
-            excite_amps = builder.WaveformOut(
-                "EXCITE:AMPS", initial_value=numpy.zeros(18)
-            )
-            self._feedback_records[(0, f"cell_{cell}_excite_amps")] = excite_amps
-            excite_deltas = builder.WaveformOut(
-                "EXCITE:DELTAS", initial_value=numpy.zeros(18)
-            )
-            self._feedback_records[(0, f"cell_{cell}_excite_deltas")] = excite_deltas
-            excite_ticks = builder.WaveformOut(
-                "EXCITE:TICKS", initial_value=numpy.zeros(18)
-            )
-            self._feedback_records[(0, f"cell_{cell}_excite_ticks")] = excite_ticks
-            excite_prime = builder.aOut("EXCITE:PRIME", initial_value=1)
-            self._feedback_records[(0, f"cell_{cell}_excite_prime")] = excite_prime
+
         # We can choose to not calculate emittance as it is not always required,
         # which decreases computation time.
         if not disable_emittance:
@@ -546,6 +569,7 @@ class ATIPServer:
         """
         try:
             self._feedback_records[(index, field)].set(value)
+            self._bba_records[(index, field)].set(value)
         except KeyError as exc:
             if index == 0:
                 raise FieldException(
@@ -553,6 +577,6 @@ class ATIPServer:
                 ) from exc
             else:
                 raise FieldException(
-                    f"Simulated element {self.lattice[index]} does not have "
-                    f"field {field}."
+                    f"Simulated element {self.lattice[index]} does not have \
+                    field {field}."
                 ) from exc
