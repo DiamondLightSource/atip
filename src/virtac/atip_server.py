@@ -73,7 +73,7 @@ class ATIPServer:
             bba_csv (str): The filepath to the .csv file from which to
                                     load the bba records, for more
                                     information see create_csv.py.
-            feedback_csv (string): The filepath to the .csv file from which to
+            feedback_csv (str): The filepath to the .csv file from which to
                                     load the feedback records, for more
                                     information see create_csv.py.
             mirror_csv (str): The filepath to the .csv file from which to
