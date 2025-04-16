@@ -62,6 +62,7 @@ def main():
     server = atip_server.ATIPServer(
         ring_mode,
         DATADIR / ring_mode / "limits.csv",
+        DATADIR / ring_mode / "bba.csv",
         DATADIR / ring_mode / "feedback.csv",
         DATADIR / ring_mode / "mirrored.csv",
         DATADIR / ring_mode / "tunefb.csv",
