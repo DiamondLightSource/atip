@@ -12,7 +12,7 @@ from atip.simulator import ATSimulator
 SIMULATED_FIELDS = {"a1", "b0", "b1", "b2", "x", "y", "f", "x_kick", "y_kick"}
 
 
-def load_from_filepath(
+async def load_from_filepath(
     pytac_lattice, at_lattice_filepath, callback=None, disable_emittance=False
 ):
     """Load simulator data sources onto the lattice and its elements.
@@ -32,12 +32,12 @@ def load_from_filepath(
     at_lattice = at.load.load_mat(
         at_lattice_filepath,
         name=pytac_lattice.name,
-        energy=pytac_lattice.get_value("energy"),
+        energy=await pytac_lattice.get_value("energy"),
     )
-    return load(pytac_lattice, at_lattice, callback, disable_emittance)
+    return await load(pytac_lattice, at_lattice, callback, disable_emittance)
 
 
-def load(pytac_lattice, at_lattice, callback=None, disable_emittance=False):
+async def load(pytac_lattice, at_lattice, callback=None, disable_emittance=False):
     """Load simulator data sources onto the lattice and its elements.
 
     Args:
@@ -58,7 +58,9 @@ def load(pytac_lattice, at_lattice, callback=None, disable_emittance=False):
             f"(AT:{len(at_lattice)} Pytac:{len(pytac_lattice)})."
         )
     # Initialise an instance of the ATSimulator Object.
-    atsim = ATSimulator(at_lattice, callback, disable_emittance)
+    atsim = await ATSimulator.create(
+        at_lattice, callback, disable_emittance
+    )  # TODO: This feels like a wierd place to create the simulator?
     # Set the simulator data source on the Pytac lattice.
     pytac_lattice.set_data_source(ATLatticeDataSource(atsim), pytac.SIM)
     # Load the sim onto each element.

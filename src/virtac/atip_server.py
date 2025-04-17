@@ -3,7 +3,7 @@ from warnings import warn
 
 import numpy
 import pytac
-from cothread.catools import camonitor
+from aioca import camonitor
 from pytac.device import SimpleDevice
 from pytac.exceptions import FieldException, HandleException
 from softioc import builder
@@ -54,8 +54,9 @@ class ATIPServer:
                                 get the offset from.
     """
 
-    def __init__(
-        self,
+    @classmethod
+    async def create(
+        cls,
         ring_mode,
         limits_csv=None,
         bba_csv=None,
@@ -84,7 +85,10 @@ class ATIPServer:
                                 information see create_csv.py.
             disable_emittance (bool): Whether the emittance should be disabled.
         """
-        self.lattice = atip.utils.loader(ring_mode, self.update_pvs, disable_emittance)
+        self = cls()
+        self.lattice = await atip.utils.loader(
+            ring_mode, self.update_pvs, disable_emittance
+        )
         self.tune_feedback_status = False
         self._pv_monitoring = False
         self._tune_fb_csv_path = tune_csv
@@ -97,7 +101,7 @@ class ATIPServer:
         self._monitored_pvs = {}
         self._offset_pvs = {}
         print("Starting record creation.")
-        self._create_records(limits_csv, disable_emittance)
+        await self._create_records(limits_csv, disable_emittance)
         if bba_csv is not None:
             self._create_bba_records(bba_csv)
         if feedback_csv is not None:
@@ -105,6 +109,7 @@ class ATIPServer:
         if mirror_csv is not None:
             self._create_mirror_records(mirror_csv)
         print(f"Finished creating all {len(self.all_record_names)} records.")
+        return self
 
     @property
     def all_record_names(self):
@@ -125,7 +130,7 @@ class ATIPServer:
         )
         return {record.name: record for record in all_records}
 
-    def update_pvs(self):
+    async def update_pvs(self):
         """The callback function passed to ATSimulator during lattice creation,
         it is called each time a calculation of physics data is completed. It
         updates all the in records that do not have a corresponding out record
@@ -134,17 +139,17 @@ class ATIPServer:
         for rb_record in self._rb_only_records:
             index, field = self._in_records[rb_record]
             if index == 0:
-                value = self.lattice.get_value(
+                value = await self.lattice.get_value(
                     field, units=pytac.ENG, data_source=pytac.SIM
                 )
                 rb_record.set(value)
             else:
-                value = self.lattice[index - 1].get_value(
+                value = await self.lattice[index - 1].get_value(
                     field, units=pytac.ENG, data_source=pytac.SIM
                 )
                 rb_record.set(value)
 
-    def _create_records(self, limits_csv, disable_emittance):
+    async def _create_records(self, limits_csv, disable_emittance):
         """Create all the standard records from both lattice and element Pytac
         fields. Several assumptions have been made for simplicity and
         efficiency, these are:
@@ -175,7 +180,7 @@ class ATIPServer:
             if element.type_.upper() == "BEND":
                 # Create bends only once as they all share a single PV.
                 if bend_in_record is None:
-                    value = element.get_value(
+                    value = await element.get_value(
                         "b0", units=pytac.ENG, data_source=pytac.SIM
                     )
                     get_pv = element.get_pv_name("b0", pytac.RB)
@@ -213,7 +218,7 @@ class ATIPServer:
             else:
                 # Create records for all other families.
                 for field in element.get_fields()[pytac.SIM]:
-                    value = element.get_value(
+                    value = await element.get_value(
                         field, units=pytac.ENG, data_source=pytac.SIM
                     )
                     get_pv = element.get_pv_name(field, pytac.RB)
@@ -258,7 +263,7 @@ class ATIPServer:
             # Ignore basic devices as they do not have PVs.
             if not isinstance(self.lattice.get_device(field), SimpleDevice):
                 get_pv = self.lattice.get_pv_name(field, pytac.RB)
-                value = self.lattice.get_value(
+                value = await self.lattice.get_value(
                     field, units=pytac.ENG, data_source=pytac.SIM
                 )
                 builder.SetDeviceName(get_pv.split(":", 1)[0])
@@ -269,7 +274,7 @@ class ATIPServer:
                 self._rb_only_records.append(in_record)
         print("~*~*Woah, we're halfway there, Wo-oah...*~*~")
 
-    def _on_update(self, value, name):
+    async def _on_update(self, value, name):
         """The callback function passed to out records, it is called after
         successful record processing has been completed. It updates the out
         record's corresponding in record with the value that has been set and
@@ -290,11 +295,11 @@ class ATIPServer:
                 pass
         if isinstance(index, list):
             for i in index:
-                self.lattice[i - 1].set_value(
+                await self.lattice[i - 1].set_value(
                     field, value, units=pytac.ENG, data_source=pytac.SIM
                 )
         else:
-            self.lattice[index - 1].set_value(
+            await self.lattice[index - 1].set_value(
                 field, value, units=pytac.ENG, data_source=pytac.SIM
             )
 
@@ -483,7 +488,7 @@ class ATIPServer:
         for pv, output in self._mirrored_records.items():
             mask = callback_set(output)
             try:
-                self._monitored_pvs[pv] = camonitor(pv, mask.callback)
+                self._monitored_pvs[pv] = camonitor(pv, callback=mask.callback)
             except Exception as e:
                 warn(e, stacklevel=1)
 
@@ -534,7 +539,7 @@ class ATIPServer:
             try:
                 self._monitored_pvs[line["delta"]] = camonitor(
                     line["delta"], mask.callback
-                )
+                )  # TODO: Could be a lambda instead
             except Exception as e:
                 warn(e, stacklevel=1)
 

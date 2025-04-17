@@ -8,7 +8,6 @@ import os
 
 import numpy as np
 import pytac
-from cothread.catools import FORMAT_CTRL, caget
 
 import atip
 

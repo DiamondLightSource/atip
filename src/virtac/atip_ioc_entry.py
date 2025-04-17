@@ -1,13 +1,13 @@
 import argparse
+import asyncio
 import logging
 import os
 import socket
 from pathlib import Path
 from warnings import warn
 
-import epicscorelibs.path.cothread  # noqa
-from cothread.catools import ca_nothing, caget
-from softioc import builder, softioc
+from aioca import CANothing, caget
+from softioc import asyncio_dispatcher, builder, softioc
 
 from . import atip_server
 
@@ -39,9 +39,10 @@ def parse_arguments():
     return parser.parse_args()
 
 
-def main():
+async def async_main():
     """Main entrypoint for virtac. Executed when running the 'virtac' command"""
     args = parse_arguments()
+    loop = asyncio.get_event_loop()  # TODO: check a loop is running
     log_level = logging.DEBUG if args.verbose else logging.INFO
     logging.basicConfig(level=log_level, format=LOG_FORMAT)
 
@@ -53,13 +54,13 @@ def main():
             ring_mode = str(os.environ["RINGMODE"])
         except KeyError:
             try:
-                value = caget("SR-CS-RING-01:MODE", format=2)
+                value = await caget("SR-CS-RING-01:MODE", format=2)
                 ring_mode = value.enums[int(value)]
-            except ca_nothing:
+            except CANothing:
                 ring_mode = "I04"
 
     # Create PVs.
-    server = atip_server.ATIPServer(
+    server: atip_server.ATIPServer = await atip_server.ATIPServer.create(
         ring_mode,
         DATADIR / ring_mode / "limits.csv",
         DATADIR / ring_mode / "bba.csv",
@@ -103,10 +104,21 @@ def main():
         os.environ["EPICS_CAS_AUTO_BEACON_ADDR_LIST"] = "NO"
 
     # Start the IOC.
+    dispatcher = asyncio_dispatcher.AsyncioDispatcher(loop=loop)
     builder.LoadDatabase()
-    softioc.iocInit()
+    softioc.iocInit(dispatcher)
     server.monitor_mirrored_pvs()
     if args.enable_tfb:
         server.setup_tune_feedback()
 
-    softioc.interactive_ioc(globals())
+    while True:
+        logging.debug("Sleepy time")
+        await asyncio.sleep(10)
+    # softioc.interactive_ioc(globals())
+
+
+def main():
+    logging.basicConfig()
+    logging.getLogger().setLevel(logging.DEBUG)
+    # Load the AT sim into the Pytac lattice.
+    asyncio.run(async_main())

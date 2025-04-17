@@ -1,9 +1,11 @@
 """Module containing an interface with the AT simulator."""
 
+import asyncio
 import logging
 from dataclasses import dataclass
 from warnings import warn
 
+import aioca
 import at
 import cothread
 import numpy
@@ -98,7 +100,15 @@ class ATSimulator:
                                                     physics data upon a change.
     """
 
-    def __init__(self, at_lattice, callback=None, disable_emittance=False):
+    _loop: asyncio.BaseEventLoop
+    _queue: asyncio.Queue
+    _paused: asyncio.Event
+    _quit_thread: asyncio.Event
+    _up_to_date: asyncio.Event
+    _compute_task: asyncio.Task
+
+    @classmethod
+    async def create(cls, at_lattice, callback=None, disable_emittance=False):
         """
         .. Note:: To avoid errors, the physics data must be initially
            calculated here, during creation, otherwise it could be accidentally
@@ -116,6 +126,7 @@ class ATSimulator:
 
         **Methods:**
         """
+        self = cls()
         if (not callable(callback)) and (callback is not None):
             raise TypeError(
                 f"If passed, 'callback' should be callable, {callback} is not."
@@ -130,17 +141,19 @@ class ATSimulator:
             self._at_lat, self._rp, self._disable_emittance
         )
 
-        # Threading stuff initialisation.
-        self._queue = cothread.EventQueue()
-        # Explicitly manage the cothread Events, so turn off auto_reset.
-        # These are False when reset, True when signalled.
-        self._paused = cothread.Event(auto_reset=False)
-        self._quit_thread = cothread.Event(auto_reset=False)
-        self.up_to_date = cothread.Event(auto_reset=False)
-        self.up_to_date.Signal()
-        self._calculation_thread = cothread.Spawn(self._recalculate_phys_data, callback)
+        self._loop = asyncio.get_event_loop()  # TODO: check a loop is running
+        self._queue = asyncio.Queue()
+        self._paused = asyncio.Event()
+        self._quit_thread = asyncio.Event()
+        self._up_to_date = asyncio.Event()
+        self._up_to_date.set()
+        self._lock = asyncio.Lock()
+        self._compute_task = asyncio.create_task(
+            self._recalculate_phys_data(callback)
+        )  # This task should last the lifetime of the program
+        return self
 
-    def queue_set(self, func, field, value):
+    async def queue_set(self, func, field, value):
         """Add a change to the queue, to be applied when the queue is emptied.
 
         Args:
@@ -148,27 +161,39 @@ class ATSimulator:
             field (str): The field to be changed.
             value (float): The value to be set.
         """
-        cothread.CallbackResult(self.up_to_date.Reset)
-        cothread.Callback(self._queue.Signal, (func, field, value))
+        async with self._lock:
+            await self._queue.put((func, field, value))
+            # If this flag gets cleared while we are recalculating, then it can cause
+            # everything to lock, so we setup a lock between this function and the
+            # recalculate function
+            self._up_to_date.clear()
+            logging.debug("Added task to async queue")
 
-    def _gather_one_sample(self):
+    async def _gather_one_sample(self):
         """If the queue is empty Wait() yields until an item is added. When the
         queue is not empty the oldest change will be removed and applied to the
         AT lattice.
         """
-        apply_change_method, field, value = self._queue.Wait()
+        logging.debug("Waiting for new item in queue")
+        self._lock.release()
+        apply_change_method, field, value = await self._queue.get()
+        await self._lock.acquire()
         apply_change_method(field, value)
+        logging.debug("Processed item from queue")
 
-    def quit_calculation_thread(self, timeout=10):
+    async def quit_calculation_thread(self, timeout=10):
         """Quit the calculation thread after the current loop is complete."""
-        cothread.CallbackResult(self._quit_thread.Signal)
-        self.trigger_calculation()
-        cothread.CallbackResult(self._calculation_thread.Wait, timeout)
+        await self._quit_thread.set()
+        await self.trigger_calculation()
+        await asyncio.wait_for(self._calculation_thread.Wait, timeout)
+        # TODO: Catch timeout exception
         # For some reason we have to wait a bit before we can clear the queue.
-        cothread.Sleep(0.1)
-        cothread.CallbackResult(self._queue.Reset)
+        await asyncio.sleep(0.1)
+        tasks = asyncio.all_tasks()
+        for task in tasks:
+            await task.cancel()
 
-    def _recalculate_phys_data(self, callback):
+    async def _recalculate_phys_data(self, callback):
         """Target function for the Cothread thread. Recalculates the physics
         data dependent on the status of the '_paused' flag and the length of
         the queue. The calculations only take place if '_paused' is False and
@@ -187,33 +212,35 @@ class ATSimulator:
             at.AtWarning: any error or exception that was raised in the thread,
                            but as a warning.
         """
-        # Using Cothread Event is only ~4% slower than a normal Boolean but much safer.
-        while not self._quit_thread:
+        async with self._lock:
             logging.debug("Starting recalculation loop")
-            self._gather_one_sample()
-            while self._queue:
-                self._gather_one_sample()
-            if bool(self._paused) is False:
-                try:
-                    self._lattice_data = calculate_optics(
-                        self._at_lat, self._rp, self._disable_emittance
-                    )
-                except Exception as e:
-                    warn(at.AtWarning(e), stacklevel=1)
-                # Signal the up to date flag since the physics data is now up to date.
-                # We do this before the callback is executed in case the callback
-                # checks the flag.
-                self.up_to_date.Signal()
-                if callback is not None:
-                    logging.debug("Executing callback function.")
-                    callback()
-                    logging.debug("Callback completed.")
-            # This could cause thread-locking issues if another application using
-            # cothreads is poorly written and running on the same machine, but this
-            # isn't the case with any of the software that currently runs against
-            # ATIP/virtac and it's required for cothread.CallbackResult to play nicely
-            # with Bluesky. So it's a calculated risk until we move away from Cothread.
-            cothread.Yield()
+            # Using Cothread Event is only ~4% slower than a normal Boolean but much safer.
+            while not self._quit_thread.is_set():
+                await self._gather_one_sample()
+                while not self._queue.empty():
+                    await self._gather_one_sample()
+                logging.debug("Recaulculating simulation with new setpoints.")
+                if not self._paused.is_set():
+                    try:
+                        self._lattice_data = calculate_optics(
+                            self._at_lat, self._rp, self._disable_emittance
+                        )
+                    except Exception as e:
+                        warn(at.AtWarning(e), stacklevel=1)
+                    # Signal the up to date flag since the physics data is now up to date.
+                    # We do this before the callback is executed in case the callback
+                    # checks the flag.
+                    self._up_to_date.set()
+                    logging.debug("Simulation up to date.")
+                    if callback is not None:
+                        logging.debug("Executing callback function.")
+                        await callback()
+                        logging.debug("Callback completed.")
+                # This could cause thread-locking issues if another application using
+                # cothreads is poorly written and running on the same machine, but this
+                # isn't the case with any of the software that currently runs against
+                # ATIP/virtac and it's required for cothread.CallbackResult to play nicely
+                # with Bluesky. So it's a calculated risk until we move away from Cothread.
 
     def toggle_calculations(self):
         """Pause or unpause the physics calculations by setting or clearing the
@@ -234,24 +261,24 @@ class ATSimulator:
         if not self._paused:
             cothread.CallbackResult(self._paused.Signal)
 
-    def unpause_calculations(self):
+    async def unpause_calculations(self):
         """Unpause the physics calculations by clearing the _paused flag."""
-        if self._paused:
-            cothread.CallbackResult(self._paused.Reset)
-            if not self.up_to_date:
-                self.trigger_calculation()
+        if self._paused.is_set():
+            await self._paused.clear()
+            if not self._up_to_date:
+                await self.trigger_calculation()
 
-    def trigger_calculation(self):
+    async def trigger_calculation(self):
         """Unpause the physics calculations and add a null item to the queue to
         trigger a recalculation.
 
         .. Note:: This method does not wait for the recalculation to complete,
            that is up to the user.
         """
-        self.unpause_calculations()
+        await self.unpause_calculations()
         self.queue_set(lambda *x: None, None, None)
 
-    def wait_for_calculations(self, timeout=10):
+    async def wait_for_calculations(self, timeout=10):
         """Wait until the physics calculations have taken account of all
         changes to the AT lattice, i.e. the physics data is fully up to date.
 
@@ -263,9 +290,9 @@ class ATSimulator:
             concluded, else True.
         """
         try:
-            cothread.CallbackResult(self.up_to_date.Wait, timeout)
+            await asyncio.wait_for(self._up_to_date.wait(), timeout)
             return True
-        except cothread.Timedout:
+        except asyncio.exceptions.TimeoutError:
             return False
 
     # Get lattice related data:
