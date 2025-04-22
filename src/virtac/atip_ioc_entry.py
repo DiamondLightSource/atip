@@ -122,6 +122,8 @@ def main():
         format="%(asctime)s.%(msecs)03d %(levelname)-4s %(message)s",
         level=logging.DEBUG,
         datefmt="%H:%M:%S",
+        filename="../logs/aioca.log",
+        encoding="utf-8",
     )
     # Load the AT sim into the Pytac lattice.
     asyncio.run(async_main())
