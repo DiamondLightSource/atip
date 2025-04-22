@@ -118,7 +118,10 @@ async def async_main():
 
 
 def main():
-    logging.basicConfig()
-    logging.getLogger().setLevel(logging.DEBUG)
+    logging.basicConfig(
+        format="%(asctime)s.%(msecs)03d %(levelname)-4s %(message)s",
+        level=logging.DEBUG,
+        datefmt="%H:%M:%S",
+    )
     # Load the AT sim into the Pytac lattice.
     asyncio.run(async_main())
