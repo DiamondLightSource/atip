@@ -173,7 +173,9 @@ class ATSimulator:
         AT lattice.
         """
         logging.debug("Waiting for new item in queue")
+        self._lock.release()
         apply_change_method, field, value = await self._queue.get()
+        await self._lock.acquire()
         apply_change_method(field, value)
         logging.debug("Processed item from queue")
 
@@ -211,24 +213,25 @@ class ATSimulator:
         logging.debug("Starting recalculation loop")
         # Using Cothread Event is only ~4% slower than a normal Boolean but much safer.
         while not self._quit_thread.is_set():
-            await self._gather_one_sample()
-            while not self._queue.empty():
+            # We lock for the remainder of the function, to make sure that the
+            # _up_to_date flag isnt reset before we run the callback which may
+            # look at this
+            async with self._lock:
                 await self._gather_one_sample()
-            logging.debug("Recaulculating simulation with new setpoints.")
-            if not self._paused.is_set():
-                try:
-                    self._lattice_data = calculate_optics(
-                        self._at_lat, self._rp, self._disable_emittance
-                    )
-                except Exception as e:
-                    warn(at.AtWarning(e), stacklevel=1)
-                # Signal the up to date flag since the physics data is now up to
-                # date. We do this before the callback is executed in case the
-                # callback checks the flag.
-                # We lock for the remainder of the function, to make sure that the
-                # _up_to_date flag isnt reset before we run the callback which may
-                # look at this
-                async with self._lock:
+                while not self._queue.empty():
+                    await self._gather_one_sample()
+                logging.debug("Recaulculating simulation with new setpoints.")
+                if not self._paused.is_set():
+                    try:
+                        self._lattice_data = calculate_optics(
+                            self._at_lat, self._rp, self._disable_emittance
+                        )
+                    except Exception as e:
+                        warn(at.AtWarning(e), stacklevel=1)
+
+                    # Signal the up to date flag since the physics data is now up to
+                    # date. We do this before the callback is executed in case the
+                    # callback checks the flag.
                     self._up_to_date.set()
                     logging.debug("Simulation up to date.")
                     if callback is not None:

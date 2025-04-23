@@ -1,4 +1,5 @@
 import csv
+import logging
 from warnings import warn
 
 import numpy
@@ -284,6 +285,7 @@ class ATIPServer:
             value (number): The value that has just been set to the record.
             name (str): The name of record object that has just been set to.
         """
+        logging.debug(f"Read value {value} on pv {name}")
         in_record = self._out_records[self.all_record_names[name]]
         in_record.set(value)
         index, field = self._in_records[in_record]
