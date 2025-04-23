@@ -20,7 +20,7 @@ def generate_feedback_pvs(all_elements, lattice):
         lattice (pytac.lattice.Lattice): The pytac lattice being used by the virtual
         machine
     Returns:
-        data (list(tuple)): Data to be written to csv
+        list[tuple]: Data to be written to csv
     """
     tune_quad_elements = set(
         all_elements.q1d
@@ -33,7 +33,7 @@ def generate_feedback_pvs(all_elements, lattice):
     # Data to be written is stored as a list of tuples each with structure:
     #     element index (int), field (str), pv (str), value (int), record_type (str).
     # We have special cases for four lattice fields that feedback systems read from.
-    data = [
+    data: list[tuple] = [
         ("index", "field", "pv", "value", "record_type"),
         (0, "beam_current", "SR-DI-DCCT-01:SIGNAL", 300, "ai"),
         (0, "feedback_status", "CS-CS-MSTAT-01:FBSTAT", 2, "ai"),

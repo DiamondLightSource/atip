@@ -1,4 +1,5 @@
 import csv
+import typing
 from warnings import warn
 
 import numpy
@@ -337,19 +338,26 @@ class ATIPServer:
 
     def _create_feedback_or_bba_records_from_csv(
         self, csv_file
-    ) -> dict[(int, str), builder.aIn | builder.aOut | builder.WaveformOut]:
+    ) -> dict[tuple[int, str], typing.Any]:
         """Read the csv file and create the corresponding records based on
         its contents.
 
         Args:
             csv_file (str): The filepath to the .csv file to load the
                                     records in accordance with.
+        Returns:
+            records dict[tuple[int, str], typing.Any]: A dictionary containing
+                a tuple of indexes,field as its key and a softioc.builder record
+                as its value
         """
         # We don't set limits or precision but this shouldn't be an issue as these
         # records aren't really intended to be set to by a user.
         csv_reader = csv.DictReader(open(csv_file))
-        records: dict[(int, str), builder.aIn | builder.aOut | builder.WaveformOut] = {}
+        records: dict[
+            tuple[int, str], builder.aIn | builder.aOut | builder.WaveformOut
+        ] = {}
         for line in csv_reader:
+            val: typing.Any = 0
             prefix, suffix = line["pv"].split(":", 1)
             builder.SetDeviceName(prefix)
             try:
@@ -358,7 +366,7 @@ class ATIPServer:
                 if (line["value"][0], line["value"][-1]) == ("[", "]"):
                     val = numpy.fromstring((line["value"])[1:-1], sep=" ")
                 else:
-                    val = int(line["value"])
+                    val = float(line["value"])
             except (AssertionError, ValueError) as exc:
                 raise ValueError(
                     f"Invalid initial value for waveform record: {line['value']}"
