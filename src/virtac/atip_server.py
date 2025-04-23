@@ -175,14 +175,7 @@ class ATIPServer:
             # we have another bend element, then just register this element with the
             # existing pv. Otherwise create a new PV for the element
             if element.type_.upper() == "BEND" and bend_in_record is not None:
-                # record[0] may be an int or a list of ints
-                if isinstance(self._in_records[bend_in_record][0], list):
-                    self._in_records[bend_in_record][0].append(element.index)
-                else:
-                    raise TypeError(
-                        f"in_record[0] should have type list but has type "
-                        f"{type(self._in_records[bend_in_record][0])}"
-                    )
+                self._in_records[bend_in_record][0].append(element.index)
             else:
                 for field in element.get_fields()[pytac.SIM]:
                     value = element.get_value(
