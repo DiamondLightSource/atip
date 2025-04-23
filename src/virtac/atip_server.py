@@ -306,7 +306,7 @@ class ATIPServer:
             bba_csv (str): The filepath to the .csv file to load the
                                     records in accordance with.
         """
-        self._create_feedback_or_bba_records_from_csv(bba_csv)
+        self._bba_records = self._create_feedback_or_bba_records_from_csv(bba_csv)
 
     def _create_feedback_records(self, feedback_csv, disable_emittance):
         """Create all the feedback records from the .csv file at the location
@@ -320,19 +320,9 @@ class ATIPServer:
                                         created or not.
         """
         # Create standard records from csv
-        self._create_feedback_or_bba_records_from_csv(feedback_csv)
-
-        # Special case: BPM ID for the x axis of beam position plot, should this be in a
-        # csv or not?
-        bpm_ids = [
-            int(pv[2:4]) + 0.1 * int(pv[14:16])
-            for pv in self.lattice.get_element_pv_names("BPM", "x", pytac.RB)
-        ]
-        builder.SetDeviceName("SR-DI-EBPM-01")
-        bpm_id_record = builder.Waveform(
-            "BPMID", NELM=len(bpm_ids), initial_value=bpm_ids
+        self._feedback_records = self._create_feedback_or_bba_records_from_csv(
+            feedback_csv
         )
-        self._feedback_records[(0, "bpm_id")] = bpm_id_record
 
         # We can choose to not calculate emittance as it is not always required,
         # which decreases computation time.
@@ -345,7 +335,9 @@ class ATIPServer:
             )
             self._feedback_records[(0, "emittance_status")] = emit_status_record
 
-    def _create_feedback_or_bba_records_from_csv(self, csv_file):
+    def _create_feedback_or_bba_records_from_csv(
+        self, csv_file
+    ) -> dict[(int, str), builder.aIn | builder.aOut | builder.WaveformOut]:
         """Read the csv file and create the corresponding records based on
         its contents.
 
@@ -356,12 +348,13 @@ class ATIPServer:
         # We don't set limits or precision but this shouldn't be an issue as these
         # records aren't really intended to be set to by a user.
         csv_reader = csv.DictReader(open(csv_file))
+        records: dict[(int, str), builder.aIn | builder.aOut | builder.WaveformOut] = {}
         for line in csv_reader:
             prefix, suffix = line["pv"].split(":", 1)
             builder.SetDeviceName(prefix)
             try:
                 if (line["value"][0], line["value"][-1]) == ("[", "]"):
-                    val = numpy.fromstring((line["value"])[1:-1], dtype=int, sep=" ")
+                    val = numpy.fromstring((line["value"])[1:-1], sep=" ")
                 else:
                     val = int(line["value"])
             except (AssertionError, ValueError) as exc:
@@ -371,10 +364,10 @@ class ATIPServer:
             else:
                 if line["record_type"] == "ai":
                     record = builder.aIn(suffix, initial_value=val, MDEL="-1")
-                    self._bba_records[(int(line["index"]), line["field"])] = record
+                    records[(int(line["index"]), line["field"])] = record
                 elif line["record_type"] == "ao":
                     record = builder.aOut(suffix, initial_value=val, always_update=True)
-                    self._bba_records[(int(line["index"]), line["field"])] = record
+                    records[(int(line["index"]), line["field"])] = record
                 elif line["record_type"] == "wfm":
                     record = builder.WaveformOut(
                         suffix,
@@ -382,13 +375,14 @@ class ATIPServer:
                         initial_value=val,
                         always_update=True,
                     )
-                    self._bba_records[(int(line["index"]), line["field"])] = record
+                    records[(int(line["index"]), line["field"])] = record
                 else:
                     raise ValueError(
                         f"Failed to create PV from csv file line num "
                         f"{csv_reader.line_num} invalid record_type: "
                         f"{line['record_type']}"
                     )
+        return records
 
     def _create_mirror_records(self, mirror_csv):
         """Create all the mirror records from the .csv file at the location

@@ -13,7 +13,7 @@ from cothread.catools import FORMAT_CTRL, caget
 import atip
 
 
-def generate_feedback_pvs(all_elements):
+def generate_feedback_pvs(all_elements, lattice):
     """Get feedback pvs. Also get families for tune feedback"""
     tune_quad_elements = set(
         all_elements.q1d
@@ -51,6 +51,23 @@ def generate_feedback_pvs(all_elements):
         data.append(
             (elem.index, "offset", elem.get_device("b1").name + ":OFFSET1", 0, "ai")
         )
+
+    # BPM ID for the x axis of beam position plot
+    bpm_ids = "["
+    for pv in lattice.get_element_pv_names("BPM", "x", pytac.RB):
+        bpm_ids += f"{int(pv[2:4]) + 0.1 * int(pv[14:16]):.1f} "
+    bpm_ids = bpm_ids.rstrip()
+    bpm_ids += "]"  # Should look like [1.1 1.2 1.3 ...]
+    data.append(
+        (
+            0,
+            "n/a",
+            "SR-DI-EBPM-01:BPMID",
+            bpm_ids,
+            "wfm",
+        )
+    )
+
     return data
 
 
@@ -373,7 +390,7 @@ if __name__ == "__main__":
     args = parse_arguments()
     lattice = atip.utils.loader(args.ring_mode)
     all_elements = atip.utils.preload(lattice)
-    data = generate_feedback_pvs(all_elements)
+    data = generate_feedback_pvs(all_elements, lattice)
     write_data_to_file(data, args.feedback, args.ring_mode)
     data = generate_bba_pvs(all_elements, lattice.symmetry)
     write_data_to_file(data, args.bba, args.ring_mode)
