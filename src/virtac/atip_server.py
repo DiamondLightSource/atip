@@ -1,5 +1,6 @@
 import ast
 import csv
+import logging
 from warnings import warn
 
 import numpy
@@ -31,8 +32,8 @@ class ATIPServer:
            _pv_monitoring (bool): Whether the mirrored PVs are being monitored.
            _tune_fb_csv_path (str): The path to the tune feedback .csv file.
            _in_records (dict): A dictionary containing all the created in
-                                records and their associated element index and
-                                Pytac field, i.e. {in_record: [index, field]}.
+                                records, a list of associated element indexes and
+                                Pytac field, i.e. {in_record: [[index], field]}.
            _out_records (dict): A dictionary containing the names of all the
                                  created out records and their associated in
                                  records, i.e. {out_record.name: in_record}.
@@ -124,18 +125,22 @@ class ATIPServer:
         updates all the in records that do not have a corresponding out record
         with the latest values from the simulator.
         """
+        logging.debug("Updating output PVs")
         for rb_record in self._rb_only_records:
-            index, field = self._in_records[rb_record]
-            if index == 0:
-                value = self.lattice.get_value(
-                    field, units=pytac.ENG, data_source=pytac.SIM
-                )
-                rb_record.set(value)
-            else:
-                value = self.lattice[index - 1].get_value(
-                    field, units=pytac.ENG, data_source=pytac.SIM
-                )
-                rb_record.set(value)
+            indexes, field = self._in_records[rb_record]
+            # indexes is a list of element indexes associated with the pv
+            # index 0 is the lattice itself rather than an element
+            for index in indexes:
+                if index == 0:
+                    value = self.lattice.get_value(
+                        field, units=pytac.ENG, data_source=pytac.SIM
+                    )
+                    rb_record.set(value)
+                else:
+                    value = self.lattice[index - 1].get_value(
+                        field, units=pytac.ENG, data_source=pytac.SIM
+                    )
+                    rb_record.set(value)
 
     def _create_records(self, limits_csv, disable_emittance):
         """Create all the standard records from both lattice and element Pytac
@@ -174,10 +179,10 @@ class ATIPServer:
                 if isinstance(self._in_records[bend_in_record][0], list):
                     self._in_records[bend_in_record][0].append(element.index)
                 else:
-                    self._in_records[bend_in_record] = [
-                        self._in_records[bend_in_record][0],
-                        element.index,
-                    ]
+                    raise TypeError(
+                        f"in_record[0] should have type list but has type "
+                        f"{type(self._in_records[bend_in_record][0])}"
+                    )
             else:
                 for field in element.get_fields()[pytac.SIM]:
                     value = element.get_value(
@@ -196,7 +201,7 @@ class ATIPServer:
                         MDEL="-1",
                         initial_value=value,
                     )
-                    self._in_records[in_record] = (element.index, field)
+                    self._in_records[in_record] = ([element.index], field)
 
                     try:
                         set_pv = element.get_pv_name(field, pytac.SP)
@@ -236,7 +241,7 @@ class ATIPServer:
                 in_record = builder.aIn(
                     get_pv.split(":", 1)[1], PREC=4, initial_value=value, MDEL="-1"
                 )
-                self._in_records[in_record] = (0, field)
+                self._in_records[in_record] = ([0], field)
                 self._rb_only_records.append(in_record)
         print("~*~*Woah, we're halfway there, Wo-oah...*~*~")
 
@@ -259,13 +264,9 @@ class ATIPServer:
                 value += offset_record.get()
             except KeyError:
                 pass
-        if isinstance(index, list):
-            for i in index:
-                self.lattice[i - 1].set_value(
-                    field, value, units=pytac.ENG, data_source=pytac.SIM
-                )
-        else:
-            self.lattice[index - 1].set_value(
+
+        for i in index:
+            self.lattice[i - 1].set_value(
                 field, value, units=pytac.ENG, data_source=pytac.SIM
             )
 
