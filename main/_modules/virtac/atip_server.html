@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>virtac.atip_server &#8212; atip 0.1.1.dev66+gb0449bf documentation</title>
+    <title>virtac.atip_server &#8212; atip 0.1.1.dev70+g3f98946 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=0b90bf47"></script>
+    <script src="../../_static/documentation_options.js?v=8c3aceaf"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -444,6 +444,7 @@
   <h1>Source code for virtac.atip_server</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">ast</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">csv</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
@@ -477,8 +478,8 @@
 <span class="sd">           _pv_monitoring (bool): Whether the mirrored PVs are being monitored.</span>
 <span class="sd">           _tune_fb_csv_path (str): The path to the tune feedback .csv file.</span>
 <span class="sd">           _in_records (dict): A dictionary containing all the created in</span>
-<span class="sd">                                records and their associated element index and</span>
-<span class="sd">                                Pytac field, i.e. {in_record: [index, field]}.</span>
+<span class="sd">                                records, a list of associated element indexes and</span>
+<span class="sd">                                Pytac field, i.e. {in_record: [[index], field]}.</span>
 <span class="sd">           _out_records (dict): A dictionary containing the names of all the</span>
 <span class="sd">                                 created out records and their associated in</span>
 <span class="sd">                                 records, i.e. {out_record.name: in_record}.</span>
@@ -572,18 +573,22 @@
 <span class="sd">        updates all the in records that do not have a corresponding out record</span>
 <span class="sd">        with the latest values from the simulator.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Updating output PVs&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">rb_record</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rb_only_records</span><span class="p">:</span>
-            <span class="n">index</span><span class="p">,</span> <span class="n">field</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_in_records</span><span class="p">[</span><span class="n">rb_record</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">index</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
-                    <span class="n">field</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="n">pytac</span><span class="o">.</span><span class="n">ENG</span><span class="p">,</span> <span class="n">data_source</span><span class="o">=</span><span class="n">pytac</span><span class="o">.</span><span class="n">SIM</span>
-                <span class="p">)</span>
-                <span class="n">rb_record</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lattice</span><span class="p">[</span><span class="n">index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
-                    <span class="n">field</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="n">pytac</span><span class="o">.</span><span class="n">ENG</span><span class="p">,</span> <span class="n">data_source</span><span class="o">=</span><span class="n">pytac</span><span class="o">.</span><span class="n">SIM</span>
-                <span class="p">)</span>
-                <span class="n">rb_record</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+            <span class="n">indexes</span><span class="p">,</span> <span class="n">field</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_in_records</span><span class="p">[</span><span class="n">rb_record</span><span class="p">]</span>
+            <span class="c1"># indexes is a list of element indexes associated with the pv</span>
+            <span class="c1"># index 0 is the lattice itself rather than an element</span>
+            <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">indexes</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">index</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+                        <span class="n">field</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="n">pytac</span><span class="o">.</span><span class="n">ENG</span><span class="p">,</span> <span class="n">data_source</span><span class="o">=</span><span class="n">pytac</span><span class="o">.</span><span class="n">SIM</span>
+                    <span class="p">)</span>
+                    <span class="n">rb_record</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lattice</span><span class="p">[</span><span class="n">index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+                        <span class="n">field</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="n">pytac</span><span class="o">.</span><span class="n">ENG</span><span class="p">,</span> <span class="n">data_source</span><span class="o">=</span><span class="n">pytac</span><span class="o">.</span><span class="n">SIM</span>
+                    <span class="p">)</span>
+                    <span class="n">rb_record</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_create_records</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limits_csv</span><span class="p">,</span> <span class="n">disable_emittance</span><span class="p">):</span>
@@ -612,48 +617,15 @@
                     <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;lower&quot;</span><span class="p">]),</span>
                     <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;precision&quot;</span><span class="p">]),</span>
                 <span class="p">)</span>
+
         <span class="n">bend_in_record</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lattice</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">type_</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;BEND&quot;</span><span class="p">:</span>
-                <span class="c1"># Create bends only once as they all share a single PV.</span>
-                <span class="k">if</span> <span class="n">bend_in_record</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">value</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
-                        <span class="s2">&quot;b0&quot;</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="n">pytac</span><span class="o">.</span><span class="n">ENG</span><span class="p">,</span> <span class="n">data_source</span><span class="o">=</span><span class="n">pytac</span><span class="o">.</span><span class="n">SIM</span>
-                    <span class="p">)</span>
-                    <span class="n">get_pv</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">get_pv_name</span><span class="p">(</span><span class="s2">&quot;b0&quot;</span><span class="p">,</span> <span class="n">pytac</span><span class="o">.</span><span class="n">RB</span><span class="p">)</span>
-                    <span class="n">upper</span><span class="p">,</span> <span class="n">lower</span><span class="p">,</span> <span class="n">precision</span> <span class="o">=</span> <span class="n">limits_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                        <span class="n">get_pv</span><span class="p">,</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-                    <span class="p">)</span>
-                    <span class="n">builder</span><span class="o">.</span><span class="n">SetDeviceName</span><span class="p">(</span><span class="n">get_pv</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
-                    <span class="n">in_record</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">aIn</span><span class="p">(</span>
-                        <span class="n">get_pv</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span>
-                        <span class="n">LOPR</span><span class="o">=</span><span class="n">lower</span><span class="p">,</span>
-                        <span class="n">HOPR</span><span class="o">=</span><span class="n">upper</span><span class="p">,</span>
-                        <span class="n">PREC</span><span class="o">=</span><span class="n">precision</span><span class="p">,</span>
-                        <span class="n">MDEL</span><span class="o">=</span><span class="s2">&quot;-1&quot;</span><span class="p">,</span>
-                        <span class="n">initial_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
-                    <span class="p">)</span>
-                    <span class="n">set_pv</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">get_pv_name</span><span class="p">(</span><span class="s2">&quot;b0&quot;</span><span class="p">,</span> <span class="n">pytac</span><span class="o">.</span><span class="n">SP</span><span class="p">)</span>
-                    <span class="n">upper</span><span class="p">,</span> <span class="n">lower</span><span class="p">,</span> <span class="n">precision</span> <span class="o">=</span> <span class="n">limits_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                        <span class="n">set_pv</span><span class="p">,</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-                    <span class="p">)</span>
-                    <span class="n">builder</span><span class="o">.</span><span class="n">SetDeviceName</span><span class="p">(</span><span class="n">set_pv</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
-                    <span class="n">out_record</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">aOut</span><span class="p">(</span>
-                        <span class="n">set_pv</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span>
-                        <span class="n">LOPR</span><span class="o">=</span><span class="n">lower</span><span class="p">,</span>
-                        <span class="n">HOPR</span><span class="o">=</span><span class="n">upper</span><span class="p">,</span>
-                        <span class="n">PREC</span><span class="o">=</span><span class="n">precision</span><span class="p">,</span>
-                        <span class="n">initial_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
-                        <span class="n">on_update_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_update</span><span class="p">,</span>
-                        <span class="n">always_update</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                    <span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_in_records</span><span class="p">[</span><span class="n">in_record</span><span class="p">]</span> <span class="o">=</span> <span class="p">([</span><span class="n">element</span><span class="o">.</span><span class="n">index</span><span class="p">],</span> <span class="s2">&quot;b0&quot;</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_out_records</span><span class="p">[</span><span class="n">out_record</span><span class="p">]</span> <span class="o">=</span> <span class="n">in_record</span>
-                    <span class="n">bend_in_record</span> <span class="o">=</span> <span class="n">in_record</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_in_records</span><span class="p">[</span><span class="n">bend_in_record</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+            <span class="c1"># There is only 1 bend PV in the lattice, if it has already been defined and</span>
+            <span class="c1"># we have another bend element, then just register this element with the</span>
+            <span class="c1"># existing pv. Otherwise create a new PV for the element</span>
+            <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">type_</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;BEND&quot;</span> <span class="ow">and</span> <span class="n">bend_in_record</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_in_records</span><span class="p">[</span><span class="n">bend_in_record</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># Create records for all other families.</span>
                 <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">element</span><span class="o">.</span><span class="n">get_fields</span><span class="p">()[</span><span class="n">pytac</span><span class="o">.</span><span class="n">SIM</span><span class="p">]:</span>
                     <span class="n">value</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
                         <span class="n">field</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="n">pytac</span><span class="o">.</span><span class="n">ENG</span><span class="p">,</span> <span class="n">data_source</span><span class="o">=</span><span class="n">pytac</span><span class="o">.</span><span class="n">SIM</span>
@@ -671,7 +643,8 @@
                         <span class="n">MDEL</span><span class="o">=</span><span class="s2">&quot;-1&quot;</span><span class="p">,</span>
                         <span class="n">initial_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
                     <span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_in_records</span><span class="p">[</span><span class="n">in_record</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">field</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_in_records</span><span class="p">[</span><span class="n">in_record</span><span class="p">]</span> <span class="o">=</span> <span class="p">([</span><span class="n">element</span><span class="o">.</span><span class="n">index</span><span class="p">],</span> <span class="n">field</span><span class="p">)</span>
+
                     <span class="k">try</span><span class="p">:</span>
                         <span class="n">set_pv</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">get_pv_name</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">pytac</span><span class="o">.</span><span class="n">SP</span><span class="p">)</span>
                     <span class="k">except</span> <span class="n">HandleException</span><span class="p">:</span>
@@ -691,6 +664,9 @@
                             <span class="n">always_update</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                         <span class="p">)</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">_out_records</span><span class="p">[</span><span class="n">out_record</span><span class="p">]</span> <span class="o">=</span> <span class="n">in_record</span>
+                        <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">type_</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;BEND&quot;</span> <span class="ow">and</span> <span class="n">bend_in_record</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="n">bend_in_record</span> <span class="o">=</span> <span class="n">in_record</span>
+
         <span class="c1"># Now for lattice fields.</span>
         <span class="n">lat_fields</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">get_fields</span><span class="p">()</span>
         <span class="n">lat_fields</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">lat_fields</span><span class="p">[</span><span class="n">pytac</span><span class="o">.</span><span class="n">LIVE</span><span class="p">])</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">lat_fields</span><span class="p">[</span><span class="n">pytac</span><span class="o">.</span><span class="n">SIM</span><span class="p">])</span>
@@ -707,7 +683,7 @@
                 <span class="n">in_record</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">aIn</span><span class="p">(</span>
                     <span class="n">get_pv</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span> <span class="n">PREC</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="n">MDEL</span><span class="o">=</span><span class="s2">&quot;-1&quot;</span>
                 <span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_in_records</span><span class="p">[</span><span class="n">in_record</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">field</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_in_records</span><span class="p">[</span><span class="n">in_record</span><span class="p">]</span> <span class="o">=</span> <span class="p">([</span><span class="mi">0</span><span class="p">],</span> <span class="n">field</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_rb_only_records</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">in_record</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;~*~*Woah, we&#39;re halfway there, Wo-oah...*~*~&quot;</span><span class="p">)</span>
 
@@ -730,13 +706,9 @@
                 <span class="n">value</span> <span class="o">+=</span> <span class="n">offset_record</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
             <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
                 <span class="k">pass</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">index</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">lattice</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span>
-                    <span class="n">field</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="n">pytac</span><span class="o">.</span><span class="n">ENG</span><span class="p">,</span> <span class="n">data_source</span><span class="o">=</span><span class="n">pytac</span><span class="o">.</span><span class="n">SIM</span>
-                <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">lattice</span><span class="p">[</span><span class="n">index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">index</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lattice</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span>
                 <span class="n">field</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="n">pytac</span><span class="o">.</span><span class="n">ENG</span><span class="p">,</span> <span class="n">data_source</span><span class="o">=</span><span class="n">pytac</span><span class="o">.</span><span class="n">SIM</span>
             <span class="p">)</span>
 
