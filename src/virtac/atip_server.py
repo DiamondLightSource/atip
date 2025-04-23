@@ -353,13 +353,15 @@ class ATIPServer:
             prefix, suffix = line["pv"].split(":", 1)
             builder.SetDeviceName(prefix)
             try:
+                # Waveform records may have values stored as a list such as: [5 1 3]
+                # Here we convert that into a numpy array for initialising the record
                 if (line["value"][0], line["value"][-1]) == ("[", "]"):
                     val = numpy.fromstring((line["value"])[1:-1], sep=" ")
                 else:
                     val = int(line["value"])
             except (AssertionError, ValueError) as exc:
                 raise ValueError(
-                    "Invalid initial value for waveform record: {line['value']}"
+                    f"Invalid initial value for waveform record: {line['value']}"
                 ) from exc
             else:
                 if line["record_type"] == "ai":
@@ -569,6 +571,6 @@ class ATIPServer:
                 ) from exc
             else:
                 raise FieldException(
-                    f"Simulated element {self.lattice[index]} does not have"
+                    f"Simulated element {self.lattice[index]} does not have "
                     f"field {field}."
                 ) from exc

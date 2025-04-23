@@ -6,7 +6,7 @@ import argparse
 import csv
 import os
 
-import numpy as np
+import numpy
 import pytac
 from cothread.catools import FORMAT_CTRL, caget
 
@@ -14,7 +14,14 @@ import atip
 
 
 def generate_feedback_pvs(all_elements, lattice):
-    """Get feedback pvs. Also get families for tune feedback"""
+    """Get feedback pvs. Also get families for tune feedback
+    Args:
+        all_elements (list): a list of elements
+        lattice (pytac.lattice.Lattice): The pytac lattice being used by the virtual
+        machine
+    Returns:
+        data (list(tuple)): Data to be written to csv
+    """
     tune_quad_elements = set(
         all_elements.q1d
         + all_elements.q2d
@@ -98,7 +105,7 @@ def generate_bba_pvs(all_elements, symmetry):
                 cell,
                 f"cell_{cell}_excite_start_times",
                 f"{pv_stem}:EXCITE:START_TIMES",
-                np.zeros(18),
+                numpy.zeros(18),
                 "wfm",
             )
         )
@@ -107,7 +114,7 @@ def generate_bba_pvs(all_elements, symmetry):
                 cell,
                 f"cell_{cell}_excite_amps",
                 f"{pv_stem}:EXCITE:AMPS",
-                np.zeros(18),
+                numpy.zeros(18),
                 "wfm",
             )
         )
@@ -116,7 +123,7 @@ def generate_bba_pvs(all_elements, symmetry):
                 cell,
                 f"cell_{cell}_excite_deltas",
                 f"{pv_stem}:EXCITE:DELTAS",
-                np.zeros(18),
+                numpy.zeros(18),
                 "wfm",
             )
         )
@@ -125,7 +132,7 @@ def generate_bba_pvs(all_elements, symmetry):
                 cell,
                 f"cell_{cell}_excite_ticks",
                 f"{pv_stem}:EXCITE:TICKS",
-                np.zeros(18),
+                numpy.zeros(18),
                 "wfm",
             )
         )
