@@ -145,6 +145,7 @@ class ATSimulator:
         self._quit_thread = asyncio.Event()
         self._up_to_date = asyncio.Event()
         self._up_to_date.set()
+        self._new_setpoint = asyncio.Event()
         self._lock = asyncio.Lock()
         self._compute_task = asyncio.create_task(
             self._recalculate_phys_data(callback)
@@ -159,13 +160,11 @@ class ATSimulator:
             field (str): The field to be changed.
             value (float): The value to be set.
         """
-        async with self._lock:
-            await self._queue.put((func, field, value))
-            # If this flag gets cleared while we are recalculating, then it can cause
-            # everything to lock, so we setup a lock between this function and the
-            # recalculate function
-            self._up_to_date.clear()
-            logging.debug(f"Added task to async queue. qsize={self._queue.qsize()}")
+        await self._queue.put((func, field, value))
+        # If this flag gets cleared while we are recalculating, then it can cause
+        # everything to lock, so we setup a lock between this function and the
+        # recalculate function
+        logging.debug(f"Added task to async queue. qsize={self._queue.qsize()}")
 
     async def _gather_one_sample(self):
         """If the queue is empty Wait() yields until an item is added. When the
@@ -173,9 +172,7 @@ class ATSimulator:
         AT lattice.
         """
         logging.debug("Waiting for new item in queue")
-        self._lock.release()
         apply_change_method, field, value = await self._queue.get()
-        await self._lock.acquire()
         apply_change_method(field, value)
         logging.debug("Processed item from queue")
 
@@ -216,30 +213,28 @@ class ATSimulator:
             # We lock for the remainder of the function, to make sure that the
             # _up_to_date flag isnt reset before we run the callback which may
             # look at this
-            async with self._lock:
+            await self._gather_one_sample()
+            while not self._queue.empty():
                 await self._gather_one_sample()
-                while not self._queue.empty():
-                    await self._gather_one_sample()
-                logging.debug("Recaulculating simulation with new setpoints.")
-                if not self._paused.is_set():
-                    try:
-                        self._lattice_data = calculate_optics(
-                            self._at_lat, self._rp, self._disable_emittance
-                        )
-                    except Exception as e:
-                        warn(at.AtWarning(e), stacklevel=1)
+            logging.debug("Recaulculating simulation with new setpoints.")
+            if not self._paused.is_set():
+                try:
+                    self._lattice_data = calculate_optics(
+                        self._at_lat, self._rp, self._disable_emittance
+                    )
+                except Exception as e:
+                    warn(at.AtWarning(e), stacklevel=1)
 
-                    # Signal the up to date flag since the physics data is now up to
-                    # date. We do this before the callback is executed in case the
-                    # callback checks the flag.
-                    self._up_to_date.set()
-                    logging.debug("Simulation up to date.")
-                    if callback is not None:
-                        logging.debug(
-                            f"Executing callback function: {callback.__name__}"
-                        )
-                        await callback()
-                        logging.debug("Callback completed.")
+                # Signal the up to date flag since the physics data is now up to
+                # date. We do this before the callback is executed in case the
+                # callback checks the flag.
+                self._up_to_date.set()
+                logging.debug("Simulation up to date.")
+                if callback is not None:
+                    logging.debug(f"Executing callback function: {callback.__name__}")
+                    await callback()
+                    logging.debug("Callback completed.")
+                self._up_to_date.clear()
 
     def toggle_calculations(self):
         """Pause or unpause the physics calculations by setting or clearing the
