@@ -1,5 +1,4 @@
 import csv
-import logging
 from warnings import warn
 
 import numpy
@@ -138,17 +137,18 @@ class ATIPServer:
         with the latest values from the simulator.
         """
         for rb_record in self._rb_only_records:
-            index, field = self._in_records[rb_record]
-            if index == 0:
-                value = await self.lattice.get_value(
-                    field, units=pytac.ENG, data_source=pytac.SIM
-                )
-                rb_record.set(value)
-            else:
-                value = await self.lattice[index - 1].get_value(
-                    field, units=pytac.ENG, data_source=pytac.SIM
-                )
-                rb_record.set(value)
+            indexes, field = self._in_records[rb_record]
+            for index in indexes:
+                if index == 0:
+                    value = await self.lattice.get_value(
+                        field, units=pytac.ENG, data_source=pytac.SIM
+                    )
+                    rb_record.set(value)
+                else:
+                    value = await self.lattice[index - 1].get_value(
+                        field, units=pytac.ENG, data_source=pytac.SIM
+                    )
+                    rb_record.set(value)
 
     async def _create_records(self, limits_csv, disable_emittance):
         """Create all the standard records from both lattice and element Pytac
@@ -235,7 +235,7 @@ class ATIPServer:
                         MDEL="-1",
                         initial_value=value,
                     )
-                    self._in_records[in_record] = (element.index, field)
+                    self._in_records[in_record] = ([element.index], field)
                     try:
                         set_pv = element.get_pv_name(field, pytac.SP)
                     except HandleException:
@@ -271,7 +271,7 @@ class ATIPServer:
                 in_record = builder.aIn(
                     get_pv.split(":", 1)[1], PREC=4, initial_value=value, MDEL="-1"
                 )
-                self._in_records[in_record] = (0, field)
+                self._in_records[in_record] = ([0], field)
                 self._rb_only_records.append(in_record)
         print("~*~*Woah, we're halfway there, Wo-oah...*~*~")
 
@@ -284,23 +284,22 @@ class ATIPServer:
         Args:
             value (number): The value that has just been set to the record.
             name (str): The name of record object that has just been set to.
+        Notes:
+            This function is called whenever a softioc pv recieves a channal
+            access call, this means it can be called a lot! It should be kept
+            lean.
         """
-        logging.debug(f"Read value {value} on pv {name}")
+        # logging.debug(f"Read value {value} on pv {name}")
         in_record = self._out_records[self.all_record_names[name]]
         in_record.set(value)
-        index, field = self._in_records[in_record]
+        indexes, field = self._in_records[in_record]
         if self.tune_feedback_status is True:
             try:
                 offset_record = self._offset_pvs[name]
                 value += offset_record.get()
             except KeyError:
                 pass
-        if isinstance(index, list):
-            for i in index:
-                await self.lattice[i - 1].set_value(
-                    field, value, units=pytac.ENG, data_source=pytac.SIM
-                )
-        else:
+        for index in indexes:
             await self.lattice[index - 1].set_value(
                 field, value, units=pytac.ENG, data_source=pytac.SIM
             )
