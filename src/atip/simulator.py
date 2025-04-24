@@ -1,6 +1,7 @@
 """Module containing an interface with the AT simulator."""
 
 import asyncio
+import concurrent
 import logging
 from dataclasses import dataclass
 from warnings import warn
@@ -42,23 +43,26 @@ def calculate_optics(
     Returns:
         LatticeData: The calculated lattice data.
     """
-    logging.debug("Starting physics calculations.")
+    try:
+        logging.debug("Starting physics calculations.")
 
-    orbit0, _ = at_lattice.find_orbit6()
-    logging.debug("Completed orbit calculation.")
+        orbit0, _ = at_lattice.find_orbit6()
+        logging.debug("Completed orbit calculation.")
 
-    _, beamdata, twiss = at_lattice.linopt6(
-        refpts=refpts, get_chrom=True, orbit=orbit0, keep_lattice=True
-    )
-    logging.debug("Completed linear optics calculation.")
+        _, beamdata, twiss = at_lattice.linopt6(
+            refpts=refpts, get_chrom=True, orbit=orbit0, keep_lattice=True
+        )
+        logging.debug("Completed linear optics calculation.")
 
-    if not disable_emittance:
-        emitdata = at_lattice.ohmi_envelope(orbit=orbit0, keep_lattice=True)
-        logging.debug("Completed emittance calculation")
-    else:
-        emitdata = ()
-    radint = at_lattice.get_radiation_integrals(twiss=twiss)
-    logging.debug("All calculation complete.")
+        if not disable_emittance:
+            emitdata = at_lattice.ohmi_envelope(orbit=orbit0, keep_lattice=True)
+            logging.debug("Completed emittance calculation")
+        else:
+            emitdata = ()
+        radint = at_lattice.get_radiation_integrals(twiss=twiss)
+        logging.debug("All calculation complete.")
+    except Exception as e:
+        warn(at.AtWarning(e), stacklevel=1)
     return LatticeData(twiss, beamdata.tune, beamdata.chromaticity, emitdata, radint)
 
 
@@ -147,6 +151,7 @@ class ATSimulator:
         self._up_to_date.set()
         self._new_setpoint = asyncio.Event()
         self._lock = asyncio.Lock()
+
         self._compute_task = asyncio.create_task(
             self._recalculate_phys_data(callback)
         )  # This task should last the lifetime of the program
@@ -218,13 +223,17 @@ class ATSimulator:
                 await self._gather_one_sample()
             logging.debug("Recaulculating simulation with new setpoints.")
             if not self._paused.is_set():
-                try:
-                    self._lattice_data = calculate_optics(
-                        self._at_lat, self._rp, self._disable_emittance
+                # we run the cpu intensive calculate_optics() function in a seperate
+                # process which allows us to continue servicing CA requests while doing
+                # the physics
+                with concurrent.futures.ProcessPoolExecutor() as pool:
+                    self._lattice_data = await self._loop.run_in_executor(
+                        pool,
+                        calculate_optics,
+                        self._at_lat,
+                        self._rp,
+                        self._disable_emittance,
                     )
-                except Exception as e:
-                    warn(at.AtWarning(e), stacklevel=1)
-
                 # Signal the up to date flag since the physics data is now up to
                 # date. We do this before the callback is executed in case the
                 # callback checks the flag.
