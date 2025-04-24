@@ -61,9 +61,12 @@ def calculate_optics(
             emitdata = ()
         radint = at_lattice.get_radiation_integrals(twiss=twiss)
         logging.debug("All calculation complete.")
+        return LatticeData(
+            twiss, beamdata.tune, beamdata.chromaticity, emitdata, radint
+        )
     except Exception as e:
         warn(at.AtWarning(e), stacklevel=1)
-    return LatticeData(twiss, beamdata.tune, beamdata.chromaticity, emitdata, radint)
+        return None
 
 
 class ATSimulator:
@@ -227,13 +230,19 @@ class ATSimulator:
                 # process which allows us to continue servicing CA requests while doing
                 # the physics
                 with concurrent.futures.ProcessPoolExecutor() as pool:
-                    self._lattice_data = await self._loop.run_in_executor(
+                    data = await self._loop.run_in_executor(
                         pool,
                         calculate_optics,
                         self._at_lat,
                         self._rp,
                         self._disable_emittance,
                     )
+                    if data is not None:
+                        # Sometimes the data is non if an exception is raised during
+                        # calculate_optics().
+                        # TODO: If data is none we dont update the lattice and so dont
+                        # need to update the output pvs.
+                        self._lattice_data = data
                 # Signal the up to date flag since the physics data is now up to
                 # date. We do this before the callback is executed in case the
                 # callback checks the flag.
