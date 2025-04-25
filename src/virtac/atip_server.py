@@ -211,8 +211,8 @@ class ATIPServer:
                     except HandleException:
                         self._rb_only_records.append(in_record)
                     else:
-                        upper, lower, precision, drive_high, drive_low = limits_dict.get(
-                            set_pv, (None, None, None, None, None)
+                        upper, lower, precision, drive_high, drive_low = (
+                            limits_dict.get(set_pv, (None, None, None, None, None))
                         )
                         builder.SetDeviceName(set_pv.split(":", 1)[0])
                         out_record = builder.aOut(
