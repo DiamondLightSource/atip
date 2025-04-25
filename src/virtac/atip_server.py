@@ -106,10 +106,14 @@ class ATIPServer:
             self._create_feedback_records(feedback_csv, disable_emittance)
         if mirror_csv is not None:
             self._create_mirror_records(mirror_csv)
-        print(f"Finished creating all {len(self.all_record_names)} records.")
+        self._record_names = self._get_all_record_names()
+        print(f"Finished creating all {len(self.record_names)} records.")
 
     @property
-    def all_record_names(self):
+    def record_names(self):
+        return self._record_names
+
+    def _get_all_record_names(self):
         """A dictionary with all the names of records created by this server
         as the keys and the corresponding record (and mirror) objects as the
         values.
@@ -250,13 +254,17 @@ class ATIPServer:
         """The callback function passed to out records, it is called after
         successful record processing has been completed. It updates the out
         record's corresponding in record with the value that has been set and
-        then sets the value to the centralised Pytac lattice.
+        then sets the value to the centralised Pytac lattice. This functions
+        needs to be kept FAST as it can be called quickly by CA clients.
 
         Args:
             value (number): The value that has just been set to the record.
             name (str): The name of record object that has just been set to.
         """
-        in_record = self._out_records[self.all_record_names[name]]
+        # This debug statement has an overhead and can be removed if it this function
+        # is found to be a bottleneck in the future
+        logging.debug("Read value %i on pv %s", value, name)
+        in_record = self._out_records[self.record_names[name]]
         in_record.set(value)
         index, field = self._in_records[in_record]
         if self.tune_feedback_status is True:
@@ -397,7 +405,7 @@ class ATIPServer:
             input_records = []
             for pv in input_pvs:
                 try:
-                    input_records.append(self.all_record_names[pv])
+                    input_records.append(self._get_all_record_names()[pv])
                 except KeyError:
                     input_records.append(caget_mask(pv))
             # Create output record.
@@ -470,7 +478,7 @@ class ATIPServer:
             pv_name (str): The name of the record to refresh.
         """
         try:
-            record = self.all_record_names[pv_name]
+            record = self.record_names[pv_name]
         except KeyError as exc:
             raise ValueError(
                 f"{pv_name} is not the name of a record created by this server."
@@ -503,7 +511,7 @@ class ATIPServer:
             self.monitor_mirrored_pvs()
         self.tune_feedback_status = True
         for line in csv_reader:
-            offset_record = self.all_record_names[line["offset"]]
+            offset_record = self._get_all_record_names()[line["offset"]]
             self._offset_pvs[line["set pv"]] = offset_record
             mask = callback_offset(self, line["set pv"], offset_record)
             try:
