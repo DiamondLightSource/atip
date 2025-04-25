@@ -1,5 +1,7 @@
 import csv
 import typing
+import logging
+
 from warnings import warn
 
 import numpy
@@ -31,8 +33,8 @@ class ATIPServer:
            _pv_monitoring (bool): Whether the mirrored PVs are being monitored.
            _tune_fb_csv_path (str): The path to the tune feedback .csv file.
            _in_records (dict): A dictionary containing all the created in
-                                records and their associated element index and
-                                Pytac field, i.e. {in_record: [index, field]}.
+                                records, a list of associated element indexes and
+                                Pytac field, i.e. {in_record: [[index], field]}.
            _out_records (dict): A dictionary containing the names of all the
                                  created out records and their associated in
                                  records, i.e. {out_record.name: in_record}.
@@ -132,18 +134,22 @@ class ATIPServer:
         updates all the in records that do not have a corresponding out record
         with the latest values from the simulator.
         """
+        logging.debug("Updating output PVs")
         for rb_record in self._rb_only_records:
-            index, field = self._in_records[rb_record]
-            if index == 0:
-                value = self.lattice.get_value(
-                    field, units=pytac.ENG, data_source=pytac.SIM
-                )
-                rb_record.set(value)
-            else:
-                value = self.lattice[index - 1].get_value(
-                    field, units=pytac.ENG, data_source=pytac.SIM
-                )
-                rb_record.set(value)
+            indexes, field = self._in_records[rb_record]
+            # indexes is a list of element indexes associated with the pv
+            # index 0 is the lattice itself rather than an element
+            for index in indexes:
+                if index == 0:
+                    value = self.lattice.get_value(
+                        field, units=pytac.ENG, data_source=pytac.SIM
+                    )
+                    rb_record.set(value)
+                else:
+                    value = self.lattice[index - 1].get_value(
+                        field, units=pytac.ENG, data_source=pytac.SIM
+                    )
+                    rb_record.set(value)
 
     def _create_records(self, limits_csv, disable_emittance):
         """Create all the standard records from both lattice and element Pytac
@@ -171,48 +177,15 @@ class ATIPServer:
                     float(line["lower"]),
                     int(line["precision"]),
                 )
+
         bend_in_record = None
         for element in self.lattice:
-            if element.type_.upper() == "BEND":
-                # Create bends only once as they all share a single PV.
-                if bend_in_record is None:
-                    value = element.get_value(
-                        "b0", units=pytac.ENG, data_source=pytac.SIM
-                    )
-                    get_pv = element.get_pv_name("b0", pytac.RB)
-                    upper, lower, precision = limits_dict.get(
-                        get_pv, (None, None, None)
-                    )
-                    builder.SetDeviceName(get_pv.split(":", 1)[0])
-                    in_record = builder.aIn(
-                        get_pv.split(":", 1)[1],
-                        LOPR=lower,
-                        HOPR=upper,
-                        PREC=precision,
-                        MDEL="-1",
-                        initial_value=value,
-                    )
-                    set_pv = element.get_pv_name("b0", pytac.SP)
-                    upper, lower, precision = limits_dict.get(
-                        set_pv, (None, None, None)
-                    )
-                    builder.SetDeviceName(set_pv.split(":", 1)[0])
-                    out_record = builder.aOut(
-                        set_pv.split(":", 1)[1],
-                        LOPR=lower,
-                        HOPR=upper,
-                        PREC=precision,
-                        initial_value=value,
-                        on_update_name=self._on_update,
-                        always_update=True,
-                    )
-                    self._in_records[in_record] = ([element.index], "b0")
-                    self._out_records[out_record] = in_record
-                    bend_in_record = in_record
-                else:
-                    self._in_records[bend_in_record][0].append(element.index)
+            # There is only 1 bend PV in the lattice, if it has already been defined and
+            # we have another bend element, then just register this element with the
+            # existing pv. Otherwise create a new PV for the element
+            if element.type_.upper() == "BEND" and bend_in_record is not None:
+                self._in_records[bend_in_record][0].append(element.index)
             else:
-                # Create records for all other families.
                 for field in element.get_fields()[pytac.SIM]:
                     value = element.get_value(
                         field, units=pytac.ENG, data_source=pytac.SIM
@@ -230,7 +203,8 @@ class ATIPServer:
                         MDEL="-1",
                         initial_value=value,
                     )
-                    self._in_records[in_record] = (element.index, field)
+                    self._in_records[in_record] = ([element.index], field)
+
                     try:
                         set_pv = element.get_pv_name(field, pytac.SP)
                     except HandleException:
@@ -250,6 +224,9 @@ class ATIPServer:
                             always_update=True,
                         )
                         self._out_records[out_record] = in_record
+                        if element.type_.upper() == "BEND" and bend_in_record is None:
+                            bend_in_record = in_record
+
         # Now for lattice fields.
         lat_fields = self.lattice.get_fields()
         lat_fields = set(lat_fields[pytac.LIVE]) & set(lat_fields[pytac.SIM])
@@ -266,7 +243,7 @@ class ATIPServer:
                 in_record = builder.aIn(
                     get_pv.split(":", 1)[1], PREC=4, initial_value=value, MDEL="-1"
                 )
-                self._in_records[in_record] = (0, field)
+                self._in_records[in_record] = ([0], field)
                 self._rb_only_records.append(in_record)
         print("~*~*Woah, we're halfway there, Wo-oah...*~*~")
 
@@ -289,13 +266,9 @@ class ATIPServer:
                 value += offset_record.get()
             except KeyError:
                 pass
-        if isinstance(index, list):
-            for i in index:
-                self.lattice[i - 1].set_value(
-                    field, value, units=pytac.ENG, data_source=pytac.SIM
-                )
-        else:
-            self.lattice[index - 1].set_value(
+
+        for i in index:
+            self.lattice[i - 1].set_value(
                 field, value, units=pytac.ENG, data_source=pytac.SIM
             )
 
