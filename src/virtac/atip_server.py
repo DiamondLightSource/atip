@@ -369,7 +369,8 @@ class ATIPServer:
                     val = float(line["value"])
             except (AssertionError, ValueError) as exc:
                 raise ValueError(
-                    f"Invalid initial value for waveform record: {line['value']}"
+                    f"Invalid initial value for {line['record_type']} record: "
+                    f"{line['value']}"
                 ) from exc
             else:
                 if line["record_type"] == "ai":

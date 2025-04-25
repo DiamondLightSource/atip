@@ -68,7 +68,7 @@ def generate_feedback_pvs(all_elements, lattice):
     data.append(
         (
             0,
-            "n/a",
+            "bpm_id",
             "SR-DI-EBPM-01:BPMID",
             bpm_ids,
             "wfm",
