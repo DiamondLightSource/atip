@@ -1,7 +1,6 @@
 import csv
-import typing
 import logging
-
+import typing
 from warnings import warn
 
 import numpy
