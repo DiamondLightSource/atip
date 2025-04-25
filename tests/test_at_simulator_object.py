@@ -1,6 +1,7 @@
+from unittest import mock
+
 import at
 import cothread
-import mock
 import numpy
 import pytest
 from pytac.exceptions import DataSourceException, FieldException
@@ -198,7 +199,7 @@ def test_toggle_calculations_and_wait_for_calculations(atsim, initial_phys_data)
     atsim._at_lat[5].PolynomB[1] = 2.5
     atsim.queue_set(mock.Mock(), "f", 0)
     assert atsim.wait_for_calculations(2) is False
-    _check_initial_phys_data(atsim, initial_phys_data) is True
+    _check_initial_phys_data(atsim, initial_phys_data)
     atsim.toggle_calculations()
     atsim.queue_set(mock.Mock(), "f", 0)
     assert atsim.wait_for_calculations() is True
@@ -225,7 +226,7 @@ def test_get_at_element(atsim, at_lattice):
 
 
 def test_get_at_lattice(atsim, at_lattice):
-    for elem1, elem2 in zip(atsim.get_at_lattice(), atsim._at_lat):
+    for elem1, elem2 in zip(atsim.get_at_lattice(), atsim._at_lat, strict=False):
         assert elem1 == elem2
 
 
