@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>virtac.atip_server &#8212; atip 0.1.1.dev70+g3f98946 documentation</title>
+    <title>virtac.atip_server &#8212; atip 0.1.1.dev81+gb6946e9 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=8c3aceaf"></script>
+    <script src="../../_static/documentation_options.js?v=ad9e142a"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -442,9 +442,9 @@
                 <article class="bd-article">
                   
   <h1>Source code for virtac.atip_server</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">ast</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">csv</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">csv</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">typing</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
@@ -506,6 +506,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">ring_mode</span><span class="p">,</span>
         <span class="n">limits_csv</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">bba_csv</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">feedback_csv</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">mirror_csv</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">tune_csv</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -517,6 +518,9 @@
 <span class="sd">            limits_csv (str): The filepath to the .csv file from which to</span>
 <span class="sd">                                    load the pv limits, for more information</span>
 <span class="sd">                                    see create_csv.py.</span>
+<span class="sd">            bba_csv (str): The filepath to the .csv file from which to</span>
+<span class="sd">                                    load the bba records, for more</span>
+<span class="sd">                                    information see create_csv.py.</span>
 <span class="sd">            feedback_csv (str): The filepath to the .csv file from which to</span>
 <span class="sd">                                    load the feedback records, for more</span>
 <span class="sd">                                    information see create_csv.py.</span>
@@ -535,12 +539,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_in_records</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_out_records</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_rb_only_records</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bba_records</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_feedback_records</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mirrored_records</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_monitored_pvs</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_offset_pvs</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Starting record creation.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_create_records</span><span class="p">(</span><span class="n">limits_csv</span><span class="p">,</span> <span class="n">disable_emittance</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">bba_csv</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_bba_records</span><span class="p">(</span><span class="n">bba_csv</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">feedback_csv</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_create_feedback_records</span><span class="p">(</span><span class="n">feedback_csv</span><span class="p">,</span> <span class="n">disable_emittance</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">mirror_csv</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -561,6 +568,7 @@
             <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_in_records</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
             <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_out_records</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
             <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_feedback_records</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+            <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_bba_records</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
             <span class="o">+</span> <span class="n">mirrored</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="p">{</span><span class="n">record</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">record</span> <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">all_records</span><span class="p">}</span>
@@ -712,10 +720,20 @@
                 <span class="n">field</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="n">pytac</span><span class="o">.</span><span class="n">ENG</span><span class="p">,</span> <span class="n">data_source</span><span class="o">=</span><span class="n">pytac</span><span class="o">.</span><span class="n">SIM</span>
             <span class="p">)</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_bba_records</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bba_csv</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create all the beam-based-alignment records from the .csv file at the</span>
+<span class="sd">        location passed, see create_csv.py for more information.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            bba_csv (str): The filepath to the .csv file to load the</span>
+<span class="sd">                                    records in accordance with.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bba_records</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_feedback_or_bba_records_from_csv</span><span class="p">(</span><span class="n">bba_csv</span><span class="p">)</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">_create_feedback_records</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feedback_csv</span><span class="p">,</span> <span class="n">disable_emittance</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create all the feedback records from the .csv file at the location</span>
-<span class="sd">        passed, see create_csv.py for more information; records for two edge</span>
-<span class="sd">        cases are also created.</span>
+<span class="sd">        passed, see create_csv.py for more information; records for one edge</span>
+<span class="sd">        case are also created.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            feedback_csv (str): The filepath to the .csv file to load the</span>
@@ -723,62 +741,11 @@
 <span class="sd">            disable_emittance (bool): Whether the emittance related PVs should be</span>
 <span class="sd">                                        created or not.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># We don&#39;t set limits or precision but this shouldn&#39;t be an issue as these</span>
-        <span class="c1"># records aren&#39;t really intended to be set to by a user.</span>
-        <span class="n">csv_reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">feedback_csv</span><span class="p">))</span>
-        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">csv_reader</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">readonly</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;read-only&quot;</span><span class="p">])</span>
-                <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">readonly</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
-            <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">AssertionError</span><span class="p">)</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Unable to evaluate </span><span class="si">{</span><span class="n">line</span><span class="p">[</span><span class="s1">&#39;read-only&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> as a boolean.&quot;</span>
-                <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
-            <span class="n">prefix</span><span class="p">,</span> <span class="n">suffix</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;pv&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-            <span class="n">builder</span><span class="o">.</span><span class="n">SetDeviceName</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">readonly</span><span class="p">:</span>
-                <span class="n">in_record</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">aIn</span><span class="p">(</span>
-                    <span class="n">suffix</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]),</span> <span class="n">MDEL</span><span class="o">=</span><span class="s2">&quot;-1&quot;</span>
-                <span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_feedback_records</span><span class="p">[(</span><span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;index&quot;</span><span class="p">]),</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;field&quot;</span><span class="p">])]</span> <span class="o">=</span> <span class="n">in_record</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">out_record</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">aOut</span><span class="p">(</span>
-                    <span class="n">suffix</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]),</span> <span class="n">always_update</span><span class="o">=</span><span class="kc">True</span>
-                <span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_feedback_records</span><span class="p">[(</span><span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;index&quot;</span><span class="p">]),</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;field&quot;</span><span class="p">])]</span> <span class="o">=</span> <span class="n">out_record</span>
-        <span class="c1"># Special case: BPM ID for the x axis of beam position plot, since we</span>
-        <span class="c1"># cannot currently create Waveform records via CSV.</span>
-        <span class="n">bpm_ids</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="nb">int</span><span class="p">(</span><span class="n">pv</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">])</span> <span class="o">+</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">pv</span><span class="p">[</span><span class="mi">14</span><span class="p">:</span><span class="mi">16</span><span class="p">])</span>
-            <span class="k">for</span> <span class="n">pv</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">get_element_pv_names</span><span class="p">(</span><span class="s2">&quot;BPM&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">pytac</span><span class="o">.</span><span class="n">RB</span><span class="p">)</span>
-        <span class="p">]</span>
-        <span class="n">builder</span><span class="o">.</span><span class="n">SetDeviceName</span><span class="p">(</span><span class="s2">&quot;SR-DI-EBPM-01&quot;</span><span class="p">)</span>
-        <span class="n">bpm_id_record</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">Waveform</span><span class="p">(</span>
-            <span class="s2">&quot;BPMID&quot;</span><span class="p">,</span> <span class="n">NELM</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">bpm_ids</span><span class="p">),</span> <span class="n">initial_value</span><span class="o">=</span><span class="n">bpm_ids</span>
+        <span class="c1"># Create standard records from csv</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_feedback_records</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_feedback_or_bba_records_from_csv</span><span class="p">(</span>
+            <span class="n">feedback_csv</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_feedback_records</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;bpm_id&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">bpm_id_record</span>
-        <span class="c1"># Special case: Fast BBA oscillation PVs - should also be moved to CSV in future</span>
-        <span class="k">for</span> <span class="n">cell</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">symmetry</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
-            <span class="n">cell</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">cell</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-            <span class="n">builder</span><span class="o">.</span><span class="n">SetDeviceName</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;SR</span><span class="si">{</span><span class="n">cell</span><span class="si">}</span><span class="s2">A-CS-FOFB-01&quot;</span><span class="p">)</span>
-            <span class="n">start_times</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">WaveformOut</span><span class="p">(</span>
-                <span class="s2">&quot;EXCITE:START_TIMES&quot;</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">18</span><span class="p">)</span>
-            <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_feedback_records</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;cell_</span><span class="si">{</span><span class="n">cell</span><span class="si">}</span><span class="s2">_excite_start_times&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">start_times</span>
-            <span class="n">excite_amps</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">WaveformOut</span><span class="p">(</span>
-                <span class="s2">&quot;EXCITE:AMPS&quot;</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">18</span><span class="p">)</span>
-            <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_feedback_records</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;cell_</span><span class="si">{</span><span class="n">cell</span><span class="si">}</span><span class="s2">_excite_amps&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">excite_amps</span>
-            <span class="n">excite_deltas</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">WaveformOut</span><span class="p">(</span>
-                <span class="s2">&quot;EXCITE:DELTAS&quot;</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">18</span><span class="p">)</span>
-            <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_feedback_records</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;cell_</span><span class="si">{</span><span class="n">cell</span><span class="si">}</span><span class="s2">_excite_deltas&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">excite_deltas</span>
-            <span class="n">excite_ticks</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">WaveformOut</span><span class="p">(</span>
-                <span class="s2">&quot;EXCITE:TICKS&quot;</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">18</span><span class="p">)</span>
-            <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_feedback_records</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;cell_</span><span class="si">{</span><span class="n">cell</span><span class="si">}</span><span class="s2">_excite_ticks&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">excite_ticks</span>
-            <span class="n">excite_prime</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">aOut</span><span class="p">(</span><span class="s2">&quot;EXCITE:PRIME&quot;</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_feedback_records</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;cell_</span><span class="si">{</span><span class="n">cell</span><span class="si">}</span><span class="s2">_excite_prime&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">excite_prime</span>
+
         <span class="c1"># We can choose to not calculate emittance as it is not always required,</span>
         <span class="c1"># which decreases computation time.</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">disable_emittance</span><span class="p">:</span>
@@ -789,6 +756,65 @@
                 <span class="s2">&quot;STATUS&quot;</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ZRVL</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ZRST</span><span class="o">=</span><span class="s2">&quot;Successful&quot;</span><span class="p">,</span> <span class="n">PINI</span><span class="o">=</span><span class="s2">&quot;YES&quot;</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_feedback_records</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;emittance_status&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">emit_status_record</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_feedback_or_bba_records_from_csv</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">csv_file</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read the csv file and create the corresponding records based on</span>
+<span class="sd">        its contents.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            csv_file (str): The filepath to the .csv file to load the</span>
+<span class="sd">                                    records in accordance with.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            records dict[tuple[int, str], typing.Any]: A dictionary containing</span>
+<span class="sd">                a tuple of indexes,field as its key and a softioc.builder record</span>
+<span class="sd">                as its value</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># We don&#39;t set limits or precision but this shouldn&#39;t be an issue as these</span>
+        <span class="c1"># records aren&#39;t really intended to be set to by a user.</span>
+        <span class="n">csv_reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">csv_file</span><span class="p">))</span>
+        <span class="n">records</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span>
+            <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">builder</span><span class="o">.</span><span class="n">aIn</span> <span class="o">|</span> <span class="n">builder</span><span class="o">.</span><span class="n">aOut</span> <span class="o">|</span> <span class="n">builder</span><span class="o">.</span><span class="n">WaveformOut</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">csv_reader</span><span class="p">:</span>
+            <span class="n">val</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">prefix</span><span class="p">,</span> <span class="n">suffix</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;pv&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">builder</span><span class="o">.</span><span class="n">SetDeviceName</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># Waveform records may have values stored as a list such as: [5 1 3]</span>
+                <span class="c1"># Here we convert that into a numpy array for initialising the record</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">==</span> <span class="p">(</span><span class="s2">&quot;[&quot;</span><span class="p">,</span> <span class="s2">&quot;]&quot;</span><span class="p">):</span>
+                    <span class="n">val</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">fromstring</span><span class="p">((</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">])[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">val</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">])</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">AssertionError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Invalid initial value for </span><span class="si">{</span><span class="n">line</span><span class="p">[</span><span class="s1">&#39;record_type&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> record: &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">line</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;record_type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;ai&quot;</span><span class="p">:</span>
+                    <span class="n">record</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">aIn</span><span class="p">(</span><span class="n">suffix</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="n">val</span><span class="p">,</span> <span class="n">MDEL</span><span class="o">=</span><span class="s2">&quot;-1&quot;</span><span class="p">)</span>
+                    <span class="n">records</span><span class="p">[(</span><span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;index&quot;</span><span class="p">]),</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;field&quot;</span><span class="p">])]</span> <span class="o">=</span> <span class="n">record</span>
+                <span class="k">elif</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;record_type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;ao&quot;</span><span class="p">:</span>
+                    <span class="n">record</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">aOut</span><span class="p">(</span><span class="n">suffix</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="n">val</span><span class="p">,</span> <span class="n">always_update</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="n">records</span><span class="p">[(</span><span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;index&quot;</span><span class="p">]),</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;field&quot;</span><span class="p">])]</span> <span class="o">=</span> <span class="n">record</span>
+                <span class="k">elif</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;record_type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;wfm&quot;</span><span class="p">:</span>
+                    <span class="n">record</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">WaveformOut</span><span class="p">(</span>
+                        <span class="n">suffix</span><span class="p">,</span>
+                        <span class="c1"># We remove the [] around the string</span>
+                        <span class="n">initial_value</span><span class="o">=</span><span class="n">val</span><span class="p">,</span>
+                        <span class="n">always_update</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="n">records</span><span class="p">[(</span><span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;index&quot;</span><span class="p">]),</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;field&quot;</span><span class="p">])]</span> <span class="o">=</span> <span class="n">record</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Failed to create PV from csv file line num &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">csv_reader</span><span class="o">.</span><span class="n">line_num</span><span class="si">}</span><span class="s2"> invalid record_type: &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">line</span><span class="p">[</span><span class="s1">&#39;record_type&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+        <span class="k">return</span> <span class="n">records</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_create_mirror_records</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mirror_csv</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create all the mirror records from the .csv file at the location</span>
@@ -981,6 +1007,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_feedback_records</span><span class="p">[(</span><span class="n">index</span><span class="p">,</span> <span class="n">field</span><span class="p">)]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_bba_records</span><span class="p">[(</span><span class="n">index</span><span class="p">,</span> <span class="n">field</span><span class="p">)]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">index</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">FieldException</span><span class="p">(</span>

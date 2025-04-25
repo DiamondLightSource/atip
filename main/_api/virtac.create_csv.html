@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>virtac.create_csv &#8212; atip 0.1.1.dev70+g3f98946 documentation</title>
+    <title>virtac.create_csv &#8212; atip 0.1.1.dev81+gb6946e9 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=8c3aceaf"></script>
+    <script src="../_static/documentation_options.js?v=ad9e142a"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -485,7 +485,7 @@ default EPICS port for the live machine not 6064.</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#virtac.create_csv.generate_bba_pvs" title="virtac.create_csv.generate_bba_pvs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_bba_pvs</span></code></a></p></td>
-<td><p>Data to be written is stored as a list of tuples each with structure: element index (int), field (str), pv (str), value (int).</p></td>
+<td><p>Data to be written is stored as a list of tuples each with structure: element index (int), field (str), pv (str), value (int), record_type (str).</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#virtac.create_csv.generate_feedback_pvs" title="virtac.create_csv.generate_feedback_pvs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_feedback_pvs</span></code></a></p></td>
 <td><p>Get feedback pvs.</p></td>
@@ -510,15 +510,28 @@ default EPICS port for the live machine not 6064.</p>
 </div>
 <dl class="py function">
 <dt class="sig sig-object py" id="virtac.create_csv.generate_feedback_pvs">
-<span class="sig-prename descclassname"><span class="pre">virtac.create_csv.</span></span><span class="sig-name descname"><span class="pre">generate_feedback_pvs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">all_elements</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/virtac/create_csv.html#generate_feedback_pvs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtac.create_csv.generate_feedback_pvs" title="Link to this definition">#</a></dt>
-<dd><p>Get feedback pvs. Also get families for tune feedback</p>
+<span class="sig-prename descclassname"><span class="pre">virtac.create_csv.</span></span><span class="sig-name descname"><span class="pre">generate_feedback_pvs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">all_elements</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lattice</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/virtac/create_csv.html#generate_feedback_pvs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtac.create_csv.generate_feedback_pvs" title="Link to this definition">#</a></dt>
+<dd><p>Get feedback pvs. Also get families for tune feedback
+:param all_elements: a list of elements
+:type all_elements: list
+:param lattice: The pytac lattice being used by the virtual
+:type lattice: pytac.lattice.Lattice
+:param machine:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Data to be written to csv</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)">tuple</a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="virtac.create_csv.generate_bba_pvs">
-<span class="sig-prename descclassname"><span class="pre">virtac.create_csv.</span></span><span class="sig-name descname"><span class="pre">generate_bba_pvs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">all_elements</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/virtac/create_csv.html#generate_bba_pvs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtac.create_csv.generate_bba_pvs" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">virtac.create_csv.</span></span><span class="sig-name descname"><span class="pre">generate_bba_pvs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">all_elements</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symmetry</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/virtac/create_csv.html#generate_bba_pvs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtac.create_csv.generate_bba_pvs" title="Link to this definition">#</a></dt>
 <dd><p>Data to be written is stored as a list of tuples each with structure:
-element index (int), field (str), pv (str), value (int).</p>
+element index (int), field (str), pv (str), value (int), record_type (str).</p>
 </dd></dl>
 
 <dl class="py function">
