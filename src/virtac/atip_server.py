@@ -1,4 +1,5 @@
 import csv
+import logging
 from warnings import warn
 
 import numpy
@@ -168,13 +169,14 @@ class ATIPServer:
         """
         limits_dict = {}
         if limits_csv is not None:
-            csv_reader = csv.DictReader(open(limits_csv))
-            for line in csv_reader:
-                limits_dict[line["pv"]] = (
-                    float(line["upper"]),
-                    float(line["lower"]),
-                    int(line["precision"]),
-                )
+            with open(limits_csv) as f:
+                csv_reader = csv.DictReader(f)
+                for line in csv_reader:
+                    limits_dict[line["pv"]] = (
+                        float(line["upper"]),
+                        float(line["lower"]),
+                        int(line["precision"]),
+                    )
         bend_in_record = None
         for element in self.lattice:
             if element.type_.upper() == "BEND":
@@ -284,7 +286,7 @@ class ATIPServer:
             value (number): The value that has just been set to the record.
             name (str): The name of record object that has just been set to.
         """
-        # logging.debug(f"Read value {value} on pv {name}")
+        logging.debug(f"Read value {value} on pv {name}")
         in_record = self._out_records[self.all_record_names[name]]
         in_record.set(value)
         index, field = self._in_records[in_record]
@@ -314,32 +316,31 @@ class ATIPServer:
         """
         # We don't set limits or precision but this shouldn't be an issue as these
         # records aren't really intended to be set to by a user.
-        csv_reader = csv.DictReader(open(bba_csv))
-        for line in csv_reader:
-            prefix, suffix = line["pv"].split(":", 1)
-            builder.SetDeviceName(prefix)
-            if line["record_type"] == "ai":
-                record = builder.aIn(
-                    suffix, initial_value=int(line["value"]), MDEL="-1"
-                )
-                self._bba_records[(int(line["index"]), line["field"])] = record
-            elif line["record_type"] == "ao":
-                record = builder.aOut(
-                    suffix, initial_value=int(line["value"]), always_update=True
-                )
-                self._bba_records[(int(line["index"]), line["field"])] = record
-            elif line["record_type"] == "wfm":
-                record = builder.WaveformOut(
-                    suffix,
-                    # We remove the [] around the string
-                    initial_value=numpy.fromstring(
-                        (line["value"])[1:-1], dtype=int, sep=" "
-                    ),
-                    always_update=True,
-                )
-                self._bba_records[(int(line["index"]), line["field"])] = record
-            else:
-                raise ValueError
+        with open(bba_csv) as f:
+            csv_reader = csv.DictReader(f)
+            for line in csv_reader:
+                prefix, suffix = line["pv"].split(":", 1)
+                builder.SetDeviceName(prefix)
+                if line["record_type"] == "ai":
+                    record = builder.aIn(
+                        suffix, initial_value=int(line["value"]), MDEL="-1"
+                    )
+                    self._bba_records[(int(line["index"]), line["field"])] = record
+                elif line["record_type"] == "ao":
+                    record = builder.aOut(
+                        suffix, initial_value=int(line["value"]), always_update=True
+                    )
+                    self._bba_records[(int(line["index"]), line["field"])] = record
+                elif line["record_type"] == "wfm":
+                    record = builder.WaveformOut(
+                        suffix,
+                        # We remove the [] around the string
+                        initial_value=numpy.fromstring((line["value"])[1:-1], sep=" "),
+                        always_update=True,
+                    )
+                    self._bba_records[(int(line["index"]), line["field"])] = record
+                else:
+                    raise ValueError
 
     def _create_feedback_records(self, feedback_csv, disable_emittance):
         """Create all the feedback records from the .csv file at the location
@@ -354,49 +355,50 @@ class ATIPServer:
         """
         # We don't set limits or precision but this shouldn't be an issue as these
         # records aren't really intended to be set to by a user.
-        csv_reader = csv.DictReader(open(feedback_csv))
-        for line in csv_reader:
-            prefix, suffix = line["pv"].split(":", 1)
-            builder.SetDeviceName(prefix)
-            if line["record_type"] == "ai":
-                record = builder.aIn(
-                    suffix, initial_value=int(line["value"]), MDEL="-1"
-                )
-                self._feedback_records[(int(line["index"]), line["field"])] = record
-            elif line["record_type"] == "ao":
-                record = builder.aOut(
-                    suffix, initial_value=int(line["value"]), always_update=True
-                )
-                self._feedback_records[(int(line["index"]), line["field"])] = record
-            elif line["record_type"] == "wfm":
-                record = builder.WaveformOut(
-                    suffix, initial_value=int(line["value"]), always_update=True
-                )
-                self._feedback_records[(int(line["index"]), line["field"])] = record
-            else:
-                raise ValueError
-        # Special case: BPM ID for the x axis of beam position plot, since we
-        # cannot currently create Waveform records via CSV.
-        bpm_ids = [
-            int(pv[2:4]) + 0.1 * int(pv[14:16])
-            for pv in self.lattice.get_element_pv_names("BPM", "x", pytac.RB)
-        ]
-        builder.SetDeviceName("SR-DI-EBPM-01")
-        bpm_id_record = builder.Waveform(
-            "BPMID", NELM=len(bpm_ids), initial_value=bpm_ids
-        )
-        self._feedback_records[(0, "bpm_id")] = bpm_id_record
-
-        # We can choose to not calculate emittance as it is not always required,
-        # which decreases computation time.
-        if not disable_emittance:
-            # Special case: EMIT STATUS for the vertical emittance feedback, since
-            # we cannot currently create mbbIn records via CSV.
-            builder.SetDeviceName("SR-DI-EMIT-01")
-            emit_status_record = builder.mbbIn(
-                "STATUS", initial_value=0, ZRVL=0, ZRST="Successful", PINI="YES"
+        with open(feedback_csv) as f:
+            csv_reader = csv.DictReader(f)
+            for line in csv_reader:
+                prefix, suffix = line["pv"].split(":", 1)
+                builder.SetDeviceName(prefix)
+                if line["record_type"] == "ai":
+                    record = builder.aIn(
+                        suffix, initial_value=int(line["value"]), MDEL="-1"
+                    )
+                    self._feedback_records[(int(line["index"]), line["field"])] = record
+                elif line["record_type"] == "ao":
+                    record = builder.aOut(
+                        suffix, initial_value=int(line["value"]), always_update=True
+                    )
+                    self._feedback_records[(int(line["index"]), line["field"])] = record
+                elif line["record_type"] == "wfm":
+                    record = builder.WaveformOut(
+                        suffix, initial_value=int(line["value"]), always_update=True
+                    )
+                    self._feedback_records[(int(line["index"]), line["field"])] = record
+                else:
+                    raise ValueError
+            # Special case: BPM ID for the x axis of beam position plot, since we
+            # cannot currently create Waveform records via CSV.
+            bpm_ids = [
+                int(pv[2:4]) + 0.1 * int(pv[14:16])
+                for pv in self.lattice.get_element_pv_names("BPM", "x", pytac.RB)
+            ]
+            builder.SetDeviceName("SR-DI-EBPM-01")
+            bpm_id_record = builder.Waveform(
+                "BPMID", NELM=len(bpm_ids), initial_value=bpm_ids
             )
-            self._feedback_records[(0, "emittance_status")] = emit_status_record
+            self._feedback_records[(0, "bpm_id")] = bpm_id_record
+
+            # We can choose to not calculate emittance as it is not always required,
+            # which decreases computation time.
+            if not disable_emittance:
+                # Special case: EMIT STATUS for the vertical emittance feedback, since
+                # we cannot currently create mbbIn records via CSV.
+                builder.SetDeviceName("SR-DI-EMIT-01")
+                emit_status_record = builder.mbbIn(
+                    "STATUS", initial_value=0, ZRVL=0, ZRST="Successful", PINI="YES"
+                )
+                self._feedback_records[(0, "emittance_status")] = emit_status_record
 
     def _create_mirror_records(self, mirror_csv):
         """Create all the mirror records from the .csv file at the location
@@ -406,80 +408,84 @@ class ATIPServer:
             mirror_csv (str): The filepath to the .csv file to load the
                                     records in accordance with.
         """
-        csv_reader = csv.DictReader(open(mirror_csv))
-        for line in csv_reader:
-            # Parse arguments.
-            input_pvs = line["in"].split(", ")
-            if (len(input_pvs) > 1) and (
-                line["mirror type"] in ["basic", "inverse", "refresh"]
-            ):
-                raise IndexError(
-                    "Transformation, refresher, and basic mirror "
-                    "types take only one input PV."
-                )
-            elif (len(input_pvs) < 2) and (
-                line["mirror type"] in ["collate", "summate"]
-            ):
-                raise IndexError(
-                    "collation and summation mirror types take at least two input PVs."
-                )
-            monitor = input_pvs  # need to update to support camonitor multiple
-            # Convert input pvs to record objects
-            input_records = []
-            for pv in input_pvs:
-                try:
-                    input_records.append(self.all_record_names[pv])
-                except KeyError:
-                    input_records.append(caget_mask(pv))
-            # Create output record.
-            prefix, suffix = line["out"].split(":", 1)
-            builder.SetDeviceName(prefix)
-            if line["mirror type"] == "refresh":
-                # Refresh records come first as do not require an output record
-                pass
-            elif line["output type"] == "caput":
-                output_record = caput_mask(line["out"])
-            elif line["output type"] == "aIn":
-                value = float(line["value"])
-                output_record = builder.aIn(suffix, initial_value=value, MDEL="-1")
-            elif line["output type"] == "longIn":
-                value = int(line["value"])
-                output_record = builder.longIn(suffix, initial_value=value, MDEL="-1")
-            elif line["output type"] == "Waveform":
-                value = numpy.asarray(line["value"][1:-1].split(", "), dtype=float)
-                output_record = builder.Waveform(suffix, initial_value=value)
-            else:
-                raise TypeError(
-                    f"{line['output type']} isn't a supported mirroring output type;"
-                    "please enter 'caput', 'aIn', 'longIn', or 'Waveform'."
-                )
-            # Update the mirror dictionary.
-            for pv in monitor:
-                if pv not in self._mirrored_records:
-                    self._mirrored_records[pv] = []
-            if line["mirror type"] == "basic":
-                self._mirrored_records[monitor[0]].append(output_record)
-            elif line["mirror type"] == "inverse":
-                # Other transformation types are not yet supported.
-                transformation = transform(numpy.invert, output_record)
-                self._mirrored_records[monitor[0]].append(transformation)
-            elif line["mirror type"] == "summate":
-                summation_object = summate(input_records, output_record)
+        with open(mirror_csv) as f:
+            csv_reader = csv.DictReader(f)
+            for line in csv_reader:
+                # Parse arguments.
+                input_pvs = line["in"].split(", ")
+                if (len(input_pvs) > 1) and (
+                    line["mirror type"] in ["basic", "inverse", "refresh"]
+                ):
+                    raise IndexError(
+                        "Transformation, refresher, and basic mirror "
+                        "types take only one input PV."
+                    )
+                elif (len(input_pvs) < 2) and (
+                    line["mirror type"] in ["collate", "summate"]
+                ):
+                    raise IndexError(
+                        "collation and summation mirror types take at least two input "
+                        "PVs."
+                    )
+                monitor = input_pvs  # need to update to support camonitor multiple
+                # Convert input pvs to record objects
+                input_records = []
+                for pv in input_pvs:
+                    try:
+                        input_records.append(self.all_record_names[pv])
+                    except KeyError:
+                        input_records.append(caget_mask(pv))
+                # Create output record.
+                prefix, suffix = line["out"].split(":", 1)
+                builder.SetDeviceName(prefix)
+                if line["mirror type"] == "refresh":
+                    # Refresh records come first as do not require an output record
+                    pass
+                elif line["output type"] == "caput":
+                    output_record = caput_mask(line["out"])
+                elif line["output type"] == "aIn":
+                    value = float(line["value"])
+                    output_record = builder.aIn(suffix, initial_value=value, MDEL="-1")
+                elif line["output type"] == "longIn":
+                    value = int(line["value"])
+                    output_record = builder.longIn(
+                        suffix, initial_value=value, MDEL="-1"
+                    )
+                elif line["output type"] == "Waveform":
+                    value = numpy.asarray(line["value"][1:-1].split(", "), dtype=float)
+                    output_record = builder.Waveform(suffix, initial_value=value)
+                else:
+                    raise TypeError(
+                        f"{line['output type']} isn't a supported mirroring output "
+                        "type; please enter 'caput', 'aIn', 'longIn', or 'Waveform'."
+                    )
+                # Update the mirror dictionary.
                 for pv in monitor:
-                    self._mirrored_records[pv].append(summation_object)
-            elif line["mirror type"] == "collate":
-                collation_object = collate(input_records, output_record)
-                for pv in monitor:
-                    self._mirrored_records[pv].append(collation_object)
-            elif line["mirror type"] == "refresh":
-                refresh_object = refresher(self, line["out"])
-                self._mirrored_records[pv].append(refresh_object)
-            else:
-                raise TypeError(
-                    f"{line['mirror type']} is not a valid mirror type; please enter a "
-                    "a currently supported type from: 'basic', 'summate', 'collate', "
-                    "'inverse', and 'refresh'."
-                )
+                    if pv not in self._mirrored_records:
+                        self._mirrored_records[pv] = []
+                if line["mirror type"] == "basic":
+                    self._mirrored_records[monitor[0]].append(output_record)
+                elif line["mirror type"] == "inverse":
+                    # Other transformation types are not yet supported.
+                    transformation = transform(numpy.invert, output_record)
+                    self._mirrored_records[monitor[0]].append(transformation)
+                elif line["mirror type"] == "summate":
+                    summation_object = summate(input_records, output_record)
+                    for pv in monitor:
+                        self._mirrored_records[pv].append(summation_object)
+                elif line["mirror type"] == "collate":
+                    collation_object = collate(input_records, output_record)
+                    for pv in monitor:
+                        self._mirrored_records[pv].append(collation_object)
+                elif line["mirror type"] == "refresh":
+                    refresh_object = refresher(self, line["out"])
+                    self._mirrored_records[pv].append(refresh_object)
+                else:
+                    raise TypeError(
+                        f"{line['mirror type']} is not a valid mirror type; please "
+                        "enter a currently supported type from: 'basic', 'summate', "
+                        "'collate', 'inverse', and 'refresh'."
+                    )
 
     def monitor_mirrored_pvs(self):
         """Start monitoring the input PVs for mirrored records, so that they
