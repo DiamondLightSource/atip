@@ -98,7 +98,7 @@ def generate_bba_pvs(all_elements, symmetry):
         data.append((elem.index, "bba_offset_y", pv_stem + ":CF:BBA_Y_S", 0, "ao"))
     for cell in range(1, symmetry + 1):
         padded_cell = str(cell).zfill(2)
-        pv_stem = f"SR{cell}A-CS-FOFB-01"
+        pv_stem = f"SR{padded_cell}A-CS-FOFB-01"
         # Waveform records
         data.append(
             (

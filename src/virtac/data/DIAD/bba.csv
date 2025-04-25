@@ -1,55 +1,55 @@
 index,field,pv,value,record_type
-1,cell_01_excite_amps,SR1A-CS-FOFB-01:EXCITE:AMPS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
-1,cell_01_excite_deltas,SR1A-CS-FOFB-01:EXCITE:DELTAS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
-1,cell_01_excite_prime,SR1A-CS-FOFB-01:EXCITE:PRIME,0,ao
-1,cell_01_excite_start_times,SR1A-CS-FOFB-01:EXCITE:START_TIMES,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
-1,cell_01_excite_ticks,SR1A-CS-FOFB-01:EXCITE:TICKS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
-2,cell_02_excite_amps,SR2A-CS-FOFB-01:EXCITE:AMPS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
-2,cell_02_excite_deltas,SR2A-CS-FOFB-01:EXCITE:DELTAS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
-2,cell_02_excite_prime,SR2A-CS-FOFB-01:EXCITE:PRIME,0,ao
-2,cell_02_excite_start_times,SR2A-CS-FOFB-01:EXCITE:START_TIMES,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
-2,cell_02_excite_ticks,SR2A-CS-FOFB-01:EXCITE:TICKS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
+1,cell_01_excite_amps,SR01A-CS-FOFB-01:EXCITE:AMPS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
+1,cell_01_excite_deltas,SR01A-CS-FOFB-01:EXCITE:DELTAS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
+1,cell_01_excite_prime,SR01A-CS-FOFB-01:EXCITE:PRIME,0,ao
+1,cell_01_excite_start_times,SR01A-CS-FOFB-01:EXCITE:START_TIMES,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
+1,cell_01_excite_ticks,SR01A-CS-FOFB-01:EXCITE:TICKS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
+2,cell_02_excite_amps,SR02A-CS-FOFB-01:EXCITE:AMPS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
+2,cell_02_excite_deltas,SR02A-CS-FOFB-01:EXCITE:DELTAS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
+2,cell_02_excite_prime,SR02A-CS-FOFB-01:EXCITE:PRIME,0,ao
+2,cell_02_excite_start_times,SR02A-CS-FOFB-01:EXCITE:START_TIMES,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
+2,cell_02_excite_ticks,SR02A-CS-FOFB-01:EXCITE:TICKS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
 3,bba_offset_x,SR01C-DI-EBPM-01:CF:BBA_X_S,0,ao
 3,bba_offset_y,SR01C-DI-EBPM-01:CF:BBA_Y_S,0,ao
 3,bcd_offset_x,SR01C-DI-EBPM-01:CF:BCD_X_S,0,ao
 3,bcd_offset_y,SR01C-DI-EBPM-01:CF:BCD_Y_S,0,ao
-3,cell_03_excite_amps,SR3A-CS-FOFB-01:EXCITE:AMPS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
-3,cell_03_excite_deltas,SR3A-CS-FOFB-01:EXCITE:DELTAS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
-3,cell_03_excite_prime,SR3A-CS-FOFB-01:EXCITE:PRIME,0,ao
-3,cell_03_excite_start_times,SR3A-CS-FOFB-01:EXCITE:START_TIMES,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
-3,cell_03_excite_ticks,SR3A-CS-FOFB-01:EXCITE:TICKS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
+3,cell_03_excite_amps,SR03A-CS-FOFB-01:EXCITE:AMPS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
+3,cell_03_excite_deltas,SR03A-CS-FOFB-01:EXCITE:DELTAS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
+3,cell_03_excite_prime,SR03A-CS-FOFB-01:EXCITE:PRIME,0,ao
+3,cell_03_excite_start_times,SR03A-CS-FOFB-01:EXCITE:START_TIMES,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
+3,cell_03_excite_ticks,SR03A-CS-FOFB-01:EXCITE:TICKS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
 3,golden_offset_x,SR01C-DI-EBPM-01:CF:GOLDEN_X_S,0,ao
 3,golden_offset_y,SR01C-DI-EBPM-01:CF:GOLDEN_Y_S,0,ao
-4,cell_04_excite_amps,SR4A-CS-FOFB-01:EXCITE:AMPS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
-4,cell_04_excite_deltas,SR4A-CS-FOFB-01:EXCITE:DELTAS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
-4,cell_04_excite_prime,SR4A-CS-FOFB-01:EXCITE:PRIME,0,ao
-4,cell_04_excite_start_times,SR4A-CS-FOFB-01:EXCITE:START_TIMES,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
-4,cell_04_excite_ticks,SR4A-CS-FOFB-01:EXCITE:TICKS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
-5,cell_05_excite_amps,SR5A-CS-FOFB-01:EXCITE:AMPS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
-5,cell_05_excite_deltas,SR5A-CS-FOFB-01:EXCITE:DELTAS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
-5,cell_05_excite_prime,SR5A-CS-FOFB-01:EXCITE:PRIME,0,ao
-5,cell_05_excite_start_times,SR5A-CS-FOFB-01:EXCITE:START_TIMES,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
-5,cell_05_excite_ticks,SR5A-CS-FOFB-01:EXCITE:TICKS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
-6,cell_06_excite_amps,SR6A-CS-FOFB-01:EXCITE:AMPS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
-6,cell_06_excite_deltas,SR6A-CS-FOFB-01:EXCITE:DELTAS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
-6,cell_06_excite_prime,SR6A-CS-FOFB-01:EXCITE:PRIME,0,ao
-6,cell_06_excite_start_times,SR6A-CS-FOFB-01:EXCITE:START_TIMES,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
-6,cell_06_excite_ticks,SR6A-CS-FOFB-01:EXCITE:TICKS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
-7,cell_07_excite_amps,SR7A-CS-FOFB-01:EXCITE:AMPS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
-7,cell_07_excite_deltas,SR7A-CS-FOFB-01:EXCITE:DELTAS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
-7,cell_07_excite_prime,SR7A-CS-FOFB-01:EXCITE:PRIME,0,ao
-7,cell_07_excite_start_times,SR7A-CS-FOFB-01:EXCITE:START_TIMES,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
-7,cell_07_excite_ticks,SR7A-CS-FOFB-01:EXCITE:TICKS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
-8,cell_08_excite_amps,SR8A-CS-FOFB-01:EXCITE:AMPS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
-8,cell_08_excite_deltas,SR8A-CS-FOFB-01:EXCITE:DELTAS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
-8,cell_08_excite_prime,SR8A-CS-FOFB-01:EXCITE:PRIME,0,ao
-8,cell_08_excite_start_times,SR8A-CS-FOFB-01:EXCITE:START_TIMES,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
-8,cell_08_excite_ticks,SR8A-CS-FOFB-01:EXCITE:TICKS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
-9,cell_09_excite_amps,SR9A-CS-FOFB-01:EXCITE:AMPS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
-9,cell_09_excite_deltas,SR9A-CS-FOFB-01:EXCITE:DELTAS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
-9,cell_09_excite_prime,SR9A-CS-FOFB-01:EXCITE:PRIME,0,ao
-9,cell_09_excite_start_times,SR9A-CS-FOFB-01:EXCITE:START_TIMES,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
-9,cell_09_excite_ticks,SR9A-CS-FOFB-01:EXCITE:TICKS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
+4,cell_04_excite_amps,SR04A-CS-FOFB-01:EXCITE:AMPS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
+4,cell_04_excite_deltas,SR04A-CS-FOFB-01:EXCITE:DELTAS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
+4,cell_04_excite_prime,SR04A-CS-FOFB-01:EXCITE:PRIME,0,ao
+4,cell_04_excite_start_times,SR04A-CS-FOFB-01:EXCITE:START_TIMES,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
+4,cell_04_excite_ticks,SR04A-CS-FOFB-01:EXCITE:TICKS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
+5,cell_05_excite_amps,SR05A-CS-FOFB-01:EXCITE:AMPS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
+5,cell_05_excite_deltas,SR05A-CS-FOFB-01:EXCITE:DELTAS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
+5,cell_05_excite_prime,SR05A-CS-FOFB-01:EXCITE:PRIME,0,ao
+5,cell_05_excite_start_times,SR05A-CS-FOFB-01:EXCITE:START_TIMES,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
+5,cell_05_excite_ticks,SR05A-CS-FOFB-01:EXCITE:TICKS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
+6,cell_06_excite_amps,SR06A-CS-FOFB-01:EXCITE:AMPS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
+6,cell_06_excite_deltas,SR06A-CS-FOFB-01:EXCITE:DELTAS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
+6,cell_06_excite_prime,SR06A-CS-FOFB-01:EXCITE:PRIME,0,ao
+6,cell_06_excite_start_times,SR06A-CS-FOFB-01:EXCITE:START_TIMES,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
+6,cell_06_excite_ticks,SR06A-CS-FOFB-01:EXCITE:TICKS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
+7,cell_07_excite_amps,SR07A-CS-FOFB-01:EXCITE:AMPS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
+7,cell_07_excite_deltas,SR07A-CS-FOFB-01:EXCITE:DELTAS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
+7,cell_07_excite_prime,SR07A-CS-FOFB-01:EXCITE:PRIME,0,ao
+7,cell_07_excite_start_times,SR07A-CS-FOFB-01:EXCITE:START_TIMES,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
+7,cell_07_excite_ticks,SR07A-CS-FOFB-01:EXCITE:TICKS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
+8,cell_08_excite_amps,SR08A-CS-FOFB-01:EXCITE:AMPS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
+8,cell_08_excite_deltas,SR08A-CS-FOFB-01:EXCITE:DELTAS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
+8,cell_08_excite_prime,SR08A-CS-FOFB-01:EXCITE:PRIME,0,ao
+8,cell_08_excite_start_times,SR08A-CS-FOFB-01:EXCITE:START_TIMES,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
+8,cell_08_excite_ticks,SR08A-CS-FOFB-01:EXCITE:TICKS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
+9,cell_09_excite_amps,SR09A-CS-FOFB-01:EXCITE:AMPS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
+9,cell_09_excite_deltas,SR09A-CS-FOFB-01:EXCITE:DELTAS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
+9,cell_09_excite_prime,SR09A-CS-FOFB-01:EXCITE:PRIME,0,ao
+9,cell_09_excite_start_times,SR09A-CS-FOFB-01:EXCITE:START_TIMES,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
+9,cell_09_excite_ticks,SR09A-CS-FOFB-01:EXCITE:TICKS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
 10,cell_10_excite_amps,SR10A-CS-FOFB-01:EXCITE:AMPS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
 10,cell_10_excite_deltas,SR10A-CS-FOFB-01:EXCITE:DELTAS,[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.],wfm
 10,cell_10_excite_prime,SR10A-CS-FOFB-01:EXCITE:PRIME,0,ao
