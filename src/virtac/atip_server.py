@@ -1,5 +1,4 @@
 import csv
-import logging
 from warnings import warn
 
 import numpy
@@ -101,6 +100,7 @@ class ATIPServer:
         self._mirrored_records = {}
         self._monitored_pvs = {}
         self._offset_pvs = {}
+        self._all_records = {}
         print("Starting record creation.")
         await self._create_records(limits_csv, disable_emittance)
         if bba_csv is not None:
@@ -109,7 +109,9 @@ class ATIPServer:
             self._create_feedback_records(feedback_csv, disable_emittance)
         if mirror_csv is not None:
             self._create_mirror_records(mirror_csv)
-        print(f"Finished creating all {len(self.all_record_names)} records.")
+        # Get the final dictionary and save it to this variable for cheaper access
+        self._all_records = self.all_record_names
+        print(f"Finished creating all {len(self._all_records)} records.")
         return self
 
     @property
@@ -286,8 +288,8 @@ class ATIPServer:
             value (number): The value that has just been set to the record.
             name (str): The name of record object that has just been set to.
         """
-        logging.debug(f"Read value {value} on pv {name}")
-        in_record = self._out_records[self.all_record_names[name]]
+        # logging.debug(f"Read value {value} on pv {name}")
+        in_record = self._out_records[self._all_records[name]]
         in_record.set(value)
         index, field = self._in_records[in_record]
         if self.tune_feedback_status is True:
@@ -507,7 +509,7 @@ class ATIPServer:
             pv_name (str): The name of the record to refresh.
         """
         try:
-            record = self.all_record_names[pv_name]
+            record = self._all_records[pv_name]
         except KeyError as exc:
             raise ValueError(
                 f"{pv_name} is not the name of a record created by this server."
