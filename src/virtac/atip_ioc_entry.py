@@ -41,7 +41,7 @@ def parse_arguments():
     parser.add_argument(
         "-v",
         "--verbose",
-        help="Increase output and logging verbosity",
+        help="Increase logging verbosity",
         action="store_true",
     )
     return parser.parse_args()

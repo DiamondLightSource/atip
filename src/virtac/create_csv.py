@@ -361,9 +361,11 @@ def write_data_to_file(data, filename, ring_mode):
     filepath = os.path.join(
         os.path.abspath(os.path.dirname(__file__)), "data", ring_mode, filename
     )
+    column_titles = data[0]
+    sorted_data = sorted(data[1:])
     with open(filepath, "w", newline="") as file:
         csv_writer = csv.writer(file)
-        csv_writer.writerows([data[0]] + sorted(data[1:]))
+        csv_writer.writerows([column_titles] + sorted_data)
 
 
 def parse_arguments():
