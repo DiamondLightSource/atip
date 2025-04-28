@@ -114,9 +114,9 @@ class ATIPServer:
         return self._record_names
 
     def _get_all_record_names(self):
-        """A dictionary with all the names of records created by this server
-        as the keys and the corresponding record (and mirror) objects as the
-        values.
+        """Creates and returns a dictionary with all the names of records
+        created by this server as the keys and the corresponding record
+        (and mirror) objects as the values.
         """
         mirrored = []
         for rec_list in self._mirrored_records.values():
@@ -257,7 +257,7 @@ class ATIPServer:
         """The callback function passed to out records, it is called after
         successful record processing has been completed. It updates the out
         record's corresponding in record with the value that has been set and
-        then sets the value to the centralised Pytac lattice. This functions
+        then sets the value to the Pytac lattice. This functions
         needs to be kept FAST as it can be called quickly by CA clients.
 
         Args:
@@ -415,7 +415,7 @@ class ATIPServer:
             input_records = []
             for pv in input_pvs:
                 try:
-                    input_records.append(self._record_names[pv])
+                    input_records.append(self.record_names[pv])
                 except KeyError:
                     input_records.append(caget_mask(pv))
             # Create output record.
@@ -524,7 +524,7 @@ class ATIPServer:
             self.monitor_mirrored_pvs()
         self.tune_feedback_status = True
         for line in csv_reader:
-            offset_record = self._record_names[line["offset"]]
+            offset_record = self.record_names[line["offset"]]
             self._offset_pvs[line["set pv"]] = offset_record
             mask = callback_offset(self, line["set pv"], offset_record)
             try:
