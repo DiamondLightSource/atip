@@ -248,6 +248,9 @@ class ATIPServer:
                 )
                 self._in_records[in_record] = ([0], field)
                 self._rb_only_records.append(in_record)
+        self._record_names = (
+            self._get_all_record_names()
+        )  # update complete dict with new records
         print("~*~*Woah, we're halfway there, Wo-oah...*~*~")
 
     def _on_update(self, value, name):
@@ -288,6 +291,9 @@ class ATIPServer:
                                     records in accordance with.
         """
         self._bba_records = self._create_feedback_or_bba_records_from_csv(bba_csv)
+        self._record_names = (
+            self._get_all_record_names()
+        )  # update complete dict with new records
 
     def _create_feedback_records(self, feedback_csv, disable_emittance):
         """Create all the feedback records from the .csv file at the location
@@ -315,6 +321,10 @@ class ATIPServer:
                 "STATUS", initial_value=0, ZRVL=0, ZRST="Successful", PINI="YES"
             )
             self._feedback_records[(0, "emittance_status")] = emit_status_record
+
+        self._record_names = (
+            self._get_all_record_names()
+        )  # update complete dict with new records
 
     def _create_feedback_or_bba_records_from_csv(
         self, csv_file
@@ -405,7 +415,7 @@ class ATIPServer:
             input_records = []
             for pv in input_pvs:
                 try:
-                    input_records.append(self._get_all_record_names()[pv])
+                    input_records.append(self._record_names[pv])
                 except KeyError:
                     input_records.append(caget_mask(pv))
             # Create output record.
@@ -457,6 +467,9 @@ class ATIPServer:
                     "a currently supported type from: 'basic', 'summate', 'collate', "
                     "'inverse', and 'refresh'."
                 )
+        self._record_names = (
+            self._get_all_record_names()
+        )  # update complete dict with new records
 
     def monitor_mirrored_pvs(self):
         """Start monitoring the input PVs for mirrored records, so that they
@@ -511,7 +524,7 @@ class ATIPServer:
             self.monitor_mirrored_pvs()
         self.tune_feedback_status = True
         for line in csv_reader:
-            offset_record = self._get_all_record_names()[line["offset"]]
+            offset_record = self._record_names[line["offset"]]
             self._offset_pvs[line["set pv"]] = offset_record
             mask = callback_offset(self, line["set pv"], offset_record)
             try:
@@ -520,6 +533,9 @@ class ATIPServer:
                 )
             except Exception as e:
                 warn(e, stacklevel=1)
+        self._record_names = (
+            self._get_all_record_names()
+        )  # update complete dict with new records
 
     def stop_all_monitoring(self):
         """Stop monitoring mirrored records and tune feedback offsets."""

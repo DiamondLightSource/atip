@@ -53,12 +53,18 @@ def main():
             ring_mode = str(os.environ["RINGMODE"])
         except KeyError:
             try:
-                value = caget("SR-CS-RING-01:MODE", format=2)
+                value = caget("SR-CS-RING-01:MODE", timeout=0.5, format=2)
                 ring_mode = value.enums[int(value)]
+                logging.warning(
+                    f"Ring mode not specified, using value from real "
+                    f"machine as default: {value}"
+                )
             except ca_nothing:
                 ring_mode = "I04"
+                logging.warning(f"Ring mode not specified, using default: {ring_mode}")
 
     # Create PVs.
+    logging.debug("Creating ATIP server")
     server = atip_server.ATIPServer(
         ring_mode,
         DATADIR / ring_mode / "limits.csv",
