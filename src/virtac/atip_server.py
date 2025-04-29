@@ -54,6 +54,9 @@ class ATIPServer:
            _offset_pvs (dict): A dictionary of the PVs to apply offset to and
                                 their associated offset records from which to
                                 get the offset from.
+            _record_names (dict[str: softioc.builder.record]): A dictonary
+                                containing the name of every pv created by the
+                                virtual accelerator and the pv object itself.
     """
 
     def __init__(
@@ -98,6 +101,7 @@ class ATIPServer:
         self._mirrored_records = {}
         self._monitored_pvs = {}
         self._offset_pvs = {}
+        self._record_names = {}
         print("Starting record creation.")
         self._create_records(limits_csv, disable_emittance)
         if bba_csv is not None:
@@ -106,30 +110,11 @@ class ATIPServer:
             self._create_feedback_records(feedback_csv, disable_emittance)
         if mirror_csv is not None:
             self._create_mirror_records(mirror_csv)
-        self._record_names = self._get_all_record_names()
-        print(f"Finished creating all {len(self.record_names)} records.")
+        print(f"Finished creating all {len(self._record_names)} records.")
 
-    @property
-    def record_names(self):
-        return self._record_names
-
-    def _get_all_record_names(self):
-        """Creates and returns a dictionary with all the names of records
-        created by this server as the keys and the corresponding record
-        (and mirror) objects as the values.
-        """
-        mirrored = []
-        for rec_list in self._mirrored_records.values():
-            for record in rec_list:
-                mirrored.append(record)
-        all_records = (
-            list(self._in_records.keys())
-            + list(self._out_records.keys())
-            + list(self._feedback_records.values())
-            + list(self._bba_records.values())
-            + mirrored
-        )
-        return {record.name: record for record in all_records}
+    def _update_record_names(self, records):
+        """Updates _record_names using the supplied list of softioc record objects."""
+        self._record_names |= {record.name: record for record in list(records)}
 
     def update_pvs(self):
         """The callback function passed to ATSimulator during lattice creation,
@@ -248,26 +233,25 @@ class ATIPServer:
                 )
                 self._in_records[in_record] = ([0], field)
                 self._rb_only_records.append(in_record)
-        self._record_names = (
-            self._get_all_record_names()
-        )  # update complete dict with new records
+        self._update_record_names(
+            list(self._in_records.keys()) + list(self._out_records.keys())
+        )
         print("~*~*Woah, we're halfway there, Wo-oah...*~*~")
 
     def _on_update(self, value, name):
         """The callback function passed to out records, it is called after
         successful record processing has been completed. It updates the out
         record's corresponding in record with the value that has been set and
-        then sets the value to the Pytac lattice. This functions
-        needs to be kept FAST as it can be called quickly by CA clients.
+        then sets the value to the Pytac lattice.
+
+        This functions needs to be kept FAST as it can be called rapidly by CA clients.
 
         Args:
             value (number): The value that has just been set to the record.
             name (str): The name of record object that has just been set to.
         """
-        # This debug statement has an overhead and can be removed if it this function
-        # is found to be a bottleneck in the future
-        logging.debug("Read value %i on pv %s", value, name)
-        in_record = self._out_records[self.record_names[name]]
+        logging.debug("Read value %s on pv %s", value, name)
+        in_record = self._out_records[self._record_names[name]]
         in_record.set(value)
         index, field = self._in_records[in_record]
         if self.tune_feedback_status is True:
@@ -291,9 +275,7 @@ class ATIPServer:
                                     records in accordance with.
         """
         self._bba_records = self._create_feedback_or_bba_records_from_csv(bba_csv)
-        self._record_names = (
-            self._get_all_record_names()
-        )  # update complete dict with new records
+        self._update_record_names(self._bba_records.values())
 
     def _create_feedback_records(self, feedback_csv, disable_emittance):
         """Create all the feedback records from the .csv file at the location
@@ -322,9 +304,7 @@ class ATIPServer:
             )
             self._feedback_records[(0, "emittance_status")] = emit_status_record
 
-        self._record_names = (
-            self._get_all_record_names()
-        )  # update complete dict with new records
+        self._update_record_names(self._feedback_records.values())
 
     def _create_feedback_or_bba_records_from_csv(
         self, csv_file
@@ -415,7 +395,7 @@ class ATIPServer:
             input_records = []
             for pv in input_pvs:
                 try:
-                    input_records.append(self.record_names[pv])
+                    input_records.append(self._record_names[pv])
                 except KeyError:
                     input_records.append(caget_mask(pv))
             # Create output record.
@@ -467,9 +447,11 @@ class ATIPServer:
                     "a currently supported type from: 'basic', 'summate', 'collate', "
                     "'inverse', and 'refresh'."
                 )
-        self._record_names = (
-            self._get_all_record_names()
-        )  # update complete dict with new records
+        mirrored_records = []
+        for rec_list in self._mirrored_records.values():
+            for record in rec_list:
+                mirrored_records.append(record)
+        self._update_record_names(mirrored_records)
 
     def monitor_mirrored_pvs(self):
         """Start monitoring the input PVs for mirrored records, so that they
@@ -491,7 +473,7 @@ class ATIPServer:
             pv_name (str): The name of the record to refresh.
         """
         try:
-            record = self.record_names[pv_name]
+            record = self._record_names[pv_name]
         except KeyError as exc:
             raise ValueError(
                 f"{pv_name} is not the name of a record created by this server."
@@ -524,7 +506,7 @@ class ATIPServer:
             self.monitor_mirrored_pvs()
         self.tune_feedback_status = True
         for line in csv_reader:
-            offset_record = self.record_names[line["offset"]]
+            offset_record = self._record_names[line["offset"]]
             self._offset_pvs[line["set pv"]] = offset_record
             mask = callback_offset(self, line["set pv"], offset_record)
             try:
@@ -533,9 +515,6 @@ class ATIPServer:
                 )
             except Exception as e:
                 warn(e, stacklevel=1)
-        self._record_names = (
-            self._get_all_record_names()
-        )  # update complete dict with new records
 
     def stop_all_monitoring(self):
         """Stop monitoring mirrored records and tune feedback offsets."""
