@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>virtac.atip_server &#8212; atip 0.1.1.dev81+gb6946e9 documentation</title>
+    <title>virtac.atip_server &#8212; atip 0.1.1.dev86+ge04c5bd documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=ad9e142a"></script>
+    <script src="../../_static/documentation_options.js?v=7c4a298f"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -500,6 +500,9 @@
 <span class="sd">           _offset_pvs (dict): A dictionary of the PVs to apply offset to and</span>
 <span class="sd">                                their associated offset records from which to</span>
 <span class="sd">                                get the offset from.</span>
+<span class="sd">            _record_names (dict[str: softioc.builder.record]): A dictonary</span>
+<span class="sd">                                containing the name of every pv created by the</span>
+<span class="sd">                                virtual accelerator and the pv object itself.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -544,6 +547,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_mirrored_records</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_monitored_pvs</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_offset_pvs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_record_names</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Starting record creation.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_create_records</span><span class="p">(</span><span class="n">limits_csv</span><span class="p">,</span> <span class="n">disable_emittance</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">bba_csv</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -552,26 +556,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_create_feedback_records</span><span class="p">(</span><span class="n">feedback_csv</span><span class="p">,</span> <span class="n">disable_emittance</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">mirror_csv</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_create_mirror_records</span><span class="p">(</span><span class="n">mirror_csv</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Finished creating all </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_record_names</span><span class="p">)</span><span class="si">}</span><span class="s2"> records.&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Finished creating all </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_record_names</span><span class="p">)</span><span class="si">}</span><span class="s2"> records.&quot;</span><span class="p">)</span>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">all_record_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;A dictionary with all the names of records created by this server</span>
-<span class="sd">        as the keys and the corresponding record (and mirror) objects as the</span>
-<span class="sd">        values.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">mirrored</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">rec_list</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mirrored_records</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-            <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">rec_list</span><span class="p">:</span>
-                <span class="n">mirrored</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
-        <span class="n">all_records</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_in_records</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-            <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_out_records</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-            <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_feedback_records</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
-            <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_bba_records</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
-            <span class="o">+</span> <span class="n">mirrored</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="p">{</span><span class="n">record</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">record</span> <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">all_records</span><span class="p">}</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_record_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">records</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Updates _record_names using the supplied list of softioc record objects.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_record_names</span> <span class="o">|=</span> <span class="p">{</span><span class="n">record</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">record</span> <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">records</span><span class="p">)}</span>
 
 <div class="viewcode-block" id="ATIPServer.update_pvs">
 <a class="viewcode-back" href="../../_api/virtac.atip_server.html#virtac.atip_server.ATIPServer.update_pvs">[docs]</a>
@@ -693,19 +682,25 @@
                 <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_in_records</span><span class="p">[</span><span class="n">in_record</span><span class="p">]</span> <span class="o">=</span> <span class="p">([</span><span class="mi">0</span><span class="p">],</span> <span class="n">field</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_rb_only_records</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">in_record</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_record_names</span><span class="p">(</span>
+            <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_in_records</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_out_records</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;~*~*Woah, we&#39;re halfway there, Wo-oah...*~*~&quot;</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_on_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The callback function passed to out records, it is called after</span>
 <span class="sd">        successful record processing has been completed. It updates the out</span>
 <span class="sd">        record&#39;s corresponding in record with the value that has been set and</span>
-<span class="sd">        then sets the value to the centralised Pytac lattice.</span>
+<span class="sd">        then sets the value to the Pytac lattice.</span>
+
+<span class="sd">        This functions needs to be kept FAST as it can be called rapidly by CA clients.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            value (number): The value that has just been set to the record.</span>
 <span class="sd">            name (str): The name of record object that has just been set to.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">in_record</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_out_records</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">all_record_names</span><span class="p">[</span><span class="n">name</span><span class="p">]]</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Read value </span><span class="si">%s</span><span class="s2"> on pv </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">in_record</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_out_records</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_record_names</span><span class="p">[</span><span class="n">name</span><span class="p">]]</span>
         <span class="n">in_record</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
         <span class="n">index</span><span class="p">,</span> <span class="n">field</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_in_records</span><span class="p">[</span><span class="n">in_record</span><span class="p">]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tune_feedback_status</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
@@ -729,6 +724,7 @@
 <span class="sd">                                    records in accordance with.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_bba_records</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_feedback_or_bba_records_from_csv</span><span class="p">(</span><span class="n">bba_csv</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_record_names</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_bba_records</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_create_feedback_records</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feedback_csv</span><span class="p">,</span> <span class="n">disable_emittance</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create all the feedback records from the .csv file at the location</span>
@@ -756,6 +752,8 @@
                 <span class="s2">&quot;STATUS&quot;</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ZRVL</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ZRST</span><span class="o">=</span><span class="s2">&quot;Successful&quot;</span><span class="p">,</span> <span class="n">PINI</span><span class="o">=</span><span class="s2">&quot;YES&quot;</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_feedback_records</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;emittance_status&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">emit_status_record</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_record_names</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_feedback_records</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_create_feedback_or_bba_records_from_csv</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">csv_file</span>
@@ -846,7 +844,7 @@
             <span class="n">input_records</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">pv</span> <span class="ow">in</span> <span class="n">input_pvs</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
-                    <span class="n">input_records</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_record_names</span><span class="p">[</span><span class="n">pv</span><span class="p">])</span>
+                    <span class="n">input_records</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_record_names</span><span class="p">[</span><span class="n">pv</span><span class="p">])</span>
                 <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
                     <span class="n">input_records</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">caget_mask</span><span class="p">(</span><span class="n">pv</span><span class="p">))</span>
             <span class="c1"># Create output record.</span>
@@ -898,6 +896,11 @@
                     <span class="s2">&quot;a currently supported type from: &#39;basic&#39;, &#39;summate&#39;, &#39;collate&#39;, &quot;</span>
                     <span class="s2">&quot;&#39;inverse&#39;, and &#39;refresh&#39;.&quot;</span>
                 <span class="p">)</span>
+        <span class="n">mirrored_records</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">rec_list</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mirrored_records</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">rec_list</span><span class="p">:</span>
+                <span class="n">mirrored_records</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_record_names</span><span class="p">(</span><span class="n">mirrored_records</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ATIPServer.monitor_mirrored_pvs">
 <a class="viewcode-back" href="../../_api/virtac.atip_server.html#virtac.atip_server.ATIPServer.monitor_mirrored_pvs">[docs]</a>
@@ -924,7 +927,7 @@
 <span class="sd">            pv_name (str): The name of the record to refresh.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">record</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_record_names</span><span class="p">[</span><span class="n">pv_name</span><span class="p">]</span>
+            <span class="n">record</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_record_names</span><span class="p">[</span><span class="n">pv_name</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pv_name</span><span class="si">}</span><span class="s2"> is not the name of a record created by this server.&quot;</span>
@@ -960,7 +963,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">monitor_mirrored_pvs</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tune_feedback_status</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">csv_reader</span><span class="p">:</span>
-            <span class="n">offset_record</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_record_names</span><span class="p">[</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;offset&quot;</span><span class="p">]]</span>
+            <span class="n">offset_record</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_record_names</span><span class="p">[</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;offset&quot;</span><span class="p">]]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_offset_pvs</span><span class="p">[</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;set pv&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">offset_record</span>
             <span class="n">mask</span> <span class="o">=</span> <span class="n">callback_offset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;set pv&quot;</span><span class="p">],</span> <span class="n">offset_record</span><span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>

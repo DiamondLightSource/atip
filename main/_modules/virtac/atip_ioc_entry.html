@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>virtac.atip_ioc_entry &#8212; atip 0.1.1.dev81+gb6946e9 documentation</title>
+    <title>virtac.atip_ioc_entry &#8212; atip 0.1.1.dev86+ge04c5bd documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=ad9e142a"></script>
+    <script src="../../_static/documentation_options.js?v=7c4a298f"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -502,12 +502,18 @@
             <span class="n">ring_mode</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;RINGMODE&quot;</span><span class="p">])</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="n">caget</span><span class="p">(</span><span class="s2">&quot;SR-CS-RING-01:MODE&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">caget</span><span class="p">(</span><span class="s2">&quot;SR-CS-RING-01:MODE&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
                 <span class="n">ring_mode</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">enums</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)]</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Ring mode not specified, using value from real &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;machine as default: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
             <span class="k">except</span> <span class="n">ca_nothing</span><span class="p">:</span>
                 <span class="n">ring_mode</span> <span class="o">=</span> <span class="s2">&quot;I04&quot;</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Ring mode not specified, using default: </span><span class="si">{</span><span class="n">ring_mode</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="c1"># Create PVs.</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating ATIP server&quot;</span><span class="p">)</span>
     <span class="n">server</span> <span class="o">=</span> <span class="n">atip_server</span><span class="o">.</span><span class="n">ATIPServer</span><span class="p">(</span>
         <span class="n">ring_mode</span><span class="p">,</span>
         <span class="n">DATADIR</span> <span class="o">/</span> <span class="n">ring_mode</span> <span class="o">/</span> <span class="s2">&quot;limits.csv&quot;</span><span class="p">,</span>
