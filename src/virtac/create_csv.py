@@ -97,13 +97,13 @@ def generate_bba_pvs(all_elements, symmetry):
         data.append((elem.index, "bba_offset_x", pv_stem + ":CF:BBA_X_S", 0, "ao"))
         data.append((elem.index, "bba_offset_y", pv_stem + ":CF:BBA_Y_S", 0, "ao"))
     for cell in range(1, symmetry + 1):
-        cell = str(cell).zfill(2)
-        pv_stem = f"SR{cell}A-CS-FOFB-01"
+        padded_cell = str(cell).zfill(2)
+        pv_stem = f"SR{padded_cell}A-CS-FOFB-01"
         # Waveform records
         data.append(
             (
                 cell,
-                f"cell_{cell}_excite_start_times",
+                f"cell_{padded_cell}_excite_start_times",
                 f"{pv_stem}:EXCITE:START_TIMES",
                 numpy.zeros(18),
                 "wfm",
@@ -112,7 +112,7 @@ def generate_bba_pvs(all_elements, symmetry):
         data.append(
             (
                 cell,
-                f"cell_{cell}_excite_amps",
+                f"cell_{padded_cell}_excite_amps",
                 f"{pv_stem}:EXCITE:AMPS",
                 numpy.zeros(18),
                 "wfm",
@@ -121,7 +121,7 @@ def generate_bba_pvs(all_elements, symmetry):
         data.append(
             (
                 cell,
-                f"cell_{cell}_excite_deltas",
+                f"cell_{padded_cell}_excite_deltas",
                 f"{pv_stem}:EXCITE:DELTAS",
                 numpy.zeros(18),
                 "wfm",
@@ -130,7 +130,7 @@ def generate_bba_pvs(all_elements, symmetry):
         data.append(
             (
                 cell,
-                f"cell_{cell}_excite_ticks",
+                f"cell_{padded_cell}_excite_ticks",
                 f"{pv_stem}:EXCITE:TICKS",
                 numpy.zeros(18),
                 "wfm",
@@ -140,7 +140,7 @@ def generate_bba_pvs(all_elements, symmetry):
         data.append(
             (
                 cell,
-                f"cell_{cell}_excite_prime",
+                f"cell_{padded_cell}_excite_prime",
                 f"{pv_stem}:EXCITE:PRIME",
                 0,
                 "ao",
@@ -157,13 +157,20 @@ def generate_pv_limits(lattice):
         lattice (pytac.lattice.Lattice): The pytac lattice being used by the virtual
         machine
     """
-    data = [("pv", "upper", "lower", "precision")]
+    data = [("pv", "upper", "lower", "precision", "drive high", "drive low")]
     for element in lattice:
         for field in element.get_fields()[pytac.SIM]:
             pv = element.get_pv_name(field, pytac.RB)
             ctrl = caget(pv, format=FORMAT_CTRL)
             data.append(
-                (pv, ctrl.upper_ctrl_limit, ctrl.lower_ctrl_limit, ctrl.precision)
+                (
+                    pv,
+                    ctrl.upper_ctrl_limit,
+                    ctrl.lower_ctrl_limit,
+                    ctrl.precision,
+                    ctrl.upper_disp_limit,
+                    ctrl.lower_disp_limit,
+                )
             )
             try:
                 pv = element.get_pv_name(field, pytac.SP)
@@ -172,7 +179,14 @@ def generate_pv_limits(lattice):
             else:
                 ctrl = caget(pv, format=FORMAT_CTRL)
                 data.append(
-                    (pv, ctrl.upper_ctrl_limit, ctrl.lower_ctrl_limit, ctrl.precision)
+                    (
+                        pv,
+                        ctrl.upper_ctrl_limit,
+                        ctrl.lower_ctrl_limit,
+                        ctrl.precision,
+                        ctrl.upper_disp_limit,
+                        ctrl.lower_disp_limit,
+                    )
                 )
     return data
 
@@ -347,9 +361,11 @@ def write_data_to_file(data, filename, ring_mode):
     filepath = os.path.join(
         os.path.abspath(os.path.dirname(__file__)), "data", ring_mode, filename
     )
+    column_titles = data[0]
+    sorted_data = sorted(data[1:])
     with open(filepath, "w", newline="") as file:
         csv_writer = csv.writer(file)
-        csv_writer.writerows(data)
+        csv_writer.writerows([column_titles] + sorted_data)
 
 
 def parse_arguments():
@@ -397,13 +413,18 @@ if __name__ == "__main__":
     args = parse_arguments()
     lattice = atip.utils.loader(args.ring_mode)
     all_elements = atip.utils.preload(lattice)
+    print("Creating feedback PVs CSV file.")
     data = generate_feedback_pvs(all_elements, lattice)
     write_data_to_file(data, args.feedback, args.ring_mode)
+    print("Creating BBA PVs CSV file.")
     data = generate_bba_pvs(all_elements, lattice.symmetry)
     write_data_to_file(data, args.bba, args.ring_mode)
+    print("Creating limits PVs CSV file.")
     data = generate_pv_limits(lattice)
     write_data_to_file(data, args.limits, args.ring_mode)
+    print("Creating mirrored PVs CSV file.")
     data = generate_mirrored_pvs(lattice)
     write_data_to_file(data, args.mirrored, args.ring_mode)
+    print("Creating tune PVs CSV file.")
     data = generate_tune_pvs(lattice)
     write_data_to_file(data, args.tune, args.ring_mode)

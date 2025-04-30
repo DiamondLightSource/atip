@@ -20,21 +20,29 @@ DATADIR = Path(__file__).absolute().parent / "data"
 def parse_arguments():
     """Parse command line arguments sent to virtac"""
     parser = argparse.ArgumentParser()
-    parser.add_argument("ring_mode", nargs="?", type=str, help="Ring mode name")
     parser.add_argument(
-        "--disable-emittance",
+        "ring_mode",
+        nargs="?",
+        type=str,
+        help="The ring mode to be used, e.g., IO4 or DIAD",
+    )
+    parser.add_argument(
         "-d",
-        help="disable the simulator's time-consuming emittance calculation",
+        "--disable-emittance",
+        help="Disable the simulator's time-consuming emittance calculation",
         action="store_true",
     )
     parser.add_argument(
-        "--enable-tfb",
         "-t",
-        help="simulate extra dummy hardware to be used by the Tune Feedback system",
+        "--enable-tfb",
+        help="Simulate extra dummy hardware to be used by the Tune Feedback system",
         action="store_true",
     )
     parser.add_argument(
-        "--verbose", "-v", help="increase output verbosity", action="store_true"
+        "-v",
+        "--verbose",
+        help="Increase logging verbosity",
+        action="store_true",
     )
     return parser.parse_args()
 
@@ -72,7 +80,7 @@ def main():
         DATADIR / ring_mode / "feedback.csv",
         DATADIR / ring_mode / "mirrored.csv",
         DATADIR / ring_mode / "tunefb.csv",
-        not args.disable_emittance,
+        args.disable_emittance,
     )
 
     # Warn if set to default EPICS port(s) as this will likely cause PV conflicts.
@@ -114,5 +122,5 @@ def main():
     server.monitor_mirrored_pvs()
     if args.enable_tfb:
         server.setup_tune_feedback()
-
-    softioc.interactive_ioc(globals())
+    context = globals() | {"server": server}
+    softioc.interactive_ioc(context)
