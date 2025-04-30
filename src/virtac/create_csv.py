@@ -8,7 +8,10 @@ import os
 
 import numpy
 import pytac
-from cothread.catools import FORMAT_CTRL, caget
+from aioca import FORMAT_CTRL
+
+# TODO: This will switch to aioca when this file is refactored
+from epics import caget
 
 import atip
 
@@ -198,7 +201,7 @@ def generate_mirrored_pvs(lattice):
         The type of output record to create, only 'aIn', 'longIn',
         'Waveform' types are currently supported; if '' then output to an
         existing in record already created in ATIPServer, 'caput' is also a
-        special case it creates a mask for cothread.catools.caput calling
+        special case it creates a mask for aioca.caput calling
         set(value) on this mask will call caput with the output PV and the
         passed value.
 

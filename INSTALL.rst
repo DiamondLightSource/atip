@@ -31,6 +31,3 @@ Initial Setup and Installation
 
 Troubleshooting
 ---------------
-
-Please note that for ATIP to function with Python 3.7 or later, you must
-use Cothread>=2.16.
