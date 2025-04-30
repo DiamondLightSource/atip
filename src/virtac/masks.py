@@ -1,4 +1,6 @@
-from cothread.catools import caget, caput
+import inspect
+
+from aioca import caget, caput
 
 
 class callback_offset:
@@ -19,7 +21,7 @@ class callback_offset:
         self.quad_pv = quad_pv
         self.offset_record = offset_record
 
-    def callback(self, value, index=None):
+    async def callback(self, value, index=None):
         """When called set the passed value to the held offset record and
         refresh the held quadrupole PV so the new offset is applied.
 
@@ -27,7 +29,7 @@ class callback_offset:
             value (number): The value to set to the offset record.
             index (int): Ignored, only there to support camonitor multiple.
         """
-        self.offset_record.set(value)
+        await self.offset_record.set(value)
         self.server.refresh_record(self.quad_pv)
 
 
@@ -41,7 +43,7 @@ class callback_set:
         """
         self.output = output
 
-    def callback(self, value, index=None):
+    async def callback(self, value, index=None):
         """When called set the passed value to all held output records.
 
         Args:
@@ -49,7 +51,10 @@ class callback_set:
             index (int): Ignored, only there to support camonitor multiple.
         """
         for record in self.output:
-            record.set(value)
+            if inspect.iscoroutinefunction(record.set):
+                await record.set(value)
+            else:
+                record.set(value)
 
 
 class caget_mask:
@@ -63,8 +68,8 @@ class caget_mask:
         self.pv = pv
         self.name = pv
 
-    def get(self):
-        return caget(self.pv)
+    async def get(self):
+        return await caget(self.pv)
 
 
 class caput_mask:
@@ -78,9 +83,9 @@ class caput_mask:
         self.pv = pv
         self.name = pv
 
-    def set(self, value):
+    async def set(self, value):
         """
         Args:
             value (number): The value to caput to the PV.
         """
-        return caput(self.pv, value)
+        return await caput(self.pv, value)
