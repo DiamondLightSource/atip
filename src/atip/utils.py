@@ -29,7 +29,7 @@ def load_at_lattice(mode="I04", **kwargs):
     return at_lattice
 
 
-def loader(
+async def loader(
     mode="I04",
     sim_params=None,
     callback=None,
@@ -51,13 +51,13 @@ def loader(
         pytac.lattice.Lattice: A Pytac lattice object with the simulator data
                                 source loaded.
     """
-    pytac_lattice = pytac.load_csv.load(mode, symmetry=24)
+    pytac_lattice = await pytac.load_csv.load(mode, symmetry=24)
     at_lattice = load_at_lattice(
         mode,
         periodicity=1,
-        energy=pytac_lattice.get_value("energy", units=pytac.PHYS),
+        energy=await pytac_lattice.get_value("energy", units=pytac.PHYS),
     )
-    lattice = atip.load_sim.load(
+    lattice = await atip.load_sim.load(
         pytac_lattice,
         at_lattice,
         sim_params,

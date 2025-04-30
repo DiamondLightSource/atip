@@ -88,7 +88,6 @@ nitpick_ignore = [
     ("py:class", "obj"),
     ("py:class", "class"),
     ("py:class", "at.lattice.lattice_object.Lattice"),
-    ("py:class", "cothread.Event"),
 ]
 
 # Both the class’ and the __init__ method’s docstring are concatenated and
