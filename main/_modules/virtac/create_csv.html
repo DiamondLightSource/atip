@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>virtac.create_csv &#8212; atip 0.1.1.dev86+ge04c5bd documentation</title>
+    <title>virtac.create_csv &#8212; atip 0.1.1.dev95+g8942c3a documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=7c4a298f"></script>
+    <script src="../../_static/documentation_options.js?v=ed1fc45e"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -546,13 +546,13 @@
         <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">elem</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="s2">&quot;bba_offset_x&quot;</span><span class="p">,</span> <span class="n">pv_stem</span> <span class="o">+</span> <span class="s2">&quot;:CF:BBA_X_S&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;ao&quot;</span><span class="p">))</span>
         <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">elem</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="s2">&quot;bba_offset_y&quot;</span><span class="p">,</span> <span class="n">pv_stem</span> <span class="o">+</span> <span class="s2">&quot;:CF:BBA_Y_S&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;ao&quot;</span><span class="p">))</span>
     <span class="k">for</span> <span class="n">cell</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">symmetry</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
-        <span class="n">cell</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">cell</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-        <span class="n">pv_stem</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;SR</span><span class="si">{</span><span class="n">cell</span><span class="si">}</span><span class="s2">A-CS-FOFB-01&quot;</span>
+        <span class="n">padded_cell</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">cell</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">pv_stem</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;SR</span><span class="si">{</span><span class="n">padded_cell</span><span class="si">}</span><span class="s2">A-CS-FOFB-01&quot;</span>
         <span class="c1"># Waveform records</span>
         <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
             <span class="p">(</span>
                 <span class="n">cell</span><span class="p">,</span>
-                <span class="sa">f</span><span class="s2">&quot;cell_</span><span class="si">{</span><span class="n">cell</span><span class="si">}</span><span class="s2">_excite_start_times&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;cell_</span><span class="si">{</span><span class="n">padded_cell</span><span class="si">}</span><span class="s2">_excite_start_times&quot;</span><span class="p">,</span>
                 <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pv_stem</span><span class="si">}</span><span class="s2">:EXCITE:START_TIMES&quot;</span><span class="p">,</span>
                 <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">18</span><span class="p">),</span>
                 <span class="s2">&quot;wfm&quot;</span><span class="p">,</span>
@@ -561,7 +561,7 @@
         <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
             <span class="p">(</span>
                 <span class="n">cell</span><span class="p">,</span>
-                <span class="sa">f</span><span class="s2">&quot;cell_</span><span class="si">{</span><span class="n">cell</span><span class="si">}</span><span class="s2">_excite_amps&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;cell_</span><span class="si">{</span><span class="n">padded_cell</span><span class="si">}</span><span class="s2">_excite_amps&quot;</span><span class="p">,</span>
                 <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pv_stem</span><span class="si">}</span><span class="s2">:EXCITE:AMPS&quot;</span><span class="p">,</span>
                 <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">18</span><span class="p">),</span>
                 <span class="s2">&quot;wfm&quot;</span><span class="p">,</span>
@@ -570,7 +570,7 @@
         <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
             <span class="p">(</span>
                 <span class="n">cell</span><span class="p">,</span>
-                <span class="sa">f</span><span class="s2">&quot;cell_</span><span class="si">{</span><span class="n">cell</span><span class="si">}</span><span class="s2">_excite_deltas&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;cell_</span><span class="si">{</span><span class="n">padded_cell</span><span class="si">}</span><span class="s2">_excite_deltas&quot;</span><span class="p">,</span>
                 <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pv_stem</span><span class="si">}</span><span class="s2">:EXCITE:DELTAS&quot;</span><span class="p">,</span>
                 <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">18</span><span class="p">),</span>
                 <span class="s2">&quot;wfm&quot;</span><span class="p">,</span>
@@ -579,7 +579,7 @@
         <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
             <span class="p">(</span>
                 <span class="n">cell</span><span class="p">,</span>
-                <span class="sa">f</span><span class="s2">&quot;cell_</span><span class="si">{</span><span class="n">cell</span><span class="si">}</span><span class="s2">_excite_ticks&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;cell_</span><span class="si">{</span><span class="n">padded_cell</span><span class="si">}</span><span class="s2">_excite_ticks&quot;</span><span class="p">,</span>
                 <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pv_stem</span><span class="si">}</span><span class="s2">:EXCITE:TICKS&quot;</span><span class="p">,</span>
                 <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">18</span><span class="p">),</span>
                 <span class="s2">&quot;wfm&quot;</span><span class="p">,</span>
@@ -589,7 +589,7 @@
         <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
             <span class="p">(</span>
                 <span class="n">cell</span><span class="p">,</span>
-                <span class="sa">f</span><span class="s2">&quot;cell_</span><span class="si">{</span><span class="n">cell</span><span class="si">}</span><span class="s2">_excite_prime&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;cell_</span><span class="si">{</span><span class="n">padded_cell</span><span class="si">}</span><span class="s2">_excite_prime&quot;</span><span class="p">,</span>
                 <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pv_stem</span><span class="si">}</span><span class="s2">:EXCITE:PRIME&quot;</span><span class="p">,</span>
                 <span class="mi">0</span><span class="p">,</span>
                 <span class="s2">&quot;ao&quot;</span><span class="p">,</span>
@@ -609,13 +609,20 @@
 <span class="sd">        lattice (pytac.lattice.Lattice): The pytac lattice being used by the virtual</span>
 <span class="sd">        machine</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;pv&quot;</span><span class="p">,</span> <span class="s2">&quot;upper&quot;</span><span class="p">,</span> <span class="s2">&quot;lower&quot;</span><span class="p">,</span> <span class="s2">&quot;precision&quot;</span><span class="p">)]</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;pv&quot;</span><span class="p">,</span> <span class="s2">&quot;upper&quot;</span><span class="p">,</span> <span class="s2">&quot;lower&quot;</span><span class="p">,</span> <span class="s2">&quot;precision&quot;</span><span class="p">,</span> <span class="s2">&quot;drive high&quot;</span><span class="p">,</span> <span class="s2">&quot;drive low&quot;</span><span class="p">)]</span>
     <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">lattice</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">element</span><span class="o">.</span><span class="n">get_fields</span><span class="p">()[</span><span class="n">pytac</span><span class="o">.</span><span class="n">SIM</span><span class="p">]:</span>
             <span class="n">pv</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">get_pv_name</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">pytac</span><span class="o">.</span><span class="n">RB</span><span class="p">)</span>
             <span class="n">ctrl</span> <span class="o">=</span> <span class="n">caget</span><span class="p">(</span><span class="n">pv</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="n">FORMAT_CTRL</span><span class="p">)</span>
             <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="p">(</span><span class="n">pv</span><span class="p">,</span> <span class="n">ctrl</span><span class="o">.</span><span class="n">upper_ctrl_limit</span><span class="p">,</span> <span class="n">ctrl</span><span class="o">.</span><span class="n">lower_ctrl_limit</span><span class="p">,</span> <span class="n">ctrl</span><span class="o">.</span><span class="n">precision</span><span class="p">)</span>
+                <span class="p">(</span>
+                    <span class="n">pv</span><span class="p">,</span>
+                    <span class="n">ctrl</span><span class="o">.</span><span class="n">upper_ctrl_limit</span><span class="p">,</span>
+                    <span class="n">ctrl</span><span class="o">.</span><span class="n">lower_ctrl_limit</span><span class="p">,</span>
+                    <span class="n">ctrl</span><span class="o">.</span><span class="n">precision</span><span class="p">,</span>
+                    <span class="n">ctrl</span><span class="o">.</span><span class="n">upper_disp_limit</span><span class="p">,</span>
+                    <span class="n">ctrl</span><span class="o">.</span><span class="n">lower_disp_limit</span><span class="p">,</span>
+                <span class="p">)</span>
             <span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">pv</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">get_pv_name</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">pytac</span><span class="o">.</span><span class="n">SP</span><span class="p">)</span>
@@ -624,7 +631,14 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">ctrl</span> <span class="o">=</span> <span class="n">caget</span><span class="p">(</span><span class="n">pv</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="n">FORMAT_CTRL</span><span class="p">)</span>
                 <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                    <span class="p">(</span><span class="n">pv</span><span class="p">,</span> <span class="n">ctrl</span><span class="o">.</span><span class="n">upper_ctrl_limit</span><span class="p">,</span> <span class="n">ctrl</span><span class="o">.</span><span class="n">lower_ctrl_limit</span><span class="p">,</span> <span class="n">ctrl</span><span class="o">.</span><span class="n">precision</span><span class="p">)</span>
+                    <span class="p">(</span>
+                        <span class="n">pv</span><span class="p">,</span>
+                        <span class="n">ctrl</span><span class="o">.</span><span class="n">upper_ctrl_limit</span><span class="p">,</span>
+                        <span class="n">ctrl</span><span class="o">.</span><span class="n">lower_ctrl_limit</span><span class="p">,</span>
+                        <span class="n">ctrl</span><span class="o">.</span><span class="n">precision</span><span class="p">,</span>
+                        <span class="n">ctrl</span><span class="o">.</span><span class="n">upper_disp_limit</span><span class="p">,</span>
+                        <span class="n">ctrl</span><span class="o">.</span><span class="n">lower_disp_limit</span><span class="p">,</span>
+                    <span class="p">)</span>
                 <span class="p">)</span>
     <span class="k">return</span> <span class="n">data</span></div>
 
@@ -808,9 +822,11 @@
     <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
         <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)),</span> <span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">ring_mode</span><span class="p">,</span> <span class="n">filename</span>
     <span class="p">)</span>
+    <span class="n">column_titles</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">sorted_data</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
         <span class="n">csv_writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
-        <span class="n">csv_writer</span><span class="o">.</span><span class="n">writerows</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+        <span class="n">csv_writer</span><span class="o">.</span><span class="n">writerows</span><span class="p">([</span><span class="n">column_titles</span><span class="p">]</span> <span class="o">+</span> <span class="n">sorted_data</span><span class="p">)</span></div>
 
 
 
@@ -862,14 +878,19 @@
     <span class="n">args</span> <span class="o">=</span> <span class="n">parse_arguments</span><span class="p">()</span>
     <span class="n">lattice</span> <span class="o">=</span> <span class="n">atip</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">loader</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">ring_mode</span><span class="p">)</span>
     <span class="n">all_elements</span> <span class="o">=</span> <span class="n">atip</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">preload</span><span class="p">(</span><span class="n">lattice</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Creating feedback PVs CSV file.&quot;</span><span class="p">)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">generate_feedback_pvs</span><span class="p">(</span><span class="n">all_elements</span><span class="p">,</span> <span class="n">lattice</span><span class="p">)</span>
     <span class="n">write_data_to_file</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">feedback</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">ring_mode</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Creating BBA PVs CSV file.&quot;</span><span class="p">)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">generate_bba_pvs</span><span class="p">(</span><span class="n">all_elements</span><span class="p">,</span> <span class="n">lattice</span><span class="o">.</span><span class="n">symmetry</span><span class="p">)</span>
     <span class="n">write_data_to_file</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">bba</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">ring_mode</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Creating limits PVs CSV file.&quot;</span><span class="p">)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">generate_pv_limits</span><span class="p">(</span><span class="n">lattice</span><span class="p">)</span>
     <span class="n">write_data_to_file</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">limits</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">ring_mode</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Creating mirrored PVs CSV file.&quot;</span><span class="p">)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">generate_mirrored_pvs</span><span class="p">(</span><span class="n">lattice</span><span class="p">)</span>
     <span class="n">write_data_to_file</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">mirrored</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">ring_mode</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Creating tune PVs CSV file.&quot;</span><span class="p">)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">generate_tune_pvs</span><span class="p">(</span><span class="n">lattice</span><span class="p">)</span>
     <span class="n">write_data_to_file</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">tune</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">ring_mode</span><span class="p">)</span>
 </pre></div>

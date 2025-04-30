@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>virtac.atip_server &#8212; atip 0.1.1.dev86+ge04c5bd documentation</title>
+    <title>virtac.atip_server &#8212; atip 0.1.1.dev95+g8942c3a documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=7c4a298f"></script>
+    <script src="../../_static/documentation_options.js?v=ed1fc45e"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -613,6 +613,8 @@
                     <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;upper&quot;</span><span class="p">]),</span>
                     <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;lower&quot;</span><span class="p">]),</span>
                     <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;precision&quot;</span><span class="p">]),</span>
+                    <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;drive high&quot;</span><span class="p">]),</span>
+                    <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;drive low&quot;</span><span class="p">]),</span>
                 <span class="p">)</span>
 
         <span class="n">bend_in_record</span> <span class="o">=</span> <span class="kc">None</span>
@@ -628,8 +630,8 @@
                         <span class="n">field</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="n">pytac</span><span class="o">.</span><span class="n">ENG</span><span class="p">,</span> <span class="n">data_source</span><span class="o">=</span><span class="n">pytac</span><span class="o">.</span><span class="n">SIM</span>
                     <span class="p">)</span>
                     <span class="n">get_pv</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">get_pv_name</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">pytac</span><span class="o">.</span><span class="n">RB</span><span class="p">)</span>
-                    <span class="n">upper</span><span class="p">,</span> <span class="n">lower</span><span class="p">,</span> <span class="n">precision</span> <span class="o">=</span> <span class="n">limits_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                        <span class="n">get_pv</span><span class="p">,</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                    <span class="n">upper</span><span class="p">,</span> <span class="n">lower</span><span class="p">,</span> <span class="n">precision</span><span class="p">,</span> <span class="n">drive_high</span><span class="p">,</span> <span class="n">drive_low</span> <span class="o">=</span> <span class="n">limits_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                        <span class="n">get_pv</span><span class="p">,</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
                     <span class="p">)</span>
                     <span class="n">builder</span><span class="o">.</span><span class="n">SetDeviceName</span><span class="p">(</span><span class="n">get_pv</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
                     <span class="n">in_record</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">aIn</span><span class="p">(</span>
@@ -647,12 +649,14 @@
                     <span class="k">except</span> <span class="n">HandleException</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">_rb_only_records</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">in_record</span><span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="n">upper</span><span class="p">,</span> <span class="n">lower</span><span class="p">,</span> <span class="n">precision</span> <span class="o">=</span> <span class="n">limits_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                            <span class="n">set_pv</span><span class="p">,</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                        <span class="n">upper</span><span class="p">,</span> <span class="n">lower</span><span class="p">,</span> <span class="n">precision</span><span class="p">,</span> <span class="n">drive_high</span><span class="p">,</span> <span class="n">drive_low</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="n">limits_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">set_pv</span><span class="p">,</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
                         <span class="p">)</span>
                         <span class="n">builder</span><span class="o">.</span><span class="n">SetDeviceName</span><span class="p">(</span><span class="n">set_pv</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
                         <span class="n">out_record</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">aOut</span><span class="p">(</span>
                             <span class="n">set_pv</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span>
+                            <span class="n">DRVH</span><span class="o">=</span><span class="n">drive_high</span><span class="p">,</span>
+                            <span class="n">DRVL</span><span class="o">=</span><span class="n">drive_low</span><span class="p">,</span>
                             <span class="n">LOPR</span><span class="o">=</span><span class="n">lower</span><span class="p">,</span>
                             <span class="n">HOPR</span><span class="o">=</span><span class="n">upper</span><span class="p">,</span>
                             <span class="n">PREC</span><span class="o">=</span><span class="n">precision</span><span class="p">,</span>

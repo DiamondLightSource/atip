@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>VIRTAC example &#8212; atip 0.1.1.dev86+ge04c5bd documentation</title>
+    <title>VIRTAC example &#8212; atip 0.1.1.dev95+g8942c3a documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=7c4a298f"></script>
+    <script src="../_static/documentation_options.js?v=ed1fc45e"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -474,8 +474,8 @@ user.</p>
 used by convention at Diamond for simulations) to avoid conflict with the same
 PVs on the live machine.</p>
 </section>
-<section id="start-the-virtual-accelerator">
-<h2>Start the virtual accelerator<a class="headerlink" href="#start-the-virtual-accelerator" title="Link to this heading">#</a></h2>
+<section id="starting-the-virtual-accelerator">
+<h2>Starting the virtual accelerator<a class="headerlink" href="#starting-the-virtual-accelerator" title="Link to this heading">#</a></h2>
 <p>Once ATIP has been installed using pip or by running the docker image:</p>
 <p>Run the virtac under the development EPICS port:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">EPICS_CA_SERVER_PORT</span><span class="o">=</span><span class="m">6064</span>
@@ -509,6 +509,29 @@ $<span class="w"> </span><span class="c1"># or:    . changeports 6064</span>
 </div>
 <p>In this new terminal you are then free to address the simulator as you would
 the live machine, either through Pytac or by directly accessing the PVs.</p>
+</section>
+<section id="command-line-options">
+<h2>Command Line Options:<a class="headerlink" href="#command-line-options" title="Link to this heading">#</a></h2>
+<p>Usage::</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>virtac [-h] [--disable-emittance] [--enable-tfb] [--verbose] [ring_mode]
+</pre></div>
+</div>
+<p>Positional arguments::</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>ring_mode             The ring mode to be used, e.g., IO4 or DIAD
+</pre></div>
+</div>
+<p>Optional arguments::</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>-h, --help            show this help message and exit
+-d, --disable-emittance
+                      Disable the simulator&#39;s time-consuming emittance
+                      calculation
+-t, --enable-tfb      Simulate extra dummy hardware to be used by the Tune
+                      Feedback system
+-v, --verbose         Increase output and logging verbosity
+</pre></div>
+</div>
+<p>N.B. The relatively slow emittance calculation is enabled by default, if the
+virtac isn’t as performant as your would like try disabling it using <code class="docutils literal notranslate"><span class="pre">-d</span></code>.</p>
 </section>
 <section id="feedback-records">
 <h2>Feedback Records:<a class="headerlink" href="#feedback-records" title="Link to this heading">#</a></h2>
@@ -631,7 +654,8 @@ $<span class="w"> </span><span class="c1"># Having none of these set would also 
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#running-atip-as-a-virtual-accelerator-using-python-soft-ioc">Running ATIP as a Virtual Accelerator using Python Soft IOC</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#start-the-virtual-accelerator">Start the virtual accelerator</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starting-the-virtual-accelerator">Starting the virtual accelerator</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#command-line-options">Command Line Options:</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#feedback-records">Feedback Records:</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ring-mode">Ring Mode:</a></li>
 </ul>
