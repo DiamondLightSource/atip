@@ -1,6 +1,7 @@
 """Module containing an interface with the AT simulator."""
 
 import asyncio
+import concurrent
 import logging
 from dataclasses import dataclass
 from warnings import warn
@@ -219,15 +220,20 @@ class ATSimulator:
                 await self._gather_one_sample()
             logging.debug("Recaulculating simulation with new setpoints.")
             if not self._paused.is_set():
-                try:
-                    self._lattice_data = calculate_optics(
-                        self._at_lat, self._rp, self._disable_emittance
-                    )
-                except Exception as e:
-                    # If an error is found while doing the calculations we dont update
-                    # lattice data. TODO: We currently update the pvs anyway but this
-                    # wont do anything, so could be improved
-                    warn(at.AtWarning(e), stacklevel=1)
+                with concurrent.futures.ProcessPoolExecutor() as pool:
+                    try:
+                        self._lattice_data = await self._loop.run_in_executor(
+                            pool,
+                            calculate_optics,
+                            self._at_lat,
+                            self._rp,
+                            self._disable_emittance,
+                        )
+                    except Exception as e:
+                        # If an error is found while doing the calculations we dont
+                        # update lattice data. TODO: We currently update the pvs anyway
+                        # but this wont do anything, so could be improved
+                        warn(at.AtWarning(e), stacklevel=1)
                 # Signal the up to date flag since the physics data is now up to
                 # date. We do this before the callback is executed in case the
                 # callback checks the flag.
