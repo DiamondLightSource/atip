@@ -10,6 +10,9 @@
             "request": "launch",
             "program": "/venv/bin/virtac",
             "console": "integratedTerminal",
+            "args": [
+                "-v"
+            ],
             "env": {
                 "EPICS_CA_SERVER_PORT": "8064",
                 "EPICS_CA_REPEATER_PORT": "8065",
