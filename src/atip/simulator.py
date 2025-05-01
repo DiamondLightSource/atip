@@ -157,6 +157,10 @@ class ATSimulator:
                                         for new changes to the AT
                                         lattice and recalculate the
                                         physics data upon a change.
+            _new_data_lock (asyncio.Lock): A lock which can be taken
+                                        to stop new caput callbacks
+                                        being added to the queue while
+                                        held.
     """
 
     _loop: asyncio.BaseEventLoop
@@ -165,6 +169,7 @@ class ATSimulator:
     _quit_thread: asyncio.Event
     _up_to_date: asyncio.Event
     _calculation_task: asyncio.Task
+    _new_data_lock: asyncio.Lock
 
     @classmethod
     async def create(
@@ -213,6 +218,7 @@ class ATSimulator:
         self._quit_thread = asyncio.Event()
         self._up_to_date = asyncio.Event()
         self._up_to_date.set()
+        self._new_data_lock = asyncio.Lock()
 
         self._calculation_task = asyncio.create_task(
             self._recalculate_phys_data(callback)
@@ -227,11 +233,16 @@ class ATSimulator:
             field (str): The field to be changed.
             value (float): The value to be set.
         """
-        await self._queue.put((func, field, value))
-        # If this flag gets cleared while we are recalculating, then it can cause
-        # everything to lock, so we setup a lock between this function and the
-        # recalculate function
-        logging.debug(f"Added task to async queue. qsize={self._queue.qsize()}")
+        async with self._new_data_lock:
+            # Clear first otherwise it is possible to yield to another thread which will
+            # then think the lattice is up to date with the most recently accepted caput
+            # /lattice.set_value. when it isnt.
+            self._up_to_date.clear()
+            await self._queue.put((func, field, value))
+            # If this flag gets cleared while we are recalculating, then it can cause
+            # everything to lock, so we setup a lock between this function and the
+            # recalculate function
+            logging.debug(f"Added task to async queue. qsize={self._queue.qsize()}")
 
     async def _gather_one_sample(self):
         """If the queue is empty Wait() yields until an item is added. When the
@@ -287,37 +298,42 @@ class ATSimulator:
                 await self._gather_one_sample()
             logging.debug("Recaulculating simulation with new setpoints.")
             if not self._paused.is_set():
-                with concurrent.futures.ProcessPoolExecutor() as pool:
-                    try:
-                        self._lattice_data = await self._loop.run_in_executor(
-                            pool,
-                            calculate_optics,
-                            self._at_lat,
-                            self._rp,
-                            self._sim_params,
+                async with self._new_data_lock:
+                    with concurrent.futures.ProcessPoolExecutor() as pool:
+                        try:
+                            self._lattice_data = await self._loop.run_in_executor(
+                                pool,
+                                calculate_optics,
+                                self._at_lat,
+                                self._rp,
+                                self._sim_params,
+                            )
+                        except Exception as e:
+                            # If an error is found while doing the calculations we dont
+                            # update lattice data. TODO: We currently update the pvs
+                            # anyway but this wont do anything, so could be improved
+                            warn(at.AtWarning(e), stacklevel=1)
+                            logging.warning(
+                                "PVs will not be updated due to simulation exception"
+                            )
+                            continue
+                    # Signal the up to date flag since the physics data is now up to
+                    # date. We do this before the callback is executed in case the
+                    # callback checks the flag.
+                    self._up_to_date.set()
+                    logging.debug("Simulation up to date.")
+                    if callback is not None:
+                        logging.debug(
+                            f"Executing callback function: {callback.__name__}"
                         )
-                    except Exception as e:
-                        # If an error is found while doing the calculations we dont update
-                        # lattice data. TODO: We currently update the pvs anyway but this
-                        # wont do anything, so could be improved
-                        warn(at.AtWarning(e), stacklevel=1)
-                        logging.warning(
-                            "PVs will not be updated due to simulation exception"
-                        )
-                        continue
-                # Signal the up to date flag since the physics data is now up to
-                # date. We do this before the callback is executed in case the
-                # callback checks the flag.
-                self._up_to_date.set()
-                logging.debug("Simulation up to date.")
-                if callback is not None:
-                    logging.debug(f"Executing callback function: {callback.__name__}")
-                    await callback()
-                    logging.debug("Callback completed.")
-                # After this point we assume new setpoints have made the data stale. We
-                # cant clear this flag in queue_set() as the callbacks can depend on
-                # this being set.
-                self._up_to_date.clear()
+                        # For Virtac this function calls update_pvs() which gets data
+                        # from the pytac datasource to update the softioc pvs with. The
+                        # data source is sim_data_sources.py and its get_value()
+                        # function waits on the wait_for_calculation() function which
+                        # waits for the up_to_date flag which currently will always be
+                        # set, so this process is pointless.
+                        await callback()
+                        logging.debug("Callback completed.")
 
     def toggle_calculations(self):
         """Pause or unpause the physics calculations by setting or clearing the
