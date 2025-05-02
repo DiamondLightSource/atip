@@ -21,7 +21,7 @@ class callback_offset:
         self.quad_pv = quad_pv
         self.offset_record = offset_record
 
-    async def callback(self, value, index=None):
+    def callback(self, value, index=None):
         """When called set the passed value to the held offset record and
         refresh the held quadrupole PV so the new offset is applied.
 
@@ -29,7 +29,7 @@ class callback_offset:
             value (number): The value to set to the offset record.
             index (int): Ignored, only there to support camonitor multiple.
         """
-        await self.offset_record.set(value)
+        self.offset_record.set(value)
         self.server.refresh_record(self.quad_pv)
 
 
