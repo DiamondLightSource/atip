@@ -1,4 +1,6 @@
-from cothread.catools import caget, caput
+import inspect
+
+from aioca import caget, caput
 
 
 class callback_offset:
@@ -41,7 +43,7 @@ class callback_set:
         """
         self.output = output
 
-    def callback(self, value, index=None):
+    async def callback(self, value, index=None):
         """When called set the passed value to all held output records.
 
         Args:
@@ -49,7 +51,10 @@ class callback_set:
             index (int): Ignored, only there to support camonitor multiple.
         """
         for record in self.output:
-            record.set(value)
+            if inspect.iscoroutinefunction(record.set):
+                await record.set(value)
+            else:
+                record.set(value)
 
 
 class caget_mask:
@@ -63,8 +68,8 @@ class caget_mask:
         self.pv = pv
         self.name = pv
 
-    def get(self):
-        return caget(self.pv)
+    async def get(self):
+        return await caget(self.pv)
 
 
 class caput_mask:
@@ -78,9 +83,9 @@ class caput_mask:
         self.pv = pv
         self.name = pv
 
-    def set(self, value):
+    async def set(self, value):
         """
         Args:
             value (number): The value to caput to the PV.
         """
-        return caput(self.pv, value)
+        return await caput(self.pv, value)

@@ -3,12 +3,13 @@ default EPICS port for the live machine not 6064.
 """
 
 import argparse
+import asyncio
 import csv
 import os
 
 import numpy
 import pytac
-from cothread.catools import FORMAT_CTRL, caget
+from aioca import FORMAT_CTRL, caget
 
 import atip
 
@@ -149,7 +150,7 @@ def generate_bba_pvs(all_elements, symmetry):
     return data
 
 
-def generate_pv_limits(lattice):
+async def generate_pv_limits(lattice):
     """Get the control limits and precision values from the live machine for
     all normal PVS.
 
@@ -161,7 +162,7 @@ def generate_pv_limits(lattice):
     for element in lattice:
         for field in element.get_fields()[pytac.SIM]:
             pv = element.get_pv_name(field, pytac.RB)
-            ctrl = caget(pv, format=FORMAT_CTRL)
+            ctrl = await caget(pv, format=FORMAT_CTRL)
             data.append(
                 (
                     pv,
@@ -177,7 +178,7 @@ def generate_pv_limits(lattice):
             except pytac.exceptions.HandleException:
                 pass
             else:
-                ctrl = caget(pv, format=FORMAT_CTRL)
+                ctrl = await caget(pv, format=FORMAT_CTRL)
                 data.append(
                     (
                         pv,
@@ -191,7 +192,7 @@ def generate_pv_limits(lattice):
     return data
 
 
-def generate_mirrored_pvs(lattice):
+async def generate_mirrored_pvs(lattice):
     """Structure of data:
 
     output type:
@@ -230,8 +231,8 @@ def generate_mirrored_pvs(lattice):
     ]
     # Tune PV aliases.
     tune = [
-        lattice.get_value("tune_x", pytac.RB, data_source=pytac.SIM),
-        lattice.get_value("tune_y", pytac.RB, data_source=pytac.SIM),
+        await lattice.get_value("tune_x", pytac.RB, data_source=pytac.SIM),
+        await lattice.get_value("tune_y", pytac.RB, data_source=pytac.SIM),
     ]
     data.append(
         (
@@ -253,8 +254,8 @@ def generate_mirrored_pvs(lattice):
     )
     # Combined emittance and average emittance PVs.
     emit = [
-        lattice.get_value("emittance_x", pytac.RB, data_source=pytac.SIM),
-        lattice.get_value("emittance_y", pytac.RB, data_source=pytac.SIM),
+        await lattice.get_value("emittance_x", pytac.RB, data_source=pytac.SIM),
+        await lattice.get_value("emittance_y", pytac.RB, data_source=pytac.SIM),
     ]
     data.append(
         ("aIn", "basic", "SR-DI-EMIT-01:HEMIT", "SR-DI-EMIT-01:HEMIT_MEAN", emit[0])
@@ -409,9 +410,9 @@ def parse_arguments():
     return parser.parse_args()
 
 
-if __name__ == "__main__":
+async def main():
     args = parse_arguments()
-    lattice = atip.utils.loader(args.ring_mode)
+    lattice = await atip.utils.loader(args.ring_mode)
     all_elements = atip.utils.preload(lattice)
     print("Creating feedback PVs CSV file.")
     data = generate_feedback_pvs(all_elements, lattice)
@@ -420,11 +421,15 @@ if __name__ == "__main__":
     data = generate_bba_pvs(all_elements, lattice.symmetry)
     write_data_to_file(data, args.bba, args.ring_mode)
     print("Creating limits PVs CSV file.")
-    data = generate_pv_limits(lattice)
+    data = await generate_pv_limits(lattice)
     write_data_to_file(data, args.limits, args.ring_mode)
     print("Creating mirrored PVs CSV file.")
-    data = generate_mirrored_pvs(lattice)
+    data = await generate_mirrored_pvs(lattice)
     write_data_to_file(data, args.mirrored, args.ring_mode)
     print("Creating tune PVs CSV file.")
     data = generate_tune_pvs(lattice)
     write_data_to_file(data, args.tune, args.ring_mode)
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
