@@ -200,6 +200,10 @@ class ATSimulator:
                     )
                 except Exception as e:
                     warn(at.AtWarning(e), stacklevel=1)
+                    logging.warning(
+                        "PVs will not be updated due to simulation exception"
+                    )
+                    continue
                 # Signal the up to date flag since the physics data is now up to date.
                 # We do this before the callback is executed in case the callback
                 # checks the flag.
