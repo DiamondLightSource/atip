@@ -61,7 +61,7 @@ def main():
             ring_mode = str(os.environ["RINGMODE"])
         except KeyError:
             try:
-                value = caget("SR-CS-RING-01:MODE", timeout=0.5, format=2)
+                value = caget("SR-CS-RING-01:MODE", timeout=1, format=2)
                 ring_mode = value.enums[int(value)]
                 logging.warning(
                     f"Ring mode not specified, using value from real "
