@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>virtac.atip_server &#8212; atip 0.1.1.dev95+g8942c3a documentation</title>
+    <title>virtac.atip_server &#8212; atip 0.1.1.dev99+gd0317c0 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=ed1fc45e"></script>
+    <script src="../../_static/documentation_options.js?v=1738ba02"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -607,15 +607,16 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">limits_dict</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="n">limits_csv</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">csv_reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">limits_csv</span><span class="p">))</span>
-            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">csv_reader</span><span class="p">:</span>
-                <span class="n">limits_dict</span><span class="p">[</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;pv&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;upper&quot;</span><span class="p">]),</span>
-                    <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;lower&quot;</span><span class="p">]),</span>
-                    <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;precision&quot;</span><span class="p">]),</span>
-                    <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;drive high&quot;</span><span class="p">]),</span>
-                    <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;drive low&quot;</span><span class="p">]),</span>
-                <span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">limits_csv</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">csv_reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">csv_reader</span><span class="p">:</span>
+                    <span class="n">limits_dict</span><span class="p">[</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;pv&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;upper&quot;</span><span class="p">]),</span>
+                        <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;lower&quot;</span><span class="p">]),</span>
+                        <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;precision&quot;</span><span class="p">]),</span>
+                        <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;drive high&quot;</span><span class="p">]),</span>
+                        <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;drive low&quot;</span><span class="p">]),</span>
+                    <span class="p">)</span>
 
         <span class="n">bend_in_record</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lattice</span><span class="p">:</span>
@@ -775,47 +776,51 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># We don&#39;t set limits or precision but this shouldn&#39;t be an issue as these</span>
         <span class="c1"># records aren&#39;t really intended to be set to by a user.</span>
-        <span class="n">csv_reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">csv_file</span><span class="p">))</span>
-        <span class="n">records</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span>
-            <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">builder</span><span class="o">.</span><span class="n">aIn</span> <span class="o">|</span> <span class="n">builder</span><span class="o">.</span><span class="n">aOut</span> <span class="o">|</span> <span class="n">builder</span><span class="o">.</span><span class="n">WaveformOut</span>
-        <span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">csv_reader</span><span class="p">:</span>
-            <span class="n">val</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="n">prefix</span><span class="p">,</span> <span class="n">suffix</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;pv&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-            <span class="n">builder</span><span class="o">.</span><span class="n">SetDeviceName</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="c1"># Waveform records may have values stored as a list such as: [5 1 3]</span>
-                <span class="c1"># Here we convert that into a numpy array for initialising the record</span>
-                <span class="k">if</span> <span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">==</span> <span class="p">(</span><span class="s2">&quot;[&quot;</span><span class="p">,</span> <span class="s2">&quot;]&quot;</span><span class="p">):</span>
-                    <span class="n">val</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">fromstring</span><span class="p">((</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">])[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">val</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">])</span>
-            <span class="k">except</span> <span class="p">(</span><span class="ne">AssertionError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Invalid initial value for </span><span class="si">{</span><span class="n">line</span><span class="p">[</span><span class="s1">&#39;record_type&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> record: &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">line</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
-                <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;record_type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;ai&quot;</span><span class="p">:</span>
-                    <span class="n">record</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">aIn</span><span class="p">(</span><span class="n">suffix</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="n">val</span><span class="p">,</span> <span class="n">MDEL</span><span class="o">=</span><span class="s2">&quot;-1&quot;</span><span class="p">)</span>
-                    <span class="n">records</span><span class="p">[(</span><span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;index&quot;</span><span class="p">]),</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;field&quot;</span><span class="p">])]</span> <span class="o">=</span> <span class="n">record</span>
-                <span class="k">elif</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;record_type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;ao&quot;</span><span class="p">:</span>
-                    <span class="n">record</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">aOut</span><span class="p">(</span><span class="n">suffix</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="n">val</span><span class="p">,</span> <span class="n">always_update</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-                    <span class="n">records</span><span class="p">[(</span><span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;index&quot;</span><span class="p">]),</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;field&quot;</span><span class="p">])]</span> <span class="o">=</span> <span class="n">record</span>
-                <span class="k">elif</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;record_type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;wfm&quot;</span><span class="p">:</span>
-                    <span class="n">record</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">WaveformOut</span><span class="p">(</span>
-                        <span class="n">suffix</span><span class="p">,</span>
-                        <span class="c1"># We remove the [] around the string</span>
-                        <span class="n">initial_value</span><span class="o">=</span><span class="n">val</span><span class="p">,</span>
-                        <span class="n">always_update</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                    <span class="p">)</span>
-                    <span class="n">records</span><span class="p">[(</span><span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;index&quot;</span><span class="p">]),</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;field&quot;</span><span class="p">])]</span> <span class="o">=</span> <span class="n">record</span>
-                <span class="k">else</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">csv_file</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">csv_reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            <span class="n">records</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span>
+                <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">builder</span><span class="o">.</span><span class="n">aIn</span> <span class="o">|</span> <span class="n">builder</span><span class="o">.</span><span class="n">aOut</span> <span class="o">|</span> <span class="n">builder</span><span class="o">.</span><span class="n">WaveformOut</span>
+            <span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">csv_reader</span><span class="p">:</span>
+                <span class="n">val</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">prefix</span><span class="p">,</span> <span class="n">suffix</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;pv&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">builder</span><span class="o">.</span><span class="n">SetDeviceName</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="c1"># Waveform records may have values stored as a list such as: [5 1 3]</span>
+                    <span class="c1"># Here we convert that into a numpy array for initialising the</span>
+                    <span class="c1"># record</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">==</span> <span class="p">(</span><span class="s2">&quot;[&quot;</span><span class="p">,</span> <span class="s2">&quot;]&quot;</span><span class="p">):</span>
+                        <span class="n">val</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">fromstring</span><span class="p">((</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">])[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">val</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">])</span>
+                <span class="k">except</span> <span class="p">(</span><span class="ne">AssertionError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;Failed to create PV from csv file line num &quot;</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">csv_reader</span><span class="o">.</span><span class="n">line_num</span><span class="si">}</span><span class="s2"> invalid record_type: &quot;</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">line</span><span class="p">[</span><span class="s1">&#39;record_type&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
-                    <span class="p">)</span>
+                        <span class="sa">f</span><span class="s2">&quot;Invalid initial value for </span><span class="si">{</span><span class="n">line</span><span class="p">[</span><span class="s1">&#39;record_type&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> record: &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">line</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;record_type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;ai&quot;</span><span class="p">:</span>
+                        <span class="n">record</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">aIn</span><span class="p">(</span><span class="n">suffix</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="n">val</span><span class="p">,</span> <span class="n">MDEL</span><span class="o">=</span><span class="s2">&quot;-1&quot;</span><span class="p">)</span>
+                        <span class="n">records</span><span class="p">[(</span><span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;index&quot;</span><span class="p">]),</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;field&quot;</span><span class="p">])]</span> <span class="o">=</span> <span class="n">record</span>
+                    <span class="k">elif</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;record_type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;ao&quot;</span><span class="p">:</span>
+                        <span class="n">record</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">aOut</span><span class="p">(</span>
+                            <span class="n">suffix</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="n">val</span><span class="p">,</span> <span class="n">always_update</span><span class="o">=</span><span class="kc">True</span>
+                        <span class="p">)</span>
+                        <span class="n">records</span><span class="p">[(</span><span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;index&quot;</span><span class="p">]),</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;field&quot;</span><span class="p">])]</span> <span class="o">=</span> <span class="n">record</span>
+                    <span class="k">elif</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;record_type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;wfm&quot;</span><span class="p">:</span>
+                        <span class="n">record</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">WaveformOut</span><span class="p">(</span>
+                            <span class="n">suffix</span><span class="p">,</span>
+                            <span class="c1"># We remove the [] around the string</span>
+                            <span class="n">initial_value</span><span class="o">=</span><span class="n">val</span><span class="p">,</span>
+                            <span class="n">always_update</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="p">)</span>
+                        <span class="n">records</span><span class="p">[(</span><span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;index&quot;</span><span class="p">]),</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;field&quot;</span><span class="p">])]</span> <span class="o">=</span> <span class="n">record</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;Failed to create PV from csv file line num &quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">csv_reader</span><span class="o">.</span><span class="n">line_num</span><span class="si">}</span><span class="s2"> invalid record_type: &quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">line</span><span class="p">[</span><span class="s1">&#39;record_type&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="p">)</span>
         <span class="k">return</span> <span class="n">records</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_create_mirror_records</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mirror_csv</span><span class="p">):</span>
@@ -826,84 +831,88 @@
 <span class="sd">            mirror_csv (str): The filepath to the .csv file to load the</span>
 <span class="sd">                                    records in accordance with.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">csv_reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">mirror_csv</span><span class="p">))</span>
-        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">csv_reader</span><span class="p">:</span>
-            <span class="c1"># Parse arguments.</span>
-            <span class="n">input_pvs</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;in&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">input_pvs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
-                <span class="n">line</span><span class="p">[</span><span class="s2">&quot;mirror type&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;basic&quot;</span><span class="p">,</span> <span class="s2">&quot;inverse&quot;</span><span class="p">,</span> <span class="s2">&quot;refresh&quot;</span><span class="p">]</span>
-            <span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span>
-                    <span class="s2">&quot;Transformation, refresher, and basic mirror &quot;</span>
-                    <span class="s2">&quot;types take only one input PV.&quot;</span>
-                <span class="p">)</span>
-            <span class="k">elif</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">input_pvs</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
-                <span class="n">line</span><span class="p">[</span><span class="s2">&quot;mirror type&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;collate&quot;</span><span class="p">,</span> <span class="s2">&quot;summate&quot;</span><span class="p">]</span>
-            <span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span>
-                    <span class="s2">&quot;collation and summation mirror types take at least two input PVs.&quot;</span>
-                <span class="p">)</span>
-            <span class="n">monitor</span> <span class="o">=</span> <span class="n">input_pvs</span>  <span class="c1"># need to update to support camonitor multiple</span>
-            <span class="c1"># Convert input pvs to record objects</span>
-            <span class="n">input_records</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="k">for</span> <span class="n">pv</span> <span class="ow">in</span> <span class="n">input_pvs</span><span class="p">:</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="n">input_records</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_record_names</span><span class="p">[</span><span class="n">pv</span><span class="p">])</span>
-                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-                    <span class="n">input_records</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">caget_mask</span><span class="p">(</span><span class="n">pv</span><span class="p">))</span>
-            <span class="c1"># Create output record.</span>
-            <span class="n">prefix</span><span class="p">,</span> <span class="n">suffix</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;out&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-            <span class="n">builder</span><span class="o">.</span><span class="n">SetDeviceName</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;mirror type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;refresh&quot;</span><span class="p">:</span>
-                <span class="c1"># Refresh records come first as do not require an output record</span>
-                <span class="k">pass</span>
-            <span class="k">elif</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;output type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;caput&quot;</span><span class="p">:</span>
-                <span class="n">output_record</span> <span class="o">=</span> <span class="n">caput_mask</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;out&quot;</span><span class="p">])</span>
-            <span class="k">elif</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;output type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;aIn&quot;</span><span class="p">:</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">])</span>
-                <span class="n">output_record</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">aIn</span><span class="p">(</span><span class="n">suffix</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="n">MDEL</span><span class="o">=</span><span class="s2">&quot;-1&quot;</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;output type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;longIn&quot;</span><span class="p">:</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">])</span>
-                <span class="n">output_record</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">longIn</span><span class="p">(</span><span class="n">suffix</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="n">MDEL</span><span class="o">=</span><span class="s2">&quot;-1&quot;</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;output type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Waveform&quot;</span><span class="p">:</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-                <span class="n">output_record</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">Waveform</span><span class="p">(</span><span class="n">suffix</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">line</span><span class="p">[</span><span class="s1">&#39;output type&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> isn&#39;t a supported mirroring output type;&quot;</span>
-                    <span class="s2">&quot;please enter &#39;caput&#39;, &#39;aIn&#39;, &#39;longIn&#39;, or &#39;Waveform&#39;.&quot;</span>
-                <span class="p">)</span>
-            <span class="c1"># Update the mirror dictionary.</span>
-            <span class="k">for</span> <span class="n">pv</span> <span class="ow">in</span> <span class="n">monitor</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">pv</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mirrored_records</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_mirrored_records</span><span class="p">[</span><span class="n">pv</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;mirror type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;basic&quot;</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_mirrored_records</span><span class="p">[</span><span class="n">monitor</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">output_record</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;mirror type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;inverse&quot;</span><span class="p">:</span>
-                <span class="c1"># Other transformation types are not yet supported.</span>
-                <span class="n">transformation</span> <span class="o">=</span> <span class="n">transform</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">invert</span><span class="p">,</span> <span class="n">output_record</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_mirrored_records</span><span class="p">[</span><span class="n">monitor</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">transformation</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;mirror type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;summate&quot;</span><span class="p">:</span>
-                <span class="n">summation_object</span> <span class="o">=</span> <span class="n">summate</span><span class="p">(</span><span class="n">input_records</span><span class="p">,</span> <span class="n">output_record</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">mirror_csv</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">csv_reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">csv_reader</span><span class="p">:</span>
+                <span class="c1"># Parse arguments.</span>
+                <span class="n">input_pvs</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;in&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">input_pvs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
+                    <span class="n">line</span><span class="p">[</span><span class="s2">&quot;mirror type&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;basic&quot;</span><span class="p">,</span> <span class="s2">&quot;inverse&quot;</span><span class="p">,</span> <span class="s2">&quot;refresh&quot;</span><span class="p">]</span>
+                <span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span>
+                        <span class="s2">&quot;Transformation, refresher, and basic mirror &quot;</span>
+                        <span class="s2">&quot;types take only one input PV.&quot;</span>
+                    <span class="p">)</span>
+                <span class="k">elif</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">input_pvs</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
+                    <span class="n">line</span><span class="p">[</span><span class="s2">&quot;mirror type&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;collate&quot;</span><span class="p">,</span> <span class="s2">&quot;summate&quot;</span><span class="p">]</span>
+                <span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span>
+                        <span class="s2">&quot;collation and summation mirror types take at least two input &quot;</span>
+                        <span class="s2">&quot;PVs.&quot;</span>
+                    <span class="p">)</span>
+                <span class="n">monitor</span> <span class="o">=</span> <span class="n">input_pvs</span>  <span class="c1"># need to update to support camonitor multiple</span>
+                <span class="c1"># Convert input pvs to record objects</span>
+                <span class="n">input_records</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">pv</span> <span class="ow">in</span> <span class="n">input_pvs</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">input_records</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_record_names</span><span class="p">[</span><span class="n">pv</span><span class="p">])</span>
+                    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                        <span class="n">input_records</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">caget_mask</span><span class="p">(</span><span class="n">pv</span><span class="p">))</span>
+                <span class="c1"># Create output record.</span>
+                <span class="n">prefix</span><span class="p">,</span> <span class="n">suffix</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;out&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">builder</span><span class="o">.</span><span class="n">SetDeviceName</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;mirror type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;refresh&quot;</span><span class="p">:</span>
+                    <span class="c1"># Refresh records come first as do not require an output record</span>
+                    <span class="k">pass</span>
+                <span class="k">elif</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;output type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;caput&quot;</span><span class="p">:</span>
+                    <span class="n">output_record</span> <span class="o">=</span> <span class="n">caput_mask</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;out&quot;</span><span class="p">])</span>
+                <span class="k">elif</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;output type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;aIn&quot;</span><span class="p">:</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">])</span>
+                    <span class="n">output_record</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">aIn</span><span class="p">(</span><span class="n">suffix</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="n">MDEL</span><span class="o">=</span><span class="s2">&quot;-1&quot;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;output type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;longIn&quot;</span><span class="p">:</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">])</span>
+                    <span class="n">output_record</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">longIn</span><span class="p">(</span>
+                        <span class="n">suffix</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="n">MDEL</span><span class="o">=</span><span class="s2">&quot;-1&quot;</span>
+                    <span class="p">)</span>
+                <span class="k">elif</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;output type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Waveform&quot;</span><span class="p">:</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+                    <span class="n">output_record</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">Waveform</span><span class="p">(</span><span class="n">suffix</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">line</span><span class="p">[</span><span class="s1">&#39;output type&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> isn&#39;t a supported mirroring output &quot;</span>
+                        <span class="s2">&quot;type; please enter &#39;caput&#39;, &#39;aIn&#39;, &#39;longIn&#39;, or &#39;Waveform&#39;.&quot;</span>
+                    <span class="p">)</span>
+                <span class="c1"># Update the mirror dictionary.</span>
                 <span class="k">for</span> <span class="n">pv</span> <span class="ow">in</span> <span class="n">monitor</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_mirrored_records</span><span class="p">[</span><span class="n">pv</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">summation_object</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;mirror type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;collate&quot;</span><span class="p">:</span>
-                <span class="n">collation_object</span> <span class="o">=</span> <span class="n">collate</span><span class="p">(</span><span class="n">input_records</span><span class="p">,</span> <span class="n">output_record</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">pv</span> <span class="ow">in</span> <span class="n">monitor</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_mirrored_records</span><span class="p">[</span><span class="n">pv</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">collation_object</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;mirror type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;refresh&quot;</span><span class="p">:</span>
-                <span class="n">refresh_object</span> <span class="o">=</span> <span class="n">refresher</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;out&quot;</span><span class="p">])</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_mirrored_records</span><span class="p">[</span><span class="n">pv</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">refresh_object</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">line</span><span class="p">[</span><span class="s1">&#39;mirror type&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> is not a valid mirror type; please enter a &quot;</span>
-                    <span class="s2">&quot;a currently supported type from: &#39;basic&#39;, &#39;summate&#39;, &#39;collate&#39;, &quot;</span>
-                    <span class="s2">&quot;&#39;inverse&#39;, and &#39;refresh&#39;.&quot;</span>
-                <span class="p">)</span>
-        <span class="n">mirrored_records</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">rec_list</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mirrored_records</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-            <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">rec_list</span><span class="p">:</span>
-                <span class="n">mirrored_records</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">pv</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mirrored_records</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_mirrored_records</span><span class="p">[</span><span class="n">pv</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;mirror type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;basic&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_mirrored_records</span><span class="p">[</span><span class="n">monitor</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">output_record</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;mirror type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;inverse&quot;</span><span class="p">:</span>
+                    <span class="c1"># Other transformation types are not yet supported.</span>
+                    <span class="n">transformation</span> <span class="o">=</span> <span class="n">transform</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">invert</span><span class="p">,</span> <span class="n">output_record</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_mirrored_records</span><span class="p">[</span><span class="n">monitor</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">transformation</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;mirror type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;summate&quot;</span><span class="p">:</span>
+                    <span class="n">summation_object</span> <span class="o">=</span> <span class="n">summate</span><span class="p">(</span><span class="n">input_records</span><span class="p">,</span> <span class="n">output_record</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">pv</span> <span class="ow">in</span> <span class="n">monitor</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_mirrored_records</span><span class="p">[</span><span class="n">pv</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">summation_object</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;mirror type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;collate&quot;</span><span class="p">:</span>
+                    <span class="n">collation_object</span> <span class="o">=</span> <span class="n">collate</span><span class="p">(</span><span class="n">input_records</span><span class="p">,</span> <span class="n">output_record</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">pv</span> <span class="ow">in</span> <span class="n">monitor</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_mirrored_records</span><span class="p">[</span><span class="n">pv</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">collation_object</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;mirror type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;refresh&quot;</span><span class="p">:</span>
+                    <span class="n">refresh_object</span> <span class="o">=</span> <span class="n">refresher</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;out&quot;</span><span class="p">])</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_mirrored_records</span><span class="p">[</span><span class="n">pv</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">refresh_object</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">line</span><span class="p">[</span><span class="s1">&#39;mirror type&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> is not a valid mirror type; please &quot;</span>
+                        <span class="s2">&quot;enter a currently supported type from: &#39;basic&#39;, &#39;summate&#39;, &quot;</span>
+                        <span class="s2">&quot;&#39;collate&#39;, &#39;inverse&#39;, and &#39;refresh&#39;.&quot;</span>
+                    <span class="p">)</span>
+            <span class="n">mirrored_records</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">rec_list</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mirrored_records</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">rec_list</span><span class="p">:</span>
+                    <span class="n">mirrored_records</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_record_names</span><span class="p">(</span><span class="n">mirrored_records</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ATIPServer.monitor_mirrored_pvs">
@@ -962,20 +971,21 @@
                 <span class="s2">&quot;start-up, please provide one now; i.e. &quot;</span>
                 <span class="s2">&quot;server.start_tune_feedback(&#39;&lt;path_to_csv&gt;&#39;)&quot;</span>
             <span class="p">)</span>
-        <span class="n">csv_reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tune_fb_csv_path</span><span class="p">))</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pv_monitoring</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">monitor_mirrored_pvs</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tune_feedback_status</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">csv_reader</span><span class="p">:</span>
-            <span class="n">offset_record</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_record_names</span><span class="p">[</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;offset&quot;</span><span class="p">]]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_offset_pvs</span><span class="p">[</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;set pv&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">offset_record</span>
-            <span class="n">mask</span> <span class="o">=</span> <span class="n">callback_offset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;set pv&quot;</span><span class="p">],</span> <span class="n">offset_record</span><span class="p">)</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_monitored_pvs</span><span class="p">[</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;delta&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">camonitor</span><span class="p">(</span>
-                    <span class="n">line</span><span class="p">[</span><span class="s2">&quot;delta&quot;</span><span class="p">],</span> <span class="n">mask</span><span class="o">.</span><span class="n">callback</span>
-                <span class="p">)</span>
-            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="n">warn</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tune_fb_csv_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">csv_reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pv_monitoring</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">monitor_mirrored_pvs</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tune_feedback_status</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">csv_reader</span><span class="p">:</span>
+                <span class="n">offset_record</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_record_names</span><span class="p">[</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;offset&quot;</span><span class="p">]]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_offset_pvs</span><span class="p">[</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;set pv&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">offset_record</span>
+                <span class="n">mask</span> <span class="o">=</span> <span class="n">callback_offset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;set pv&quot;</span><span class="p">],</span> <span class="n">offset_record</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_monitored_pvs</span><span class="p">[</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;delta&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">camonitor</span><span class="p">(</span>
+                        <span class="n">line</span><span class="p">[</span><span class="s2">&quot;delta&quot;</span><span class="p">],</span> <span class="n">mask</span><span class="o">.</span><span class="n">callback</span>
+                    <span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">warn</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ATIPServer.stop_all_monitoring">
