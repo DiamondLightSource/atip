@@ -9,6 +9,8 @@ import epicscorelibs.path.cothread  # noqa
 from cothread.catools import ca_nothing, caget
 from softioc import builder, softioc
 
+from atip import __version__
+
 from . import atip_server
 
 LOG_FORMAT = "%(asctime)s %(message)s"
@@ -43,6 +45,11 @@ def parse_arguments():
         "--verbose",
         help="Increase logging verbosity",
         action="store_true",
+    )
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=__version__,
     )
     return parser.parse_args()
 
