@@ -1,5 +1,5 @@
 # Changes here will be overwritten by Copier
-_commit: 2.6.0
+_commit: 4.0.1
 _src_path: gh:DiamondLightSource/python-copier-template
 author_email: tobyn.nicholls@diamond.ac.uk
 author_name: Tobyn Nicholls
@@ -8,7 +8,7 @@ component_owner: group:default/high-level-apps
 component_type: library
 description: Accelerator Toolbox Interface for Pytac
 distribution_name: atip
-docker: false
+docker: true
 docs_type: sphinx
 git_platform: github.com
 github_org: DiamondLightSource
