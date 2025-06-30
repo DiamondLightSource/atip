@@ -14,4 +14,3 @@ API
     :recursive:
 
     atip
-    virtac
