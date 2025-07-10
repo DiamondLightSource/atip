@@ -30,7 +30,7 @@ publishing the same control system interface as the live machine. At Diamond
 Light Source this has been implemented with EPICS, using
 [PythonSoftIOC](<https://github.com/Araneidae/pythonIoc>)
 
-More documentation on how to use the virtual accelerator can be found [here](<https://github.com/DiamondLightSource/atip/tutorials/VIRTAC_example>)
+The diamond virtual accelerator can be found [here](<https://github.com/DiamondLightSource/virtac>)
 
 
 ## Helpful tips:
