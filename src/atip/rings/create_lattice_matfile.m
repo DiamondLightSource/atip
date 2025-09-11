@@ -12,8 +12,12 @@ function create_lattice_matfile(filename)
         if isempty(RING)
             global THERING;
             RING = THERING;
+            disp('Using THERING.');
+        else
+            disp('Using RING.');
         end
     end
+    fprintf('Initial ring has dimensions: %s\n', mat2str(size(RING)))
     if isempty(RING)
         disp('Unable to load a ring from file or global variables.');
         return;
@@ -51,10 +55,10 @@ function create_lattice_matfile(filename)
     while y < length(RING)
         % I should probably transfer the attributes of the deleted corrector
         % elements to the sextupole but cba.
-        if (strcmp(RING{y, 1}.FamName, 'HSTR') && strcmp(RING{y-1, 1}.Class, 'Sextupole'))
-            RING(y, :) = [];  % Delete hstrs that are preceded by a sextupole.
-        elseif (strcmp(RING{y, 1}.FamName, 'VSTR') && strcmp(RING{y-1, 1}.Class, 'Sextupole'))
-            RING(y, :) = [];  % Delete vstrs that are preceded by a sextupole.
+        if strcmp(RING{y, 1}.FamName, 'HSTR') && (strcmp(RING{y-1, 1}.Class, 'Sextupole') || strcmp(RING{y-1, 1}.Class, 'Multipole'))
+            RING(y, :) = [];  % Delete hstrs that are preceded by a sextupole or multipole.
+        elseif strcmp(RING{y, 1}.FamName, 'VSTR') && (strcmp(RING{y-1, 1}.Class, 'Sextupole') || strcmp(RING{y-1, 1}.Class, 'Multipole'))
+            RING(y, :) = [];  % Delete vstrs that are preceded by a sextupole or multipole.
         else
             y = y + 1;
         end
@@ -62,6 +66,8 @@ function create_lattice_matfile(filename)
     if isfield(RING{1, 1}, 'TwissData')
         RING{1, 1} = rmfield(RING{1, 1}, 'TwissData');
     end
+
+    fprintf('Converted ring has dimensions: %s\n', mat2str(size(RING)))
     if nargin == 0
         save('lattice.mat', 'RING');
     else
