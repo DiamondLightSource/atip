@@ -62,25 +62,26 @@ def atlds():
     return atip.sim_data_sources.ATLatticeDataSource(mock.Mock())
 
 
-@pytest.fixture()
-def at_lattice():
-    return atip.utils.load_at_lattice("I04")
+@pytest.fixture(scope="function", params=["I04"])
+def load_at_and_pytac_lattices(request):
+    lattices = []
+    lattices.append(load_csv.load(request.param, cs.ControlSystem()))
+    lattices.append(atip.utils.load_at_lattice(request.param))
+    return lattices
 
 
-@pytest.fixture(scope="session")
-def pytac_lattice():
-    return load_csv.load("DIAD", cs.ControlSystem())
+@pytest.fixture(scope="function", params=["I04"])
+def at_lattice(request):
+    return atip.utils.load_at_lattice(request.param)
 
 
-@pytest.fixture(scope="session")
-def mat_filepath():
+@pytest.fixture(scope="function", params=["DIAD"])
+def get_lattice_filepath(request):
     here = os.path.dirname(__file__)
-    return os.path.realpath(os.path.join(here, "../src/atip/rings/DIAD.mat"))
-
-
-@pytest.fixture(scope="session")
-def at_diad_lattice(mat_filepath):
-    return at.load.load_mat(mat_filepath)
+    filepath = os.path.realpath(
+        os.path.join(here, f"../src/atip/rings/{request.param}.mat")
+    )
+    return filepath
 
 
 @pytest.fixture()
