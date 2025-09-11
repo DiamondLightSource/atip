@@ -70,18 +70,13 @@ def at_and_pytac_lattices(request):
     return lattices
 
 
-@pytest.fixture(scope="function", params=["DIAD"])
-def pytac_lattice(request):
-    return load_csv.load(request.param, cs.ControlSystem())
-
-
-@pytest.fixture(scope="function", params=["HMBA"])
+@pytest.fixture(scope="function", params=["I04"])
 def at_lattice(request):
     return atip.utils.load_at_lattice(request.param)
 
 
 @pytest.fixture(scope="function", params=["DIAD"])
-def lattice_filepath(request):
+def get_lattice_filepath(request):
     here = os.path.dirname(__file__)
     filepath = os.path.realpath(
         os.path.join(here, f"../src/atip/rings/{request.param}.mat")
