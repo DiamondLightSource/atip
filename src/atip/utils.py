@@ -50,7 +50,7 @@ def loader(mode="I04", callback=None, disable_emittance=False):
     at_lattice = load_at_lattice(
         mode,
         periodicity=1,
-        energy=pytac_lattice.get_value("energy"),
+        energy=pytac_lattice.get_value("energy", units=pytac.PHYS),
     )
     lattice = atip.load_sim.load(pytac_lattice, at_lattice, callback, disable_emittance)
     return lattice
