@@ -9,7 +9,7 @@ from atip.sim_data_sources import ATElementDataSource, ATLatticeDataSource
 from atip.simulator import ATSimulator
 
 # List of all the element fields that can be currently simulated.
-SIMULATED_FIELDS = {"a1", "b0", "b1", "b2", "x", "y", "f", "x_kick", "y_kick"}
+SIMULATED_FIELDS = {"a1", "b0", "b1", "b2", "b3", "x", "y", "f", "x_kick", "y_kick"}
 
 
 def load_from_filepath(
@@ -34,6 +34,7 @@ def load_from_filepath(
         name=pytac_lattice.name,
         energy=pytac_lattice.get_value("energy", units=pytac.PHYS),
     )
+    at_lattice.disable_6d()
     return load(pytac_lattice, at_lattice, callback, disable_emittance)
 
 
