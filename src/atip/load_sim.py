@@ -34,6 +34,7 @@ def load_from_filepath(
         name=pytac_lattice.name,
         energy=pytac_lattice.get_value("energy", units=pytac.PHYS),
     )
+    at_lattice.disable_6d()
     return load(pytac_lattice, at_lattice, callback, disable_emittance)
 
 
