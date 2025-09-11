@@ -5,9 +5,23 @@ import pytest
 
 import atip
 
+RINGMODES_TO_TEST = ["I04", "DIAD", "48"]
 
-def test_load_pytac_side(pytac_lattice, at_diad_lattice):
-    lat = atip.load_sim.load(pytac_lattice, at_diad_lattice)
+
+@pytest.mark.parametrize(
+    "at_lattice",
+    RINGMODES_TO_TEST,
+    indirect=True,
+)
+def test_load_atip_lattice(request, at_lattice):
+    assert at_lattice.name == request.node.callspec.params["at_lattice"]
+
+
+@pytest.mark.parametrize("load_at_and_pytac_lattices", RINGMODES_TO_TEST, indirect=True)
+def test_load_pytac_side(load_at_and_pytac_lattices):
+    lat = atip.load_sim.load(
+        load_at_and_pytac_lattices[0], load_at_and_pytac_lattices[1]
+    )
     # Check lattice has simulator data source
     assert pytac.SIM in lat._data_source_manager._data_sources
     # Check all elements have simulator data source
@@ -18,22 +32,31 @@ def test_load_pytac_side(pytac_lattice, at_diad_lattice):
     assert isinstance(lat._data_source_manager._uc["mu"], pytac.units.NullUnitConv)
 
 
-def test_load_from_filepath(pytac_lattice, mat_filepath):
-    atip.load_sim.load_from_filepath(pytac_lattice, mat_filepath)
+@pytest.mark.parametrize(
+    ["pytac_lattice", "get_lattice_filepath"],
+    [(mode, mode) for mode in RINGMODES_TO_TEST],
+    indirect=True,
+)
+def test_load_atip_and_pytac_lattices(pytac_lattice, get_lattice_filepath):
+    atip.load_sim.load_from_filepath(pytac_lattice, get_lattice_filepath)
 
 
-def test_load_with_non_callable_callback_raises_TypeError(
-    pytac_lattice, at_diad_lattice
-):
+@pytest.mark.parametrize("load_at_and_pytac_lattices", RINGMODES_TO_TEST, indirect=True)
+def test_load_with_non_callable_callback_raises_TypeError(load_at_and_pytac_lattices):
     with pytest.raises(TypeError):
-        atip.load_sim.load(pytac_lattice, at_diad_lattice, "")
+        atip.load_sim.load(
+            load_at_and_pytac_lattices[0], load_at_and_pytac_lattices[1], ""
+        )
 
 
-def test_load_with_callback(pytac_lattice, at_diad_lattice):
+@pytest.mark.parametrize("load_at_and_pytac_lattices", RINGMODES_TO_TEST, indirect=True)
+def test_load_with_callback(load_at_and_pytac_lattices):
     callback_func = mock.Mock()
-    lat = atip.load_sim.load(pytac_lattice, at_diad_lattice, callback_func)
+    lat = atip.load_sim.load(
+        load_at_and_pytac_lattices[0], load_at_and_pytac_lattices[1], callback_func
+    )
     atsim = lat._data_source_manager._data_sources[pytac.SIM]._atsim
-    atip.utils.trigger_calc(pytac_lattice)
+    atip.utils.trigger_calc(load_at_and_pytac_lattices[0])
     atsim.wait_for_calculations()
     callback_func.assert_called_once_with()
 
