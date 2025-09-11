@@ -72,6 +72,7 @@ class ATElementDataSource(pytac.data_source.DataSource):
             "a1": partial(self._get_PolynomA, 1),
             "b1": partial(self._get_PolynomB, 1),
             "b2": partial(self._get_PolynomB, 2),
+            "b3": partial(self._get_PolynomB, 3),
             "b0": self._get_BendingAngle,
             "f": self._get_Frequency,
         }
@@ -81,6 +82,7 @@ class ATElementDataSource(pytac.data_source.DataSource):
             "a1": partial(self._set_PolynomA, 1),
             "b1": partial(self._set_PolynomB, 1),
             "b2": partial(self._set_PolynomB, 2),
+            "b3": partial(self._set_PolynomB, 3),
             "b0": self._set_BendingAngle,
             "f": self._set_Frequency,
         }
