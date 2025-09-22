@@ -63,11 +63,16 @@ def atlds():
 
 
 @pytest.fixture(scope="function", params=["I04"])
-def load_at_and_pytac_lattices(request):
+def at_and_pytac_lattices(request):
     lattices = []
     lattices.append(load_csv.load(request.param, cs.ControlSystem()))
     lattices.append(atip.utils.load_at_lattice(request.param))
     return lattices
+
+
+@pytest.fixture(scope="function", params=["DIAD"])
+def pytac_lattice(request):
+    return load_csv.load(request.param, cs.ControlSystem())
 
 
 @pytest.fixture(scope="function", params=["HMBA"])
@@ -76,7 +81,7 @@ def at_lattice(request):
 
 
 @pytest.fixture(scope="function", params=["DIAD"])
-def get_lattice_filepath(request):
+def lattice_filepath(request):
     here = os.path.dirname(__file__)
     filepath = os.path.realpath(
         os.path.join(here, f"../src/atip/rings/{request.param}.mat")
