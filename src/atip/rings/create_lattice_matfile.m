@@ -52,19 +52,19 @@ function create_lattice_matfile(filename)
     % Remove elements. Done this way because the size of THERING changes
     % during the loop.
     y = 1;  
-    while y < length(RING)
-        % I should probably transfer the attributes of the deleted corrector
-        % elements to the sextupole but cba.
-        if strcmp(RING{y, 1}.FamName, 'HSTR') && (strcmp(RING{y-1, 1}.Class, 'Sextupole') || strcmp(RING{y-1, 1}.Class, 'Multipole'))
-            RING(y, :) = [];  % Delete hstrs that are preceded by a sextupole or multipole.
-        elseif strcmp(RING{y, 1}.FamName, 'VSTR') && (strcmp(RING{y-1, 1}.Class, 'Sextupole') || strcmp(RING{y-1, 1}.Class, 'Multipole'))
-            RING(y, :) = [];  % Delete vstrs that are preceded by a sextupole or multipole.
+    while y < length(THERING)
+        % The data within the deleted elements is not needed
+        if strcmp(THERING{y, 1}.FamName, 'HSTR') && THERING{y, 1}.Length == 0 &&(strcmp(THERING{y-1, 1}.Class, 'Sextupole') || strcmp(THERING{y-1, 1}.Class, 'Multipole'))
+            THERING(y, :) = [];  % Delete hstrs that are preceded by a sextupole or multipole.
+        elseif strcmp(THERING{y, 1}.FamName, 'VSTR') && THERING{y, 1}.Length == 0 && (strcmp(THERING{y-1, 1}.Class, 'Sextupole') || strcmp(THERING{y-1, 1}.Class, 'Multipole'))
+            THERING(y, :) = [];  % Delete vstrs that are preceded by a sextupole or multipole.
         else
             y = y + 1;
         end
     end
-    if isfield(RING{1, 1}, 'TwissData')
-        RING{1, 1} = rmfield(RING{1, 1}, 'TwissData');
+
+    if isfield(THERING{1, 1}, 'TwissData')
+        THERING{1, 1} = rmfield(THERING{1, 1}, 'TwissData');
     end
 
     fprintf('Converted THERING has dimensions: %s\n', mat2str(size(THERING)))
