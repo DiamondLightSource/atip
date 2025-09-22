@@ -1,44 +1,46 @@
 function create_lattice_matfile(filename)
 % Creates a .mat file AT lattice compatible with ATIP.
 % If a filename is given that file will be updated to ATIP standard. Otherwise
-% the ring is taken from either of the 'RING' or 'THERING' global variables,
-% with 'RING' taking priority. If a filename is not passed the updated lattice
+% THERING is taken from either of the 'RING' or 'THERING' global variables,
+% with 'THERING' taking priority. If a filename is not passed the updated lattice
 % will be stored in 'lattice.mat'.
     if ~(nargin == 0)
-        load(filename, 'RING');
+        load(filename, 'THERING');
     end
-    if ~exist('RING', 'var')
-        global RING;
-        if isempty(RING)
-            global THERING;
-            RING = THERING;
-            disp('Using THERING.');
+    if ~exist('THERING', 'var')
+        global THERING;
+        if isempty(THERING)
+            global RING;
+            if isempty(RING)
+                disp('Both RING and THERING are empty, try running storageringinit(Ringmode). Exiting with error.');
+                exit(1)
+            else
+                THERING = RING;
+                disp('THERING is empty, using RING.');
+            end
         else
-            disp('Using RING.');
+            disp('Using THERING.');
         end
     end
-    fprintf('Initial ring has dimensions: %s\n', mat2str(size(RING)))
-    if isempty(RING)
-        disp('Unable to load a ring from file or global variables.');
-        return;
-    end
+    fprintf('Initial THERING has dimensions: %s\n', mat2str(size(THERING)))
     % Correct dimension order if necessary.
-    if size(RING, 1) == 1
-        RING = permute(RING, [2 1]);
+    if size(THERING, 1) == 1
+        THERING = permute(THERING, [2 1]);
     end
     % Correct classes and pass methods.
-    for x = 1:length(RING)
-        if strcmp(RING{x, 1}.FamName, 'BPM10')
+    for x = 1:length(THERING)
+        if strcmp(THERING{x, 1}.FamName, 'BPM10')
             % Wouldn't be correctly classed by class guessing otherwise.
-            RING{x, 1}.Class = 'Monitor';
-        elseif (strcmp(RING{x, 1}.FamName, 'HSTR') || strcmp(RING{x, 1}.FamName, 'VSTR'))
-            RING{x, 1}.Class = 'Corrector';
-        elseif (strcmp(RING{x, 1}.FamName, 'HTRIM') || strcmp(RING{x, 1}.FamName, 'VTRIM'))
-            RING{x, 1}.Class = 'Corrector';
+            THERING{x, 1}.Class = 'Monitor';
+        elseif (strcmp(THERING{x, 1}.FamName, 'HSTR') || strcmp(THERING{x, 1}.FamName, 'VSTR'))
+            THERING{x, 1}.Class = 'Corrector';
+        elseif (strcmp(THERING{x, 1}.FamName, 'HTRIM') || strcmp(THERING{x, 1}.FamName, 'VTRIM'))
+            THERING{x, 1}.Class = 'Corrector';
         end
-        if isfield(RING{x, 1}, 'Class')
-            if strcmp(RING{x, 1}.Class, 'SEXT')
-                RING{x, 1}.Class = 'Sextupole';
+
+        if isfield(THERING{x, 1}, 'Class')
+            if strcmp(THERING{x, 1}.Class, 'SEXT')
+                THERING{x, 1}.Class = 'Sextupole';
             end
         end
         if strcmp(RING{x, 1}.PassMethod, 'ThinCorrectorPass')
@@ -49,8 +51,8 @@ function create_lattice_matfile(filename)
         end
     end
 
-    % Remove elements. Done this way because the size of RING changes during
-    % the loop.
+    % Remove elements. Done this way because the size of THERING changes
+    % during the loop.
     y = 1;  
     while y < length(RING)
         % I should probably transfer the attributes of the deleted corrector
@@ -67,10 +69,10 @@ function create_lattice_matfile(filename)
         RING{1, 1} = rmfield(RING{1, 1}, 'TwissData');
     end
 
-    fprintf('Converted ring has dimensions: %s\n', mat2str(size(RING)))
+    fprintf('Converted THERING has dimensions: %s\n', mat2str(size(THERING)))
     if nargin == 0
-        save('lattice.mat', 'RING');
+        save('lattice.mat', 'THERING');
     else
-        save(filename, 'RING');
+        save(filename, 'THERING');
     end
 end
