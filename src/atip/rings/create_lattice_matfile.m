@@ -43,11 +43,9 @@ function create_lattice_matfile(filename)
                 THERING{x, 1}.Class = 'Sextupole';
             end
         end
-        if strcmp(RING{x, 1}.PassMethod, 'ThinCorrectorPass')
-            % ThinCorrectorPass no longer exists in AT.
-            RING{x, 1}.PassMethod = 'CorrectorPass';
-        elseif strcmp(RING{x, 1}.PassMethod, 'GWigSymplecticPass')
-            RING{x, 1}.Class = 'Wiggler';
+
+        if strcmp(THERING{x, 1}.PassMethod, 'GWigSymplecticPass')
+            THERING{x, 1}.Class = 'Wiggler';
         end
     end
 
