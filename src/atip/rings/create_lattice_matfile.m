@@ -54,7 +54,7 @@ function create_lattice_matfile(filename)
     y = 1;  
     while y < length(THERING)
         % The data within the deleted elements is not needed
-        if strcmp(THERING{y, 1}.FamName, 'HSTR') && THERING{y, 1}.Length == 0 &&(strcmp(THERING{y-1, 1}.Class, 'Sextupole') || strcmp(THERING{y-1, 1}.Class, 'Multipole'))
+        if strcmp(THERING{y, 1}.FamName, 'HSTR') && THERING{y, 1}.Length == 0 && (strcmp(THERING{y-1, 1}.Class, 'Sextupole') || strcmp(THERING{y-1, 1}.Class, 'Multipole'))
             THERING(y, :) = [];  % Delete hstrs that are preceded by a sextupole or multipole.
         elseif strcmp(THERING{y, 1}.FamName, 'VSTR') && THERING{y, 1}.Length == 0 && (strcmp(THERING{y-1, 1}.Class, 'Sextupole') || strcmp(THERING{y-1, 1}.Class, 'Multipole'))
             THERING(y, :) = [];  % Delete vstrs that are preceded by a sextupole or multipole.

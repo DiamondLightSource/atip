@@ -229,7 +229,7 @@ class ATElementDataSource(pytac.data_source.DataSource):
         """A data handling function used to set the value of a specific cell
         of the KickAngle attribute of the AT element.
 
-        .. Note:: If the Corrector is attached to a Sextupole  or ocupole then
+        .. Note:: If the Corrector is attached to a Sextupole  or Octupole then
             KickAngle needs to be assigned to cell 0 of the applicable Polynom(A/B)
             attribute and so a conversion must take place. For independent
             Correctors KickAngle can be assigned directly to the element's
