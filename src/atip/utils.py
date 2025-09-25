@@ -29,7 +29,14 @@ def load_at_lattice(mode="I04", **kwargs):
     return at_lattice
 
 
-def loader(mode="I04", callback=None, disable_emittance=False):
+def loader(
+    mode="I04",
+    linopt_function="linopt6",
+    disable_emittance=False,
+    disable_chromaticity=False,
+    disable_radiation=False,
+    callback=None,
+):
     """Load a unified lattice of the specifed mode.
 
     .. Note:: A unified lattice is a Pytac lattice where the corresponding AT
@@ -52,7 +59,15 @@ def loader(mode="I04", callback=None, disable_emittance=False):
         periodicity=1,
         energy=pytac_lattice.get_value("energy", units=pytac.PHYS),
     )
-    lattice = atip.load_sim.load(pytac_lattice, at_lattice, callback, disable_emittance)
+    lattice = atip.load_sim.load(
+        pytac_lattice,
+        at_lattice,
+        linopt_function,
+        disable_emittance,
+        disable_chromaticity,
+        disable_radiation,
+        callback,
+    )
     return lattice
 
 

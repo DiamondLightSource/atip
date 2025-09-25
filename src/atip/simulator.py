@@ -24,7 +24,10 @@ class LatticeData:
 def calculate_optics(
     at_lattice: at.lattice_object.Lattice,
     refpts: ArrayLike,
+    linopt_function: str = "linopt6",
     disable_emittance: bool = False,
+    disable_chromaticity: bool = False,
+    disable_radiation: bool = False,
 ) -> LatticeData:
     """Perform the physics calculations on the lattice.
 
@@ -43,13 +46,47 @@ def calculate_optics(
         LatticeData: The calculated lattice data.
     """
     logging.debug("Starting physics calculations.")
-
-    orbit0, _ = at_lattice.find_orbit6()
-    logging.debug("Completed orbit calculation.")
-
-    _, beamdata, twiss = at_lattice.linopt6(
-        refpts=refpts, get_chrom=True, orbit=orbit0, keep_lattice=True
+    logging.debug(
+        f"Using simulation params: {linopt_function}, disable_emittance="
+        f"{disable_emittance}, disable_chromaticity={disable_chromaticity}, "
+        f"disable_radiation={disable_radiation}"
     )
+    if linopt_function == "linopt6":
+        orbit0, _ = at_lattice.find_orbit6()
+        logging.debug("Completed orbit calculation.")
+
+        _, beamdata, twiss = at_lattice.linopt6(
+            refpts=refpts,
+            get_chrom=not disable_chromaticity,
+            orbit=orbit0,
+            keep_lattice=True,
+        )
+    elif linopt_function == "linopt4":
+        orbit0, _ = at_lattice.find_orbit4()
+        logging.debug("Completed orbit calculation.")
+
+        _, beamdata, twiss = at_lattice.linopt6(
+            refpts=refpts,
+            get_chrom=not disable_chromaticity,
+            orbit=orbit0,
+            keep_lattice=True,
+        )
+    elif linopt_function == "linopt2":
+        orbit0, _ = at_lattice.find_orbit()
+        logging.debug("Completed orbit calculation.")
+
+        _, beamdata, twiss = at_lattice.linopt2(
+            refpts=refpts,
+            get_chrom=not disable_chromaticity,
+            orbit=orbit0,
+            keep_lattice=True,
+        )
+    else:
+        logging.error(
+            f"Error. Invalid linopt function selected: {linopt_function}. Simulation "
+            "not computed."
+        )
+
     logging.debug("Completed linear optics calculation.")
 
     if not disable_emittance:
@@ -57,7 +94,13 @@ def calculate_optics(
         logging.debug("Completed emittance calculation")
     else:
         emitdata = ()
-    radint = at_lattice.get_radiation_integrals(twiss=twiss)
+
+    if not disable_radiation:
+        radint = at_lattice.get_radiation_integrals(twiss=twiss)
+        logging.debug("Completed radiation calculation")
+    else:
+        radint = ()
+
     logging.debug("All calculation complete.")
     return LatticeData(twiss, beamdata.tune, beamdata.chromaticity, emitdata, radint)
 
@@ -98,7 +141,15 @@ class ATSimulator:
                                                     physics data upon a change.
     """
 
-    def __init__(self, at_lattice, callback=None, disable_emittance=False):
+    def __init__(
+        self,
+        at_lattice,
+        linopt_function="linopt6",
+        disable_emittance=False,
+        disable_chromaticity=False,
+        disable_radiation=False,
+        callback=None,
+    ):
         """
         .. Note:: To avoid errors, the physics data must be initially
            calculated here, during creation, otherwise it could be accidentally
@@ -122,12 +173,22 @@ class ATSimulator:
             )
         self._at_lat = at_lattice
         self._rp = numpy.ones(len(at_lattice) + 1, dtype=bool)
+        self._linopt_function = linopt_function
         self._disable_emittance = disable_emittance
-        self._at_lat.radiation_on()
+        self._disable_chromaticity = disable_chromaticity
+        self._disable_radiation = disable_radiation
+
+        if not self._disable_radiation:
+            self._at_lat.radiation_on()
 
         # Initial phys data calculation.
         self._lattice_data = calculate_optics(
-            self._at_lat, self._rp, self._disable_emittance
+            self._at_lat,
+            self._rp,
+            self._linopt_function,
+            self._disable_emittance,
+            self._disable_chromaticity,
+            self._disable_radiation,
         )
 
         # Threading stuff initialisation.
@@ -196,7 +257,12 @@ class ATSimulator:
             if bool(self._paused) is False:
                 try:
                     self._lattice_data = calculate_optics(
-                        self._at_lat, self._rp, self._disable_emittance
+                        self._at_lat,
+                        self._rp,
+                        self._linopt_function,
+                        self._disable_emittance,
+                        self._disable_chromaticity,
+                        self._disable_radiation,
                     )
                 except Exception as e:
                     warn(at.AtWarning(e), stacklevel=1)
