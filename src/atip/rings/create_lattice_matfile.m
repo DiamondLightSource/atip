@@ -19,8 +19,10 @@ function create_lattice_matfile(filename)
                 disp('THERING is empty, using RING.');
             end
         else
-            disp('Using THERING.');
+            disp('Using global THERING and modifying it in place.');
         end
+    else
+        disp('Using global THERING and modifying it in place.');
     end
     fprintf('Initial THERING has dimensions: %s\n', mat2str(size(THERING)))
     % Correct dimension order if necessary.
