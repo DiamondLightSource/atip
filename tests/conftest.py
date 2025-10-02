@@ -129,7 +129,7 @@ def ba_atsim(at_lattice):
 
 
 @pytest.fixture()
-def initial_phys_data(at_lattice):
+def initial_phys_data(atsim):
     return {
         "tune": numpy.array([0.1823785, 0.2730096]),
         "chromaticity": numpy.array([2.05528097, 2.90000203]),
@@ -138,7 +138,7 @@ def initial_phys_data(at_lattice):
             [8.04285115e-02, 1.82229041e-03, -4.66599806e-16, 9.68514718e-17]
         ),
         "s_pos": numpy.cumsum(
-            [0.0] + [getattr(elem, "Length", 0) for elem in at_lattice[:-1]]
+            [0.0] + [getattr(elem, "Length", 0) for elem in atsim._at_lat[:-1]]
         ),
         "alpha": numpy.array([0.41083373, 0.76826358]),
         "beta": numpy.array([11.41465744, 9.38580055]),
