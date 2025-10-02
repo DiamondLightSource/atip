@@ -64,7 +64,7 @@ def atlds():
 
 @pytest.fixture()
 def at_lattice():
-    return atip.utils.load_at_lattice("HMBA")
+    return atip.utils.load_at_lattice("I04")
 
 
 @pytest.fixture(scope="session")
@@ -123,52 +123,21 @@ def ba_atsim(at_lattice):
 
 
 @pytest.fixture()
-def initial_phys_data(at_lattice):
+def initial_phys_data(atsim):
     return {
-        "tune": numpy.array([0.38156245, 0.85437543]),
-        "chromaticity": numpy.array([0.17919002, 0.12242263]),
-        "closed_orbit": numpy.zeros((6, len(at_lattice))),
-        "dispersion": numpy.array(
-            [1.72682010e-3, 4.04368254e-9, 5.88659608e-28, -8.95277691e-29]
+        "tune": numpy.array([atsim.get_tune("x"), atsim.get_tune("y")]),
+        "chromaticity": numpy.array(
+            [atsim.get_chromaticity("x"), atsim.get_chromaticity("y")]
         ),
+        "closed_orbit": numpy.zeros((6, len(atsim._at_lat))),
+        "dispersion": atsim.get_dispersion()[-1],
         "s_pos": numpy.cumsum(
-            [0.0] + [getattr(elem, "Length", 0) for elem in at_lattice[:-1]]
+            [0.0] + [getattr(elem, "Length", 0) for elem in atsim._at_lat[:-1]]
         ),
-        "alpha": numpy.array([0.384261343, 1.00253822]),
-        "beta": numpy.array([7.91882634, 5.30280084]),
-        "m66": numpy.array(
-            [
-                [-0.47537132, 6.62427828, 0.0, 0.0, 2.55038448e-03, -5.33885495e-07],
-                [-0.09816788, -0.73565385, 0.0, 0.0, 1.69015229e-04, -3.53808533e-08],
-                [0.0, 0.0, -0.18476435, -3.7128728, 0.0, 0.0],
-                [0.0, 0.0, 0.29967874, 0.60979916, 0.0, 0.0],
-                [
-                    1.24684834e-06,
-                    2.15443495e-05,
-                    0.0,
-                    0.0,
-                    9.99980691e-01,
-                    2.09331256e-04,
-                ],
-                [
-                    1.70098195e-04,
-                    2.99580152e-03,
-                    0.0,
-                    0.0,
-                    2.24325864e-03,
-                    9.99999530e-01,
-                ],
-            ]
-        ),
-        "mu": numpy.array([14.59693301, 4.58153046, 6.85248778e-04]),
-        "emitXY": numpy.array([1.32528e-10, 0.0]),
-        "rad_int": numpy.array(
-            [
-                2.2435734416179783e-3,
-                4.3264360771244244e-3,
-                1.049245018317141e-4,
-                -2.3049140720439194e-3,
-                1.6505019559193616e-8,
-            ]
-        ),
+        "alpha": atsim.get_alpha()[-1],
+        "beta": atsim.get_beta()[-1],
+        "m66": atsim.get_m66()[-1],
+        "mu": atsim.get_mu()[-1],
+        "emitXY": numpy.array([atsim.get_emittance("x"), atsim.get_emittance("y")]),
+        "rad_int": atsim.get_radiation_integrals(),
     }

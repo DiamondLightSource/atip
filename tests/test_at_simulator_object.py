@@ -137,21 +137,21 @@ def test_gather_one_sample(atsim):
 def test_recalculate_phys_data(atsim, initial_phys_data):
     _check_initial_phys_data(atsim, initial_phys_data)
     # Check that errors raised inside thread are converted to warnings.
-    atsim._at_lat[5].PolynomB[0] = 1.0e10
+    atsim._at_lat[4].PolynomB[0] = 1.0e10
     atsim.queue_set(mock.Mock(), "f", 0)
     with pytest.warns(at.AtWarning):
         atsim.wait_for_calculations()
-    atsim._at_lat[5].PolynomB[0] = 0.0
+    atsim._at_lat[4].PolynomB[0] = 0.0
     # Set corrector x_kick but on a sextupole as no correctors in test ring
-    atsim._at_lat[21].PolynomB[0] = -7.0e-5
+    atsim._at_lat[7].PolynomB[0] = -7.0e-5
     # Set corrector y_kick but on a sextupole as no correctors in test ring
-    atsim._at_lat[21].PolynomA[0] = 7.0e-5
+    atsim._at_lat[7].PolynomA[0] = 7.0e-5
     # Set quadrupole b1
-    atsim._at_lat[5].PolynomB[1] = 2.5
+    atsim._at_lat[4].PolynomB[1] = -0.8
     # Set skew quadrupole a1
-    atsim._at_lat[7].PolynomA[1] = 2.25e-3
+    atsim._at_lat[10].PolynomA[1] = 2.25e-3
     # Set sextupole b2
-    atsim._at_lat[21].PolynomB[2] = -75
+    atsim._at_lat[7].PolynomB[2] = 10
     # Clear the flag and then wait for the calculations
     atsim.queue_set(mock.Mock(), "f", 0)
     atsim.wait_for_calculations()
@@ -164,8 +164,8 @@ def test_recalculate_phys_data(atsim, initial_phys_data):
     numpy.testing.assert_almost_equal(
         orbit, [5.18918914e-06, -8.92596857e-06], decimal=3
     )
-    numpy.testing.assert_almost_equal(chrom, [0.11732846, 0.04300947], decimal=2)
-    numpy.testing.assert_almost_equal(tune, [0.37444833, 0.86048592], decimal=3)
+    numpy.testing.assert_almost_equal(chrom, [1.89, 4.64], decimal=2)
+    numpy.testing.assert_almost_equal(tune, [0.133, 0.307], decimal=3)
     numpy.testing.assert_almost_equal(emit, [1.34308653e-10, 3.74339964e-13], decimal=3)
 
 
@@ -196,7 +196,8 @@ def test_toggle_calculations_and_wait_for_calculations(atsim, initial_phys_data)
     assert not atsim._paused
     # pause > make a change > check no calc > unpause > check calc
     atsim.toggle_calculations()
-    atsim._at_lat[5].PolynomB[1] = 2.5
+    # Kick quadrupole
+    atsim._at_lat[4].PolynomB[1] = -0.8
     atsim.queue_set(mock.Mock(), "f", 0)
     assert atsim.wait_for_calculations(2) is False
     _check_initial_phys_data(atsim, initial_phys_data)
@@ -335,7 +336,8 @@ def test_get_radiation_integrals(mocked_atsim):
 
 def test_get_momentum_compaction(mocked_atsim, at_lattice):
     numpy.testing.assert_almost_equal(
-        0.08196721311475409, mocked_atsim.get_momentum_compaction()
+        mocked_atsim.get_momentum_compaction(),
+        0.0045641,
     )
 
 
