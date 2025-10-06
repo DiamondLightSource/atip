@@ -1,78 +1,72 @@
 function create_lattice_matfile(filename)
 % Creates a .mat file AT lattice compatible with ATIP.
 % If a filename is given that file will be updated to ATIP standard. Otherwise
-% THERING is taken from either of the 'RING' or 'THERING' global variables,
-% with 'THERING' taking priority. If a filename is not passed the updated lattice
-% will be stored in 'lattice.mat'.
+% ATIP_RING is initially taken from 'THERING' global variable and save as
+% 'lattice.mat'.
     if ~(nargin == 0)
-        load(filename, 'THERING');
+        load(filename, 'ATIP_RING');
     end
-    if ~exist('THERING', 'var')
+    if ~exist('ATIP_RING', 'var')
         global THERING;
-        if isempty(THERING)
-            global RING;
-            if isempty(RING)
-                disp('Both RING and THERING are empty, try running storageringinit(Ringmode). Exiting with error.');
+        ATIP_RING = THERING;
+        if isempty(ATIP_RING)
+                disp('THERING global variable is empty, try running storageringinit(Ringmode). Exiting with error.');
                 exit(1)
-            else
-                THERING = RING;
-                disp('THERING is empty, using RING.');
-            end
         else
-            disp('Using global THERING and modifying it in place.');
+            disp('Using global THERING and saving it to global ATIP_RING.');
         end
     else
-        disp('Using global THERING and modifying it in place.');
+        disp('Using loaded ATIP_RING from file.');
     end
-    fprintf('Initial THERING has dimensions: %s\n', mat2str(size(THERING)))
+    fprintf('Initial lattice has dimensions: %s\n', mat2str(size(ATIP_RING)))
     % Correct dimension order if necessary.
-    if size(THERING, 1) == 1
-        THERING = permute(THERING, [2 1]);
+    if size(ATIP_RING, 1) == 1
+        ATIP_RING = permute(ATIP_RING, [2 1]);
     end
     % Correct classes and pass methods.
-    for x = 1:length(THERING)
-        if strcmp(THERING{x, 1}.FamName, 'BPM10')
+    for x = 1:length(ATIP_RING)
+        if strcmp(ATIP_RING{x, 1}.FamName, 'BPM10')
             % Wouldn't be correctly classed by class guessing otherwise.
-            THERING{x, 1}.Class = 'Monitor';
-        elseif (strcmp(THERING{x, 1}.FamName, 'HSTR') || strcmp(THERING{x, 1}.FamName, 'VSTR'))
-            THERING{x, 1}.Class = 'Corrector';
-        elseif (strcmp(THERING{x, 1}.FamName, 'HTRIM') || strcmp(THERING{x, 1}.FamName, 'VTRIM'))
-            THERING{x, 1}.Class = 'Corrector';
+            ATIP_RING{x, 1}.Class = 'Monitor';
+        elseif (strcmp(ATIP_RING{x, 1}.FamName, 'HSTR') || strcmp(ATIP_RING{x, 1}.FamName, 'VSTR'))
+            ATIP_RING{x, 1}.Class = 'Corrector';
+        elseif (strcmp(ATIP_RING{x, 1}.FamName, 'HTRIM') || strcmp(ATIP_RING{x, 1}.FamName, 'VTRIM'))
+            ATIP_RING{x, 1}.Class = 'Corrector';
         end
 
-        if isfield(THERING{x, 1}, 'Class')
-            if strcmp(THERING{x, 1}.Class, 'SEXT')
-                THERING{x, 1}.Class = 'Sextupole';
+        if isfield(ATIP_RING{x, 1}, 'Class')
+            if strcmp(ATIP_RING{x, 1}.Class, 'SEXT')
+                ATIP_RING{x, 1}.Class = 'Sextupole';
             end
         end
 
-        if strcmp(THERING{x, 1}.PassMethod, 'GWigSymplecticPass')
-            THERING{x, 1}.Class = 'Wiggler';
+        if strcmp(ATIP_RING{x, 1}.PassMethod, 'GWigSymplecticPass')
+            ATIP_RING{x, 1}.Class = 'Wiggler';
         end
     end
 
-    % Remove elements. Done this way because the size of THERING changes
+    % Remove elements. Done this way because the size of ATIP_RING changes
     % during the loop.
     y = 1;  
-    while y < length(THERING)
+    while y < length(ATIP_RING)
         % The data within the deleted elements is not needed
-        if strcmp(THERING{y, 1}.FamName, 'HSTR') && THERING{y, 1}.Length == 0 && (strcmp(THERING{y-1, 1}.Class, 'Sextupole') || strcmp(THERING{y-1, 1}.Class, 'Multipole'))
-            THERING(y, :) = [];  % Delete hstrs that are preceded by a sextupole or multipole.
-        elseif strcmp(THERING{y, 1}.FamName, 'VSTR') && THERING{y, 1}.Length == 0 && (strcmp(THERING{y-1, 1}.Class, 'Sextupole') || strcmp(THERING{y-1, 1}.Class, 'Multipole'))
-            THERING(y, :) = [];  % Delete vstrs that are preceded by a sextupole or multipole.
+        if strcmp(ATIP_RING{y, 1}.FamName, 'HSTR') && ATIP_RING{y, 1}.Length == 0 && (strcmp(ATIP_RING{y-1, 1}.Class, 'Sextupole') || strcmp(ATIP_RING{y-1, 1}.Class, 'Multipole'))
+            ATIP_RING(y, :) = [];  % Delete hstrs that are preceded by a sextupole or multipole.
+        elseif strcmp(ATIP_RING{y, 1}.FamName, 'VSTR') && ATIP_RING{y, 1}.Length == 0 && (strcmp(ATIP_RING{y-1, 1}.Class, 'Sextupole') || strcmp(ATIP_RING{y-1, 1}.Class, 'Multipole'))
+            ATIP_RING(y, :) = [];  % Delete vstrs that are preceded by a sextupole or multipole.
         else
             y = y + 1;
         end
     end
 
-    if isfield(THERING{1, 1}, 'TwissData')
-        THERING{1, 1} = rmfield(THERING{1, 1}, 'TwissData');
+    if isfield(ATIP_RING{1, 1}, 'TwissData')
+        ATIP_RING{1, 1} = rmfield(ATIP_RING{1, 1}, 'TwissData');
     end
 
-    fprintf('Converted THERING has dimensions: %s\n', mat2str(size(THERING)))
+    fprintf('Converted ATIP_RING has dimensions: %s\n', mat2str(size(ATIP_RING)))
     if nargin == 0
-        save('lattice.mat', 'THERING');
+        save('lattice.mat', 'ATIP_RING');
     else
-        save(filename, 'THERING');
+        save(filename, 'ATIP_RING');
     end
 end
