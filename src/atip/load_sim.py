@@ -66,7 +66,7 @@ async def load(
             f"(AT:{len(at_lattice)} Pytac:{len(pytac_lattice)})."
         )
     # Initialise an instance of the ATSimulator Object.
-    atsim = await ATSimulator(
+    atsim = await ATSimulator.create(
         at_lattice,
         linopt_function,
         disable_emittance,
