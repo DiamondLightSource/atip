@@ -6,23 +6,26 @@ function create_lattice_matfile(filename)
     if ~(nargin == 0)
         load(filename, 'ATIP_RING');
     end
+
     if ~exist('ATIP_RING', 'var')
         global THERING;
-        ATIP_RING = THERING;
-        if isempty(ATIP_RING)
+        if isempty(THERING)
                 disp('THERING global variable is empty, try running storageringinit(Ringmode). Exiting with error.');
                 exit(1)
         else
+            ATIP_RING=THERING
             disp('Using global THERING and saving it to global ATIP_RING.');
         end
     else
         disp('Using loaded ATIP_RING from file.');
     end
+
     fprintf('Initial lattice has dimensions: %s\n', mat2str(size(ATIP_RING)))
     % Correct dimension order if necessary.
     if size(ATIP_RING, 1) == 1
         ATIP_RING = permute(ATIP_RING, [2 1]);
     end
+
     % Correct classes and pass methods.
     for x = 1:length(ATIP_RING)
         if strcmp(ATIP_RING{x, 1}.FamName, 'BPM10')
