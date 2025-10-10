@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>atip.sim_data_sources &#8212; atip 0.2.1.dev9+ge37bbde0d documentation</title>
+    <title>atip.sim_data_sources &#8212; atip 0.2.1.dev24+geed565649 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=5f4e4d5c"></script>
+    <script src="../../_static/documentation_options.js?v=e2b2ad44"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -518,6 +518,7 @@
             <span class="s2">&quot;a1&quot;</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_PolynomA</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
             <span class="s2">&quot;b1&quot;</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_PolynomB</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
             <span class="s2">&quot;b2&quot;</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_PolynomB</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+            <span class="s2">&quot;b3&quot;</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_PolynomB</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
             <span class="s2">&quot;b0&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_BendingAngle</span><span class="p">,</span>
             <span class="s2">&quot;f&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_Frequency</span><span class="p">,</span>
         <span class="p">}</span>
@@ -527,6 +528,7 @@
             <span class="s2">&quot;a1&quot;</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_set_PolynomA</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
             <span class="s2">&quot;b1&quot;</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_set_PolynomB</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
             <span class="s2">&quot;b2&quot;</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_set_PolynomB</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+            <span class="s2">&quot;b3&quot;</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_set_PolynomB</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
             <span class="s2">&quot;b0&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_BendingAngle</span><span class="p">,</span>
             <span class="s2">&quot;f&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_Frequency</span><span class="p">,</span>
         <span class="p">}</span>
@@ -658,13 +660,13 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;A data handling function used to get the value of a specific cell</span>
 <span class="sd">        of the KickAngle attribute of the AT element.</span>
 
-<span class="sd">        .. Note:: If the Corrector is attached to a Sextupole then KickAngle</span>
-<span class="sd">           needs to be returned from cell 0 of the applicable Polynom(A/B)</span>
-<span class="sd">           attribute and so a conversion must take place. For independent</span>
-<span class="sd">           Correctors KickAngle can be returned directly from the element&#39;s</span>
-<span class="sd">           KickAngle attribute without any conversion. This is because</span>
-<span class="sd">           independent Correctors have a KickAngle attribute in our AT lattice,</span>
-<span class="sd">           but those attached to Sextupoles do not.</span>
+<span class="sd">        .. Note:: If the Corrector is attached to a Sextupole or Octupole then</span>
+<span class="sd">            KickAngle needs to be returned from cell 0 of the applicable Polynom(A/B)</span>
+<span class="sd">            attribute and so a conversion must take place. For independent</span>
+<span class="sd">            Correctors KickAngle can be returned directly from the element&#39;s</span>
+<span class="sd">            KickAngle attribute without any conversion. This is because</span>
+<span class="sd">            independent Correctors have a KickAngle attribute in our AT lattice,</span>
+<span class="sd">            but those attached to Sextupoles do not.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            cell (int): Which cell of KickAngle to get.</span>
@@ -672,7 +674,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            float: The kick angle of the specified cell.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_at_element</span><span class="p">,</span> <span class="n">at</span><span class="o">.</span><span class="n">elements</span><span class="o">.</span><span class="n">Sextupole</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_at_element</span><span class="p">,</span> <span class="p">(</span><span class="n">at</span><span class="o">.</span><span class="n">elements</span><span class="o">.</span><span class="n">Sextupole</span><span class="p">,</span> <span class="n">at</span><span class="o">.</span><span class="n">elements</span><span class="o">.</span><span class="n">Multipole</span><span class="p">)):</span>
             <span class="n">length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_at_element</span><span class="o">.</span><span class="n">Length</span>
             <span class="k">if</span> <span class="n">cell</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">return</span> <span class="o">-</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_at_element</span><span class="o">.</span><span class="n">PolynomB</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">length</span><span class="p">)</span>
@@ -685,19 +687,19 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;A data handling function used to set the value of a specific cell</span>
 <span class="sd">        of the KickAngle attribute of the AT element.</span>
 
-<span class="sd">        .. Note:: If the Corrector is attached to a Sextupole then KickAngle</span>
-<span class="sd">           needs to be assigned to cell 0 of the applicable Polynom(A/B)</span>
-<span class="sd">           attribute and so a conversion must take place. For independent</span>
-<span class="sd">           Correctors KickAngle can be assigned directly to the element&#39;s</span>
-<span class="sd">           KickAngle attribute without any conversion. This is because</span>
-<span class="sd">           independent Correctors have a KickAngle attribute in our AT lattice,</span>
-<span class="sd">           but those attached to Sextupoles do not.</span>
+<span class="sd">        .. Note:: If the Corrector is attached to a Sextupole  or Octupole then</span>
+<span class="sd">            KickAngle needs to be assigned to cell 0 of the applicable Polynom(A/B)</span>
+<span class="sd">            attribute and so a conversion must take place. For independent</span>
+<span class="sd">            Correctors KickAngle can be assigned directly to the element&#39;s</span>
+<span class="sd">            KickAngle attribute without any conversion. This is because</span>
+<span class="sd">            independent Correctors have a KickAngle attribute in our AT lattice,</span>
+<span class="sd">            but those attached to Sextupoles do not.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            cell (int): Which cell of KickAngle to set.</span>
 <span class="sd">            value (float): The angle to be set.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_at_element</span><span class="p">,</span> <span class="n">at</span><span class="o">.</span><span class="n">elements</span><span class="o">.</span><span class="n">Sextupole</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_at_element</span><span class="p">,</span> <span class="p">(</span><span class="n">at</span><span class="o">.</span><span class="n">elements</span><span class="o">.</span><span class="n">Sextupole</span><span class="p">,</span> <span class="n">at</span><span class="o">.</span><span class="n">elements</span><span class="o">.</span><span class="n">Multipole</span><span class="p">)):</span>
             <span class="n">length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_at_element</span><span class="o">.</span><span class="n">Length</span>
             <span class="k">if</span> <span class="n">cell</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_at_element</span><span class="o">.</span><span class="n">PolynomB</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">value</span> <span class="o">/</span> <span class="n">length</span><span class="p">)</span>
