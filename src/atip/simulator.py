@@ -3,6 +3,7 @@
 import asyncio
 import concurrent
 import logging
+import time
 from dataclasses import dataclass
 from warnings import warn
 
@@ -263,6 +264,35 @@ class ATSimulator:
         for task in tasks:
             await task.cancel()
 
+    async def _queue_wrangler(self):
+        # The time we wait before giving up waiting for new items in queue
+        interval = 0.05
+        # The min time we spend getting data from queue. If this is small, then we will recalculate before all items from the queue have been emptied
+        min_time = 0
+        init = time.time()
+        start = 0
+        end = 0
+
+        queue_warning = True
+        # while item in queue, there was recently an item in queue, or we havnt had
+        # our minimum waiting time, keep waiting for queue
+        while (
+            not self._queue.empty()
+            or end - start < interval
+            or not (end - init > min_time)
+        ):
+            start = time.time()
+            try:
+                await asyncio.wait_for(self._gather_one_sample(), timeout=interval)
+                end = time.time()
+            except TimeoutError:
+                end = time.time()
+                if end - init > min_time:
+                    logging.info(f"No new changes seen in {interval} seconds")
+                    queue_warning = False
+                    break
+        return queue_warning
+
     async def _recalculate_phys_data(self, callback):
         """Run as a never ending asyncio task. Recalculates the physics
         data dependent on the status of the '_paused' flag and the length of
@@ -288,8 +318,21 @@ class ATSimulator:
         logging.debug("Starting recalculation loop")
         while not self._quit_thread.is_set():
             await self._gather_one_sample()
-            while not self._queue.empty():
-                await self._gather_one_sample()
+
+            # The max time we spend getting data from queue
+            max_time = 1
+            try:
+                logging.info(f"Starting queue wrangling with max time = {max_time}")
+                queue_warning = await asyncio.wait_for(
+                    self._queue_wrangler(), timeout=max_time
+                )
+            except TimeoutError:
+                logging.info("Too long since last recalculation, forcing update!")
+                queue_warning = True
+
+            if queue_warning:
+                print("Recalculation occurred with changes still in queue!")
+
             logging.debug("Recaulculating simulation with new setpoints.")
             if not self._paused.is_set():
                 async with self._new_data_lock:
