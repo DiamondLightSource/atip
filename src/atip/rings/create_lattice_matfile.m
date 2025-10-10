@@ -1,70 +1,75 @@
 function create_lattice_matfile(filename)
 % Creates a .mat file AT lattice compatible with ATIP.
 % If a filename is given that file will be updated to ATIP standard. Otherwise
-% the ring is taken from either of the 'RING' or 'THERING' global variables,
-% with 'RING' taking priority. If a filename is not passed the updated lattice
-% will be stored in 'lattice.mat'.
+% ATIP_RING is initially taken from 'THERING' global variable and save as
+% 'lattice.mat'.
     if ~(nargin == 0)
-        load(filename, 'RING');
+        load(filename, 'ATIP_RING');
     end
-    if ~exist('RING', 'var')
-        global RING;
-        if isempty(RING)
-            global THERING;
-            RING = THERING;
+
+    if ~exist('ATIP_RING', 'var')
+        global THERING;
+        if isempty(THERING)
+                disp('THERING global variable is empty, try running storageringinit(Ringmode). Exiting with error.');
+                exit(1)
+        else
+            ATIP_RING=THERING
+            disp('Using global THERING and saving it to global ATIP_RING.');
         end
+    else
+        disp('Using loaded ATIP_RING from file.');
     end
-    if isempty(RING)
-        disp('Unable to load a ring from file or global variables.');
-        return;
-    end
+
+    fprintf('Initial lattice has dimensions: %s\n', mat2str(size(ATIP_RING)))
     % Correct dimension order if necessary.
-    if size(RING, 1) == 1
-        RING = permute(RING, [2 1]);
+    if size(ATIP_RING, 1) == 1
+        ATIP_RING = permute(ATIP_RING, [2 1]);
     end
+
     % Correct classes and pass methods.
-    for x = 1:length(RING)
-        if strcmp(RING{x, 1}.FamName, 'BPM10')
+    for x = 1:length(ATIP_RING)
+        if strcmp(ATIP_RING{x, 1}.FamName, 'BPM10')
             % Wouldn't be correctly classed by class guessing otherwise.
-            RING{x, 1}.Class = 'Monitor';
-        elseif (strcmp(RING{x, 1}.FamName, 'HSTR') || strcmp(RING{x, 1}.FamName, 'VSTR'))
-            RING{x, 1}.Class = 'Corrector';
-        elseif (strcmp(RING{x, 1}.FamName, 'HTRIM') || strcmp(RING{x, 1}.FamName, 'VTRIM'))
-            RING{x, 1}.Class = 'Corrector';
+            ATIP_RING{x, 1}.Class = 'Monitor';
+        elseif (strcmp(ATIP_RING{x, 1}.FamName, 'HSTR') || strcmp(ATIP_RING{x, 1}.FamName, 'VSTR'))
+            ATIP_RING{x, 1}.Class = 'Corrector';
+        elseif (strcmp(ATIP_RING{x, 1}.FamName, 'HTRIM') || strcmp(ATIP_RING{x, 1}.FamName, 'VTRIM'))
+            ATIP_RING{x, 1}.Class = 'Corrector';
         end
-        if isfield(RING{x, 1}, 'Class')
-            if strcmp(RING{x, 1}.Class, 'SEXT')
-                RING{x, 1}.Class = 'Sextupole';
+
+        if isfield(ATIP_RING{x, 1}, 'Class')
+            if strcmp(ATIP_RING{x, 1}.Class, 'SEXT')
+                ATIP_RING{x, 1}.Class = 'Sextupole';
             end
         end
-        if strcmp(RING{x, 1}.PassMethod, 'ThinCorrectorPass')
-            % ThinCorrectorPass no longer exists in AT.
-            RING{x, 1}.PassMethod = 'CorrectorPass';
-        elseif strcmp(RING{x, 1}.PassMethod, 'GWigSymplecticPass')
-            RING{x, 1}.Class = 'Wiggler';
+
+        if strcmp(ATIP_RING{x, 1}.PassMethod, 'GWigSymplecticPass')
+            ATIP_RING{x, 1}.Class = 'Wiggler';
         end
     end
 
-    % Remove elements. Done this way because the size of RING changes during
-    % the loop.
+    % Remove elements. Done this way because the size of ATIP_RING changes
+    % during the loop.
     y = 1;  
-    while y < length(RING)
-        % I should probably transfer the attributes of the deleted corrector
-        % elements to the sextupole but cba.
-        if (strcmp(RING{y, 1}.FamName, 'HSTR') && strcmp(RING{y-1, 1}.Class, 'Sextupole'))
-            RING(y, :) = [];  % Delete hstrs that are preceded by a sextupole.
-        elseif (strcmp(RING{y, 1}.FamName, 'VSTR') && strcmp(RING{y-1, 1}.Class, 'Sextupole'))
-            RING(y, :) = [];  % Delete vstrs that are preceded by a sextupole.
+    while y < length(ATIP_RING)
+        % The data within the deleted elements is not needed
+        if strcmp(ATIP_RING{y, 1}.FamName, 'HSTR') && ATIP_RING{y, 1}.Length == 0 && (strcmp(ATIP_RING{y-1, 1}.Class, 'Sextupole') || strcmp(ATIP_RING{y-1, 1}.Class, 'Multipole'))
+            ATIP_RING(y, :) = [];  % Delete hstrs that are preceded by a sextupole or multipole.
+        elseif strcmp(ATIP_RING{y, 1}.FamName, 'VSTR') && ATIP_RING{y, 1}.Length == 0 && (strcmp(ATIP_RING{y-1, 1}.Class, 'Sextupole') || strcmp(ATIP_RING{y-1, 1}.Class, 'Multipole'))
+            ATIP_RING(y, :) = [];  % Delete vstrs that are preceded by a sextupole or multipole.
         else
             y = y + 1;
         end
     end
-    if isfield(RING{1, 1}, 'TwissData')
-        RING{1, 1} = rmfield(RING{1, 1}, 'TwissData');
+
+    if isfield(ATIP_RING{1, 1}, 'TwissData')
+        ATIP_RING{1, 1} = rmfield(ATIP_RING{1, 1}, 'TwissData');
     end
+
+    fprintf('Converted ATIP_RING has dimensions: %s\n', mat2str(size(ATIP_RING)))
     if nargin == 0
-        save('lattice.mat', 'RING');
+        save('lattice.mat', 'ATIP_RING');
     else
-        save(filename, 'RING');
+        save(filename, 'ATIP_RING');
     end
 end

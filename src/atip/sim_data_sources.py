@@ -72,6 +72,7 @@ class ATElementDataSource(pytac.data_source.DataSource):
             "a1": partial(self._get_PolynomA, 1),
             "b1": partial(self._get_PolynomB, 1),
             "b2": partial(self._get_PolynomB, 2),
+            "b3": partial(self._get_PolynomB, 3),
             "b0": self._get_BendingAngle,
             "f": self._get_Frequency,
         }
@@ -81,6 +82,7 @@ class ATElementDataSource(pytac.data_source.DataSource):
             "a1": partial(self._set_PolynomA, 1),
             "b1": partial(self._set_PolynomB, 1),
             "b2": partial(self._set_PolynomB, 2),
+            "b3": partial(self._set_PolynomB, 3),
             "b0": self._set_BendingAngle,
             "f": self._set_Frequency,
         }
@@ -200,13 +202,13 @@ class ATElementDataSource(pytac.data_source.DataSource):
         """A data handling function used to get the value of a specific cell
         of the KickAngle attribute of the AT element.
 
-        .. Note:: If the Corrector is attached to a Sextupole then KickAngle
-           needs to be returned from cell 0 of the applicable Polynom(A/B)
-           attribute and so a conversion must take place. For independent
-           Correctors KickAngle can be returned directly from the element's
-           KickAngle attribute without any conversion. This is because
-           independent Correctors have a KickAngle attribute in our AT lattice,
-           but those attached to Sextupoles do not.
+        .. Note:: If the Corrector is attached to a Sextupole or Octupole then
+            KickAngle needs to be returned from cell 0 of the applicable Polynom(A/B)
+            attribute and so a conversion must take place. For independent
+            Correctors KickAngle can be returned directly from the element's
+            KickAngle attribute without any conversion. This is because
+            independent Correctors have a KickAngle attribute in our AT lattice,
+            but those attached to Sextupoles do not.
 
         Args:
             cell (int): Which cell of KickAngle to get.
@@ -214,7 +216,7 @@ class ATElementDataSource(pytac.data_source.DataSource):
         Returns:
             float: The kick angle of the specified cell.
         """
-        if isinstance(self._at_element, at.elements.Sextupole):
+        if isinstance(self._at_element, (at.elements.Sextupole, at.elements.Multipole)):
             length = self._at_element.Length
             if cell == 0:
                 return -(self._at_element.PolynomB[0] * length)
@@ -227,19 +229,19 @@ class ATElementDataSource(pytac.data_source.DataSource):
         """A data handling function used to set the value of a specific cell
         of the KickAngle attribute of the AT element.
 
-        .. Note:: If the Corrector is attached to a Sextupole then KickAngle
-           needs to be assigned to cell 0 of the applicable Polynom(A/B)
-           attribute and so a conversion must take place. For independent
-           Correctors KickAngle can be assigned directly to the element's
-           KickAngle attribute without any conversion. This is because
-           independent Correctors have a KickAngle attribute in our AT lattice,
-           but those attached to Sextupoles do not.
+        .. Note:: If the Corrector is attached to a Sextupole  or Octupole then
+            KickAngle needs to be assigned to cell 0 of the applicable Polynom(A/B)
+            attribute and so a conversion must take place. For independent
+            Correctors KickAngle can be assigned directly to the element's
+            KickAngle attribute without any conversion. This is because
+            independent Correctors have a KickAngle attribute in our AT lattice,
+            but those attached to Sextupoles do not.
 
         Args:
             cell (int): Which cell of KickAngle to set.
             value (float): The angle to be set.
         """
-        if isinstance(self._at_element, at.elements.Sextupole):
+        if isinstance(self._at_element, (at.elements.Sextupole, at.elements.Multipole)):
             length = self._at_element.Length
             if cell == 0:
                 self._at_element.PolynomB[0] = -(value / length)
