@@ -214,9 +214,9 @@ def test_recalculate_phys_data_callback(at_lattice):
     atip.simulator.ATSimulator(at_lattice)
     # Check non-callable callback argument raises TypeError.
     with pytest.raises(TypeError):
-        atip.simulator.ATSimulator(at_lattice, "")
+        atip.simulator.ATSimulator(at_lattice, callback="")
     callback_func = mock.Mock()
-    atsim = atip.simulator.ATSimulator(at_lattice, callback_func)
+    atsim = atip.simulator.ATSimulator(at_lattice, callback=callback_func)
     atsim.queue_set(mock.Mock(), "f", 0)
     atsim.wait_for_calculations()
     callback_func.assert_called_once_with()
