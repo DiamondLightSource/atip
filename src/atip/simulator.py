@@ -28,18 +28,14 @@ class SimParams:
 
     def __post_init__(self):
         """Check that we have a valid combination of simulation parameters."""
-        if self.radiation:
-            if self.linopt == LinoptType.LINOPT2 or self.linopt == LinoptType.LINOPT4:
+        if self.linopt == LinoptType.LINOPT2 or self.linopt == LinoptType.LINOPT4:
+            if self.emittance or self.radiation:
                 raise ValueError(
-                    f"You must disable radiation to use linopt function: {self.linopt}",
+                    "Emittance and radiation calculations must be disabled when using "
+                    f"{self.linopt}",
                 )
-        else:
-            if self.linopt == LinoptType.LINOPT6:
-                raise ValueError(
-                    f"You cannot use linopt function: {self.linopt} with radiation "
-                    f"disabled.",
-                )
-            elif self.emittance:
+        if self.linopt == LinoptType.LINOPT6:
+            if not self.radiation and self.emittance:
                 raise ValueError(
                     "You cannot calculate emittance with radiation disabled",
                 )
@@ -192,8 +188,8 @@ class ATSimulator:
             sim_params = SimParams()
         self._sim_params = sim_params
 
-        if self._sim_params.radiation:
-            self._at_lat.radiation_on()
+        if self._sim_params.linopt == LinoptType.LINOPT6:
+            self._at_lat.enable_6d()
 
         # Initial phys data calculation.
         self._lattice_data = calculate_optics(self._at_lat, self._rp, self._sim_params)
