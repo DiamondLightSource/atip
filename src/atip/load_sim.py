@@ -15,10 +15,7 @@ SIMULATED_FIELDS = {"a1", "b0", "b1", "b2", "b3", "x", "y", "f", "x_kick", "y_ki
 def load_from_filepath(
     pytac_lattice,
     at_lattice_filepath,
-    linopt_function="linopt6",
-    disable_emittance=False,
-    disable_chromaticity=False,
-    disable_radiation=False,
+    sim_params=None,
     callback=None,
 ):
     """Load simulator data sources onto the lattice and its elements.
@@ -27,13 +24,8 @@ def load_from_filepath(
         pytac_lattice (pytac.lattice.Lattice): An instance of a Pytac lattice.
         at_lattice_filepath (str): The path to a .mat file from which the
                                     Accelerator Toolbox lattice can be loaded.
-        linopt_function (str): Which pyAT linear optics function to use: linopt2,
-            linopt4, linopt6.
-        disable_emittance (bool): Whether the emittance calculations should be
-            disabled.
-        disable_chromaticity (bool): Whether the chromaticity calculations should be
-            disabled.
-        disable_radiation (bool): Whether radiation calculations should be disabled.
+        sim_params (SimParams | None): An optional dataclass containing the pyAT
+            simulation parameters to use.
         callback (typing.Callable): To be called after completion of each round of
             physics calculations.
 
@@ -49,10 +41,7 @@ def load_from_filepath(
     return load(
         pytac_lattice,
         at_lattice,
-        linopt_function,
-        disable_emittance,
-        disable_chromaticity,
-        disable_radiation,
+        sim_params,
         callback,
     )
 
@@ -60,10 +49,7 @@ def load_from_filepath(
 def load(
     pytac_lattice,
     at_lattice,
-    linopt_function="linopt6",
-    disable_emittance=False,
-    disable_chromaticity=False,
-    disable_radiation=False,
+    sim_params=None,
     callback=None,
 ):
     """Load simulator data sources onto the lattice and its elements.
@@ -71,13 +57,8 @@ def load(
     Args:
         pytac_lattice (pytac.lattice.Lattice): An instance of a Pytac lattice.
         at_lattice (at.lattice_object.Lattice): An instance of an AT lattice object.
-        linopt_function (str): Which pyAT linear optics function to use: linopt2,
-            linopt4, linopt6.
-        disable_emittance (bool): Whether the emittance calculations should be
-            disabled.
-        disable_chromaticity (bool): Whether the chromaticity calculations should be
-            disabled.
-        disable_radiation (bool): Whether radiation calculations should be disabled.
+        sim_params (SimParams | None): An optional dataclass containing the pyAT
+            simulation parameters to use.
         callback (typing.Callable): To be called after completion of each round of
             physics calculations.
 
@@ -93,10 +74,7 @@ def load(
     # Initialise an instance of the ATSimulator Object.
     atsim = ATSimulator(
         at_lattice,
-        linopt_function,
-        disable_emittance,
-        disable_chromaticity,
-        disable_radiation,
+        sim_params,
         callback,
     )
     # Set the simulator data source on the Pytac lattice.

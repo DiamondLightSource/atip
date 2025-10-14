@@ -65,7 +65,7 @@ def test_load_raises_ValueError_if_incompatible_lattices():
 
 
 @mock.patch("atip.simulator.calculate_optics")
-def test_load_with_default_sim_params(
+def test_load_from_filepath_with_default_sim_params(
     mocked_calc_optics,
     pytac_lattice,
     lattice_filepath,
@@ -73,24 +73,19 @@ def test_load_with_default_sim_params(
     pytac_lattice = atip.load_sim.load_from_filepath(pytac_lattice, lattice_filepath)
 
     mocked_calc_optics.assert_called_with(
-        mock.ANY,
-        mock.ANY,
-        "linopt6",
-        False,
-        False,
-        False,
+        mock.ANY, mock.ANY, atip.simulator.SimParams()
     )
 
 
 @pytest.mark.parametrize(
-    "linopt, disable_emittance, disable_chromaticity, disable_radiation",
+    "linopt, emittance, chromaticity, radiation",
     [
-        ("linopt6", False, True, False),
-        ("linopt6", True, True, False),
-        ("linopt4", True, False, True),
-        ("linopt4", True, True, True),
-        ("linopt2", True, False, True),
-        ("linopt2", True, True, True),
+        ("linopt6", True, False, True),
+        ("linopt6", False, False, True),
+        ("linopt4", False, True, False),
+        ("linopt4", False, False, False),
+        ("linopt2", False, True, False),
+        ("linopt2", False, False, False),
     ],
 )
 @mock.patch("atip.simulator.calculate_optics")
@@ -99,24 +94,19 @@ def test_load_with_non_default_sim_params(
     pytac_lattice,
     lattice_filepath,
     linopt,
-    disable_emittance,
-    disable_chromaticity,
-    disable_radiation,
+    emittance,
+    chromaticity,
+    radiation,
 ):
-    pytac_lattice = atip.load_sim.load_from_filepath(
-        pytac_lattice,
-        lattice_filepath,
+    sim_params = atip.simulator.SimParams(
         linopt,
-        disable_emittance,
-        disable_chromaticity,
-        disable_radiation,
+        emittance,
+        chromaticity,
+        radiation,
     )
 
-    mocked_calc_optics.assert_called_with(
-        mock.ANY,
-        mock.ANY,
-        linopt,
-        disable_emittance,
-        disable_chromaticity,
-        disable_radiation,
+    pytac_lattice = atip.load_sim.load_from_filepath(
+        pytac_lattice, lattice_filepath, sim_params
     )
+
+    mocked_calc_optics.assert_called_with(mock.ANY, mock.ANY, sim_params)
