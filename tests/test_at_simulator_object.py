@@ -169,21 +169,25 @@ def test_recalculate_phys_data(atsim, initial_phys_data):
     numpy.testing.assert_almost_equal(emit, [1.34308653e-10, 3.74339964e-13], decimal=3)
 
 
-def test_emittance_flag(atsim, initial_phys_data):
+def test_ohmi_envelope_with_emittance_enabled(atsim, initial_phys_data):
     # Check emittance data is intially there
-    assert atsim._sim_params.emittance
     assert len(atsim._lattice_data.emittance) == 3
+    assert atsim._sim_params.emittance
     # Check that ohmi_envelope is called when emittance is True
     atsim._at_lat.ohmi_envelope = mock.Mock()
     atsim.trigger_calculation()
     cothread.Sleep(0.1)
     atsim._at_lat.ohmi_envelope.assert_called_once()
-    # Check that ohmi_envelope isn't called when emittance is False and that
-    # there isn't any emittance data
-    atsim._sim_params.emittance = False
-    atsim._at_lat.ohmi_envelope.reset_mock()
+
+
+def test_ohmi_envelope_with_emittance_disabled(atsim, initial_phys_data):
+    atsim._sim_params = atip.simulator.SimParams(emittance=False)
+    assert not atsim._sim_params.emittance
+    atsim._at_lat.ohmi_envelope = mock.Mock()
     atsim.trigger_calculation()
     cothread.Sleep(0.1)
+    # Check that ohmi_envelope isn't called when emittance is False and that
+    # there isn't any emittance data
     atsim._at_lat.ohmi_envelope.assert_not_called()
     assert len(atsim._lattice_data.emittance) == 0
 
@@ -323,7 +327,12 @@ def test_get_emittance(mocked_atsim):
     assert mocked_atsim.get_emittance("y") == 0.45
     with pytest.raises(FieldException):
         mocked_atsim.get_emittance("not_a_field")
-    mocked_atsim._sim_params.emittance = False
+
+
+def test_get_emittance_with_emittance_disabled(mocked_atsim):
+    assert mocked_atsim._sim_params.emittance
+    mocked_atsim._sim_params = atip.simulator.SimParams(emittance=False)
+    assert not mocked_atsim._sim_params.emittance
     with pytest.raises(DataSourceException):
         mocked_atsim.get_emittance()
 
