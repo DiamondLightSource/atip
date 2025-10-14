@@ -28,6 +28,14 @@ class SimParams:
 
     def __post_init__(self):
         """Check that we have a valid combination of simulation parameters."""
+        try:
+            LinoptType(self.linopt)
+        except ValueError as e:
+            raise ValueError(
+                f"{self.linopt} is not a valid linopt function. Choose from: "
+                f"{[sp.value for sp in LinoptType]}"
+            ) from e
+
         if self.linopt == LinoptType.LINOPT2 or self.linopt == LinoptType.LINOPT4:
             if self.emittance or self.radiation:
                 raise ValueError(
@@ -86,11 +94,6 @@ def calculate_optics(
         case LinoptType.LINOPT6:
             orbit_func = at_lattice.find_orbit6
             linopt_func = at_lattice.linopt6
-        case _:
-            raise ValueError(
-                f"Error. Invalid linopt function selected: {sp.linopt}. Simulation "
-                "data not calculated."
-            )
 
     # Perform pyAT orbit calculation
     orbit0, _ = orbit_func()
