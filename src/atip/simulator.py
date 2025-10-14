@@ -19,7 +19,7 @@ class LinoptType(StrEnum):
     LINOPT6 = auto()
 
 
-@dataclass
+@dataclass(frozen=True)
 class SimParams:
     linopt: LinoptType = LinoptType.LINOPT6
     emittance: bool = True
@@ -34,7 +34,7 @@ class SimParams:
                     "Emittance and radiation calculations must be disabled when using "
                     f"{self.linopt}",
                 )
-        if self.linopt == LinoptType.LINOPT6:
+        elif self.linopt == LinoptType.LINOPT6:
             if not self.radiation and self.emittance:
                 raise ValueError(
                     "You cannot calculate emittance with radiation disabled",
