@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>atip.load_sim &#8212; atip 0.2.1.dev24+geed565649 documentation</title>
+    <title>atip.load_sim &#8212; atip 0.2.1.dev34+gc4011f361 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=e2b2ad44"></script>
+    <script src="../_static/documentation_options.js?v=fee4d1dc"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -486,7 +486,7 @@
 </div>
 <dl class="py function">
 <dt class="sig sig-object py" id="atip.load_sim.load_from_filepath">
-<span class="sig-prename descclassname"><span class="pre">atip.load_sim.</span></span><span class="sig-name descname"><span class="pre">load_from_filepath</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pytac_lattice</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">at_lattice_filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disable_emittance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/atip/load_sim.html#load_from_filepath"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#atip.load_sim.load_from_filepath" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">atip.load_sim.</span></span><span class="sig-name descname"><span class="pre">load_from_filepath</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pytac_lattice</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">at_lattice_filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sim_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/atip/load_sim.html#load_from_filepath"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#atip.load_sim.load_from_filepath" title="Link to this definition">#</a></dt>
 <dd><p>Load simulator data sources onto the lattice and its elements.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -494,9 +494,10 @@
 <li><p><strong>pytac_lattice</strong> (<em>pytac.lattice.Lattice</em>) – An instance of a Pytac lattice.</p></li>
 <li><p><strong>at_lattice_filepath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The path to a .mat file from which the
 Accelerator Toolbox lattice can be loaded.</p></li>
+<li><p><strong>sim_params</strong> (<a class="reference internal" href="atip.simulator.html#atip.simulator.SimParams" title="atip.simulator.SimParams"><em>SimParams</em></a><em> | </em><em>None</em>) – An optional dataclass containing the pyAT
+simulation parameters to use.</p></li>
 <li><p><strong>callback</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.14)"><em>Callable</em></a>) – To be called after completion of each round of
 physics calculations.</p></li>
-<li><p><strong>disable_emittance</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – Whether the emittance should be calculated.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -511,17 +512,17 @@ simulator data source fully loaded onto it.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="atip.load_sim.load">
-<span class="sig-prename descclassname"><span class="pre">atip.load_sim.</span></span><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pytac_lattice</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">at_lattice</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disable_emittance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/atip/load_sim.html#load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#atip.load_sim.load" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">atip.load_sim.</span></span><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pytac_lattice</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">at_lattice</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sim_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/atip/load_sim.html#load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#atip.load_sim.load" title="Link to this definition">#</a></dt>
 <dd><p>Load simulator data sources onto the lattice and its elements.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pytac_lattice</strong> (<em>pytac.lattice.Lattice</em>) – An instance of a Pytac lattice.</p></li>
-<li><p><strong>at_lattice</strong> (<em>at.lattice_object.Lattice</em>) – An instance of an Accelerator
-Toolbox lattice object.</p></li>
+<li><p><strong>at_lattice</strong> (<em>at.lattice_object.Lattice</em>) – An instance of an AT lattice object.</p></li>
+<li><p><strong>sim_params</strong> (<a class="reference internal" href="atip.simulator.html#atip.simulator.SimParams" title="atip.simulator.SimParams"><em>SimParams</em></a><em> | </em><em>None</em>) – An optional dataclass containing the pyAT
+simulation parameters to use.</p></li>
 <li><p><strong>callback</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.14)"><em>Callable</em></a>) – To be called after completion of each round of
 physics calculations.</p></li>
-<li><p><strong>disable_emittance</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – Whether the emittance should be calculated.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>atip.simulator &#8212; atip 0.2.1.dev24+geed565649 documentation</title>
+    <title>atip.simulator &#8212; atip 0.2.1.dev34+gc4011f361 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=e2b2ad44"></script>
+    <script src="../../_static/documentation_options.js?v=fee4d1dc"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -446,6 +446,7 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">StrEnum</span><span class="p">,</span> <span class="n">auto</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">at</span>
@@ -454,6 +455,45 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArrayLike</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pytac.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataSourceException</span><span class="p">,</span> <span class="n">FieldException</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">speed_of_light</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">LinoptType</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
+    <span class="n">LINOPT2</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+    <span class="n">LINOPT4</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+    <span class="n">LINOPT6</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="SimParams">
+<a class="viewcode-back" href="../../_api/atip.simulator.html#atip.simulator.SimParams">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SimParams</span><span class="p">:</span>
+    <span class="n">linopt</span><span class="p">:</span> <span class="n">LinoptType</span> <span class="o">=</span> <span class="n">LinoptType</span><span class="o">.</span><span class="n">LINOPT6</span>
+    <span class="n">emittance</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">chromaticity</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">radiation</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check that we have a valid combination of simulation parameters.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">LinoptType</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">linopt</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">linopt</span><span class="si">}</span><span class="s2"> is not a valid linopt function. Choose from: &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="p">[</span><span class="n">sp</span><span class="o">.</span><span class="n">value</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">sp</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">LinoptType</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">linopt</span> <span class="o">==</span> <span class="n">LinoptType</span><span class="o">.</span><span class="n">LINOPT2</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">linopt</span> <span class="o">==</span> <span class="n">LinoptType</span><span class="o">.</span><span class="n">LINOPT4</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">emittance</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">radiation</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;Emittance and radiation calculations must be disabled when using &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">linopt</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">linopt</span> <span class="o">==</span> <span class="n">LinoptType</span><span class="o">.</span><span class="n">LINOPT6</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">radiation</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">emittance</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;You cannot calculate emittance with radiation disabled&quot;</span><span class="p">,</span>
+                <span class="p">)</span></div>
+
 
 
 <div class="viewcode-block" id="LatticeData">
@@ -471,9 +511,7 @@
 <div class="viewcode-block" id="calculate_optics">
 <a class="viewcode-back" href="../../_api/atip.simulator.html#atip.simulator.calculate_optics">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">calculate_optics</span><span class="p">(</span>
-    <span class="n">at_lattice</span><span class="p">:</span> <span class="n">at</span><span class="o">.</span><span class="n">lattice_object</span><span class="o">.</span><span class="n">Lattice</span><span class="p">,</span>
-    <span class="n">refpts</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span>
-    <span class="n">disable_emittance</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">at_lattice</span><span class="p">:</span> <span class="n">at</span><span class="o">.</span><span class="n">lattice_object</span><span class="o">.</span><span class="n">Lattice</span><span class="p">,</span> <span class="n">refpts</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">sp</span><span class="p">:</span> <span class="n">SimParams</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LatticeData</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Perform the physics calculations on the lattice.</span>
 
@@ -485,28 +523,55 @@
 <span class="sd">    Args:</span>
 <span class="sd">        at_lattice (at.lattice_object.Lattice): AT lattice definition.</span>
 <span class="sd">        refpts (numpy.typing.NDArray): A boolean array specifying the points at which</span>
-<span class="sd">                               to calculate physics data.</span>
-<span class="sd">        disable_emittance (bool): whether to calculate emittance.</span>
+<span class="sd">            to calculate physics data.</span>
+<span class="sd">        sp (SimParams): An optional dataclass containing the pyAT simulation</span>
+<span class="sd">            parameters to use.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        LatticeData: The calculated lattice data.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Starting physics calculations.&quot;</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Using simulation params: </span><span class="si">{</span><span class="n">sp</span><span class="o">.</span><span class="n">linopt</span><span class="si">}</span><span class="s2">, emittance=</span><span class="si">{</span><span class="n">sp</span><span class="o">.</span><span class="n">emittance</span><span class="si">}</span><span class="s2">, chromaticity=&quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sp</span><span class="o">.</span><span class="n">chromaticity</span><span class="si">}</span><span class="s2">, radiation=</span><span class="si">{</span><span class="n">sp</span><span class="o">.</span><span class="n">radiation</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
 
-    <span class="n">orbit0</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">at_lattice</span><span class="o">.</span><span class="n">find_orbit6</span><span class="p">()</span>
+    <span class="k">match</span> <span class="n">sp</span><span class="o">.</span><span class="n">linopt</span><span class="p">:</span>
+        <span class="k">case</span> <span class="n">LinoptType</span><span class="o">.</span><span class="n">LINOPT2</span><span class="p">:</span>
+            <span class="n">orbit_func</span> <span class="o">=</span> <span class="n">at_lattice</span><span class="o">.</span><span class="n">find_orbit</span>
+            <span class="n">linopt_func</span> <span class="o">=</span> <span class="n">at_lattice</span><span class="o">.</span><span class="n">linopt2</span>
+        <span class="k">case</span> <span class="n">LinoptType</span><span class="o">.</span><span class="n">LINOPT4</span><span class="p">:</span>
+            <span class="n">orbit_func</span> <span class="o">=</span> <span class="n">at_lattice</span><span class="o">.</span><span class="n">find_orbit4</span>
+            <span class="n">linopt_func</span> <span class="o">=</span> <span class="n">at_lattice</span><span class="o">.</span><span class="n">linopt4</span>
+        <span class="k">case</span> <span class="n">LinoptType</span><span class="o">.</span><span class="n">LINOPT6</span><span class="p">:</span>
+            <span class="n">orbit_func</span> <span class="o">=</span> <span class="n">at_lattice</span><span class="o">.</span><span class="n">find_orbit6</span>
+            <span class="n">linopt_func</span> <span class="o">=</span> <span class="n">at_lattice</span><span class="o">.</span><span class="n">linopt6</span>
+
+    <span class="c1"># Perform pyAT orbit calculation</span>
+    <span class="n">orbit0</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">orbit_func</span><span class="p">()</span>
     <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Completed orbit calculation.&quot;</span><span class="p">)</span>
 
-    <span class="n">_</span><span class="p">,</span> <span class="n">beamdata</span><span class="p">,</span> <span class="n">twiss</span> <span class="o">=</span> <span class="n">at_lattice</span><span class="o">.</span><span class="n">linopt6</span><span class="p">(</span>
-        <span class="n">refpts</span><span class="o">=</span><span class="n">refpts</span><span class="p">,</span> <span class="n">get_chrom</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">orbit</span><span class="o">=</span><span class="n">orbit0</span><span class="p">,</span> <span class="n">keep_lattice</span><span class="o">=</span><span class="kc">True</span>
+    <span class="c1"># Perform pyAT linear optics calculation</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">beamdata</span><span class="p">,</span> <span class="n">twiss</span> <span class="o">=</span> <span class="n">linopt_func</span><span class="p">(</span>
+        <span class="n">refpts</span><span class="o">=</span><span class="n">refpts</span><span class="p">,</span>
+        <span class="n">get_chrom</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">chromaticity</span><span class="p">,</span>
+        <span class="n">orbit</span><span class="o">=</span><span class="n">orbit0</span><span class="p">,</span>
+        <span class="n">keep_lattice</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Completed linear optics calculation.&quot;</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">disable_emittance</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">sp</span><span class="o">.</span><span class="n">emittance</span><span class="p">:</span>
         <span class="n">emitdata</span> <span class="o">=</span> <span class="n">at_lattice</span><span class="o">.</span><span class="n">ohmi_envelope</span><span class="p">(</span><span class="n">orbit</span><span class="o">=</span><span class="n">orbit0</span><span class="p">,</span> <span class="n">keep_lattice</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Completed emittance calculation&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">emitdata</span> <span class="o">=</span> <span class="p">()</span>
-    <span class="n">radint</span> <span class="o">=</span> <span class="n">at_lattice</span><span class="o">.</span><span class="n">get_radiation_integrals</span><span class="p">(</span><span class="n">twiss</span><span class="o">=</span><span class="n">twiss</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">sp</span><span class="o">.</span><span class="n">radiation</span><span class="p">:</span>
+        <span class="n">radint</span> <span class="o">=</span> <span class="n">at_lattice</span><span class="o">.</span><span class="n">get_radiation_integrals</span><span class="p">(</span><span class="n">twiss</span><span class="o">=</span><span class="n">twiss</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Completed radiation calculation&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">radint</span> <span class="o">=</span> <span class="p">()</span>
+
     <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;All calculation complete.&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">LatticeData</span><span class="p">(</span><span class="n">twiss</span><span class="p">,</span> <span class="n">beamdata</span><span class="o">.</span><span class="n">tune</span><span class="p">,</span> <span class="n">beamdata</span><span class="o">.</span><span class="n">chromaticity</span><span class="p">,</span> <span class="n">emitdata</span><span class="p">,</span> <span class="n">radint</span><span class="p">)</span></div>
 
@@ -535,8 +600,6 @@
 <span class="sd">                                                 physics data is calculated.</span>
 <span class="sd">           _rp (numpy.typing.NDArray): A boolean array to be used as refpts for the</span>
 <span class="sd">                               physics calculations.</span>
-<span class="sd">            _disable_emittance (bool): Whether or not to perform the beam</span>
-<span class="sd">                                        envelope based emittance calculations.</span>
 <span class="sd">           _lattice_data (LatticeData): calculated physics data</span>
 <span class="sd">                              function linopt (see at.lattice.linear.py).</span>
 <span class="sd">           _queue (cothread.EventQueue): A queue of changes to be applied to</span>
@@ -550,7 +613,12 @@
 <span class="sd">                                                    physics data upon a change.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">at_lattice</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">disable_emittance</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">at_lattice</span><span class="p">,</span>
+        <span class="n">sim_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        .. Note:: To avoid errors, the physics data must be initially</span>
 <span class="sd">           calculated here, during creation, otherwise it could be accidentally</span>
@@ -559,12 +627,11 @@
 <span class="sd">           the thread.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            at_lattice (at.lattice_object.Lattice): An instance of an AT</span>
-<span class="sd">                                                     lattice object.</span>
-<span class="sd">            callback (typing.Callable): Optional, if passed it is called on completion</span>
-<span class="sd">                                  of each round of physics calculations.</span>
-<span class="sd">            disable_emittance (bool): Whether or not to perform the beam</span>
-<span class="sd">                                       envelope based emittance calculations.</span>
+<span class="sd">            at_lattice (at.lattice_object.Lattice): An instance of an AT lattice object.</span>
+<span class="sd">            sim_params (SimParams | None): An optional dataclass containing the pyAT</span>
+<span class="sd">                simulation parameters to use.</span>
+<span class="sd">            callback (typing.Callable): To be called after completion of each round of</span>
+<span class="sd">                physics calculations.</span>
 
 <span class="sd">        **Methods:**</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -574,13 +641,16 @@
             <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_at_lat</span> <span class="o">=</span> <span class="n">at_lattice</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_rp</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">at_lattice</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_disable_emittance</span> <span class="o">=</span> <span class="n">disable_emittance</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_at_lat</span><span class="o">.</span><span class="n">radiation_on</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">sim_params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">sim_params</span> <span class="o">=</span> <span class="n">SimParams</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sim_params</span> <span class="o">=</span> <span class="n">sim_params</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_params</span><span class="o">.</span><span class="n">linopt</span> <span class="o">==</span> <span class="n">LinoptType</span><span class="o">.</span><span class="n">LINOPT6</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_at_lat</span><span class="o">.</span><span class="n">enable_6d</span><span class="p">()</span>
 
         <span class="c1"># Initial phys data calculation.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_lattice_data</span> <span class="o">=</span> <span class="n">calculate_optics</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_at_lat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rp</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_disable_emittance</span>
-        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lattice_data</span> <span class="o">=</span> <span class="n">calculate_optics</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_at_lat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rp</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_params</span><span class="p">)</span>
 
         <span class="c1"># Threading stuff initialisation.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span> <span class="o">=</span> <span class="n">cothread</span><span class="o">.</span><span class="n">EventQueue</span><span class="p">()</span>
@@ -654,7 +724,7 @@
             <span class="k">if</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_paused</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_lattice_data</span> <span class="o">=</span> <span class="n">calculate_optics</span><span class="p">(</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">_at_lat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rp</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_disable_emittance</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_at_lat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rp</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_params</span>
                     <span class="p">)</span>
                 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                     <span class="n">warn</span><span class="p">(</span><span class="n">at</span><span class="o">.</span><span class="n">AtWarning</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -1010,7 +1080,7 @@
 <span class="sd">        Raises:</span>
 <span class="sd">            pytac.FieldException: if the specified field is not valid for emittance.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_disable_emittance</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_params</span><span class="o">.</span><span class="n">emittance</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">field</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lattice_data</span><span class="o">.</span><span class="n">emittance</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;emitXY&quot;</span><span class="p">]</span>
             <span class="k">elif</span> <span class="n">field</span> <span class="o">==</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span>

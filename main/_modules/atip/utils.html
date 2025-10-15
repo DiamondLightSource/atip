@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>atip.utils &#8212; atip 0.2.1.dev24+geed565649 documentation</title>
+    <title>atip.utils &#8212; atip 0.2.1.dev34+gc4011f361 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=e2b2ad44"></script>
+    <script src="../../_static/documentation_options.js?v=fee4d1dc"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -478,7 +478,11 @@
 
 <div class="viewcode-block" id="loader">
 <a class="viewcode-back" href="../../_api/atip.utils.html#atip.utils.loader">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">loader</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;I04&quot;</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">disable_emittance</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">loader</span><span class="p">(</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;I04&quot;</span><span class="p">,</span>
+    <span class="n">sim_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Load a unified lattice of the specifed mode.</span>
 
 <span class="sd">    .. Note:: A unified lattice is a Pytac lattice where the corresponding AT</span>
@@ -487,9 +491,10 @@
 
 <span class="sd">    Args:</span>
 <span class="sd">        mode (str): The lattice operation mode.</span>
+<span class="sd">        sim_params (SimParams | None): An optional dataclass containing the pyAT</span>
+<span class="sd">            simulation parameters to use.</span>
 <span class="sd">        callback (typing.Callable): Callable to be called after completion of each</span>
 <span class="sd">                              round of physics calculations in ATSimulator.</span>
-<span class="sd">        disable_emittance (bool): Whether the emittance should be calculated.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        pytac.lattice.Lattice: A Pytac lattice object with the simulator data</span>
@@ -501,7 +506,12 @@
         <span class="n">periodicity</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
         <span class="n">energy</span><span class="o">=</span><span class="n">pytac_lattice</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;energy&quot;</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="n">pytac</span><span class="o">.</span><span class="n">PHYS</span><span class="p">),</span>
     <span class="p">)</span>
-    <span class="n">lattice</span> <span class="o">=</span> <span class="n">atip</span><span class="o">.</span><span class="n">load_sim</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">pytac_lattice</span><span class="p">,</span> <span class="n">at_lattice</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">disable_emittance</span><span class="p">)</span>
+    <span class="n">lattice</span> <span class="o">=</span> <span class="n">atip</span><span class="o">.</span><span class="n">load_sim</span><span class="o">.</span><span class="n">load</span><span class="p">(</span>
+        <span class="n">pytac_lattice</span><span class="p">,</span>
+        <span class="n">at_lattice</span><span class="p">,</span>
+        <span class="n">sim_params</span><span class="p">,</span>
+        <span class="n">callback</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="k">return</span> <span class="n">lattice</span></div>
 
 

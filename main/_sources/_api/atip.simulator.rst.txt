@@ -3,6 +3,8 @@
         
         
         
+        
+        
 
 .. automodule:: atip.simulator
     :members:
@@ -20,6 +22,8 @@
     
         ATSimulator
         LatticeData
+        LinoptType
+        SimParams
         calculate_optics
     
     

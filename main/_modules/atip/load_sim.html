@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>atip.load_sim &#8212; atip 0.2.1.dev24+geed565649 documentation</title>
+    <title>atip.load_sim &#8212; atip 0.2.1.dev34+gc4011f361 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=e2b2ad44"></script>
+    <script src="../../_static/documentation_options.js?v=fee4d1dc"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -459,7 +459,10 @@
 <div class="viewcode-block" id="load_from_filepath">
 <a class="viewcode-back" href="../../_api/atip.load_sim.html#atip.load_sim.load_from_filepath">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">load_from_filepath</span><span class="p">(</span>
-    <span class="n">pytac_lattice</span><span class="p">,</span> <span class="n">at_lattice_filepath</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">disable_emittance</span><span class="o">=</span><span class="kc">False</span>
+    <span class="n">pytac_lattice</span><span class="p">,</span>
+    <span class="n">at_lattice_filepath</span><span class="p">,</span>
+    <span class="n">sim_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Load simulator data sources onto the lattice and its elements.</span>
 
@@ -467,9 +470,10 @@
 <span class="sd">        pytac_lattice (pytac.lattice.Lattice): An instance of a Pytac lattice.</span>
 <span class="sd">        at_lattice_filepath (str): The path to a .mat file from which the</span>
 <span class="sd">                                    Accelerator Toolbox lattice can be loaded.</span>
+<span class="sd">        sim_params (SimParams | None): An optional dataclass containing the pyAT</span>
+<span class="sd">            simulation parameters to use.</span>
 <span class="sd">        callback (typing.Callable): To be called after completion of each round of</span>
-<span class="sd">                              physics calculations.</span>
-<span class="sd">        disable_emittance (bool): Whether the emittance should be calculated.</span>
+<span class="sd">            physics calculations.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        pytac.lattice.Lattice: The same Pytac lattice object, but now with a</span>
@@ -480,22 +484,32 @@
         <span class="n">name</span><span class="o">=</span><span class="n">pytac_lattice</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
         <span class="n">energy</span><span class="o">=</span><span class="n">pytac_lattice</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;energy&quot;</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="n">pytac</span><span class="o">.</span><span class="n">PHYS</span><span class="p">),</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">load</span><span class="p">(</span><span class="n">pytac_lattice</span><span class="p">,</span> <span class="n">at_lattice</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">disable_emittance</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">load</span><span class="p">(</span>
+        <span class="n">pytac_lattice</span><span class="p">,</span>
+        <span class="n">at_lattice</span><span class="p">,</span>
+        <span class="n">sim_params</span><span class="p">,</span>
+        <span class="n">callback</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="load">
 <a class="viewcode-back" href="../../_api/atip.load_sim.html#atip.load_sim.load">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span><span class="n">pytac_lattice</span><span class="p">,</span> <span class="n">at_lattice</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">disable_emittance</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span>
+    <span class="n">pytac_lattice</span><span class="p">,</span>
+    <span class="n">at_lattice</span><span class="p">,</span>
+    <span class="n">sim_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Load simulator data sources onto the lattice and its elements.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        pytac_lattice (pytac.lattice.Lattice): An instance of a Pytac lattice.</span>
-<span class="sd">        at_lattice (at.lattice_object.Lattice): An instance of an Accelerator</span>
-<span class="sd">                                              Toolbox lattice object.</span>
+<span class="sd">        at_lattice (at.lattice_object.Lattice): An instance of an AT lattice object.</span>
+<span class="sd">        sim_params (SimParams | None): An optional dataclass containing the pyAT</span>
+<span class="sd">            simulation parameters to use.</span>
 <span class="sd">        callback (typing.Callable): To be called after completion of each round of</span>
-<span class="sd">                              physics calculations.</span>
-<span class="sd">        disable_emittance (bool): Whether the emittance should be calculated.</span>
+<span class="sd">            physics calculations.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        pytac.lattice.Lattice: The same Pytac lattice object, but now with a</span>
@@ -507,7 +521,11 @@
             <span class="sa">f</span><span class="s2">&quot;(AT:</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">at_lattice</span><span class="p">)</span><span class="si">}</span><span class="s2"> Pytac:</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">pytac_lattice</span><span class="p">)</span><span class="si">}</span><span class="s2">).&quot;</span>
         <span class="p">)</span>
     <span class="c1"># Initialise an instance of the ATSimulator Object.</span>
-    <span class="n">atsim</span> <span class="o">=</span> <span class="n">ATSimulator</span><span class="p">(</span><span class="n">at_lattice</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">disable_emittance</span><span class="p">)</span>
+    <span class="n">atsim</span> <span class="o">=</span> <span class="n">ATSimulator</span><span class="p">(</span>
+        <span class="n">at_lattice</span><span class="p">,</span>
+        <span class="n">sim_params</span><span class="p">,</span>
+        <span class="n">callback</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="c1"># Set the simulator data source on the Pytac lattice.</span>
     <span class="n">pytac_lattice</span><span class="o">.</span><span class="n">set_data_source</span><span class="p">(</span><span class="n">ATLatticeDataSource</span><span class="p">(</span><span class="n">atsim</span><span class="p">),</span> <span class="n">pytac</span><span class="o">.</span><span class="n">SIM</span><span class="p">)</span>
     <span class="c1"># Load the sim onto each element.</span>
