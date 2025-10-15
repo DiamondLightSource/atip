@@ -13,7 +13,10 @@ SIMULATED_FIELDS = {"a1", "b0", "b1", "b2", "b3", "x", "y", "f", "x_kick", "y_ki
 
 
 def load_from_filepath(
-    pytac_lattice, at_lattice_filepath, callback=None, disable_emittance=False
+    pytac_lattice,
+    at_lattice_filepath,
+    sim_params=None,
+    callback=None,
 ):
     """Load simulator data sources onto the lattice and its elements.
 
@@ -21,9 +24,10 @@ def load_from_filepath(
         pytac_lattice (pytac.lattice.Lattice): An instance of a Pytac lattice.
         at_lattice_filepath (str): The path to a .mat file from which the
                                     Accelerator Toolbox lattice can be loaded.
+        sim_params (SimParams | None): An optional dataclass containing the pyAT
+            simulation parameters to use.
         callback (typing.Callable): To be called after completion of each round of
-                              physics calculations.
-        disable_emittance (bool): Whether the emittance should be calculated.
+            physics calculations.
 
     Returns:
         pytac.lattice.Lattice: The same Pytac lattice object, but now with a
@@ -34,19 +38,29 @@ def load_from_filepath(
         name=pytac_lattice.name,
         energy=pytac_lattice.get_value("energy", units=pytac.PHYS),
     )
-    return load(pytac_lattice, at_lattice, callback, disable_emittance)
+    return load(
+        pytac_lattice,
+        at_lattice,
+        sim_params,
+        callback,
+    )
 
 
-def load(pytac_lattice, at_lattice, callback=None, disable_emittance=False):
+def load(
+    pytac_lattice,
+    at_lattice,
+    sim_params=None,
+    callback=None,
+):
     """Load simulator data sources onto the lattice and its elements.
 
     Args:
         pytac_lattice (pytac.lattice.Lattice): An instance of a Pytac lattice.
-        at_lattice (at.lattice_object.Lattice): An instance of an Accelerator
-                                              Toolbox lattice object.
+        at_lattice (at.lattice_object.Lattice): An instance of an AT lattice object.
+        sim_params (SimParams | None): An optional dataclass containing the pyAT
+            simulation parameters to use.
         callback (typing.Callable): To be called after completion of each round of
-                              physics calculations.
-        disable_emittance (bool): Whether the emittance should be calculated.
+            physics calculations.
 
     Returns:
         pytac.lattice.Lattice: The same Pytac lattice object, but now with a
@@ -58,7 +72,11 @@ def load(pytac_lattice, at_lattice, callback=None, disable_emittance=False):
             f"(AT:{len(at_lattice)} Pytac:{len(pytac_lattice)})."
         )
     # Initialise an instance of the ATSimulator Object.
-    atsim = ATSimulator(at_lattice, callback, disable_emittance)
+    atsim = ATSimulator(
+        at_lattice,
+        sim_params,
+        callback,
+    )
     # Set the simulator data source on the Pytac lattice.
     pytac_lattice.set_data_source(ATLatticeDataSource(atsim), pytac.SIM)
     # Load the sim onto each element.

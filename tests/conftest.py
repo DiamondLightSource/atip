@@ -80,7 +80,7 @@ def at_lattice(request):
     return atip.utils.load_at_lattice(request.param)
 
 
-@pytest.fixture(scope="function", params=["DIAD"])
+@pytest.fixture(scope="function", params=["I04"])
 def lattice_filepath(request):
     here = os.path.dirname(__file__)
     filepath = os.path.realpath(

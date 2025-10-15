@@ -29,7 +29,11 @@ def load_at_lattice(mode="I04", **kwargs):
     return at_lattice
 
 
-def loader(mode="I04", callback=None, disable_emittance=False):
+def loader(
+    mode="I04",
+    sim_params=None,
+    callback=None,
+):
     """Load a unified lattice of the specifed mode.
 
     .. Note:: A unified lattice is a Pytac lattice where the corresponding AT
@@ -38,9 +42,10 @@ def loader(mode="I04", callback=None, disable_emittance=False):
 
     Args:
         mode (str): The lattice operation mode.
+        sim_params (SimParams | None): An optional dataclass containing the pyAT
+            simulation parameters to use.
         callback (typing.Callable): Callable to be called after completion of each
                               round of physics calculations in ATSimulator.
-        disable_emittance (bool): Whether the emittance should be calculated.
 
     Returns:
         pytac.lattice.Lattice: A Pytac lattice object with the simulator data
@@ -52,7 +57,12 @@ def loader(mode="I04", callback=None, disable_emittance=False):
         periodicity=1,
         energy=pytac_lattice.get_value("energy", units=pytac.PHYS),
     )
-    lattice = atip.load_sim.load(pytac_lattice, at_lattice, callback, disable_emittance)
+    lattice = atip.load_sim.load(
+        pytac_lattice,
+        at_lattice,
+        sim_params,
+        callback,
+    )
     return lattice
 
 

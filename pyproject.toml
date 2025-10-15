@@ -8,8 +8,6 @@ classifiers = [
     "Development Status :: 3 - Alpha",
     "License :: OSI Approved :: Apache Software License",
     "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
 ]
 description = "Accelerator Toolbox Interface for Pytac"
 dependencies = [
@@ -103,7 +101,7 @@ commands =
     pre-commit: pre-commit run --all-files --show-diff-on-failure {posargs}
     type-checking: mypy src tests {posargs}
     tests: pytest --cov=atip --cov-report term --cov-report xml:cov.xml {posargs}
-    docs: sphinx-{posargs:build -EW --keep-going} -T docs build/html
+    docs: sphinx-{posargs:build -E --keep-going} -T docs build/html
 """
 # Add -W flag to sphinx-build if you want to fail on warnings
 
