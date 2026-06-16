@@ -14,7 +14,7 @@ dependencies = [
     "numpy",
     "scipy",
     "pytac>=0.7.0",
-    "accelerator-toolbox (>=0.2.0,<0.7.1)",
+    "accelerator-toolbox>=0.2.0",
     "cothread",
     "softioc",
 ]
