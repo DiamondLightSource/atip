@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>atip.simulator &#8212; atip 0.2.1.dev34+gc4011f361 documentation</title>
+    <title>atip.simulator &#8212; atip 0.2.1.dev40+g414a078e7 documentation</title>
   
   
   
@@ -26,8 +26,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
@@ -35,45 +35,52 @@
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
-    <script src="../../_static/documentation_options.js?v=fee4d1dc"></script>
-    <script src="../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/documentation_options.js?v=c39005f0"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=30646c52"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/atip/simulator';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_version = '0.21.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://DiamondLightSource.github.io/atip/switcher.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'main';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="icon" href="../../_static/dls-logo.svg"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="main" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
-
+  <body data-default-mode="">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -99,7 +106,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -191,11 +198,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -208,8 +222,7 @@
           
           
           
-          <a href="https://github.com/DiamondLightSource/atip" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DiamondLightSource/atip" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -220,8 +233,7 @@
           
           
           
-          <a href="https://pypi.org/project/atip" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-cube fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">PyPI</span></a>
+          <a href="https://pypi.org/project/atip" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-cube fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
         </li>
 </ul></div>
       
@@ -328,11 +340,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -345,8 +364,7 @@
           
           
           
-          <a href="https://github.com/DiamondLightSource/atip" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/DiamondLightSource/atip" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -357,8 +375,7 @@
           
           
           
-          <a href="https://pypi.org/project/atip" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-cube fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">PyPI</span></a>
+          <a href="https://pypi.org/project/atip" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-cube fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
         </li>
 </ul></div>
         
@@ -442,7 +459,7 @@
                 <article class="bd-article">
                   
   <h1>Source code for atip.simulator</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Module containing an interface with the AT simulator.&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""Module containing an interface with the AT simulator."""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
@@ -473,25 +490,25 @@
     <span class="n">radiation</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check that we have a valid combination of simulation parameters.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Check that we have a valid combination of simulation parameters."""</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">LinoptType</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">linopt</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">linopt</span><span class="si">}</span><span class="s2"> is not a valid linopt function. Choose from: &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="p">[</span><span class="n">sp</span><span class="o">.</span><span class="n">value</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">sp</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">LinoptType</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">linopt</span><span class="si">}</span><span class="s2"> is not a valid linopt function. Choose from: "</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="p">[</span><span class="n">sp</span><span class="o">.</span><span class="n">value</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">sp</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">LinoptType</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">linopt</span> <span class="o">==</span> <span class="n">LinoptType</span><span class="o">.</span><span class="n">LINOPT2</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">linopt</span> <span class="o">==</span> <span class="n">LinoptType</span><span class="o">.</span><span class="n">LINOPT4</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">emittance</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">radiation</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;Emittance and radiation calculations must be disabled when using &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">linopt</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="s2">"Emittance and radiation calculations must be disabled when using "</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">linopt</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                 <span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">linopt</span> <span class="o">==</span> <span class="n">LinoptType</span><span class="o">.</span><span class="n">LINOPT6</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">radiation</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">emittance</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;You cannot calculate emittance with radiation disabled&quot;</span><span class="p">,</span>
+                    <span class="s2">"You cannot calculate emittance with radiation disabled"</span><span class="p">,</span>
                 <span class="p">)</span></div>
 
 
@@ -513,7 +530,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">calculate_optics</span><span class="p">(</span>
     <span class="n">at_lattice</span><span class="p">:</span> <span class="n">at</span><span class="o">.</span><span class="n">lattice_object</span><span class="o">.</span><span class="n">Lattice</span><span class="p">,</span> <span class="n">refpts</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">sp</span><span class="p">:</span> <span class="n">SimParams</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LatticeData</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Perform the physics calculations on the lattice.</span>
+<span class="w">    </span><span class="sd">"""Perform the physics calculations on the lattice.</span>
 
 <span class="sd">    .. Note:: We choose to use the more physically accurate find_orbit6 and</span>
 <span class="sd">       linopt6 functions over their faster but less representative 4d or 2d</span>
@@ -529,11 +546,11 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        LatticeData: The calculated lattice data.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Starting physics calculations.&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Starting physics calculations."</span><span class="p">)</span>
     <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;Using simulation params: </span><span class="si">{</span><span class="n">sp</span><span class="o">.</span><span class="n">linopt</span><span class="si">}</span><span class="s2">, emittance=</span><span class="si">{</span><span class="n">sp</span><span class="o">.</span><span class="n">emittance</span><span class="si">}</span><span class="s2">, chromaticity=&quot;</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sp</span><span class="o">.</span><span class="n">chromaticity</span><span class="si">}</span><span class="s2">, radiation=</span><span class="si">{</span><span class="n">sp</span><span class="o">.</span><span class="n">radiation</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="sa">f</span><span class="s2">"Using simulation params: </span><span class="si">{</span><span class="n">sp</span><span class="o">.</span><span class="n">linopt</span><span class="si">}</span><span class="s2">, emittance=</span><span class="si">{</span><span class="n">sp</span><span class="o">.</span><span class="n">emittance</span><span class="si">}</span><span class="s2">, chromaticity="</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">sp</span><span class="o">.</span><span class="n">chromaticity</span><span class="si">}</span><span class="s2">, radiation=</span><span class="si">{</span><span class="n">sp</span><span class="o">.</span><span class="n">radiation</span><span class="si">}</span><span class="s2">"</span>
     <span class="p">)</span>
 
     <span class="k">match</span> <span class="n">sp</span><span class="o">.</span><span class="n">linopt</span><span class="p">:</span>
@@ -549,7 +566,7 @@
 
     <span class="c1"># Perform pyAT orbit calculation</span>
     <span class="n">orbit0</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">orbit_func</span><span class="p">()</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Completed orbit calculation.&quot;</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Completed orbit calculation."</span><span class="p">)</span>
 
     <span class="c1"># Perform pyAT linear optics calculation</span>
     <span class="n">_</span><span class="p">,</span> <span class="n">beamdata</span><span class="p">,</span> <span class="n">twiss</span> <span class="o">=</span> <span class="n">linopt_func</span><span class="p">(</span>
@@ -558,21 +575,21 @@
         <span class="n">orbit</span><span class="o">=</span><span class="n">orbit0</span><span class="p">,</span>
         <span class="n">keep_lattice</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Completed linear optics calculation.&quot;</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Completed linear optics calculation."</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">sp</span><span class="o">.</span><span class="n">emittance</span><span class="p">:</span>
         <span class="n">emitdata</span> <span class="o">=</span> <span class="n">at_lattice</span><span class="o">.</span><span class="n">ohmi_envelope</span><span class="p">(</span><span class="n">orbit</span><span class="o">=</span><span class="n">orbit0</span><span class="p">,</span> <span class="n">keep_lattice</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Completed emittance calculation&quot;</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Completed emittance calculation"</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">emitdata</span> <span class="o">=</span> <span class="p">()</span>
 
     <span class="k">if</span> <span class="n">sp</span><span class="o">.</span><span class="n">radiation</span><span class="p">:</span>
         <span class="n">radint</span> <span class="o">=</span> <span class="n">at_lattice</span><span class="o">.</span><span class="n">get_radiation_integrals</span><span class="p">(</span><span class="n">twiss</span><span class="o">=</span><span class="n">twiss</span><span class="p">)</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Completed radiation calculation&quot;</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Completed radiation calculation"</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">radint</span> <span class="o">=</span> <span class="p">()</span>
 
-    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;All calculation complete.&quot;</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"All calculation complete."</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">LatticeData</span><span class="p">(</span><span class="n">twiss</span><span class="p">,</span> <span class="n">beamdata</span><span class="o">.</span><span class="n">tune</span><span class="p">,</span> <span class="n">beamdata</span><span class="o">.</span><span class="n">chromaticity</span><span class="p">,</span> <span class="n">emitdata</span><span class="p">,</span> <span class="n">radint</span><span class="p">)</span></div>
 
 
@@ -580,7 +597,7 @@
 <div class="viewcode-block" id="ATSimulator">
 <a class="viewcode-back" href="../../_api/atip.simulator.html#atip.simulator.ATSimulator">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ATSimulator</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A centralised class which makes use of AT to simulate the physics data</span>
+<span class="w">    </span><span class="sd">"""A centralised class which makes use of AT to simulate the physics data</span>
 <span class="sd">    for the copy of the AT lattice which it holds. It works as follows, when a</span>
 <span class="sd">    change is made to the lattice in Pytac it is added to the queue attribute</span>
 <span class="sd">    of this class. When the queue has changes on it  a recalculation is</span>
@@ -611,7 +628,7 @@
 <span class="sd">                                                    for new changes to the AT</span>
 <span class="sd">                                                    lattice and recalculate the</span>
 <span class="sd">                                                    physics data upon a change.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -619,7 +636,7 @@
         <span class="n">sim_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        .. Note:: To avoid errors, the physics data must be initially</span>
 <span class="sd">           calculated here, during creation, otherwise it could be accidentally</span>
 <span class="sd">           referenced before the _lattice_data attribute exists due to</span>
@@ -634,10 +651,10 @@
 <span class="sd">                physics calculations.</span>
 
 <span class="sd">        **Methods:**</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">callback</span><span class="p">))</span> <span class="ow">and</span> <span class="p">(</span><span class="n">callback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;If passed, &#39;callback&#39; should be callable, </span><span class="si">{</span><span class="n">callback</span><span class="si">}</span><span class="s2"> is not.&quot;</span>
+                <span class="sa">f</span><span class="s2">"If passed, 'callback' should be callable, </span><span class="si">{</span><span class="n">callback</span><span class="si">}</span><span class="s2"> is not."</span>
             <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_at_lat</span> <span class="o">=</span> <span class="n">at_lattice</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_rp</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">at_lattice</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
@@ -665,29 +682,29 @@
 <div class="viewcode-block" id="ATSimulator.queue_set">
 <a class="viewcode-back" href="../../_api/atip.simulator.html#atip.simulator.ATSimulator.queue_set">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">queue_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a change to the queue, to be applied when the queue is emptied.</span>
+<span class="w">        </span><span class="sd">"""Add a change to the queue, to be applied when the queue is emptied.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            func (typing.Callable): The function to be called to apply the change.</span>
 <span class="sd">            field (str): The field to be changed.</span>
 <span class="sd">            value (float): The value to be set.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">cothread</span><span class="o">.</span><span class="n">CallbackResult</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">up_to_date</span><span class="o">.</span><span class="n">Reset</span><span class="p">)</span>
         <span class="n">cothread</span><span class="o">.</span><span class="n">Callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="o">.</span><span class="n">Signal</span><span class="p">,</span> <span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_gather_one_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;If the queue is empty Wait() yields until an item is added. When the</span>
+<span class="w">        </span><span class="sd">"""If the queue is empty Wait() yields until an item is added. When the</span>
 <span class="sd">        queue is not empty the oldest change will be removed and applied to the</span>
 <span class="sd">        AT lattice.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">apply_change_method</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="o">.</span><span class="n">Wait</span><span class="p">()</span>
         <span class="n">apply_change_method</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ATSimulator.quit_calculation_thread">
 <a class="viewcode-back" href="../../_api/atip.simulator.html#atip.simulator.ATSimulator.quit_calculation_thread">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">quit_calculation_thread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Quit the calculation thread after the current loop is complete.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Quit the calculation thread after the current loop is complete."""</span>
         <span class="n">cothread</span><span class="o">.</span><span class="n">CallbackResult</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_quit_thread</span><span class="o">.</span><span class="n">Signal</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trigger_calculation</span><span class="p">()</span>
         <span class="n">cothread</span><span class="o">.</span><span class="n">CallbackResult</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_calculation_thread</span><span class="o">.</span><span class="n">Wait</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
@@ -697,9 +714,9 @@
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_recalculate_phys_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Target function for the Cothread thread. Recalculates the physics</span>
-<span class="sd">        data dependent on the status of the &#39;_paused&#39; flag and the length of</span>
-<span class="sd">        the queue. The calculations only take place if &#39;_paused&#39; is False and</span>
+<span class="w">        </span><span class="sd">"""Target function for the Cothread thread. Recalculates the physics</span>
+<span class="sd">        data dependent on the status of the '_paused' flag and the length of</span>
+<span class="sd">        the queue. The calculations only take place if '_paused' is False and</span>
 <span class="sd">        there are one or more changes on the queue.</span>
 
 <span class="sd">        .. Note:: If an error or exception is raised in the running thread then</span>
@@ -714,10 +731,10 @@
 <span class="sd">        Warns:</span>
 <span class="sd">            at.AtWarning: any error or exception that was raised in the thread,</span>
 <span class="sd">                           but as a warning.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># Using Cothread Event is only ~4% slower than a normal Boolean but much safer.</span>
         <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_quit_thread</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Starting recalculation loop&quot;</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Starting recalculation loop"</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_gather_one_sample</span><span class="p">()</span>
             <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_gather_one_sample</span><span class="p">()</span>
@@ -729,7 +746,7 @@
                 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                     <span class="n">warn</span><span class="p">(</span><span class="n">at</span><span class="o">.</span><span class="n">AtWarning</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
                     <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                        <span class="s2">&quot;PVs will not be updated due to simulation exception&quot;</span>
+                        <span class="s2">"PVs will not be updated due to simulation exception"</span>
                     <span class="p">)</span>
                     <span class="k">continue</span>
                 <span class="c1"># Signal the up to date flag since the physics data is now up to date.</span>
@@ -737,24 +754,24 @@
                 <span class="c1"># checks the flag.</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">up_to_date</span><span class="o">.</span><span class="n">Signal</span><span class="p">()</span>
                 <span class="k">if</span> <span class="n">callback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Executing callback function.&quot;</span><span class="p">)</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Executing callback function."</span><span class="p">)</span>
                     <span class="n">callback</span><span class="p">()</span>
-                    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Callback completed.&quot;</span><span class="p">)</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Callback completed."</span><span class="p">)</span>
             <span class="c1"># This could cause thread-locking issues if another application using</span>
             <span class="c1"># cothreads is poorly written and running on the same machine, but this</span>
-            <span class="c1"># isn&#39;t the case with any of the software that currently runs against</span>
-            <span class="c1"># ATIP/virtac and it&#39;s required for cothread.CallbackResult to play nicely</span>
-            <span class="c1"># with Bluesky. So it&#39;s a calculated risk until we move away from Cothread.</span>
+            <span class="c1"># isn't the case with any of the software that currently runs against</span>
+            <span class="c1"># ATIP/virtac and it's required for cothread.CallbackResult to play nicely</span>
+            <span class="c1"># with Bluesky. So it's a calculated risk until we move away from Cothread.</span>
             <span class="n">cothread</span><span class="o">.</span><span class="n">Yield</span><span class="p">()</span>
 
 <div class="viewcode-block" id="ATSimulator.toggle_calculations">
 <a class="viewcode-back" href="../../_api/atip.simulator.html#atip.simulator.ATSimulator.toggle_calculations">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">toggle_calculations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Pause or unpause the physics calculations by setting or clearing the</span>
+<span class="w">        </span><span class="sd">"""Pause or unpause the physics calculations by setting or clearing the</span>
 <span class="sd">        _paused flag.</span>
 
 <span class="sd">        .. Note:: This does not pause the emptying of the queue.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_paused</span><span class="p">:</span>
             <span class="n">cothread</span><span class="o">.</span><span class="n">CallbackResult</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_paused</span><span class="o">.</span><span class="n">Reset</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -764,10 +781,10 @@
 <div class="viewcode-block" id="ATSimulator.pause_calculations">
 <a class="viewcode-back" href="../../_api/atip.simulator.html#atip.simulator.ATSimulator.pause_calculations">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">pause_calculations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Pause the physics calculations by setting the _paused flag.</span>
+<span class="w">        </span><span class="sd">"""Pause the physics calculations by setting the _paused flag.</span>
 
 <span class="sd">        .. Note:: This does not pause the emptying of the queue.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_paused</span><span class="p">:</span>
             <span class="n">cothread</span><span class="o">.</span><span class="n">CallbackResult</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_paused</span><span class="o">.</span><span class="n">Signal</span><span class="p">)</span></div>
 
@@ -775,7 +792,7 @@
 <div class="viewcode-block" id="ATSimulator.unpause_calculations">
 <a class="viewcode-back" href="../../_api/atip.simulator.html#atip.simulator.ATSimulator.unpause_calculations">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">unpause_calculations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Unpause the physics calculations by clearing the _paused flag.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Unpause the physics calculations by clearing the _paused flag."""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_paused</span><span class="p">:</span>
             <span class="n">cothread</span><span class="o">.</span><span class="n">CallbackResult</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_paused</span><span class="o">.</span><span class="n">Reset</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">up_to_date</span><span class="p">:</span>
@@ -785,12 +802,12 @@
 <div class="viewcode-block" id="ATSimulator.trigger_calculation">
 <a class="viewcode-back" href="../../_api/atip.simulator.html#atip.simulator.ATSimulator.trigger_calculation">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">trigger_calculation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Unpause the physics calculations and add a null item to the queue to</span>
+<span class="w">        </span><span class="sd">"""Unpause the physics calculations and add a null item to the queue to</span>
 <span class="sd">        trigger a recalculation.</span>
 
 <span class="sd">        .. Note:: This method does not wait for the recalculation to complete,</span>
 <span class="sd">           that is up to the user.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">unpause_calculations</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">queue_set</span><span class="p">(</span><span class="k">lambda</span> <span class="o">*</span><span class="n">x</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
 
@@ -798,7 +815,7 @@
 <div class="viewcode-block" id="ATSimulator.wait_for_calculations">
 <a class="viewcode-back" href="../../_api/atip.simulator.html#atip.simulator.ATSimulator.wait_for_calculations">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">wait_for_calculations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Wait until the physics calculations have taken account of all</span>
+<span class="w">        </span><span class="sd">"""Wait until the physics calculations have taken account of all</span>
 <span class="sd">        changes to the AT lattice, i.e. the physics data is fully up to date.</span>
 
 <span class="sd">        Args:</span>
@@ -807,7 +824,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            bool: False if the timeout elapsed before the calculations</span>
 <span class="sd">            concluded, else True.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">cothread</span><span class="o">.</span><span class="n">CallbackResult</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">up_to_date</span><span class="o">.</span><span class="n">Wait</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">True</span>
@@ -819,47 +836,47 @@
 <div class="viewcode-block" id="ATSimulator.get_at_element">
 <a class="viewcode-back" href="../../_api/atip.simulator.html#atip.simulator.ATSimulator.get_at_element">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_at_element</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the AT element corresponding to the given index.</span>
+<span class="w">        </span><span class="sd">"""Return the AT element corresponding to the given index.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            index (int): The index of the AT element to return.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            at.elements.Element: The element specified by the given index.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_at_lat</span><span class="p">[</span><span class="n">index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="ATSimulator.get_at_lattice">
 <a class="viewcode-back" href="../../_api/atip.simulator.html#atip.simulator.ATSimulator.get_at_lattice">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_at_lattice</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a copy of the AT lattice object.</span>
+<span class="w">        </span><span class="sd">"""Return a copy of the AT lattice object.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            at.lattice_object.Lattice: A copy of the AT lattice object.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_at_lat</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="ATSimulator.get_s">
 <a class="viewcode-back" href="../../_api/atip.simulator.html#atip.simulator.ATSimulator.get_s">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_s</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the s position of every element in the AT lattice</span>
+<span class="w">        </span><span class="sd">"""Return the s position of every element in the AT lattice</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            list: The s position of each element.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_lattice_data</span><span class="o">.</span><span class="n">twiss</span><span class="p">[</span><span class="s2">&quot;s_pos&quot;</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span></div>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_lattice_data</span><span class="o">.</span><span class="n">twiss</span><span class="p">[</span><span class="s2">"s_pos"</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span></div>
 
 
 <div class="viewcode-block" id="ATSimulator.get_total_bend_angle">
 <a class="viewcode-back" href="../../_api/atip.simulator.html#atip.simulator.ATSimulator.get_total_bend_angle">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_total_bend_angle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the total bending angle of all the dipoles in the AT lattice.</span>
+<span class="w">        </span><span class="sd">"""Return the total bending angle of all the dipoles in the AT lattice.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            float: The total bending angle for the AT lattice.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">theta_sum</span> <span class="o">=</span> <span class="mf">0.0</span>
         <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_at_lat</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="n">at</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">elements</span><span class="o">.</span><span class="n">Dipole</span><span class="p">):</span>
@@ -870,12 +887,12 @@
 <div class="viewcode-block" id="ATSimulator.get_total_absolute_bend_angle">
 <a class="viewcode-back" href="../../_api/atip.simulator.html#atip.simulator.ATSimulator.get_total_absolute_bend_angle">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_total_absolute_bend_angle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the total absolute bending angle of all the dipoles in the</span>
+<span class="w">        </span><span class="sd">"""Return the total absolute bending angle of all the dipoles in the</span>
 <span class="sd">        AT lattice.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            float: The total absolute bending angle for the AT lattice.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">theta_sum</span> <span class="o">=</span> <span class="mf">0.0</span>
         <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_at_lat</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="n">at</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">elements</span><span class="o">.</span><span class="n">Dipole</span><span class="p">):</span>
@@ -886,11 +903,11 @@
 <div class="viewcode-block" id="ATSimulator.get_energy">
 <a class="viewcode-back" href="../../_api/atip.simulator.html#atip.simulator.ATSimulator.get_energy">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_energy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the energy of the AT lattice. Taken from the AT attribute.</span>
+<span class="w">        </span><span class="sd">"""Return the energy of the AT lattice. Taken from the AT attribute.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            float: The energy of the AT lattice.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_at_lat</span><span class="o">.</span><span class="n">energy</span></div>
 
 
@@ -898,7 +915,7 @@
 <div class="viewcode-block" id="ATSimulator.get_tune">
 <a class="viewcode-back" href="../../_api/atip.simulator.html#atip.simulator.ATSimulator.get_tune">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_tune</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the tune for the AT lattice for the specified plane.</span>
+<span class="w">        </span><span class="sd">"""Return the tune for the AT lattice for the specified plane.</span>
 
 <span class="sd">        .. Note:: A special consideration is made so only the fractional digits</span>
 <span class="sd">           of the tune are returned.</span>
@@ -912,22 +929,22 @@
 
 <span class="sd">        Raises:</span>
 <span class="sd">            pytac.FieldException: if the specified field is not valid for tune.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">tunes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lattice_data</span><span class="o">.</span><span class="n">tunes</span>
         <span class="k">if</span> <span class="n">field</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">tunes</span><span class="p">)</span> <span class="o">%</span> <span class="mi">1</span>
-        <span class="k">elif</span> <span class="n">field</span> <span class="o">==</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">field</span> <span class="o">==</span> <span class="s2">"x"</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">tunes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">%</span> <span class="mi">1</span>
-        <span class="k">elif</span> <span class="n">field</span> <span class="o">==</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">field</span> <span class="o">==</span> <span class="s2">"y"</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">tunes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">%</span> <span class="mi">1</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">FieldException</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Field </span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2"> is not a valid tune plane.&quot;</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="n">FieldException</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Field </span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2"> is not a valid tune plane."</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ATSimulator.get_chromaticity">
 <a class="viewcode-back" href="../../_api/atip.simulator.html#atip.simulator.ATSimulator.get_chromaticity">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_chromaticity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the chromaticity for the AT lattice for the specified plane.</span>
+<span class="w">        </span><span class="sd">"""Return the chromaticity for the AT lattice for the specified plane.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            field (str): The desired field (x or y) of chromaticity, if None</span>
@@ -939,23 +956,23 @@
 <span class="sd">        Raises:</span>
 <span class="sd">            pytac.FieldException: if the specified field is not valid for</span>
 <span class="sd">                             chromaticity.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">chrom</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lattice_data</span><span class="o">.</span><span class="n">chrom</span>
         <span class="k">if</span> <span class="n">field</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">chrom</span>
-        <span class="k">elif</span> <span class="n">field</span> <span class="o">==</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">field</span> <span class="o">==</span> <span class="s2">"x"</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">chrom</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">field</span> <span class="o">==</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">field</span> <span class="o">==</span> <span class="s2">"y"</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">chrom</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">FieldException</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Field </span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2"> is not a valid chromaticity plane.&quot;</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="n">FieldException</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Field </span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2"> is not a valid chromaticity plane."</span><span class="p">)</span></div>
 
 
     <span class="c1"># Get local linear optics data:</span>
 <div class="viewcode-block" id="ATSimulator.get_orbit">
 <a class="viewcode-back" href="../../_api/atip.simulator.html#atip.simulator.ATSimulator.get_orbit">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_orbit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the closed orbit at each element in the AT lattice for the</span>
+<span class="w">        </span><span class="sd">"""Return the closed orbit at each element in the AT lattice for the</span>
 <span class="sd">        specified plane.</span>
 
 <span class="sd">        Args:</span>
@@ -968,26 +985,26 @@
 
 <span class="sd">        Raises:</span>
 <span class="sd">            pytac.FieldException: if the specified field is not valid for orbit.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">closed_orbit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lattice_data</span><span class="o">.</span><span class="n">twiss</span><span class="p">[</span><span class="s2">&quot;closed_orbit&quot;</span><span class="p">]</span>
+<span class="sd">        """</span>
+        <span class="n">closed_orbit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lattice_data</span><span class="o">.</span><span class="n">twiss</span><span class="p">[</span><span class="s2">"closed_orbit"</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">field</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">closed_orbit</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">field</span> <span class="o">==</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">field</span> <span class="o">==</span> <span class="s2">"x"</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">closed_orbit</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">field</span> <span class="o">==</span> <span class="s2">&quot;px&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">field</span> <span class="o">==</span> <span class="s2">"px"</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">closed_orbit</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">field</span> <span class="o">==</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">field</span> <span class="o">==</span> <span class="s2">"y"</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">closed_orbit</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">field</span> <span class="o">==</span> <span class="s2">&quot;py&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">field</span> <span class="o">==</span> <span class="s2">"py"</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">closed_orbit</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">FieldException</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Field </span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2"> is not a valid closed orbit plane.&quot;</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="n">FieldException</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Field </span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2"> is not a valid closed orbit plane."</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ATSimulator.get_dispersion">
 <a class="viewcode-back" href="../../_api/atip.simulator.html#atip.simulator.ATSimulator.get_dispersion">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_dispersion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the dispersion at every element in the AT lattice for the</span>
+<span class="w">        </span><span class="sd">"""Return the dispersion at every element in the AT lattice for the</span>
 <span class="sd">        specified plane.</span>
 
 <span class="sd">        Args:</span>
@@ -1000,74 +1017,74 @@
 
 <span class="sd">        Raises:</span>
 <span class="sd">            pytac.FieldException: if the specified field is not valid for dispersion.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">dispersion</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lattice_data</span><span class="o">.</span><span class="n">twiss</span><span class="p">[</span><span class="s2">&quot;dispersion&quot;</span><span class="p">]</span>
+<span class="sd">        """</span>
+        <span class="n">dispersion</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lattice_data</span><span class="o">.</span><span class="n">twiss</span><span class="p">[</span><span class="s2">"dispersion"</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">field</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">dispersion</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">field</span> <span class="o">==</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">field</span> <span class="o">==</span> <span class="s2">"x"</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">dispersion</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">field</span> <span class="o">==</span> <span class="s2">&quot;px&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">field</span> <span class="o">==</span> <span class="s2">"px"</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">dispersion</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">field</span> <span class="o">==</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">field</span> <span class="o">==</span> <span class="s2">"y"</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">dispersion</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">field</span> <span class="o">==</span> <span class="s2">&quot;py&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">field</span> <span class="o">==</span> <span class="s2">"py"</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">dispersion</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">FieldException</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Field </span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2"> is not a valid dispersion plane.&quot;</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="n">FieldException</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Field </span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2"> is not a valid dispersion plane."</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ATSimulator.get_alpha">
 <a class="viewcode-back" href="../../_api/atip.simulator.html#atip.simulator.ATSimulator.get_alpha">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_alpha</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the alpha vector at every element in the AT lattice.</span>
+<span class="w">        </span><span class="sd">"""Return the alpha vector at every element in the AT lattice.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            numpy.typing.NDArray: The alpha vector for each element.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lattice_data</span><span class="o">.</span><span class="n">twiss</span><span class="p">[</span><span class="s2">&quot;alpha&quot;</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lattice_data</span><span class="o">.</span><span class="n">twiss</span><span class="p">[</span><span class="s2">"alpha"</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="ATSimulator.get_beta">
 <a class="viewcode-back" href="../../_api/atip.simulator.html#atip.simulator.ATSimulator.get_beta">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the beta vector at every element in the AT lattice.</span>
+<span class="w">        </span><span class="sd">"""Return the beta vector at every element in the AT lattice.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            numpy.typing.NDArray: The beta vector for each element.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lattice_data</span><span class="o">.</span><span class="n">twiss</span><span class="p">[</span><span class="s2">&quot;beta&quot;</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lattice_data</span><span class="o">.</span><span class="n">twiss</span><span class="p">[</span><span class="s2">"beta"</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="ATSimulator.get_mu">
 <a class="viewcode-back" href="../../_api/atip.simulator.html#atip.simulator.ATSimulator.get_mu">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_mu</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return mu at every element in the AT lattice.</span>
+<span class="w">        </span><span class="sd">"""Return mu at every element in the AT lattice.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            numpy.typing.NDArray: The mu array for each element.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lattice_data</span><span class="o">.</span><span class="n">twiss</span><span class="p">[</span><span class="s2">&quot;mu&quot;</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lattice_data</span><span class="o">.</span><span class="n">twiss</span><span class="p">[</span><span class="s2">"mu"</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="ATSimulator.get_m66">
 <a class="viewcode-back" href="../../_api/atip.simulator.html#atip.simulator.ATSimulator.get_m66">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_m66</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the 6x6 transfer matrix for every element in the AT lattice.</span>
+<span class="w">        </span><span class="sd">"""Return the 6x6 transfer matrix for every element in the AT lattice.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            numpy.typing.NDArray: The 6x6 transfer matrix for each element.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lattice_data</span><span class="o">.</span><span class="n">twiss</span><span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lattice_data</span><span class="o">.</span><span class="n">twiss</span><span class="p">[</span><span class="s2">"M"</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
 
 
     <span class="c1"># Get lattice emittance from beam envelope:</span>
 <div class="viewcode-block" id="ATSimulator.get_emittance">
 <a class="viewcode-back" href="../../_api/atip.simulator.html#atip.simulator.ATSimulator.get_emittance">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_emittance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the emittance for the AT lattice for the specified plane.</span>
+<span class="w">        </span><span class="sd">"""Return the emittance for the AT lattice for the specified plane.</span>
 
 <span class="sd">        .. Note:: The emittance at the entrance of the AT lattice is returned</span>
-<span class="sd">           as it is constant throughout the lattice, and so which element&#39;s</span>
+<span class="sd">           as it is constant throughout the lattice, and so which element's</span>
 <span class="sd">           emittance is returned is arbitrary.</span>
 
 <span class="sd">        Args:</span>
@@ -1079,19 +1096,19 @@
 
 <span class="sd">        Raises:</span>
 <span class="sd">            pytac.FieldException: if the specified field is not valid for emittance.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_params</span><span class="o">.</span><span class="n">emittance</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">field</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lattice_data</span><span class="o">.</span><span class="n">emittance</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;emitXY&quot;</span><span class="p">]</span>
-            <span class="k">elif</span> <span class="n">field</span> <span class="o">==</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span>
-                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lattice_data</span><span class="o">.</span><span class="n">emittance</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;emitXY&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-            <span class="k">elif</span> <span class="n">field</span> <span class="o">==</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span>
-                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lattice_data</span><span class="o">.</span><span class="n">emittance</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;emitXY&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lattice_data</span><span class="o">.</span><span class="n">emittance</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">"emitXY"</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">field</span> <span class="o">==</span> <span class="s2">"x"</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lattice_data</span><span class="o">.</span><span class="n">emittance</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">"emitXY"</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">field</span> <span class="o">==</span> <span class="s2">"y"</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lattice_data</span><span class="o">.</span><span class="n">emittance</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">"emitXY"</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">FieldException</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Field </span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2"> is not a valid emittance plane.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">FieldException</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Field </span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2"> is not a valid emittance plane."</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">DataSourceException</span><span class="p">(</span>
-                <span class="s2">&quot;Emittance calculations not enabled on this simulator object.&quot;</span>
+                <span class="s2">"Emittance calculations not enabled on this simulator object."</span>
             <span class="p">)</span></div>
 
 
@@ -1099,34 +1116,34 @@
 <div class="viewcode-block" id="ATSimulator.get_radiation_integrals">
 <a class="viewcode-back" href="../../_api/atip.simulator.html#atip.simulator.ATSimulator.get_radiation_integrals">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_radiation_integrals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the 5 Synchrotron Integrals for the AT lattice.</span>
+<span class="w">        </span><span class="sd">"""Return the 5 Synchrotron Integrals for the AT lattice.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            numpy.typing.NDArray: The 5 radiation integrals.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_lattice_data</span><span class="o">.</span><span class="n">radint</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ATSimulator.get_momentum_compaction">
 <a class="viewcode-back" href="../../_api/atip.simulator.html#atip.simulator.ATSimulator.get_momentum_compaction">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_momentum_compaction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the linear momentum compaction factor for the AT lattice.</span>
+<span class="w">        </span><span class="sd">"""Return the linear momentum compaction factor for the AT lattice.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            float: The linear momentum compaction factor of the AT lattice.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">I1</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lattice_data</span><span class="o">.</span><span class="n">radint</span>
-        <span class="k">return</span> <span class="n">I1</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lattice_data</span><span class="o">.</span><span class="n">twiss</span><span class="p">[</span><span class="s2">&quot;s_pos&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="n">I1</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lattice_data</span><span class="o">.</span><span class="n">twiss</span><span class="p">[</span><span class="s2">"s_pos"</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="ATSimulator.get_energy_spread">
 <a class="viewcode-back" href="../../_api/atip.simulator.html#atip.simulator.ATSimulator.get_energy_spread">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_energy_spread</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the energy spread for the AT lattice.</span>
+<span class="w">        </span><span class="sd">"""Return the energy spread for the AT lattice.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            float: The energy spread for the AT lattice.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">_</span><span class="p">,</span> <span class="n">I2</span><span class="p">,</span> <span class="n">I3</span><span class="p">,</span> <span class="n">I4</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lattice_data</span><span class="o">.</span><span class="n">radint</span>
         <span class="n">gamma</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_energy</span><span class="p">()</span> <span class="o">/</span> <span class="p">(</span><span class="n">at</span><span class="o">.</span><span class="n">constants</span><span class="o">.</span><span class="n">e_mass</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">gamma</span> <span class="o">*</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">at</span><span class="o">.</span><span class="n">constants</span><span class="o">.</span><span class="n">Cq</span> <span class="o">*</span> <span class="n">I3</span><span class="p">)</span> <span class="o">/</span> <span class="p">((</span><span class="mi">2</span> <span class="o">*</span> <span class="n">I2</span><span class="p">)</span> <span class="o">+</span> <span class="n">I4</span><span class="p">))</span></div>
@@ -1135,11 +1152,11 @@
 <div class="viewcode-block" id="ATSimulator.get_energy_loss">
 <a class="viewcode-back" href="../../_api/atip.simulator.html#atip.simulator.ATSimulator.get_energy_loss">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_energy_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the energy loss per turn of the AT lattice.</span>
+<span class="w">        </span><span class="sd">"""Return the energy loss per turn of the AT lattice.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            float: The energy loss of the AT lattice.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">_</span><span class="p">,</span> <span class="n">I2</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lattice_data</span><span class="o">.</span><span class="n">radint</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">at</span><span class="o">.</span><span class="n">constants</span><span class="o">.</span><span class="n">Cgamma</span> <span class="o">*</span> <span class="n">I2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_energy</span><span class="p">()</span> <span class="o">**</span> <span class="mi">4</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">numpy</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span></div>
 
@@ -1147,22 +1164,22 @@
 <div class="viewcode-block" id="ATSimulator.get_damping_partition_numbers">
 <a class="viewcode-back" href="../../_api/atip.simulator.html#atip.simulator.ATSimulator.get_damping_partition_numbers">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_damping_partition_numbers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the damping partition numbers for the 3 normal modes.</span>
+<span class="w">        </span><span class="sd">"""Return the damping partition numbers for the 3 normal modes.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            numpy.typing.NDArray: The damping partition numbers of the AT lattice.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">_</span><span class="p">,</span> <span class="n">I2</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">I4</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lattice_data</span><span class="o">.</span><span class="n">radint</span>
         <span class="n">Jx</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">I4</span> <span class="o">/</span> <span class="n">I2</span><span class="p">)</span>
         <span class="n">Je</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">I4</span> <span class="o">/</span> <span class="n">I2</span><span class="p">)</span>
-        <span class="n">Jy</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">-</span> <span class="p">(</span><span class="n">Jx</span> <span class="o">+</span> <span class="n">Je</span><span class="p">)</span>  <span class="c1"># Check they sum to 4, don&#39;t just assume Jy is 1.</span>
+        <span class="n">Jy</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">-</span> <span class="p">(</span><span class="n">Jx</span> <span class="o">+</span> <span class="n">Je</span><span class="p">)</span>  <span class="c1"># Check they sum to 4, don't just assume Jy is 1.</span>
         <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">Jx</span><span class="p">,</span> <span class="n">Jy</span><span class="p">,</span> <span class="n">Je</span><span class="p">])</span></div>
 
 
 <div class="viewcode-block" id="ATSimulator.get_damping_times">
 <a class="viewcode-back" href="../../_api/atip.simulator.html#atip.simulator.ATSimulator.get_damping_times">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_damping_times</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the damping times for the 3 normal modes.</span>
+<span class="w">        </span><span class="sd">"""Return the damping times for the 3 normal modes.</span>
 <span class="sd">        [tx, ty, tz] = (2*E0*T0)/(U0*[Jx, Jy, Jz]) [1]</span>
 <span class="sd">        [1] A.Wolski; CERN  Accelerator School, Advanced Accelerator Physics</span>
 <span class="sd">        Course, Low Emittance Machines, Part 1: Beam Dynamics with Synchrotron</span>
@@ -1170,7 +1187,7 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            numpy.typing.NDArray: The damping times of the AT lattice.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">E0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_energy</span><span class="p">()</span>
         <span class="n">U0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_energy_loss</span><span class="p">()</span>
         <span class="n">T0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_at_lat</span><span class="o">.</span><span class="n">circumference</span> <span class="o">/</span> <span class="n">speed_of_light</span>
@@ -1180,11 +1197,11 @@
 <div class="viewcode-block" id="ATSimulator.get_linear_dispersion_action">
 <a class="viewcode-back" href="../../_api/atip.simulator.html#atip.simulator.ATSimulator.get_linear_dispersion_action">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_linear_dispersion_action</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the Linear Dispersion Action (&quot;curly H&quot;) for the AT lattice.</span>
+<span class="w">        </span><span class="sd">"""Return the Linear Dispersion Action ("curly H") for the AT lattice.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            float: Curly H for the AT lattice</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">_</span><span class="p">,</span> <span class="n">I2</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">I5</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lattice_data</span><span class="o">.</span><span class="n">radint</span>
         <span class="k">return</span> <span class="n">I5</span> <span class="o">/</span> <span class="n">I2</span></div>
 
@@ -1192,13 +1209,13 @@
 <div class="viewcode-block" id="ATSimulator.get_horizontal_emittance">
 <a class="viewcode-back" href="../../_api/atip.simulator.html#atip.simulator.ATSimulator.get_horizontal_emittance">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_horizontal_emittance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the horizontal emittance for the AT lattice calculated from</span>
+<span class="w">        </span><span class="sd">"""Return the horizontal emittance for the AT lattice calculated from</span>
 <span class="sd">        the radiation integrals, as opposed to the beam envelope formalism</span>
-<span class="sd">        used by AT&#39;s ohmi_envelope function.</span>
+<span class="sd">        used by AT's ohmi_envelope function.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            float: The horizontal (&#39;x&#39;) emittance for the AT lattice.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">            float: The horizontal ('x') emittance for the AT lattice.</span>
+<span class="sd">        """</span>
         <span class="n">_</span><span class="p">,</span> <span class="n">I2</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">I4</span><span class="p">,</span> <span class="n">I5</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lattice_data</span><span class="o">.</span><span class="n">radint</span>
         <span class="n">gamma</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_energy</span><span class="p">()</span> <span class="o">/</span> <span class="p">(</span><span class="n">at</span><span class="o">.</span><span class="n">constants</span><span class="o">.</span><span class="n">e_mass</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">I5</span> <span class="o">*</span> <span class="n">at</span><span class="o">.</span><span class="n">constants</span><span class="o">.</span><span class="n">Cq</span> <span class="o">*</span> <span class="n">gamma</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">I2</span> <span class="o">-</span> <span class="n">I4</span><span class="p">)</span></div>
@@ -1233,8 +1250,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1246,7 +1263,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
 </p></div>
       
     </div>
