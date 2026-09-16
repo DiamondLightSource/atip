@@ -17,6 +17,7 @@ dependencies = [
     "accelerator-toolbox>=0.2.0",
     "cothread",
     "softioc",
+    "matplotlib",
 ]
 
 dynamic = ["version"]
