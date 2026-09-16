@@ -1,0 +1,23 @@
+``atip.load_sim``
+=================
+        
+        
+
+.. automodule:: atip.load_sim
+    :members:
+
+    
+    
+    
+
+    
+    
+    .. rubric:: Members
+
+    .. autosummary::
+        :nosignatures:
+    
+        load
+        load_from_filepath
+    
+    
