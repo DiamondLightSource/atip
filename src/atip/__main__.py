@@ -6,7 +6,9 @@ import random
 from argparse import ArgumentParser
 from collections.abc import Sequence
 
-from atip import __version__
+import pytac
+
+import atip
 
 __all__ = ["main"]
 
@@ -18,7 +20,7 @@ async def async_main(args: Sequence[str] | None = None) -> None:
         "-v",
         "--version",
         action="version",
-        version=__version__,
+        version=atip.__version__,
     )
     parser.add_argument(
         "-t",
