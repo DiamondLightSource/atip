@@ -194,36 +194,38 @@ class ATSimulator:
 
         **Methods:**
         """
-        self = cls()
+        atsim = cls()
         if (not callable(callback)) and (callback is not None):
             raise TypeError(
                 f"If passed, 'callback' should be callable, {callback} is not."
             )
-        self._at_lat = at_lattice
-        self._rp = numpy.ones(len(at_lattice) + 1, dtype=bool)
+        atsim._at_lat = at_lattice
+        atsim._rp = numpy.ones(len(at_lattice) + 1, dtype=bool)
 
         if sim_params is None:
             sim_params = SimParams()
-        self._sim_params = sim_params
+        atsim._sim_params = sim_params
 
-        if self._sim_params.linopt == LinoptType.LINOPT6:
-            self._at_lat.enable_6d()
+        if atsim._sim_params.linopt == LinoptType.LINOPT6:
+            atsim._at_lat.enable_6d()
 
         # Initial phys data calculation.
-        self._lattice_data = calculate_optics(self._at_lat, self._rp, self._sim_params)
+        atsim._lattice_data = calculate_optics(
+            atsim._at_lat, atsim._rp, atsim._sim_params
+        )
 
-        self._loop = asyncio.get_event_loop()  # TODO: check a loop is running
-        self._queue = asyncio.Queue()
-        self._paused = asyncio.Event()
-        self._quit_thread = asyncio.Event()
-        self._up_to_date = asyncio.Event()
-        self._up_to_date.set()
-        self._new_data_lock = asyncio.Lock()
+        atsim._loop = asyncio.get_event_loop()  # TODO: check a loop is running
+        atsim._queue = asyncio.Queue()
+        atsim._paused = asyncio.Event()
+        atsim._quit_thread = asyncio.Event()
+        atsim._up_to_date = asyncio.Event()
+        atsim._up_to_date.set()
+        atsim._new_data_lock = asyncio.Lock()
 
-        self._calculation_task = asyncio.create_task(
-            self._recalculate_phys_data(callback)
+        atsim._calculation_task = asyncio.create_task(
+            atsim._recalculate_phys_data(callback)
         )  # This task should last the lifetime of the program
-        return self
+        return atsim
 
     async def queue_set(self, func, field, value):
         """Add a change to the queue, to be applied when the queue is emptied.
