@@ -3,16 +3,13 @@
 import asyncio
 import logging
 from argparse import ArgumentParser
-from collections.abc import Sequence
-
-import pytac
 
 import atip
 
 __all__ = ["main"]
 
 
-async def async_main(args: Sequence[str] | None = None) -> None:
+async def async_main() -> None:
     """Argument parser for the CLI."""
     parser = ArgumentParser()
     parser.add_argument(
@@ -33,11 +30,11 @@ async def async_main(args: Sequence[str] | None = None) -> None:
         await atip.utils.test_atip()
 
 
-def main(args: Sequence[str] | None = None) -> None:
+def main() -> None:
     logging.basicConfig()
     logging.getLogger().setLevel(logging.DEBUG)
     # Load the AT sim into the Pytac lattice.
-    asyncio.run(async_main(args))
+    asyncio.run(async_main())
 
 
 if __name__ == "__main__":
