@@ -59,20 +59,20 @@ def at_elem_preset():
 
 @pytest.fixture(scope="session")
 def atlds():
-    return atip.sim_data_sources.ATLatticeDataSource(mock.Mock())
+    return atip.sim_data_sources.ATLatticeDataSource(mock.AsyncMock())
 
 
 @pytest.fixture(scope="function", params=["I04"])
-def at_and_pytac_lattices(request):
+async def at_and_pytac_lattices(request):
     lattices = []
-    lattices.append(load_csv.load(request.param, cs.ControlSystem()))
+    lattices.append(await load_csv.load(request.param, cs.ControlSystem()))
     lattices.append(atip.utils.load_at_lattice(request.param))
     return lattices
 
 
 @pytest.fixture(scope="function", params=["I04"])
-def pytac_lattice(request):
-    return load_csv.load(request.param, cs.ControlSystem())
+async def pytac_lattice(request):
+    return await load_csv.load(request.param, cs.ControlSystem())
 
 
 @pytest.fixture(scope="function", params=["I04"])
@@ -90,15 +90,20 @@ def lattice_filepath(request):
 
 
 @pytest.fixture()
-def atsim(at_lattice):
-    return atip.simulator.ATSimulator(at_lattice)
+async def atsim(at_lattice):
+    atsim = await atip.simulator.ATSimulator.create(at_lattice)
+    # We must mock run_in_executor to allow it to work with other mocked objects
+    atsim._loop.run_in_executor = mock.AsyncMock(
+        side_effect=lambda pool, func, *args: func(*args)
+    )
+    return atsim
 
 
 @pytest.fixture()
-def mocked_atsim(at_lattice):
+async def mocked_atsim(at_lattice):
     length = len(at_lattice) + 1
     base = numpy.ones((length, 4))
-    atsim = atip.simulator.ATSimulator(at_lattice)
+    atsim = await atip.simulator.ATSimulator.create(at_lattice)
     atsim._at_lat = mock.PropertyMock(energy=5, circumference=(length * 0.1))
     emitdata = [{"emitXY": numpy.array([1.4, 0.45])}]
     twiss = {
@@ -119,17 +124,17 @@ def mocked_atsim(at_lattice):
 
 
 @pytest.fixture()
-def ba_atsim(at_lattice):
+async def ba_atsim(at_lattice):
     dr = at.elements.Drift("d1", 1)
     dr.BendingAngle = 9001
     lat = [at.elements.Dipole("b1", 1, 1.3), at.elements.Dipole("b2", 1, -0.8)]
-    at_sim = atip.simulator.ATSimulator(at_lattice)
+    at_sim = await atip.simulator.ATSimulator.create(at_lattice)
     at_sim._at_lat = lat
     return at_sim
 
 
 @pytest.fixture()
-def initial_phys_data(atsim):
+def initial_phys_data(atsim, at_lattice):
     return {
         "tune": numpy.array([0.1823785, 0.2730096]),
         "chromaticity": numpy.array([2.05528097, 2.90000203]),

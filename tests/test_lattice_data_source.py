@@ -77,22 +77,22 @@ def test_lat_get_fields(atlds):
 
 
 @pytest.mark.parametrize("field", ["not_a_field", 1, [], "BETA", ["x", "y"]])
-def test_lat_get_value_raises_FieldException_if_nonexistent_field(atlds, field):
+async def test_lat_get_value_raises_FieldException_if_nonexistent_field(atlds, field):
     with pytest.raises(FieldException):
-        atlds.get_value(field)
+        await atlds.get_value(field)
 
 
-def test_lat_get_value_handles_calculation_check_time_out_correctly():
-    atsim = mock.Mock()
-    atsim.get_dispersion.return_value = 2.5
+async def test_lat_get_value_handles_calculation_check_time_out_correctly():
+    atsim = mock.AsyncMock()
+    atsim.get_dispersion = mock.Mock(return_value=2.5)
     atlds = atip.sim_data_sources.ATLatticeDataSource(atsim)
     atsim.wait_for_calculations.return_value = False
     # Check fails, throw is True, so exception is raised.
     with pytest.raises(ControlSystemException):
-        atlds.get_value("dispersion", throw=True)
+        await atlds.get_value("dispersion", throw=True)
     # Check fails, throw is False, so warning is logged and value is returned.
     with LogCapture() as log:
-        assert atlds.get_value("dispersion", throw=False) == 2.5
+        assert await atlds.get_value("dispersion", throw=False) == 2.5
     log.check(
         (
             "root",
@@ -103,24 +103,25 @@ def test_lat_get_value_handles_calculation_check_time_out_correctly():
     )
     atsim.wait_for_calculations.return_value = True
     # Check doesn't fail, so doesn't raise error or warn and data is returned.
-    assert atlds.get_value("dispersion", throw=True) == 2.5
-    assert atlds.get_value("dispersion", throw=False) == 2.5
+    assert await atlds.get_value("dispersion", throw=True) == 2.5
+    assert await atlds.get_value("dispersion", throw=False) == 2.5
 
 
-def test_lat_get_value():
+async def test_lat_get_value():
     """We don't need to test every value for get_value() as _field_funcs which
     it relys on has alreadly been tested for all fields."""
-    atsim = mock.Mock()
-    atsim.get_dispersion.return_value = 2.5
+    atsim = mock.AsyncMock()
+    atsim.get_dispersion = mock.Mock(return_value=2.5)
+    atsim.get_orbit = mock.Mock()
     atlds = atip.sim_data_sources.ATLatticeDataSource(atsim)
-    assert atlds.get_value("dispersion") == 2.5
-    atlds.get_value("x")
+    assert await atlds.get_value("dispersion") == 2.5
+    await atlds.get_value("x")
     atsim.get_orbit.assert_called_with("x")
-    atlds.get_value("phase_x")
+    await atlds.get_value("phase_x")
     atsim.get_orbit.assert_called_with("px")
-    atlds.get_value("y")
+    await atlds.get_value("y")
     atsim.get_orbit.assert_called_with("y")
-    atlds.get_value("phase_y")
+    await atlds.get_value("phase_y")
     atsim.get_orbit.assert_called_with("py")
 
 

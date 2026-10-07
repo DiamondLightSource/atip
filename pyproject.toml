@@ -35,6 +35,7 @@ dev = [
     "pydata-sphinx-theme>=0.12",
     "pytest",
     "pytest-cov",
+    "pytest-asyncio",
     "testfixtures",
     "ruff",
     "sphinx-autobuild",
@@ -73,6 +74,7 @@ addopts = """
 filterwarnings = "error"
 # Doctest python code in docs, python code in src docstrings, test functions in tests
 testpaths = "docs src tests"
+asyncio_mode = "auto"
 
 [tool.coverage.run]
 data_file = "/tmp/atip.coverage"
