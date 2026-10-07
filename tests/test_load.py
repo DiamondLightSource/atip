@@ -18,8 +18,8 @@ def test_load_atip_lattice(request, at_lattice):
 
 
 @pytest.mark.parametrize("at_and_pytac_lattices", RINGMODES_TO_TEST, indirect=True)
-def test_load_pytac_side(at_and_pytac_lattices):
-    lat = atip.load_sim.load(at_and_pytac_lattices[0], at_and_pytac_lattices[1])
+async def test_load_pytac_side(at_and_pytac_lattices):
+    lat = await atip.load_sim.load(at_and_pytac_lattices[0], at_and_pytac_lattices[1])
     # Check lattice has simulator data source
     assert pytac.SIM in lat._data_source_manager._data_sources
     # Check all elements have simulator data source
@@ -35,42 +35,46 @@ def test_load_pytac_side(at_and_pytac_lattices):
     [(mode, mode) for mode in RINGMODES_TO_TEST],
     indirect=True,
 )
-def test_load_atip_and_pytac_lattices(pytac_lattice, lattice_filepath):
-    atip.load_sim.load_from_filepath(pytac_lattice, lattice_filepath)
+async def test_load_atip_and_pytac_lattices(pytac_lattice, lattice_filepath):
+    await atip.load_sim.load_from_filepath(pytac_lattice, lattice_filepath)
 
 
 @pytest.mark.parametrize("at_and_pytac_lattices", RINGMODES_TO_TEST, indirect=True)
-def test_load_with_non_callable_callback_raises_TypeError(at_and_pytac_lattices):
+async def test_load_with_non_callable_callback_raises_TypeError(at_and_pytac_lattices):
     with pytest.raises(TypeError):
-        atip.load_sim.load(
+        await atip.load_sim.load(
             at_and_pytac_lattices[0], at_and_pytac_lattices[1], callback=""
         )
 
 
 @pytest.mark.parametrize("at_and_pytac_lattices", RINGMODES_TO_TEST, indirect=True)
-def test_load_with_callback(at_and_pytac_lattices):
-    callback_func = mock.Mock()
-    lat = atip.load_sim.load(
-        at_and_pytac_lattices[0], at_and_pytac_lattices[1], callback=callback_func
+async def test_load_with_callback(at_and_pytac_lattices):
+    callback_func = mock.AsyncMock()
+    lat = await atip.load_sim.load(
+        at_and_pytac_lattices[0],
+        at_and_pytac_lattices[1],
+        callback=callback_func,
     )
     atsim = lat._data_source_manager._data_sources[pytac.SIM]._atsim
-    atip.utils.trigger_calc(at_and_pytac_lattices[0])
-    atsim.wait_for_calculations()
+    await atip.utils.trigger_calc(at_and_pytac_lattices[0])
+    await atsim.wait_for_calculations()
     callback_func.assert_called_once_with()
 
 
-def test_load_raises_ValueError_if_incompatible_lattices():
+async def test_load_raises_ValueError_if_incompatible_lattices():
     with pytest.raises(ValueError):
-        atip.load_sim.load([1], [1, 2])  # length mismatch
+        await atip.load_sim.load([1], [1, 2])  # length mismatch
 
 
 @mock.patch("atip.simulator.calculate_optics")
-def test_load_from_filepath_with_default_sim_params(
+async def test_load_from_filepath_with_default_sim_params(
     mocked_calc_optics,
     pytac_lattice,
     lattice_filepath,
 ):
-    pytac_lattice = atip.load_sim.load_from_filepath(pytac_lattice, lattice_filepath)
+    pytac_lattice = await atip.load_sim.load_from_filepath(
+        pytac_lattice, lattice_filepath
+    )
 
     mocked_calc_optics.assert_called_with(
         mock.ANY, mock.ANY, atip.simulator.SimParams()
@@ -89,7 +93,7 @@ def test_load_from_filepath_with_default_sim_params(
     ],
 )
 @mock.patch("atip.simulator.calculate_optics")
-def test_load_with_non_default_sim_params(
+async def test_load_with_non_default_sim_params(
     mocked_calc_optics,
     pytac_lattice,
     lattice_filepath,
@@ -105,7 +109,7 @@ def test_load_with_non_default_sim_params(
         radiation,
     )
 
-    pytac_lattice = atip.load_sim.load_from_filepath(
+    pytac_lattice = await atip.load_sim.load_from_filepath(
         pytac_lattice, lattice_filepath, sim_params
     )
 

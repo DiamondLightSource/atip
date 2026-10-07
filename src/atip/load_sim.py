@@ -12,7 +12,7 @@ from atip.simulator import ATSimulator
 SIMULATED_FIELDS = {"a1", "b0", "b1", "b2", "b3", "x", "y", "f", "x_kick", "y_kick"}
 
 
-def load_from_filepath(
+async def load_from_filepath(
     pytac_lattice,
     at_lattice_filepath,
     sim_params=None,
@@ -36,9 +36,9 @@ def load_from_filepath(
     at_lattice = at.load.load_mat(
         at_lattice_filepath,
         name=pytac_lattice.name,
-        energy=pytac_lattice.get_value("energy", units=pytac.PHYS),
+        energy=await pytac_lattice.get_value("energy", units=pytac.PHYS),
     )
-    return load(
+    return await load(
         pytac_lattice,
         at_lattice,
         sim_params,
@@ -46,7 +46,7 @@ def load_from_filepath(
     )
 
 
-def load(
+async def load(
     pytac_lattice,
     at_lattice,
     sim_params=None,
@@ -72,7 +72,7 @@ def load(
             f"(AT:{len(at_lattice)} Pytac:{len(pytac_lattice)})."
         )
     # Initialise an instance of the ATSimulator Object.
-    atsim = ATSimulator(
+    atsim = await ATSimulator.create(
         at_lattice,
         sim_params,
         callback,
