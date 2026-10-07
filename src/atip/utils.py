@@ -186,7 +186,7 @@ def toggle_thread(target):
     get_atsim(target).toggle_calculations()
 
 
-def trigger_calc(target):
+async def trigger_calc(target):
     """Manually trigger a recalculation of the physics data on the ATSimulator
     object of the given unified Pytac lattice.
 
@@ -198,7 +198,7 @@ def trigger_calc(target):
                                                         be extracted.
     """
     atsim = get_atsim(target)
-    atsim.trigger_calculation()
+    await atsim.trigger_calculation()
     print("Recalculation manually triggered.")
 
 
