@@ -353,16 +353,13 @@ class ATSimulator:
 
         .. Note:: This does not pause the emptying of the queue.
         """
-        # TODO: These dont currently get called anyway, maybe add a pv to call them?
         if not self._paused.is_set():
             self._paused.set()
 
-    async def unpause_calculations(self):
+    def unpause_calculations(self):
         """Unpause the physics calculations by clearing the _paused flag."""
         if self._paused.is_set():
-            await self._paused.clear()
-            if not self._up_to_date:
-                await self.trigger_calculation()
+            self._paused.clear()
 
     async def trigger_calculation(self):
         """Unpause the physics calculations and add a null item to the queue to
@@ -371,8 +368,8 @@ class ATSimulator:
         .. Note:: This method does not wait for the recalculation to complete,
            that is up to the user.
         """
-        await self.unpause_calculations()
-        self.queue_set(lambda *x: None, None, None)
+        self.unpause_calculations()
+        await self.queue_set(lambda *x: None, None, None)
 
     async def wait_for_calculations(self, timeout=10):
         """Wait until the physics calculations have taken account of all
