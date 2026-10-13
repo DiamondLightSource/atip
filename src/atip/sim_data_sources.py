@@ -125,7 +125,7 @@ class ATElementDataSource(pytac.data_source.DataSource):
         else:
             self._fields.append(field)
 
-    def get_value(self, field, handle=None, throw=True):
+    async def get_value(self, field, handle=None, throw=True):
         """Get the value for a field.
 
         Args:
@@ -150,7 +150,7 @@ class ATElementDataSource(pytac.data_source.DataSource):
         # Wait for any outstanding calculations to conclude, to ensure they are
         # complete before a value is returned; if the wait times out then raise
         # an error message or log a warning according to the value of throw.
-        if not self._atsim.wait_for_calculations():
+        if not await self._atsim.wait_for_calculations():
             error_msg = "Check for completion of outstanding calculations timed out."
             if throw:
                 raise ControlSystemException(error_msg)
@@ -162,7 +162,7 @@ class ATElementDataSource(pytac.data_source.DataSource):
         else:
             raise FieldException(f"No field {field} on AT element {self._at_element}.")
 
-    def set_value(self, field, value, throw=None):
+    async def set_value(self, field, value, throw=None):
         """Set the value for a field. The field and value go onto the queue of
         changes on the ATSimulator to be passed to make_change when the queue
         is emptied.
@@ -180,7 +180,7 @@ class ATElementDataSource(pytac.data_source.DataSource):
         """
         if field in self._fields:
             if field in self._set_field_funcs.keys():
-                self._atsim.queue_set(self._make_change, field, value)
+                await self._atsim.queue_set(self._make_change, field, value)
             else:
                 raise HandleException(
                     f"Field {field} cannot be set on element data source {self}."
@@ -415,7 +415,7 @@ class ATLatticeDataSource(pytac.data_source.DataSource):
         """
         return list(self._field_funcs.keys())
 
-    def get_value(self, field, handle=None, throw=True):
+    async def get_value(self, field, handle=None, throw=True):
         """Get the value for a field on the Pytac lattice.
 
         Args:
@@ -440,7 +440,7 @@ class ATLatticeDataSource(pytac.data_source.DataSource):
         # Wait for any outstanding calculations to conclude, to ensure they are
         # complete before a value is returned; if the wait times out then raise
         # an error message or log a warning according to the value of throw.
-        if not self._atsim.wait_for_calculations():
+        if not await self._atsim.wait_for_calculations():
             error_msg = "Check for completion of outstanding calculations timed out."
             if throw:
                 raise ControlSystemException(error_msg)

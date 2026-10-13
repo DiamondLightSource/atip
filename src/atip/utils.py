@@ -1,4 +1,6 @@
+import asyncio
 import os
+import random
 
 import at
 import pytac
@@ -29,7 +31,7 @@ def load_at_lattice(mode="I04", **kwargs):
     return at_lattice
 
 
-def loader(
+async def loader(
     mode="I04",
     sim_params=None,
     callback=None,
@@ -55,9 +57,9 @@ def loader(
     at_lattice = load_at_lattice(
         mode,
         periodicity=1,
-        energy=pytac_lattice.get_value("energy", units=pytac.PHYS),
+        energy=await pytac_lattice.get_value("energy", units=pytac.PHYS),
     )
-    lattice = atip.load_sim.load(
+    lattice = await atip.load_sim.load(
         pytac_lattice,
         at_lattice,
         sim_params,
@@ -184,7 +186,7 @@ def toggle_thread(target):
     get_atsim(target).toggle_calculations()
 
 
-def trigger_calc(target):
+async def trigger_calc(target):
     """Manually trigger a recalculation of the physics data on the ATSimulator
     object of the given unified Pytac lattice.
 
@@ -196,5 +198,25 @@ def trigger_calc(target):
                                                         be extracted.
     """
     atsim = get_atsim(target)
-    atsim.trigger_calculation()
+    await atsim.trigger_calculation()
     print("Recalculation manually triggered.")
+
+
+async def test_atip():
+    # Load the DIAD lattice from Pytac.
+    lat = pytac.load_csv.load("DIAD")
+    await atip.load_sim.load_from_filepath(lat, "../atip/src/atip/rings/DIAD.mat")
+    # Use the sim by default.
+    lat.set_default_data_source(pytac.SIM)
+    # The initial beam position is zero.
+    print(await lat.get_value("x"))
+
+    # Get the first horizontal corrector magnet and set its current to 1A.
+    hcor1 = lat.get_elements("HSTR")[0]
+    while True:
+        kick: float = random.uniform(0, 2)
+        print(f"Applying x_kick of {kick}")
+        await hcor1.set_value("x_kick", kick, units=pytac.ENG)
+        # Now the x beam position has changed.
+        print(f"New data: {await lat.get_value('x')}")
+        await asyncio.sleep(1)

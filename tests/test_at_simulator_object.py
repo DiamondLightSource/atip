@@ -1,7 +1,7 @@
+import asyncio
 from unittest import mock
 
 import at
-import cothread
 import numpy
 import pytest
 from pytac.exceptions import DataSourceException, FieldException
@@ -66,81 +66,62 @@ def _check_initial_phys_data(atsim, initial_phys_data):
 
 def test_ATSimulator_creation(atsim, initial_phys_data):
     # Check initial state of flags.
-    assert not atsim._paused
-    assert atsim.up_to_date
-    assert len(atsim._queue) == 0
+    assert not atsim._paused.is_set()
+    assert atsim._up_to_date.is_set()
+    assert atsim._queue.empty()
     # Check physics data is initially calculated correctly.
     _check_initial_phys_data(atsim, initial_phys_data)
 
 
-def test_recalculate_phys_data_queue(atsim):
+async def test_recalculate_phys_data_queue(atsim):
     elem_ds = mock.Mock()
-    assert atsim.up_to_date
-    atsim.queue_set(elem_ds._make_change, "a_field", 12)
-    assert not atsim.up_to_date
-    cothread.Sleep(0.1)
+    assert atsim._up_to_date.is_set()
+    await atsim.queue_set(elem_ds._make_change, "a_field", 12)
+    assert not atsim._up_to_date.is_set()
+    await atsim.wait_for_calculations()
     elem_ds._make_change.assert_called_once_with("a_field", 12)
 
 
-def test_pause_calculations(atsim):
+async def test_pause_calculations(atsim):
     elem_ds = mock.Mock()
     atsim.pause_calculations()
-    atsim.queue_set(elem_ds._make_change, "a_field", 12)
-    cothread.Sleep(0.1)
+    await atsim.queue_set(elem_ds._make_change, "a_field", 12)
+    await asyncio.sleep(0.1)
     # Queue emptied even though paused.
-    assert len(atsim._queue) == 0
+    assert atsim._queue.empty()
     elem_ds._make_change.assert_called_once_with("a_field", 12)
     # Calculation not updated because paused.
-    assert not atsim.up_to_date
-    # Check we don't have to add another item to the queue to prompt a recalculation.
+    assert not atsim._up_to_date.is_set()
     atsim.unpause_calculations()
-    cothread.Sleep(0.1)
+    await atsim.trigger_calculation()
+    await atsim.wait_for_calculations()
     # Calculation now updated.
-    assert atsim.up_to_date
+    assert atsim._up_to_date.is_set()
 
 
-def test_quit_calculation_thread(atsim):
-    # Check our thread initially works
-    atsim._lattice_data = None
-    atsim.trigger_calculation()
-    assert atsim.wait_for_calculations() is True
-    assert len(atsim._queue) == 0
-    assert atsim._lattice_data is not None
-    # Stop the calculation thread
-    assert len(atsim._queue) == 0
-    atsim.quit_calculation_thread()
-    assert len(atsim._queue) == 0
-    # Check our thread no longer works
-    atsim._lattice_data = None
-    atsim.trigger_calculation()
-    assert atsim.wait_for_calculations(2) is False
-    assert len(atsim._queue) == 1
-    assert atsim._lattice_data is None
-
-
-def test_gather_one_sample(atsim):
+async def test_gather_one_sample(atsim):
     # Stop the calculation thread from emptying the queue
-    atsim.quit_calculation_thread()
+    atsim.pause_calculations()
+    await asyncio.sleep(0.1)
     # Add something to the queue
     elem_ds = mock.Mock()
-    atsim.queue_set(elem_ds._make_change, "a_field", 12)
-    cothread.Sleep(0.1)
+    await atsim.queue_set(elem_ds._make_change, "a_field", 12)
     # Make sure it's on the queue and hasn't already been gathered
-    assert len(atsim._queue) == 1
+    assert not atsim._queue.empty()
     elem_ds._make_change.assert_not_called()
     # Gather it off the queue and check that our mock change has been called correctly
-    atsim._gather_one_sample()
-    assert len(atsim._queue) == 0
+    await atsim._gather_one_sample()
+    assert atsim._queue.empty()
     elem_ds._make_change.assert_called_once_with("a_field", 12)
 
 
-def test_recalculate_phys_data(atsim, initial_phys_data):
+async def test_recalculate_phys_data(atsim, initial_phys_data):
     _check_initial_phys_data(atsim, initial_phys_data)
     # Check that errors raised inside thread are converted to warnings.
     atsim._at_lat[4].PolynomB[0] = 1.0e10
-    atsim.queue_set(mock.Mock(), "f", 0)
+    await atsim.queue_set(mock.Mock(), "f", 0)
     with pytest.warns(at.AtWarning):
-        atsim.wait_for_calculations()
+        await atsim.wait_for_calculations()
     atsim._at_lat[4].PolynomB[0] = 0.0
     # Set corrector x_kick but on a sextupole as no correctors in test ring
     atsim._at_lat[7].PolynomB[0] = -7.0e-5
@@ -153,8 +134,8 @@ def test_recalculate_phys_data(atsim, initial_phys_data):
     # Set sextupole b2
     atsim._at_lat[7].PolynomB[2] = 10
     # Clear the flag and then wait for the calculations
-    atsim.queue_set(mock.Mock(), "f", 0)
-    atsim.wait_for_calculations()
+    await atsim.queue_set(mock.Mock(), "f", 0)
+    await atsim.wait_for_calculations()
     # Get the applicable physics data
     orbit = [atsim.get_orbit("x")[0], atsim.get_orbit("y")[0]]
     chrom = [atsim.get_chromaticity("x"), atsim.get_chromaticity("y")]
@@ -169,60 +150,60 @@ def test_recalculate_phys_data(atsim, initial_phys_data):
     numpy.testing.assert_almost_equal(emit, [1.34308653e-10, 3.74339964e-13], decimal=3)
 
 
-def test_ohmi_envelope_with_emittance_enabled(atsim, initial_phys_data):
+async def test_ohmi_envelope_with_emittance_enabled(atsim):
+    atsim._at_lat.ohmi_envelope = mock.Mock()
     # Check emittance data is intially there
     assert len(atsim._lattice_data.emittance) == 3
     assert atsim._sim_params.emittance
     # Check that ohmi_envelope is called when emittance is True
-    atsim._at_lat.ohmi_envelope = mock.Mock()
-    atsim.trigger_calculation()
-    cothread.Sleep(0.1)
+    await atsim.trigger_calculation()
+    await atsim.wait_for_calculations()
     atsim._at_lat.ohmi_envelope.assert_called_once()
 
 
-def test_ohmi_envelope_with_emittance_disabled(atsim, initial_phys_data):
+async def test_ohmi_envelope_with_emittance_disabled(atsim):
     atsim._sim_params = atip.simulator.SimParams(emittance=False)
     assert not atsim._sim_params.emittance
     atsim._at_lat.ohmi_envelope = mock.Mock()
-    atsim.trigger_calculation()
-    cothread.Sleep(0.1)
+    await atsim.trigger_calculation()
+    await atsim.wait_for_calculations()
     # Check that ohmi_envelope isn't called when emittance is False and that
     # there isn't any emittance data
     atsim._at_lat.ohmi_envelope.assert_not_called()
     assert len(atsim._lattice_data.emittance) == 0
 
 
-def test_toggle_calculations_and_wait_for_calculations(atsim, initial_phys_data):
-    assert not atsim._paused
+async def test_toggle_calculations_and_wait_for_calculations(atsim, initial_phys_data):
+    assert not atsim._paused.is_set()
     atsim.toggle_calculations()
-    assert atsim._paused
+    assert atsim._paused.is_set()
     atsim.toggle_calculations()
-    assert not atsim._paused
+    assert not atsim._paused.is_set()
     # pause > make a change > check no calc > unpause > check calc
     atsim.toggle_calculations()
     # Kick quadrupole
     atsim._at_lat[4].PolynomB[1] = -0.8
-    atsim.queue_set(mock.Mock(), "f", 0)
-    assert atsim.wait_for_calculations(2) is False
+    await atsim.queue_set(mock.Mock(), "f", 0)
+    assert await atsim.wait_for_calculations(2) is False
     _check_initial_phys_data(atsim, initial_phys_data)
     atsim.toggle_calculations()
-    atsim.queue_set(mock.Mock(), "f", 0)
-    assert atsim.wait_for_calculations() is True
+    await atsim.queue_set(mock.Mock(), "f", 0)
+    assert await atsim.wait_for_calculations() is True
     # Physics data has changed.
     with pytest.raises(AssertionError):
         _check_initial_phys_data(atsim, initial_phys_data)
 
 
-def test_recalculate_phys_data_callback(at_lattice):
+async def test_recalculate_phys_data_callback(at_lattice):
     # Check ATSimulator is created successfully if no callback.
-    atip.simulator.ATSimulator(at_lattice)
+    await atip.simulator.ATSimulator.create(at_lattice)
     # Check non-callable callback argument raises TypeError.
     with pytest.raises(TypeError):
-        atip.simulator.ATSimulator(at_lattice, callback="")
-    callback_func = mock.Mock()
-    atsim = atip.simulator.ATSimulator(at_lattice, callback=callback_func)
-    atsim.queue_set(mock.Mock(), "f", 0)
-    atsim.wait_for_calculations()
+        await atip.simulator.ATSimulator.create(at_lattice, callback="")
+    callback_func = mock.AsyncMock()
+    atsim = await atip.simulator.ATSimulator.create(at_lattice, callback=callback_func)
+    await atsim.queue_set(mock.Mock(), "f", 0)
+    await atsim.wait_for_calculations()
     callback_func.assert_called_once_with()
 
 

@@ -92,16 +92,16 @@ def test_elem_add_field_raises_FieldExceptions_correctly(at_elem, field):
         ateds.add_field(field)
 
 
-def test_elem_get_value_handles_calculation_check_time_out_correctly(at_elem):
-    atsim = mock.Mock()
+async def test_elem_get_value_handles_calculation_check_time_out_correctly(at_elem):
+    atsim = mock.AsyncMock()
     ateds = atip.sim_data_sources.ATElementDataSource(at_elem, 1, atsim, ["f"])
     atsim.wait_for_calculations.return_value = False
     # Check fails, throw is True, so exception is raised.
     with pytest.raises(ControlSystemException):
-        ateds.get_value("f", throw=True)
+        await ateds.get_value("f", throw=True)
     # Check fails, throw is False, so warning is logged and value is returned.
     with LogCapture() as log:
-        assert ateds.get_value("f", throw=False) == 0
+        assert await ateds.get_value("f", throw=False) == 0
     log.check(
         (
             "root",
@@ -112,17 +112,19 @@ def test_elem_get_value_handles_calculation_check_time_out_correctly(at_elem):
     )
     atsim.wait_for_calculations.return_value = True
     # Check doesn't fail, so doesn't raise error or warn and data is returned.
-    assert ateds.get_value("f", throw=True) == 0
-    assert ateds.get_value("f", throw=False) == 0
+    assert await ateds.get_value("f", throw=True) == 0
+    assert await ateds.get_value("f", throw=False) == 0
 
 
 @pytest.mark.parametrize("field", ["not_a_field", 1, [], "a1", "X_KICK"])
-def test_elem_get_value_raises_FieldException_if_nonexistent_field(at_elem, field):
+async def test_elem_get_value_raises_FieldException_if_nonexistent_field(
+    at_elem, field
+):
     ateds = atip.sim_data_sources.ATElementDataSource(
-        at_elem, 1, mock.Mock(), ["x_kick"]
+        at_elem, 1, mock.AsyncMock(), ["x_kick"]
     )
     with pytest.raises(FieldException):
-        ateds.get_value(field)
+        await ateds.get_value(field)
 
 
 @pytest.mark.parametrize(
@@ -137,56 +139,60 @@ def test_elem_get_value_raises_FieldException_if_nonexistent_field(at_elem, fiel
         ("b2", 42),
     ],
 )
-def test_elem_get_value(at_elem_preset, field, value):
+async def test_elem_get_value(at_elem_preset, field, value):
     ateds = atip.sim_data_sources.ATElementDataSource(
-        at_elem_preset, 6, mock.Mock(), [field]
+        at_elem_preset, 6, mock.AsyncMock(), [field]
     )
-    assert ateds.get_value(field) == value
+    assert await ateds.get_value(field) == value
 
 
-def test_elem_get_orbit(at_elem_preset):
-    atsim = mock.Mock()
-    atsim.get_orbit.return_value = [27, 53, 741, 16, 12, 33]
+async def test_elem_get_orbit(at_elem_preset):
+    atsim = mock.AsyncMock()
+    atsim.get_orbit = mock.Mock(return_value=[27, 53, 741, 16, 12, 33])
     ateds = atip.sim_data_sources.ATElementDataSource(
         at_elem_preset, 6, atsim, ["x", "y"]
     )
-    assert ateds.get_value("x") == 33
+    assert await ateds.get_value("x") == 33
     ateds._index = 3
-    assert ateds.get_value("y") == 741
+    assert await ateds.get_value("y") == 741
 
 
-def test_elem_get_value_on_Sextupole():
+async def test_elem_get_value_on_Sextupole():
     s = at.elements.Sextupole(
         "S1", 0.1, PolynomA=[50, 0, 0, 0], PolynomB=[-10, 0, 0, 0]
     )
     ateds = atip.sim_data_sources.ATElementDataSource(
-        s, 0, mock.Mock(), ["x_kick", "y_kick"]
+        s, 0, mock.AsyncMock(), ["x_kick", "y_kick"]
     )
-    assert ateds.get_value("x_kick") == 1
-    assert ateds.get_value("y_kick") == 5
+    assert await ateds.get_value("x_kick") == 1
+    assert await ateds.get_value("y_kick") == 5
 
 
 @pytest.mark.parametrize("field", ["not_a_field", 1, [], "a1", "X_KICK"])
-def test_elem_set_value_raises_FieldException_if_nonexistant_field(at_elem, field):
+async def test_elem_set_value_raises_FieldException_if_nonexistant_field(
+    at_elem, field
+):
     ateds = atip.sim_data_sources.ATElementDataSource(
-        at_elem, 1, mock.Mock(), ["x_kick"]
+        at_elem, 1, mock.AsyncMock(), ["x_kick"]
     )
     with pytest.raises(FieldException):
-        ateds.set_value(field, 0)
+        await ateds.set_value(field, 0)
 
 
 @pytest.mark.parametrize("field", ["x", "y"])
-def test_elem_set_orbit_raises_HandleException(at_elem, field):
-    ateds = atip.sim_data_sources.ATElementDataSource(at_elem, 1, mock.Mock(), [field])
+async def test_elem_set_orbit_raises_HandleException(at_elem, field):
+    ateds = atip.sim_data_sources.ATElementDataSource(
+        at_elem, 1, mock.AsyncMock(), [field]
+    )
     with pytest.raises(HandleException):
-        ateds.set_value(field, 0)
+        await ateds.set_value(field, 0)
 
 
 @pytest.mark.parametrize("field", ["x_kick", "y_kick", "a1", "b0", "b1", "b2", "f"])
-def test_elem_set_value_adds_changes_to_queue(at_elem, field):
-    atsim = mock.Mock()
+async def test_elem_set_value_adds_changes_to_queue(at_elem, field):
+    atsim = mock.AsyncMock()
     ateds = atip.sim_data_sources.ATElementDataSource(at_elem, 1, atsim, [field])
-    ateds.set_value(field, 1)
+    await ateds.set_value(field, 1)
     assert len(atsim.queue_set.mock_calls) == 1
     assert atsim.queue_set.mock_calls[0] == mock.call(ateds._make_change, field, 1)
 
