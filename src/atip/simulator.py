@@ -328,12 +328,6 @@ class ATSimulator:
                         logging.debug(
                             f"Executing callback function: {callback.__name__}"
                         )
-                        # For Virtac this function calls update_pvs() which gets data
-                        # from the pytac datasource to update the softioc pvs with. The
-                        # data source is sim_data_sources.py and its get_value()
-                        # function waits on the wait_for_calculation() function which
-                        # waits for the up_to_date flag which currently will always be
-                        # set, so this process is pointless.
                         await callback()
                         logging.debug("Callback completed.")
 
