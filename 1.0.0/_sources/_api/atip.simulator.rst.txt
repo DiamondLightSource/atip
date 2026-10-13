@@ -1,0 +1,29 @@
+``atip.simulator``
+==================
+        
+        
+        
+        
+        
+
+.. automodule:: atip.simulator
+    :members:
+
+    
+    
+    
+
+    
+    
+    .. rubric:: Members
+
+    .. autosummary::
+        :nosignatures:
+    
+        ATSimulator
+        LatticeData
+        LinoptType
+        SimParams
+        calculate_optics
+    
+    
