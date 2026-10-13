@@ -13,7 +13,7 @@ description = "Accelerator Toolbox Interface for Pytac"
 dependencies = [
     "numpy",
     "scipy",
-    "pytac>=1.1.0",
+    "pytac>=2.0.0",
     "accelerator-toolbox>=0.8.0",
     "cothread",
     "softioc",
