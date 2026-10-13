@@ -53,7 +53,7 @@ async def loader(
         pytac.lattice.Lattice: A Pytac lattice object with the simulator data
                                 source loaded.
     """
-    pytac_lattice = await pytac.load_csv.load(mode, symmetry=24)
+    pytac_lattice = pytac.load_csv.load(mode, symmetry=24)
     at_lattice = load_at_lattice(
         mode,
         periodicity=1,
@@ -204,7 +204,7 @@ async def trigger_calc(target):
 
 async def test_atip():
     # Load the DIAD lattice from Pytac.
-    lat = await pytac.load_csv.load("DIAD")
+    lat = pytac.load_csv.load("DIAD")
     await atip.load_sim.load_from_filepath(lat, "../atip/src/atip/rings/DIAD.mat")
     # Use the sim by default.
     lat.set_default_data_source(pytac.SIM)

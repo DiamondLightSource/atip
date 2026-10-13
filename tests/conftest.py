@@ -63,16 +63,16 @@ def atlds():
 
 
 @pytest.fixture(scope="function", params=["I04"])
-async def at_and_pytac_lattices(request):
+def at_and_pytac_lattices(request):
     lattices = []
-    lattices.append(await load_csv.load(request.param, cs.ControlSystem()))
+    lattices.append(load_csv.load(request.param, cs.ControlSystem()))
     lattices.append(atip.utils.load_at_lattice(request.param))
     return lattices
 
 
 @pytest.fixture(scope="function", params=["I04"])
-async def pytac_lattice(request):
-    return await load_csv.load(request.param, cs.ControlSystem())
+def pytac_lattice(request):
+    return load_csv.load(request.param, cs.ControlSystem())
 
 
 @pytest.fixture(scope="function", params=["I04"])
